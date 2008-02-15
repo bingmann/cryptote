@@ -36,7 +36,7 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
-	acscripts/config.guess acscripts/config.sub \
+	acscripts/config.guess acscripts/config.sub acscripts/depcomp \
 	acscripts/install-sh acscripts/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
