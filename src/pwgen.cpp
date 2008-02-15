@@ -6,6 +6,10 @@
 
 class App : public wxApp
 {
+private:
+    /// Password generator main dialog
+    class WGeneratePassword*	wgenpass;
+
 public:
     /// This function is called during application start-up.
     virtual bool	OnInit()
@@ -13,10 +17,11 @@ public:
 	wxInitAllImageHandlers();
 
 	// Create main window frame
-	WGeneratePassword dlg(NULL, false);
-	dlg.ShowModal();
+	wgenpass = new WGeneratePassword(NULL, true);
+	SetTopWindow(wgenpass);
+	wgenpass->Show();
 
-	return false;
+	return true;
     }
 
     /// Application exit function
