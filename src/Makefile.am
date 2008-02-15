@@ -3,11 +3,13 @@
 bin_PROGRAMS = cryptote pwgen
 
 cryptote_SOURCES = main.cpp \
-	wgenpass.cpp wgenpass.h
+	wgenpass.cpp wgenpass.h \
+	prng.cpp prng.h
 
 pwgen_SOURCES = pwgen.cpp \
-	wgenpass.cpp wgenpass.h
+	wgenpass.cpp wgenpass.h \
+	prng.cpp prng.h
 
-AM_CFLAGS = $(WX_CFLAGS)
-AM_CXXFLAGS = $(WX_CXXFLAGS)
+AM_CFLAGS = -W -Wall $(WX_CFLAGS)
+AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
 LDADD = $(WX_LIBS)

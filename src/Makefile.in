@@ -46,12 +46,12 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_cryptote_OBJECTS = main.$(OBJEXT) wgenpass.$(OBJEXT)
+am_cryptote_OBJECTS = main.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 cryptote_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_pwgen_OBJECTS = pwgen.$(OBJEXT) wgenpass.$(OBJEXT)
+am_pwgen_OBJECTS = pwgen.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT)
 pwgen_OBJECTS = $(am_pwgen_OBJECTS)
 pwgen_LDADD = $(LDADD)
 pwgen_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -180,13 +180,15 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 cryptote_SOURCES = main.cpp \
-	wgenpass.cpp wgenpass.h
+	wgenpass.cpp wgenpass.h \
+	prng.cpp prng.h
 
 pwgen_SOURCES = pwgen.cpp \
-	wgenpass.cpp wgenpass.h
+	wgenpass.cpp wgenpass.h \
+	prng.cpp prng.h
 
-AM_CFLAGS = $(WX_CFLAGS)
-AM_CXXFLAGS = $(WX_CXXFLAGS)
+AM_CFLAGS = -W -Wall $(WX_CFLAGS)
+AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
 LDADD = $(WX_LIBS)
 all: all-am
 
@@ -258,6 +260,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wgenpass.Po@am__quote@
 

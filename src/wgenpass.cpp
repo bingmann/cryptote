@@ -6,7 +6,7 @@
 // begin wxGlade: ::extracode
 // end wxGlade
 
-WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME),
       standalone(_standalone)
 {
@@ -132,7 +132,7 @@ BEGIN_EVENT_TABLE(WGeneratePassword, wxDialog)
     EVT_CLOSE(WGeneratePassword::OnClose)
 END_EVENT_TABLE();
 
-void WGeneratePassword::OnClose(wxCloseEvent& event)
+void WGeneratePassword::OnClose(wxCloseEvent& WXUNUSED(event))
 {
     if (standalone)
     {
@@ -192,17 +192,17 @@ void WGeneratePassword::OnPasslistActivated(wxListEvent &event)
     wxLogDebug(wxT("Event handler (WGeneratePassword::OnPasslistActivated) not implemented yet"));
 }
 
-void WGeneratePassword::OnButtonOK(wxCommandEvent &event)
+void WGeneratePassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
     EndModal(wxID_OK);
 }
 
-void WGeneratePassword::OnButtonCancel(wxCommandEvent &event)
+void WGeneratePassword::OnButtonCancel(wxCommandEvent& WXUNUSED(event))
 {
     EndModal(wxID_CANCEL);
 }
 
-void WGeneratePassword::OnButtonClose(wxCommandEvent &event)
+void WGeneratePassword::OnButtonClose(wxCommandEvent& WXUNUSED(event))
 {
     Close();
 }
