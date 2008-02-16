@@ -128,7 +128,7 @@ WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id,
 void WGeneratePassword::set_properties()
 {
     // begin wxGlade: WGeneratePassword::set_properties
-    SetTitle(_("Password Generator"));
+    SetTitle(_("CryptoTE Password Generator"));
     SetSize(wxSize(400, 600));
     choicePreset->SetToolTip(_("Default or saved password presets."));
     buttonPresetAdd->SetToolTip(_("Save the current settings as a new preset."));
@@ -374,6 +374,11 @@ void WGeneratePassword::OnPasslistActivated(wxListEvent& event)
 
 void WGeneratePassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
+    int sel = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (sel < 0) return;
+
+    selpass = listctrlPasslist->GetItemText(sel);
+
     SaveSettings();
     EndModal(wxID_OK);
 }
@@ -477,6 +482,11 @@ void WGeneratePassword::GenerateList()
     }
 
     buttonOK->Disable();
+}
+
+const wxString& WGeneratePassword::GetSelectedPassword() const
+{
+    return selpass;
 }
 
 // *** Password Generator Functions ***

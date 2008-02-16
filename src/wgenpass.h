@@ -37,8 +37,11 @@ public:
 
     WGeneratePassword(wxWindow* parent, bool standalone, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
-    // stand-alone program running.
+    /// Set if running as stand-alone program.
     bool	standalone;
+
+    /// Return password selected by the user
+    const wxString&	GetSelectedPassword() const;
 
 protected:
     // *** Preset Management ***
@@ -57,6 +60,9 @@ protected:
 
     /// List of all password presets
     std::vector<Preset> presetlist;
+
+    /// Save selected password for calling dialog
+    wxString		selpass;
 
     // *** Helper Functions ***
 
