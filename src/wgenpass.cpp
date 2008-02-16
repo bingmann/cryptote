@@ -2,6 +2,7 @@
 // $Id$
 
 #include "wgenpass.h"
+#include "tools.h"
 #include "prng.h"
 #include "fips181.h"
 
@@ -12,6 +13,22 @@ WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id,
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME),
       standalone(_standalone)
 {
+    {
+	#include "art/pwgen-16.h"
+	#include "art/pwgen-22.h"
+	#include "art/pwgen-32.h"
+	#include "art/pwgen-48.h"
+
+	wxIconBundle progicon;
+
+	progicon.AddIcon( wxIconFromMemory(pwgen_16_png) );
+	progicon.AddIcon( wxIconFromMemory(pwgen_22_png) );
+	progicon.AddIcon( wxIconFromMemory(pwgen_32_png) );
+	progicon.AddIcon( wxIconFromMemory(pwgen_48_png) );
+
+	SetIcons(progicon);
+    }
+
     // begin wxGlade: WGeneratePassword::WGeneratePassword
     sizer2_staticbox = new wxStaticBox(this, -1, _("Generator Options"));
     const wxString *choicePreset_choices = NULL;

@@ -1,5 +1,7 @@
 # $Id$
 
+SUBDIRS = art .
+
 bin_PROGRAMS = cryptote pwgen
 
 cryptote_SOURCES = main.cpp \
