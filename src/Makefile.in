@@ -46,12 +46,14 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_cryptote_OBJECTS = main.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT)
+am_cryptote_OBJECTS = main.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT) \
+	fips181.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 cryptote_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_pwgen_OBJECTS = pwgen.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT)
+am_pwgen_OBJECTS = pwgen.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT) \
+	fips181.$(OBJEXT)
 pwgen_OBJECTS = $(am_pwgen_OBJECTS)
 pwgen_LDADD = $(LDADD)
 pwgen_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -181,11 +183,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 cryptote_SOURCES = main.cpp \
 	wgenpass.cpp wgenpass.h \
-	prng.cpp prng.h
+	prng.cpp prng.h \
+	fips181.cpp fips181.h
 
 pwgen_SOURCES = pwgen.cpp \
 	wgenpass.cpp wgenpass.h \
-	prng.cpp prng.h
+	prng.cpp prng.h \
+	fips181.cpp fips181.h
 
 AM_CFLAGS = -W -Wall $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
@@ -259,6 +263,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwgen.Po@am__quote@

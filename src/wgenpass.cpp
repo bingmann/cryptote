@@ -3,6 +3,7 @@
 
 #include "wgenpass.h"
 #include "prng.h"
+#include "fips181.h"
 
 // begin wxGlade: ::extracode
 // end wxGlade
@@ -438,6 +439,12 @@ bool WGeneratePassword::IsAllowedSwapped() const
 // Use one global random generator instance for password.
 static class PRNG randgen;
 
+/// Function with right signature for FIPS181 argument.
+static int randgen_func()
+{
+    return randgen.get_int32();
+}
+
 wxString WGeneratePassword::MakePasswordType0(unsigned int len, const wxChar* letters)
 {
     wxString s;
@@ -460,7 +467,14 @@ wxString WGeneratePassword::MakePassword(unsigned int passlen)
     switch(passtype)
     {
     case PT_PRONOUNCEABLE:
-	return _("...");
+    {
+	FIPS181 fips181 (randgen_func);
+
+	std::string word, hypenated_word;
+	fips181.randomword(word, hypenated_word, passlen, passlen);
+
+	return wxString(word.data(), wxConvUTF8, word.size());
+    }
 
     case PT_ALPHANUMERIC:
     case PT_ALPHA:
