@@ -5,6 +5,11 @@
 
 #include <wx/mstream.h>
 
+// *** Missing in 2.8, but always added by wxGlade ***
+#ifndef wxTHICK_FRAME
+#define wxTHICK_FRAME wxRESIZE_BORDER
+#endif
+
 // *** Some functions to load a compiled-in transparent PNG as wxBitmap or
 // *** wxIcon
 
