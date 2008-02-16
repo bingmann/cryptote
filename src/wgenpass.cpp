@@ -23,7 +23,7 @@ WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id,
     spinctrlLength = new wxSpinCtrl(this, myID_LENGTH, wxT("12"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 6, 100);
     textctrlStrength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     checkboxEnumerate = new wxCheckBox(this, wxID_ANY, _("Enumerate Passwords"));
-    buttonRegenerate = new wxButton(this, myID_REGENERATE, _("&Regenerate"));
+    buttonGenerate = new wxButton(this, myID_GENERATE, _("&Generate"));
     listctrlPasslist = new wxListCtrl(this, myID_PASSLIST, wxDefaultPosition, wxDefaultSize, wxLC_LIST|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
     textctrlPasslist = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
@@ -43,7 +43,7 @@ WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id,
 
     UpdateCheckboxes();
     UpdateKeyStrength();
-    RegenerateList();
+    GenerateList();
 
     buttonOK->Disable();
 }
@@ -94,7 +94,7 @@ void WGeneratePassword::do_layout()
     sizer3->Add(checkboxEnumerate, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
     sizer3->AddGrowableCol(1);
     sizer2->Add(sizer3, 1, wxEXPAND, 0);
-    sizer2->Add(buttonRegenerate, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer2->Add(buttonGenerate, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
     sizer1->Add(sizer2, 0, wxALL|wxEXPAND, 8);
     wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
@@ -134,7 +134,7 @@ BEGIN_EVENT_TABLE(WGeneratePassword, wxDialog)
     EVT_CHECKBOX(myID_SKIPSIMILARCHARS, WGeneratePassword::OnCheckSkipSimilarChars)
     EVT_CHECKBOX(myID_SKIPSWAPPEDCHARS, WGeneratePassword::OnCheckSkipSwappedChars)
     EVT_SPINCTRL(myID_LENGTH, WGeneratePassword::OnSpinLength)
-    EVT_BUTTON(myID_REGENERATE, WGeneratePassword::OnButtonRegenerate)
+    EVT_BUTTON(myID_GENERATE, WGeneratePassword::OnButtonGenerate)
     EVT_LIST_ITEM_DESELECTED(myID_PASSLIST, WGeneratePassword::OnPasslistSelected)
     EVT_LIST_ITEM_SELECTED(myID_PASSLIST, WGeneratePassword::OnPasslistSelected)
     EVT_LIST_ITEM_ACTIVATED(myID_PASSLIST, WGeneratePassword::OnPasslistActivated)
@@ -185,9 +185,9 @@ void WGeneratePassword::OnSpinLength(wxSpinEvent& WXUNUSED(event))
     UpdateKeyStrength();
 }
 
-void WGeneratePassword::OnButtonRegenerate(wxCommandEvent& WXUNUSED(event))
+void WGeneratePassword::OnButtonGenerate(wxCommandEvent& WXUNUSED(event))
 {
-    RegenerateList();
+    GenerateList();
 }
 
 void WGeneratePassword::OnPasslistSelected(wxListEvent& WXUNUSED(event))
@@ -240,7 +240,7 @@ void WGeneratePassword::UpdateKeyStrength()
     textctrlStrength->SetValue(ss);
 }
 
-void WGeneratePassword::RegenerateList()
+void WGeneratePassword::GenerateList()
 {
     int passlen = spinctrlLength->GetValue();
     bool enumerate = checkboxEnumerate->GetValue();
@@ -490,3 +490,5 @@ wxString WGeneratePassword::MakePassword(unsigned int passlen)
 
     return _T("");
 }
+
+

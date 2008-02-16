@@ -25,7 +25,7 @@ public:
         myID_SKIPSIMILARCHARS = wxID_HIGHEST + 1004,
         myID_SKIPSWAPPEDCHARS = wxID_HIGHEST + 1006,
         myID_LENGTH = wxID_HIGHEST + 1008,
-        myID_REGENERATE = wxID_HIGHEST + 1010,
+        myID_GENERATE = wxID_HIGHEST + 1010,
         myID_PASSLIST = wxID_HIGHEST + 1012
     };
     // end wxGlade
@@ -45,7 +45,7 @@ protected:
     void		UpdateCheckboxes();
 
     /// (Re)Generate Password list
-    void		RegenerateList();
+    void		GenerateList();
 
     // *** Password Generator Functions ***
 
@@ -99,7 +99,7 @@ protected:
     wxSpinCtrl* spinctrlLength;
     wxTextCtrl* textctrlStrength;
     wxCheckBox* checkboxEnumerate;
-    wxButton* buttonRegenerate;
+    wxButton* buttonGenerate;
     wxListCtrl* listctrlPasslist;
     wxTextCtrl* textctrlPasslist;
     wxButton* buttonOK;
@@ -117,7 +117,7 @@ public:
     virtual void OnCheckSkipSimilarChars(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnCheckSkipSwappedChars(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnSpinLength(wxSpinEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonRegenerate(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnButtonGenerate(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnPasslistSelected(wxListEvent &event); // wxGlade: <event_handler>
     virtual void OnPasslistActivated(wxListEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
