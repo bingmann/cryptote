@@ -2,6 +2,7 @@
 // $Id$
 
 #include "wgenpass.h"
+#include "prng.h"
 
 // begin wxGlade: ::extracode
 // end wxGlade
@@ -32,6 +33,18 @@ WGeneratePassword::WGeneratePassword(wxWindow* parent, bool _standalone, int id,
     set_properties();
     do_layout();
     // end wxGlade
+
+    // insert password type names
+    for (unsigned int pt = 0; pt <= PT_LAST; ++pt)
+    {
+	choiceType->Append( GetTypeName((pass_type)pt) );
+    }
+
+    UpdateCheckboxes();
+    UpdateKeyStrength();
+    RegenerateList();
+
+    buttonOK->Disable();
 }
 
 void WGeneratePassword::set_properties()
@@ -144,52 +157,46 @@ void WGeneratePassword::OnClose(wxCloseEvent& WXUNUSED(event))
     }
 }
 
-void WGeneratePassword::OnChoicePreset(wxCommandEvent &event)
+void WGeneratePassword::OnChoicePreset(wxCommandEvent& event)
 {
     event.Skip();
     wxLogDebug(wxT("Event handler (WGeneratePassword::OnChoicePreset) not implemented yet"));
 }
 
-void WGeneratePassword::OnChoiceType(wxCommandEvent &event)
+void WGeneratePassword::OnChoiceType(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnChoiceType) not implemented yet"));
+    UpdateCheckboxes();
+    UpdateKeyStrength();
 }
 
-void WGeneratePassword::OnCheckSkipSimilarChars(wxCommandEvent &event)
+void WGeneratePassword::OnCheckSkipSimilarChars(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnCheckSkipSimilarChars) not implemented yet"));
+    UpdateKeyStrength();
 }
 
-void WGeneratePassword::OnCheckSkipSwappedChars(wxCommandEvent &event)
+void WGeneratePassword::OnCheckSkipSwappedChars(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnCheckSkipSwappedChars) not implemented yet"));
+    UpdateKeyStrength();
 }
 
-void WGeneratePassword::OnSpinLength(wxSpinEvent &event)
+void WGeneratePassword::OnSpinLength(wxSpinEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnSpinLength) not implemented yet"));
+    UpdateKeyStrength();
 }
 
-void WGeneratePassword::OnButtonRegenerate(wxCommandEvent &event)
+void WGeneratePassword::OnButtonRegenerate(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnButtonRegenerate) not implemented yet"));
+    RegenerateList();
 }
 
-void WGeneratePassword::OnPasslistSelected(wxListEvent &event)
+void WGeneratePassword::OnPasslistSelected(wxListEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnPasslistSelected) not implemented yet"));
+    buttonOK->Enable( listctrlPasslist->GetSelectedItemCount() != 0 );
 }
 
-void WGeneratePassword::OnPasslistActivated(wxListEvent &event)
+void WGeneratePassword::OnPasslistActivated(wxListEvent& event)
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WGeneratePassword::OnPasslistActivated) not implemented yet"));
+    OnButtonOK(event);
 }
 
 void WGeneratePassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
@@ -207,10 +214,265 @@ void WGeneratePassword::OnButtonClose(wxCommandEvent& WXUNUSED(event))
     Close();
 }
 
-void WGeneratePassword::OnButtonAbout(wxCommandEvent &event)
+void WGeneratePassword::OnButtonAbout(wxCommandEvent& event)
 {
     event.Skip();
     wxLogDebug(wxT("Event handler (WGeneratePassword::OnButtonAbout) not implemented yet"));
 }
 
 // wxGlade: add WGeneratePassword event handlers
+
+void WGeneratePassword::UpdateCheckboxes()
+{
+    checkboxSkipSimilarChars->Enable( IsAllowedSimilar() );
+    checkboxSkipSwappedChars->Enable( IsAllowedSwapped() );
+}
+
+void WGeneratePassword::UpdateKeyStrength()
+{
+    int passlen = spinctrlLength->GetValue();
+
+    double keybits = GetTypeKeybits() * passlen;
+
+    wxString ss = wxString::Format(_T("%.1f keybits"), keybits);
+
+    textctrlStrength->SetValue(ss);
+}
+
+void WGeneratePassword::RegenerateList()
+{
+    int passlen = spinctrlLength->GetValue();
+    bool enumerate = checkboxEnumerate->GetValue();
+
+    if (standalone)
+    {
+	// Fill wxTextCtrl with password
+
+	wxString text;
+
+	for(unsigned int i = 0; i < 10; i++)
+	{
+	    if (enumerate)
+		text += wxString::Format(_T("%u "), i);
+
+	    text += MakePassword(passlen) + _T("\n");
+	}
+
+	textctrlPasslist->SetValue(text);
+    }
+    else
+    {
+	// Fill wxListCtrl with password
+
+	listctrlPasslist->DeleteAllItems();
+
+	for(unsigned int i = 0; i < 10; i++)
+	{
+	    listctrlPasslist->InsertItem(i, MakePassword(passlen) );
+	}
+    }
+
+    buttonOK->Disable();
+}
+
+// *** Password Generator Functions ***
+
+const wxChar* WGeneratePassword::GetTypeName(pass_type pt)
+{
+    switch(pt)
+    {
+    case PT_PRONOUNCEABLE:
+	return _("Pronounceable Password");
+
+    case PT_ALPHANUMERIC:
+	return _("Random Letters + Numbers");
+
+    case PT_ALPHA:
+	return _("Random Letters");
+
+    case PT_ALPHALOWER:
+	return _("Random Lower-case Letters");
+
+    case PT_ALPHAUPPER:
+	return _("Random Upper-case Letters");
+
+    case PT_NUMERIC:
+	return _("Random Numbers");
+
+    default:
+	return _("Unknown");
+    }
+}
+
+const wxChar* WGeneratePassword::GetType0Letters(pass_type pt, bool skip_similar, bool skip_swapped)
+{
+    switch(pt)
+    {
+    case PT_PRONOUNCEABLE:
+	assert(0);
+	return _T("");
+
+    case PT_ALPHANUMERIC:
+    
+	if (skip_similar && skip_swapped)
+	    return _T("ABCDEFGHIJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx23456789");
+	else if (skip_similar && !skip_swapped)
+	    return _T("ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789");
+	else if (!skip_similar && skip_swapped)
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXabcdefghijklmnopqrstuvwx0123456789");
+	else
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+
+    case PT_ALPHA:
+    
+	if (skip_swapped)
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXabcdefghijklmnopqrstuvwx");
+	else
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+    case PT_ALPHALOWER:
+    
+	if (skip_swapped)
+	    return _T("abcdefghijklmnopqrstuvwx");
+	else
+	    return _T("abcdefghijklmnopqrstuvwxyz");
+
+    case PT_ALPHAUPPER:
+    
+	if (skip_swapped)
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWX");
+	else
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+    case PT_NUMERIC:
+
+	return _T("0123456789");
+    }
+
+    return _T("");
+}
+
+float WGeneratePassword::GetTypeKeybits() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+    bool skip_similar = checkboxSkipSimilarChars->GetValue();
+    bool skip_swapped = checkboxSkipSwappedChars->GetValue();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	// The FIPS-181 standard says "Approximately 18 million 6-character,
+	// 5.7 billion 8-character, and 1.6 trillion 10-character passwords can
+	// be created by the program." This is equivalent to about 4.05 keybits
+	// per letter.
+	return 4.05;
+
+    case PT_ALPHANUMERIC:
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+    case PT_NUMERIC:
+    {
+	double letternum = wxStrlen( GetType0Letters(passtype, skip_similar, skip_swapped) );
+	return log(letternum) / log(2);
+    }
+    }
+
+    return 0;
+}
+
+bool WGeneratePassword::IsAllowedSimilar() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	return false;
+	break;
+	
+    case PT_ALPHANUMERIC:
+	return true;
+	break;
+
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+	return false;
+	break;
+   
+    case PT_NUMERIC:
+    default:
+	return false;
+	break;
+    }
+}
+
+bool WGeneratePassword::IsAllowedSwapped() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	return false;
+	break;
+	
+    case PT_ALPHANUMERIC:
+	return true;
+	break;
+
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+	return true;
+	break;
+   
+    case PT_NUMERIC:
+    default:
+	return false;
+	break;
+    }
+}
+
+// Use one global random generator instance for password.
+static class PRNG randgen;
+
+wxString WGeneratePassword::MakePasswordType0(unsigned int len, const wxChar* letters)
+{
+    wxString s;
+    unsigned int lettlen = wxStrlen(letters);
+
+    for(unsigned int i = 0; i < len; ++i)
+    {
+	s.Append( letters[ randgen.get(lettlen) ] );
+    }
+
+    return s;
+}
+
+wxString WGeneratePassword::MakePassword(unsigned int passlen)
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+    bool skip_similar = checkboxSkipSimilarChars->GetValue();
+    bool skip_swapped = checkboxSkipSwappedChars->GetValue();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	return _("...");
+
+    case PT_ALPHANUMERIC:
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+    case PT_NUMERIC:
+    {
+	const wxChar* letters = GetType0Letters(passtype, skip_similar, skip_swapped);
+
+	return MakePasswordType0(passlen, letters);
+    }
+    }
+
+    return _T("");
+}

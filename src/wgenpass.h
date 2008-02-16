@@ -35,6 +35,54 @@ public:
     // stand-alone program running.
     bool	standalone;
 
+protected:
+    // *** Helper Functions ***
+
+    /// Update the keybits text control
+    void		UpdateKeyStrength();
+
+    /// Update disable/enable status of the check boxes
+    void		UpdateCheckboxes();
+
+    /// (Re)Generate Password list
+    void		RegenerateList();
+
+    // *** Password Generator Functions ***
+
+    /// Password generator types
+    enum pass_type {
+	PT_PRONOUNCEABLE,
+	PT_ALPHANUMERIC,
+	PT_ALPHA,
+	PT_ALPHALOWER,
+	PT_ALPHAUPPER,
+	PT_NUMERIC,
+	PT_LAST = PT_NUMERIC
+    };
+
+    /// Return ASCII Name for password generator type
+    static const wxChar* GetTypeName(pass_type pt);
+
+    /// Make one password of the generic random sequence type.
+    static wxString	MakePasswordType0(unsigned int len, const wxChar* letters);
+
+    /// Return array of possible letters in simple random password.
+    static const wxChar* GetType0Letters(pass_type pt, bool skip_similar, bool skip_swapped);
+
+    /// Return keybits per letter for currently selected generator type;
+    float		GetTypeKeybits() const;
+
+    /// Return true if the options skip similar characters is available with
+    /// the selected generator type.
+    bool		IsAllowedSimilar() const;
+
+    /// Return true if the options skip swapped characters is available with
+    /// the selected generator type.
+    bool		IsAllowedSwapped() const;
+
+    /// Make one password of the currently set type.
+    wxString		MakePassword(unsigned int passlen);
+
 private:
     // begin wxGlade: WGeneratePassword::methods
     void set_properties();
