@@ -576,6 +576,7 @@ PACKAGE_VERSION='0.1'
 PACKAGE_STRING='cryptote 0.1'
 PACKAGE_BUGREPORT=''
 
+ac_unique_file="src/main.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -715,6 +716,9 @@ WX_LIBS
 WX_LIBS_STATIC
 WX_VERSION
 WX_RESCOMP
+RESCOMP
+GOT_RESCOMP_TRUE
+GOT_RESCOMP_FALSE
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -1764,7 +1768,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-# AC_CONFIG_SRCDIR()
+
 ac_aux_dir=
 for ac_dir in acscripts "$srcdir"/acscripts; do
   if test -f "$ac_dir/install-sh"; then
@@ -5311,6 +5315,117 @@ echo "$as_me: WARNING:
     " >&2;}
 fi
 
+# Win32 tools to add icons to the programs
+
+case "${host}" in
+*-*-cygwin* | *-*-mingw32*)
+    if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}windres", so it can be a program name with args.
+set dummy ${ac_tool_prefix}windres; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_RESCOMP+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$RESCOMP"; then
+  ac_cv_prog_RESCOMP="$RESCOMP" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_RESCOMP="${ac_tool_prefix}windres"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+RESCOMP=$ac_cv_prog_RESCOMP
+if test -n "$RESCOMP"; then
+  { echo "$as_me:$LINENO: result: $RESCOMP" >&5
+echo "${ECHO_T}$RESCOMP" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_RESCOMP"; then
+  ac_ct_RESCOMP=$RESCOMP
+  # Extract the first word of "windres", so it can be a program name with args.
+set dummy windres; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_ac_ct_RESCOMP+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$ac_ct_RESCOMP"; then
+  ac_cv_prog_ac_ct_RESCOMP="$ac_ct_RESCOMP" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_ac_ct_RESCOMP="windres"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_RESCOMP=$ac_cv_prog_ac_ct_RESCOMP
+if test -n "$ac_ct_RESCOMP"; then
+  { echo "$as_me:$LINENO: result: $ac_ct_RESCOMP" >&5
+echo "${ECHO_T}$ac_ct_RESCOMP" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+  if test "x$ac_ct_RESCOMP" = x; then
+    RESCOMP=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ echo "$as_me:$LINENO: WARNING: In the future, Autoconf will not detect cross-tools
+whose name does not start with the host triplet.  If you think this
+configuration is useful to you, please write to autoconf@gnu.org." >&5
+echo "$as_me: WARNING: In the future, Autoconf will not detect cross-tools
+whose name does not start with the host triplet.  If you think this
+configuration is useful to you, please write to autoconf@gnu.org." >&2;}
+ac_tool_warned=yes ;;
+esac
+    RESCOMP=$ac_ct_RESCOMP
+  fi
+else
+  RESCOMP="$ac_cv_prog_RESCOMP"
+fi
+
+    ;;
+esac
+ if test x$RESCOMP != x; then
+  GOT_RESCOMP_TRUE=
+  GOT_RESCOMP_FALSE='#'
+else
+  GOT_RESCOMP_TRUE='#'
+  GOT_RESCOMP_FALSE=
+fi
+
+
 # Checks for library functions.
 
 ac_config_files="$ac_config_files Makefile src/Makefile src/art/Makefile"
@@ -5459,6 +5574,13 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GOT_RESCOMP_TRUE}" && test -z "${GOT_RESCOMP_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GOT_RESCOMP\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GOT_RESCOMP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -6123,11 +6245,14 @@ WX_LIBS!$WX_LIBS$ac_delim
 WX_LIBS_STATIC!$WX_LIBS_STATIC$ac_delim
 WX_VERSION!$WX_VERSION$ac_delim
 WX_RESCOMP!$WX_RESCOMP$ac_delim
+RESCOMP!$RESCOMP$ac_delim
+GOT_RESCOMP_TRUE!$GOT_RESCOMP_TRUE$ac_delim
+GOT_RESCOMP_FALSE!$GOT_RESCOMP_FALSE$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 8; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 11; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

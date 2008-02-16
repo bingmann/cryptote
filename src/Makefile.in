@@ -50,13 +50,12 @@ am_cryptote_OBJECTS = main.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT) \
 	fips181.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-cryptote_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_pwgen_OBJECTS = pwgen.$(OBJEXT) wgenpass.$(OBJEXT) prng.$(OBJEXT) \
 	fips181.$(OBJEXT)
 pwgen_OBJECTS = $(am_pwgen_OBJECTS)
 pwgen_LDADD = $(LDADD)
-pwgen_DEPENDENCIES = $(am__DEPENDENCIES_1)
+pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwgen_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
 am__depfiles_maybe = depfiles
@@ -114,7 +113,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = $(WX_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -127,6 +126,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RESCOMP = @RESCOMP@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -204,8 +204,10 @@ pwgen_SOURCES = pwgen.cpp \
 
 AM_CFLAGS = -W -Wall $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
-LDADD = $(WX_LIBS)
-all: all-recursive
+@GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o
+@GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .cpp .o .obj
@@ -266,7 +268,7 @@ cryptote$(EXEEXT): $(cryptote_OBJECTS) $(cryptote_DEPENDENCIES)
 	$(CXXLINK) $(cryptote_OBJECTS) $(cryptote_LDADD) $(LIBS)
 pwgen$(EXEEXT): $(pwgen_OBJECTS) $(pwgen_DEPENDENCIES) 
 	@rm -f pwgen$(EXEEXT)
-	$(CXXLINK) $(pwgen_OBJECTS) $(pwgen_LDADD) $(LIBS)
+	$(pwgen_LINK) $(pwgen_OBJECTS) $(pwgen_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -469,14 +471,16 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-recursive
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-recursive
 all-am: Makefile $(PROGRAMS)
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-recursive
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -500,6 +504,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
@@ -575,6 +580,9 @@ uninstall-am: uninstall-binPROGRAMS
 	ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-binPROGRAMS
 
+
+@GOT_RESCOMP_TRUE@pwgen-rc.o: pwgen.rc
+@GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

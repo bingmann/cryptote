@@ -16,4 +16,13 @@ pwgen_SOURCES = pwgen.cpp \
 
 AM_CFLAGS = -W -Wall $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
-LDADD = $(WX_LIBS)
+LIBS = $(WX_LIBS)
+
+if GOT_RESCOMP
+BUILT_SOURCES = pwgen-rc.o
+
+pwgen-rc.o: pwgen.rc
+	$(RESCOMP) -I$(srcdir) $< $@
+
+pwgen_LDFLAGS = pwgen-rc.o
+endif

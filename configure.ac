@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT(cryptote, 0.1)
-# AC_CONFIG_SRCDIR()
+AC_CONFIG_SRCDIR(src/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 AC_CANONICAL_HOST
 
@@ -61,6 +61,15 @@ if test "$wxWin" != 1; then
 	equivalent variable.
     ])
 fi
+
+# Win32 tools to add icons to the programs
+
+case "${host}" in
+*-*-cygwin* | *-*-mingw32*)
+    AC_CHECK_TOOL(RESCOMP, windres)
+    ;;
+esac
+AM_CONDITIONAL(GOT_RESCOMP, test x$RESCOMP != x)
 
 # Checks for library functions.
 
