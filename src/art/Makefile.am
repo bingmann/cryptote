@@ -14,7 +14,9 @@ noinst_HEADERS = \
 	pwgen-16.h \
 	pwgen-22.h \
 	pwgen-32.h \
-	pwgen-48.h
+	pwgen-48.h \
+	edit_add.h \
+	edit_remove.h
 
 EXTRA_DIST = \
 	pwgen-16.png \
@@ -22,4 +24,6 @@ EXTRA_DIST = \
 	pwgen-32.png \
 	pwgen-48.png \
 	pwgen-128.png \
-	pwgen.ico
+	pwgen.ico \
+	edit_add.png \
+	edit_remove.png

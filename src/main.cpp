@@ -12,6 +12,9 @@ public:
     {
 	wxInitAllImageHandlers();
 
+	SetAppName(_("CryptoTE"));
+	SetVendorName(_("idlebox.net"));
+
 	// Create main window frame
 	WGeneratePassword dlg(NULL, false);
 	dlg.ShowModal();

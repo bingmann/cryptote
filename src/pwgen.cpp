@@ -16,6 +16,9 @@ public:
     {
 	wxInitAllImageHandlers();
 
+	SetAppName(_("CryptoTE"));
+	SetVendorName(_("idlebox.net"));
+
 	// Create main window frame
 	wgenpass = new WGeneratePassword(NULL, true);
 	SetTopWindow(wgenpass);
