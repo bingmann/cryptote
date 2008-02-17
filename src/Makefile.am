@@ -10,7 +10,11 @@ cryptote_SOURCES = main.cpp \
 	fips181.cpp fips181.h
 
 pwtutor_SOURCES = pwtutor.cpp \
-	ptwmain.cpp ptmwain.h
+	ptwmain.cpp ptmwain.h \
+	ptwnew.cpp ptwnew.h \
+	pgwmain.cpp pgwmain.h \
+	prng.cpp prng.h \
+	fips181.cpp fips181.h
 
 pwgen_SOURCES = pwgen.cpp \
 	pgwmain.cpp pgwmain.h \

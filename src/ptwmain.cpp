@@ -2,6 +2,7 @@
 // $Id$
 
 #include "ptwmain.h"
+#include "ptwnew.h"
 
 #include "tools.h"
 
@@ -93,10 +94,13 @@ void PTWMain::OnPasslistItemRightClick(wxListEvent &event)
     wxLogDebug(wxT("Event handler (PTWMain::OnPasslistItemRightClick) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
 }
 
-void PTWMain::OnButtonNewPass(wxCommandEvent &event)
+void PTWMain::OnButtonNewPass(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWMain::OnButtonNewPass) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    PTWNew dlg(this);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+    }
 }
 
 void PTWMain::OnButtonAbout(wxCommandEvent &event)
@@ -105,10 +109,9 @@ void PTWMain::OnButtonAbout(wxCommandEvent &event)
     wxLogDebug(wxT("Event handler (PTWMain::OnButtonAbout) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
 }
 
-void PTWMain::OnButtonClose(wxCommandEvent &event)
+void PTWMain::OnButtonClose(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWMain::OnButtonClose) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    Close();
 }
 
 // wxGlade: add PTWMain event handlers

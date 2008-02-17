@@ -56,7 +56,9 @@ pwgen_OBJECTS = $(am_pwgen_OBJECTS)
 pwgen_LDADD = $(LDADD)
 pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwgen_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am_pwtutor_OBJECTS = pwtutor.$(OBJEXT) ptwmain.$(OBJEXT)
+am_pwtutor_OBJECTS = pwtutor.$(OBJEXT) ptwmain.$(OBJEXT) \
+	ptwnew.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
+	fips181.$(OBJEXT)
 pwtutor_OBJECTS = $(am_pwtutor_OBJECTS)
 pwtutor_LDADD = $(LDADD)
 pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwtutor_LDFLAGS) \
@@ -203,7 +205,11 @@ cryptote_SOURCES = main.cpp \
 	fips181.cpp fips181.h
 
 pwtutor_SOURCES = pwtutor.cpp \
-	ptwmain.cpp ptmwain.h
+	ptwmain.cpp ptmwain.h \
+	ptwnew.cpp ptwnew.h \
+	pgwmain.cpp pgwmain.h \
+	prng.cpp prng.h \
+	fips181.cpp fips181.h
 
 pwgen_SOURCES = pwgen.cpp \
 	pgwmain.cpp pgwmain.h \
@@ -293,6 +299,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pgwmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwnew.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwtutor.Po@am__quote@
 
