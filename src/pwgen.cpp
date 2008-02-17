@@ -2,13 +2,13 @@
 
 #include <wx/wx.h>
 
-#include "wgenpass.h"
+#include "pgwmain.h"
 
 class App : public wxApp
 {
 private:
     /// Password generator main dialog
-    class WGeneratePassword*	wgenpass;
+    class PGWMain*	wmain;
 
 public:
     /// This function is called during application start-up.
@@ -20,9 +20,9 @@ public:
 	SetVendorName(_("idlebox.net"));
 
 	// Create main window frame
-	wgenpass = new WGeneratePassword(NULL, true);
-	SetTopWindow(wgenpass);
-	wgenpass->Show();
+	wmain = new PGWMain(NULL, true);
+	SetTopWindow(wmain);
+	wmain->Show();
 
 	return true;
     }

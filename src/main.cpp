@@ -2,7 +2,7 @@
 
 #include <wx/wx.h>
 
-#include "wgenpass.h"
+#include "pgwmain.h"
 
 class App : public wxApp
 {
@@ -16,7 +16,7 @@ public:
 	SetVendorName(_("idlebox.net"));
 
 	// Create main window frame
-	WGeneratePassword dlg(NULL, false);
+	PGWMain dlg(NULL, false);
 	dlg.ShowModal();
 
 	return false;

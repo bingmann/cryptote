@@ -17,10 +17,10 @@
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class WGeneratePassword : public wxDialog
+class PGWMain : public wxDialog
 {
 public:
-    // begin wxGlade: WGeneratePassword::ids
+    // begin wxGlade: PGWMain::ids
     enum {
         myID_PRESET = wxID_HIGHEST + 1000,
         myID_PRESET_ADD = wxID_HIGHEST + 1002,
@@ -35,7 +35,7 @@ public:
     };
     // end wxGlade
 
-    WGeneratePassword(wxWindow* parent, bool standalone, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    PGWMain(wxWindow* parent, bool standalone, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
     /// Set if running as stand-alone program.
     bool	standalone;
@@ -123,13 +123,13 @@ protected:
     wxString		MakePassword(unsigned int passlen);
 
 private:
-    // begin wxGlade: WGeneratePassword::methods
+    // begin wxGlade: PGWMain::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: WGeneratePassword::attributes
+    // begin wxGlade: PGWMain::attributes
     wxStaticBox* sizer2_staticbox;
     wxChoice* choicePreset;
     wxBitmapButton* buttonPresetAdd;

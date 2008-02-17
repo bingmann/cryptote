@@ -2,15 +2,18 @@
 
 SUBDIRS = art .
 
-bin_PROGRAMS = cryptote pwgen
+bin_PROGRAMS = cryptote pwtutor pwgen
 
 cryptote_SOURCES = main.cpp \
-	wgenpass.cpp wgenpass.h \
+	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h
 
+pwtutor_SOURCES = pwtutor.cpp \
+	ptwmain.cpp ptmwain.h
+
 pwgen_SOURCES = pwgen.cpp \
-	wgenpass.cpp wgenpass.h \
+	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h
 
