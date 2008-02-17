@@ -99,6 +99,11 @@ BEGIN_EVENT_TABLE(PTWMain, wxFrame)
     EVT_BUTTON(myID_ABOUT, PTWMain::OnButtonAbout)
     EVT_BUTTON(myID_HIDE, PTWMain::OnButtonClose)
     // end wxGlade
+
+    EVT_MENU(myID_MENU_STATS, PTWMain::OnMenuStatistics)
+    EVT_MENU(myID_MENU_QUERY, PTWMain::OnMenuQuery)
+    EVT_MENU(myID_MENU_STOP, PTWMain::OnMenuStop)
+    EVT_MENU(myID_MENU_ERASE, PTWMain::OnMenuErase)
 END_EVENT_TABLE();
 
 void PTWMain::OnPasslistItemActivated(wxListEvent &event)
@@ -109,8 +114,17 @@ void PTWMain::OnPasslistItemActivated(wxListEvent &event)
 
 void PTWMain::OnPasslistItemRightClick(wxListEvent &event)
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWMain::OnPasslistItemRightClick) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    int ni = event.GetIndex();
+    if (ni < 0) return;
+
+    wxMenu* menu = new wxMenu;
+    menu->Append(myID_MENU_STATS, _("&Show learning statistics."));
+    menu->Append(myID_MENU_QUERY, _("&Query for this password now."));
+    menu->AppendSeparator();
+    menu->Append(myID_MENU_STOP, _("Temporarily s&top asking for this password."));
+    menu->Append(myID_MENU_ERASE, _("&Erase this password."));
+
+    PopupMenu(menu);
 }
 
 void PTWMain::OnButtonNewPass(wxCommandEvent& WXUNUSED(event))
@@ -139,6 +153,8 @@ void PTWMain::OnButtonClose(wxCommandEvent& WXUNUSED(event))
 
 // wxGlade: add PTWMain event handlers
 
+// *** PassEntry Management Functions ***
+
 void PTWMain::AppendPassEntry(struct PTPassEntry& WXUNUSED(pe))
 {
     int ni = listctrlPasslist->GetItemCount();
@@ -157,7 +173,33 @@ void PTWMain::UpdatePassEntry(int ni)
     listctrlPasslist->SetItem(ni, 2, wxString::Format(_("%d / %d / %d / %d"), pe.scores.size(), pe.rights, pe.wrongs, pe.revealed) );
 }
 
-// *** PassEntry Management Functions ***
+void PTWMain::OnMenuStatistics(wxCommandEvent& WXUNUSED(event))
+{
+
+}
+
+void PTWMain::OnMenuQuery(wxCommandEvent& WXUNUSED(event))
+{
+
+}
+
+void PTWMain::OnMenuStop(wxCommandEvent& WXUNUSED(event))
+{
+
+}
+
+void PTWMain::OnMenuErase(wxCommandEvent& WXUNUSED(event))
+{
+    int ni = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (ni < 0 || (unsigned int)ni >= passlist.size()) return;
+
+    passlist.erase(passlist.begin() + ni);
+    savePasslist();
+
+    listctrlPasslist->DeleteItem(ni);
+}
+
+// *** PassEntry Functions to Load and Save the List Encrypted ***
 
 /**
  * Adler32 checksum function. Used to check that encrypted data is correctly

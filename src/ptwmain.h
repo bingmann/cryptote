@@ -59,6 +59,13 @@ public:
     };
     // end wxGlade
 
+    enum {
+	myID_MENU_STATS = wxID_HIGHEST + 2000,
+	myID_MENU_QUERY,
+	myID_MENU_STOP,
+	myID_MENU_ERASE
+    };
+
     PTWMain(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 protected:
@@ -106,6 +113,11 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
+    virtual void OnMenuStatistics(wxCommandEvent& event);
+    virtual void OnMenuQuery(wxCommandEvent& event);
+    virtual void OnMenuStop(wxCommandEvent& event);
+    virtual void OnMenuErase(wxCommandEvent& event);
+
     virtual void OnPasslistItemActivated(wxListEvent &event); // wxGlade: <event_handler>
     virtual void OnPasslistItemRightClick(wxListEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonNewPass(wxCommandEvent &event); // wxGlade: <event_handler>
