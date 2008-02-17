@@ -3,8 +3,11 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
+
 // begin wxGlade: ::dependencies
 // end wxGlade
+
+#include "ptwmain.h"
 
 #ifndef PTWNEW_H
 #define PTWNEW_H
@@ -22,6 +25,12 @@ public:
     // end wxGlade
 
     PTWNew(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+public:
+
+    /// Password entry with all fields, this is later added to the list of
+    /// passes to learn.
+    class	PTPassEntry	passentry;
 
 private:
     // begin wxGlade: PTWNew::methods

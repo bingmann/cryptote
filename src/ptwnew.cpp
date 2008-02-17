@@ -82,7 +82,7 @@ BEGIN_EVENT_TABLE(PTWNew, wxDialog)
     // end wxGlade
 END_EVENT_TABLE();
 
-void PTWNew::OnButtonGenPass(wxCommandEvent &event)
+void PTWNew::OnButtonGenPass(wxCommandEvent& WXUNUSED(event))
 {
     PGWMain dlg(this, false);
 
@@ -92,12 +92,46 @@ void PTWNew::OnButtonGenPass(wxCommandEvent &event)
     }
 }
 
-void PTWNew::OnButtonOK(wxCommandEvent &event)
+void PTWNew::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWNew::OnButtonOk) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    // Fill in PassEntry structure
+
+    passentry.description = textctrlDescription->GetValue();
+    if (passentry.description.IsEmpty()) {
+	passentry.description = _("<no description>");
+    }
+
+    passentry.passtext = textctrlPass->GetValue();
+    if (passentry.passtext.IsEmpty())
+    {
+	wxLogError(_("No password entered."));
+	return;
+    }
+
+    passentry.ctime.SetToCurrent();
+    passentry.ltime.SetToCurrent();
+    passentry.timespent = 0;
+    passentry.rights = 0;
+    passentry.wrongs = 0;
+    passentry.revealed = 0;
+    passentry.scores.clear();
+
+    // Hide password
+    textctrlPass->Clear();
+
+    EndModal(wxID_OK);
+#if 0
+    WAskPassword dlg(passentry, this);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	EndModal(wxID_OK);
+    }
+    else
+    {
+	textctrlPass->SetValue(passentry.passtext);
+    }
+#endif
 }
 
 // wxGlade: add PTWNew event handlers
-
-

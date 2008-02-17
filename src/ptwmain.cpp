@@ -6,6 +6,14 @@
 
 #include "tools.h"
 
+#include <wx/config.h>
+#include <wx/fileconf.h>
+#include <wx/tokenzr.h>
+
+#include <stdexcept>
+#include <stdint.h>
+#include <assert.h>
+
 // begin wxGlade: ::extracode
 // end wxGlade
 
@@ -38,6 +46,17 @@ PTWMain::PTWMain(wxWindow* parent, int id, const wxString& title, const wxPoint&
     set_properties();
     do_layout();
     // end wxGlade
+
+    // Set up list control for passes
+    listctrlPasslist->InsertColumn(0, _("Status"), wxLIST_FORMAT_LEFT, 60);
+    listctrlPasslist->InsertColumn(1, _("Description"), wxLIST_FORMAT_LEFT, 100);
+    listctrlPasslist->InsertColumn(2, _("Queries / Right / Wrong / Revealed"), wxLIST_FORMAT_LEFT, 100);
+
+    loadPasslist();
+
+    listctrlPasslist->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
+    listctrlPasslist->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
+    listctrlPasslist->SetColumnWidth(2, wxLIST_AUTOSIZE_USEHEADER);
 }
 
 void PTWMain::set_properties()
@@ -100,6 +119,10 @@ void PTWMain::OnButtonNewPass(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() == wxID_OK)
     {
+	passlist.push_back(dlg.passentry);
+	AppendPassEntry(dlg.passentry);
+
+	savePasslist();
     }
 }
 
@@ -115,3 +138,514 @@ void PTWMain::OnButtonClose(wxCommandEvent& WXUNUSED(event))
 }
 
 // wxGlade: add PTWMain event handlers
+
+void PTWMain::AppendPassEntry(struct PTPassEntry& WXUNUSED(pe))
+{
+    int ni = listctrlPasslist->GetItemCount();
+
+    ni = listctrlPasslist->InsertItem(ni, wxT("?"));
+
+    UpdatePassEntry(ni);
+}
+
+void PTWMain::UpdatePassEntry(int ni)
+{
+    struct PTPassEntry& pe = passlist[ni];
+
+    // listctrlPasslist->SetItemColumnImage(ni, 0, 0);
+    listctrlPasslist->SetItem(ni, 1, pe.description);
+    listctrlPasslist->SetItem(ni, 2, wxString::Format(_("%d / %d / %d / %d"), pe.scores.size(), pe.rights, pe.wrongs, pe.revealed) );
+}
+
+// *** PassEntry Management Functions ***
+
+/**
+ * Adler32 checksum function. Used to check that encrypted data is correctly
+ * decrypted again. data: Pointer to the data to be summed; len is in bytes
+ */
+static inline uint32_t adler32(uint8_t *data, size_t len)
+{
+    const uint32_t MOD_ADLER = 65521;
+    uint32_t a = 1, b = 0;
+
+    while (len)
+    {
+	size_t tlen = len > 5550 ? 5550 : len;
+	len -= tlen;
+	do
+	{
+	    a += *data++;
+	    b += a;
+	} while (--tlen);
+
+	a %= MOD_ADLER;
+	b %= MOD_ADLER;
+    }
+
+    return (b << 16) | a;
+}
+
+// *** Base64 Encode and Decoding using wxStrings ***
+
+/** Encode the given binary string into Base64 representation as described in
+ * RFC 2045 or RFC 3548. The output string contains only characters
+ * [A-Za-z0-9+/] and is roughly 33% longer than the input. The output string
+ * can be broken into lines after n characters, where n must be a multiple of
+ * 4. The function's code is based on code from the libb64 project (see
+ * http://sourceforge.net/projects/libb64).
+ *
+ * @param instr		input string to encode
+ * @param linebreak	break the output string every n characters
+ * @return		base64 encoded string
+ */
+static wxString base64_encode(const char* instr, unsigned int inlen, unsigned int linebreak = 0)
+{
+    wxString outstr;
+
+    if (inlen == 0) return outstr;
+
+    // calculate output string's size in advance
+    unsigned int outsize = (((inlen - 1) / 3) + 1) * 4;
+    if (linebreak > 0) outsize += outsize / linebreak;
+    outstr.Alloc( outsize );
+
+    static const wxChar encoding64[65]
+	= wxT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+    char result = 0;
+    unsigned int linebegin = 0;
+    unsigned int inpos = 0;
+
+    while (1)
+    {
+	// step 0: if the string is finished here, no padding is needed
+	if (inpos == inlen) {
+	    return outstr;
+	}
+
+	// step 0: process first byte, write first letter
+	char fragment = instr[inpos++];
+	result = (fragment & 0xFC) >> 2;
+	outstr += encoding64[static_cast<int>(result)];
+	result = (fragment & 0x03) << 4;
+
+	// step 1: if string finished here, add two padding '='s
+	if (inpos == inlen) {
+	    outstr += encoding64[static_cast<int>(result)];
+	    outstr += '=';
+	    outstr += '=';
+	    return outstr;
+	}
+
+	// step 1: process second byte together with first, write second
+	// letter
+	fragment = instr[inpos++];
+	result |= (fragment & 0xF0) >> 4;
+	outstr += encoding64[static_cast<int>(result)];
+	result = (fragment & 0x0F) << 2;
+
+	// step 2: if string finished here, add one padding '='
+	if (inpos == inlen) {
+	    outstr += encoding64[static_cast<int>(result)];
+	    outstr += '=';
+	    return outstr;
+	}
+
+	// step 2: process third byte and write third and fourth letters.
+	fragment = instr[inpos++];
+
+	result |= (fragment & 0xC0) >> 6;
+	outstr += encoding64[static_cast<int>(result)];
+
+	result  = (fragment & 0x3F) >> 0;
+	outstr += encoding64[static_cast<int>(result)];
+
+	// wrap base64 encoding into lines if desired, but only after whole
+	// blocks of 4 letters.
+	if (linebreak > 0 && outstr.Len() - linebegin >= linebreak)
+	{
+	    outstr += '\n';
+	    linebegin = outstr.Len();
+	}
+    }
+}
+
+/** Decode a string in Base64 representation as described in RFC 2045 or RFC
+ * 3548 and return the original data. If a non-whitespace invalid Base64
+ * character is encountered _and_ the parameter "strict" is true, then this
+ * function will throw a std::runtime_error. If "strict" is false, the
+ * character is silently ignored. The function's code is based on code from the
+ * libb64 project (see http://sourceforge.net/projects/libb64).
+ *
+ * @param instr		input string to encode
+ * @param strict	throw exception on invalid character
+ * @return		decoded binary data
+ */
+static size_t base64_decode(const wxString& instr, wxMemoryBuffer& outbuff, bool strict = false)
+{
+    // estimate the output size, assume that the whole input string is
+    // base64 encoded.
+    outbuff.SetBufSize( instr.Len() * 3 / 4 );
+    outbuff.SetDataLen(0);
+
+    // value lookup table: -1 -> exception, -2 -> skip whitespace, -3 = '=' padding
+    const char decoding64[256] = {
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
+	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -3, -1, -1,
+	-1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+	-1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+	41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+    };
+
+    unsigned int inpos = 0;
+    char outchar;
+    char fragment;
+
+    while (1)
+    {
+	// step 0: save first valid letter. do not output a byte, yet.
+	do {
+	    if (inpos == instr.Len()) return outbuff.GetDataLen();
+
+	    fragment = decoding64[ static_cast<int>(instr[inpos++]) ];
+
+	    if (fragment == -3)
+		return outbuff.GetDataLen();
+
+	    if (fragment == -1 && strict)
+		throw(std::runtime_error("Invalid character encountered during Base64 decoding."));
+
+	} while (fragment < 0);
+
+	outchar = (fragment & 0x3F) << 2;
+
+	// step 1: get second valid letter. output the first byte.
+	do {
+	    if (inpos == instr.Len()) return outbuff.GetDataLen();
+
+	    fragment = decoding64[ static_cast<int>(instr[inpos++]) ];
+
+	    if (fragment == -3)
+		return outbuff.GetDataLen();
+
+	    if (fragment == -1 && strict)
+		throw(std::runtime_error("Invalid character encountered during Base64 decoding."));
+
+	} while (fragment < 0);
+
+	outchar |= (fragment & 0x30) >> 4;
+	outbuff.AppendByte(outchar);
+
+	outchar = (fragment & 0x0F) << 4;
+
+	// step 2: get third valid letter. output the second byte.
+	do {
+	    if (inpos == instr.Len())  return outbuff.GetDataLen();
+
+	    fragment = decoding64[ static_cast<int>(instr[inpos++]) ];
+
+	    if (fragment == -3)
+		return outbuff.GetDataLen();
+
+	    if (fragment == -1 && strict)
+		throw(std::runtime_error("Invalid character encountered during Base64 decoding."));
+
+	} while (fragment < 0);
+
+	outchar |= (fragment & 0x3C) >> 2;
+	outbuff.AppendByte(outchar);
+
+	outchar = (fragment & 0x03) << 6;
+
+	// step 3: get fourth valid letter. output the third byte.
+	do {
+	    if (inpos == instr.Len()) return outbuff.GetDataLen();
+
+	    fragment = decoding64[ static_cast<int>(instr[inpos++]) ];
+
+	    if (fragment == -3)
+		return outbuff.GetDataLen();
+
+	    if (fragment == -1 && strict)
+		throw(std::runtime_error("Invalid character encountered during Base64 decoding."));
+
+	} while (fragment < 0);
+
+	outchar |= (fragment & 0x3F);
+	outbuff.AppendByte(outchar);
+    }
+}
+
+// *** XTEA New Tiny Encryption Algorithm ***
+// Based on Public Domain C Source from
+// http://de.wikipedia.org/wiki/XTEA or http://143.53.36.235:8080/source.htm
+
+namespace XTEA
+{
+/** XTEA block encipher function. Reads two 32-bit unsigned ints from v and
+ * writes two 32-bit ints to w. The XTEA key is 128-bit long. */
+static void encipher_block(const uint32_t *const v, uint32_t *const w,
+			   const uint32_t k[4])
+{
+    register uint32_t v0 = v[0], v1 = v[1], sum = 0,
+	delta = 0x9E3779B9, n = 32;
+
+    while(n-- > 0)
+    {
+	v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sum + k[sum & 3]);
+	sum += delta;
+	v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sum + k[(sum >> 11) & 3]);
+    }
+
+    w[0] = v0; w[1] = v1;
+}
+
+static void decipher_block(const uint32_t *const v, uint32_t *const w,
+			   const uint32_t k[4])
+{
+    register uint32_t v0 = v[0], v1 = v[1], sum = 0xC6EF3720,
+	delta = 0x9E3779B9, n = 32;
+
+    /* sum = delta << 5, in general sum = delta * n */
+
+    while(n-- > 0)
+    {
+	v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sum + k[(sum >> 11) & 3]);
+	sum -= delta;
+	v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sum + k[sum & 3]);
+    }
+   
+    w[0] = v0; w[1] = v1;
+}
+
+static inline void cbc_copy(uint32_t* a, const uint32_t* b) {
+    a[0] = b[0]; a[1] = b[1];
+}
+
+static inline void cbc_xor(uint32_t* a, const uint32_t* b) {
+    a[0] ^= b[0]; a[1] ^= b[1];
+}
+
+static void cbc_encipher(void* cdata, unsigned int cdatalen,
+			 const uint32_t key[4], const uint32_t cbciv[2])
+{
+    uint32_t* data = (uint32_t*)cdata;
+    uint32_t cbcv[2];
+
+    assert(cdatalen % 8 == 0);
+    size_t datalen = cdatalen / sizeof(uint32_t);
+
+    cbc_copy(cbcv, cbciv);
+
+    for(unsigned int vp = 0; vp < datalen; vp += 2)
+    {
+	cbc_xor(data + vp, cbcv);
+	encipher_block(data + vp, data + vp, key);
+	cbc_copy(cbcv, data + vp);
+    }
+}
+
+static void cbc_decipher(void* cdata, unsigned int cdatalen,
+			 const uint32_t key[4], const uint32_t cbciv[2])
+{
+    uint32_t* data = (uint32_t*)cdata;
+    uint32_t cbcv[2], cbcvn[2];
+
+    assert(cdatalen % 8 == 0);
+    size_t datalen = cdatalen / sizeof(uint32_t);
+
+    cbc_copy(cbcv, cbciv);
+
+    for(unsigned int vp = 0; vp < datalen ; vp += 2)
+    {
+	cbc_copy(cbcvn, data + vp);
+	decipher_block(data + vp, data + vp, key);
+	cbc_xor(data + vp, cbcv);
+	cbc_copy(cbcv, cbcvn);
+    }
+}
+
+} // namespace XTEA
+
+void PTWMain::loadPasslistFrom(class wxConfigBase& cfg)
+{
+    for (unsigned int pi = 0; cfg.HasGroup(wxString::Format(_T("pass%d"), pi)) ; ++pi)
+    {
+	cfg.SetPath( wxString::Format(_T("pass%d"), pi) );
+
+	int tmpint;
+	PTPassEntry pe;
+
+	pe.description = cfg.Read(_T("desc"));
+	pe.passtext = cfg.Read(_T("text"));
+
+	cfg.Read(_T("ctime"), &tmpint, 0);
+	pe.ctime.Set((time_t)tmpint);
+
+	cfg.Read(_T("ltime"), &tmpint, 0);
+	pe.ltime.Set((time_t)tmpint);
+
+	cfg.Read(_T("timespent"), &pe.timespent, 0);
+	cfg.Read(_T("rights"), &pe.rights, 0);
+	cfg.Read(_T("wrongs"), &pe.wrongs, 0);
+	cfg.Read(_T("revealed"), &pe.revealed, 0);
+
+	wxString scores = cfg.Read(_T("scores"), _T(""));
+	wxStringTokenizer scoretok(scores, _T(" "));
+	while( scoretok.HasMoreTokens() )
+	{
+	    long score;
+	    if (!scoretok.GetNextToken().ToLong(&score)) continue;
+
+	    pe.scores.push_back(score);
+	}
+
+	passlist.push_back(pe);
+	AppendPassEntry(pe);
+
+	cfg.SetPath(_T(".."));
+    }
+}
+
+void PTWMain::savePasslistTo(wxConfigBase& cfg)
+{
+    for (unsigned int pi = 0; pi < passlist.size(); ++pi)
+    {
+	cfg.SetPath( wxString::Format(_T("pass%d"), pi) );
+
+	cfg.Write(_T("desc"), passlist[pi].description);
+	cfg.Write(_T("text"), passlist[pi].passtext);
+	cfg.Write(_T("ctime"), passlist[pi].ctime.GetTicks());
+	cfg.Write(_T("ltime"), passlist[pi].ltime.GetTicks());
+	cfg.Write(_T("timespent"), passlist[pi].timespent);
+	cfg.Write(_T("rights"), passlist[pi].rights);
+	cfg.Write(_T("wrongs"), passlist[pi].wrongs);
+	cfg.Write(_T("revealed"), passlist[pi].revealed);
+
+	wxString scorelist;
+	for(unsigned int i = 0; i < passlist[pi].scores.size(); ++i)
+	{
+	    if (i == 0) scorelist << passlist[pi].scores[i];
+	    else scorelist << _T(" ") << passlist[pi].scores[i];
+	}
+	cfg.Write(_T("scores"), scorelist);
+
+	cfg.SetPath(_T(".."));
+    }
+}
+
+void PTWMain::loadPasslist()
+{
+    wxConfigBase* cfg = wxConfigBase::Get();
+
+    passlist.clear();
+    listctrlPasslist->DeleteAllItems();
+
+    if (cfg->HasGroup(_T("/pwtutor/list")))
+    {
+	cfg->SetPath(_T("/pwtutor/list"));
+
+	// read base64 encoded data
+	wxString base64;
+	for (unsigned int ei = 0; cfg->HasEntry(wxString::Format(_T("%d"), ei)) ; ++ei)
+	{
+	    wxString part64 = cfg->Read(wxString::Format(_T("%d"), ei));
+	    base64 += part64;
+	}
+
+	wxString adlerstr = cfg->Read(_T("a"));
+
+	// decode base64 data
+	wxMemoryBuffer inifile;
+	base64_decode(base64, inifile);
+
+	while( inifile.GetDataLen() % 8 != 0 ) inifile.AppendByte(0);
+
+	// decrypt INI-file using XTEA
+	const uint32_t key[4] = { 0x78FB89FD, 0x148BDE16, 0x3F48DC71, 0x15377225 };
+	const uint32_t cbciv[2] = { 0x21B6167C, 0x7D9A0A92 };
+
+	XTEA::cbc_decipher(inifile.GetData(), inifile.GetDataLen(), key, cbciv);
+
+	unsigned long adler;
+	if (!adlerstr.ToULong(&adler) || adler32((uint8_t*)inifile.GetData(), inifile.GetDataLen()) != adler)
+	{
+	    wxLogError(_("Could not load password list from configuration data."));
+	    return;
+	}
+
+	// read memory buffer into a wxFileConfig object
+	wxMemoryInputStream memin(inifile.GetData(), inifile.GetDataLen());
+	wxFileConfig enccfg(memin);
+
+	loadPasslistFrom(enccfg);
+    }
+}
+
+void PTWMain::savePasslist()
+{
+    wxConfigBase* cfg = wxConfigBase::Get();
+
+    cfg->DeleteGroup(_T("/pwtutor/list"));
+
+    if (passlist.size())
+    {
+	// *** Create Encrypted wxFileConfig object
+	wxMemoryOutputStream memout;
+	{
+	    wxMemoryInputStream memin(NULL, 0);
+	    wxFileConfig enccfg(memin);
+
+	    savePasslistTo(enccfg);
+
+	    // write wxFileConfig to wxMemoryOutputStream
+	    enccfg.Save(memout);
+	}
+
+	// fill stream buffer up to a multiple of 8
+	while( memout.GetSize() % 8 != 0 ) memout.PutC(0);
+
+	// copy ini-file data to memory buffer
+	wxMemoryBuffer inifile(memout.GetSize());
+	size_t copylen = memout.CopyTo(inifile.GetData(), memout.GetSize());
+	inifile.SetDataLen(copylen);
+
+	// save checksum of unencrypted ini-file
+	uint32_t adler = adler32((uint8_t*)inifile.GetData(), inifile.GetDataLen());
+
+	// encrypt INI-file using XTEA
+	const uint32_t key[4] = { 0x78FB89FD, 0x148BDE16, 0x3F48DC71, 0x15377225 };
+	const uint32_t cbciv[2] = { 0x21B6167C, 0x7D9A0A92 };
+
+	XTEA::cbc_encipher(inifile.GetData(), inifile.GetDataLen(), key, cbciv);
+
+	// encode into base64 representation
+	wxString base64 = base64_encode((char*)inifile.GetData(), inifile.GetDataLen());
+
+	// save into registry/config file
+
+	cfg->SetPath(_T("/pwtutor/list"));
+
+	cfg->Write(_T("a"), wxString::Format(_T("%u"), adler));
+
+	for(unsigned int i = 0; i * 128 < base64.size(); i++)
+	{
+	    cfg->Write( wxString::Format(_T("%d"), i),
+			base64(i*128, 128) );
+	}
+
+	cfg->SetPath(_T(".."));
+    }
+
+    cfg->Flush();
+}
