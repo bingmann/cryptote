@@ -14,7 +14,8 @@ pwtutor_SOURCES = pwtutor.cpp \
 	ptwnew.cpp ptwnew.h \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
-	fips181.cpp fips181.h
+	fips181.cpp fips181.h \
+	ptwquery.cpp ptwquery.h
 
 pwgen_SOURCES = pwgen.cpp \
 	pgwmain.cpp pgwmain.h \

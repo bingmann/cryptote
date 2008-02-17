@@ -3,6 +3,7 @@
 
 #include "ptwmain.h"
 #include "ptwnew.h"
+#include "ptwquery.h"
 
 #include "tools.h"
 
@@ -180,7 +181,14 @@ void PTWMain::OnMenuStatistics(wxCommandEvent& WXUNUSED(event))
 
 void PTWMain::OnMenuQuery(wxCommandEvent& WXUNUSED(event))
 {
+    int ni = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (ni < 0 || (unsigned int)ni >= passlist.size()) return;
 
+    PTWQuery dlg(passlist[ni], this);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+    }
 }
 
 void PTWMain::OnMenuStop(wxCommandEvent& WXUNUSED(event))
