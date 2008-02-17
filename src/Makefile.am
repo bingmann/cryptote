@@ -22,10 +22,17 @@ AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
 LIBS = $(WX_LIBS)
 
 if GOT_RESCOMP
-BUILT_SOURCES = pwgen-rc.o
+
+BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o
 
 pwgen-rc.o: pwgen.rc
 	$(RESCOMP) -I$(srcdir) $< $@
 
+pwtutor-rc.o: pwtutor.rc
+	$(RESCOMP) -I$(srcdir) $< $@
+
 pwgen_LDFLAGS = pwgen-rc.o
+
+pwtutor_LDFLAGS = pwtutor-rc.o
+
 endif

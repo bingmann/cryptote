@@ -59,6 +59,8 @@ pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwgen_LDFLAGS) \
 am_pwtutor_OBJECTS = pwtutor.$(OBJEXT) ptwmain.$(OBJEXT)
 pwtutor_OBJECTS = $(am_pwtutor_OBJECTS)
 pwtutor_LDADD = $(LDADD)
+pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwtutor_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
 am__depfiles_maybe = depfiles
@@ -210,8 +212,9 @@ pwgen_SOURCES = pwgen.cpp \
 
 AM_CFLAGS = -W -Wall $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
-@GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o
+@GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o
 @GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
+@GOT_RESCOMP_TRUE@pwtutor_LDFLAGS = pwtutor-rc.o
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -277,7 +280,7 @@ pwgen$(EXEEXT): $(pwgen_OBJECTS) $(pwgen_DEPENDENCIES)
 	$(pwgen_LINK) $(pwgen_OBJECTS) $(pwgen_LDADD) $(LIBS)
 pwtutor$(EXEEXT): $(pwtutor_OBJECTS) $(pwtutor_DEPENDENCIES) 
 	@rm -f pwtutor$(EXEEXT)
-	$(CXXLINK) $(pwtutor_OBJECTS) $(pwtutor_LDADD) $(LIBS)
+	$(pwtutor_LINK) $(pwtutor_OBJECTS) $(pwtutor_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -593,6 +596,9 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 @GOT_RESCOMP_TRUE@pwgen-rc.o: pwgen.rc
+@GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
+
+@GOT_RESCOMP_TRUE@pwtutor-rc.o: pwtutor.rc
 @GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

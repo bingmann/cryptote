@@ -3,12 +3,30 @@
 
 #include "ptwmain.h"
 
+#include "tools.h"
+
 // begin wxGlade: ::extracode
 // end wxGlade
 
 PTWMain::PTWMain(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
     : wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
+    {
+	#include "art/pwtutor-16.h"
+	#include "art/pwtutor-22.h"
+	#include "art/pwtutor-32.h"
+	#include "art/pwtutor-48.h"
+
+	wxIconBundle progicon;
+
+	progicon.AddIcon( wxIconFromMemory(pwtutor_16_png) );
+	progicon.AddIcon( wxIconFromMemory(pwtutor_22_png) );
+	progicon.AddIcon( wxIconFromMemory(pwtutor_32_png) );
+	progicon.AddIcon( wxIconFromMemory(pwtutor_48_png) );
+
+	SetIcons(progicon);
+    }
+
     // begin wxGlade: PTWMain::PTWMain
     sizer2_staticbox = new wxStaticBox(this, -1, _("Learning List"));
     listctrlPasslist = new wxListCtrl(this, myID_PASSLIST, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
