@@ -2,6 +2,7 @@
 // $Id$
 
 #include "ptwquery.h"
+#include "tools.h"
 
 #include <algorithm>
 

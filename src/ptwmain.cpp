@@ -4,6 +4,7 @@
 #include "ptwmain.h"
 #include "ptwnew.h"
 #include "ptwquery.h"
+#include "ptwstats.h"
 
 #include "tools.h"
 
@@ -107,16 +108,23 @@ BEGIN_EVENT_TABLE(PTWMain, wxFrame)
     EVT_MENU(myID_MENU_ERASE, PTWMain::OnMenuErase)
 END_EVENT_TABLE();
 
-void PTWMain::OnPasslistItemActivated(wxListEvent &event)
-{
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWMain::OnPasslistItemActivated) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
-}
-
-void PTWMain::OnPasslistItemRightClick(wxListEvent &event)
+void PTWMain::OnPasslistItemActivated(wxListEvent& event)
 {
     int ni = event.GetIndex();
-    if (ni < 0) return;
+    if (ni < 0 || (unsigned int)ni >= passlist.size()) return;
+
+    PTWStats dlg(passlist[ni], this);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	UpdatePassEntry(ni);
+    }
+}
+
+void PTWMain::OnPasslistItemRightClick(wxListEvent& event)
+{
+    int ni = event.GetIndex();
+    if (ni < 0 || (unsigned int)ni >= passlist.size()) return;
 
     wxMenu* menu = new wxMenu;
     menu->Append(myID_MENU_STATS, _("&Show learning statistics."));
@@ -176,7 +184,15 @@ void PTWMain::UpdatePassEntry(int ni)
 
 void PTWMain::OnMenuStatistics(wxCommandEvent& WXUNUSED(event))
 {
+    int ni = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (ni < 0 || (unsigned int)ni >= passlist.size()) return;
 
+    PTWStats dlg(passlist[ni], this);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	UpdatePassEntry(ni);
+    }
 }
 
 void PTWMain::OnMenuQuery(wxCommandEvent& WXUNUSED(event))

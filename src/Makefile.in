@@ -58,7 +58,7 @@ pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwgen_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_pwtutor_OBJECTS = pwtutor.$(OBJEXT) ptwmain.$(OBJEXT) \
 	ptwnew.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
-	fips181.$(OBJEXT) ptwquery.$(OBJEXT)
+	fips181.$(OBJEXT) ptwquery.$(OBJEXT) ptwstats.$(OBJEXT)
 pwtutor_OBJECTS = $(am_pwtutor_OBJECTS)
 pwtutor_LDADD = $(LDADD)
 pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwtutor_LDFLAGS) \
@@ -210,7 +210,8 @@ pwtutor_SOURCES = pwtutor.cpp \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
-	ptwquery.cpp ptwquery.h
+	ptwquery.cpp ptwquery.h \
+	ptwstats.cpp ptwstats.h
 
 pwgen_SOURCES = pwgen.cpp \
 	pgwmain.cpp pgwmain.h \
@@ -302,6 +303,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwnew.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwquery.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwstats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwtutor.Po@am__quote@
 
