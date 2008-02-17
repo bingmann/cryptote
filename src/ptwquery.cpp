@@ -3,6 +3,8 @@
 
 #include "ptwquery.h"
 
+#include <algorithm>
+
 // begin wxGlade: ::extracode
 // end wxGlade
 
@@ -26,6 +28,13 @@ PTWQuery::PTWQuery(struct PTPassEntry& _passentry, wxWindow* parent, int id, con
     // end wxGlade
 
     textctrlDescription->SetValue(passentry.description);
+
+    mywrongs = 0;
+    myrevealed = 0;
+    score = 0.0;
+    UpdateScore();
+
+    stopwatch.Start();
 }
 
 void PTWQuery::set_properties()
@@ -87,28 +96,166 @@ BEGIN_EVENT_TABLE(PTWQuery, wxDialog)
     // end wxGlade
 END_EVENT_TABLE();
 
-void PTWQuery::OnTextPassEnter(wxCommandEvent &event)
+void PTWQuery::OnTextPassEnter(wxCommandEvent& event)
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWQuery::OnTextPassEnter) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    OnButtonOK(event);
 }
 
-void PTWQuery::OnTextPassChange(wxCommandEvent &event)
+void PTWQuery::OnTextPassChange(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWQuery::OnTextPassChange) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    textctrlCheck->Clear();
+
+    if (myrevealed == 1)
+    {
+	// Hide revealed password on first keystroke.
+	labelCorrect->SetLabel(wxEmptyString);
+	textctrlCorrect->SetValue(wxEmptyString);
+	textctrlCorrect->Disable();
+
+	buttonGiveUp->Enable();
+    }
 }
 
-void PTWQuery::OnButtonOK(wxCommandEvent &event)
+/// Levenshtein string distance algorithm used to show how close the entered
+/// password was to the correct one.
+unsigned int LevenshteinDistance(const wxString& a, const wxString& b)
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWQuery::OnButtonOK) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    // if one of the strings is zero, then all characters of the other must
+    // be inserted.
+    if (a.empty()) return b.size();
+    if (b.empty()) return a.size();
+
+    const unsigned int cost_insert = 1;
+    const unsigned int cost_delete = 1;
+    const unsigned int cost_replace = 1;
+
+    // make "as" the longer string and "bs" the shorter.
+    const wxString &as = (a.size() > b.size()) ? a : b;
+    const wxString &bs = (a.size() > b.size()) ? b : a;
+
+    // only allocate two rows of the needed matrix.
+    unsigned int matrix[2][as.size() + 1];
+
+    // fill first row with ascending ordinals.
+    for(unsigned int i = 0; i < as.size() + 1; i++) {
+	matrix[0][i] = i;
+    }
+
+    // compute distance
+    for(unsigned int j = 1; j < bs.size() + 1; j++)
+    {
+	// switch rows each time
+	unsigned int *lastrow = matrix[(j - 1) % 2];
+	unsigned int *thisrow = matrix[j % 2];
+
+	thisrow[0] = j;
+
+	for(unsigned int i = 1; i < as.size() + 1; i++)
+	{
+	    // three-way mimimum of
+	    thisrow[i] = std::min(
+		std::min(
+		    // left plus insert cost
+		    thisrow[i-1] + cost_insert,
+		    // top plus delete cost
+		    lastrow[i] + cost_delete),
+		// top left plus replacement cost
+		lastrow[i-1] + ((as[i-1] == bs[j-1]) ? 0 : cost_replace)
+		);
+	}
+    }
+
+    // result is in the last cell of the last computed row
+    return matrix[ bs.size() % 2 ][ as.size() ];
 }
 
-void PTWQuery::OnButtonGiveUp(wxCommandEvent &event)
+void PTWQuery::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PTWQuery::OnButtonGiveUp) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    wxString checkpass = textctrlPass->GetValue();
+
+    if (checkpass == passentry.passtext)
+    {
+	passentry.rights++;
+	passentry.scores.push_back( int(score) );
+	passentry.ltime.SetToCurrent();
+
+	passentry.timespent += stopwatch.Time();
+
+	EndModal(wxID_OK);
+    }
+    else
+    {
+	wxBell();
+	mywrongs++;
+	passentry.wrongs++;
+	
+	score = ( score + score_wrong_add ) * score_wrong_factor;
+	UpdateScore();
+
+	if (mywrongs >= 2)
+	{
+	    unsigned int dist = LevenshteinDistance(checkpass, passentry.passtext);
+	    textctrlCheck->SetValue( wxString::Format(_("Incorrect! Hint: %d characters wrong."), dist) );
+	}
+	else
+	{
+	    textctrlCheck->SetValue(_("Incorrect! Try again."));
+	}
+
+	textctrlPass->SetFocus();
+    }
+}
+
+void PTWQuery::OnButtonGiveUp(wxCommandEvent& WXUNUSED(event))
+{
+    myrevealed++;
+    passentry.revealed++;
+
+    score = ( score + score_reveal_add ) * score_reveal_factor;
+    UpdateScore();
+
+    labelCorrect->Enable();
+    textctrlCorrect->Enable();
+    labelCorrect->SetLabel(_("Correct:"));
+    textctrlCorrect->SetValue(passentry.passtext);
+    Layout();
+
+    textctrlPass->SetFocus();
+
+    buttonGiveUp->Disable();
+    
+    if (myrevealed == 1) {
+	textctrlCheck->SetValue(_("Revealed. Read it now, it will be hidden again."));
+    }
+    else {
+	textctrlCheck->SetValue(_("Permanently revealed."));
+    }
+}
+
+void PTWQuery::UpdateScore()
+{
+    wxString ss = wxString::Format(_T("%.0f - "), score);
+
+    if (score == 0) {
+	ss += _("Perfect until now.");
+    }
+    else if (score < 10) {
+	ss += _("Still good.");
+    }
+    else if (score < 20) {
+	ss += _("Need more repetitions.");
+    }
+    else if (score < 60) {
+	ss += _("You have to work harder.");
+    }
+    else if (score < 200) {
+	ss += _("Are you kidding me? Learn it!");
+    }
+    else {
+	ss += _("You must be doing this on purpose.");
+    }
+
+    textctrlScore->SetValue(ss);
 }
 
 // wxGlade: add PTWQuery event handlers

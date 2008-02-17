@@ -30,6 +30,33 @@ public:
     /// Updated reference to currently asked password entry.
     struct PTPassEntry&	passentry;
 
+    /// Number of wrong entries during this query
+    int		mywrongs;
+
+    /// Number of times revealed during this query
+    int		myrevealed;
+
+    /// Current Score calculated
+    double	score;
+
+    /// Score added for a wrong entry.
+    static const int	score_wrong_add = 1;
+    
+    /// Score factor multiplied for a wrong password entry.
+    static const double score_wrong_factor = 2.0;
+
+    /// Score added for password revealing.
+    static const int	score_reveal_add = 10;
+
+    /// Score factor multiplied for password revealing.
+    static const double	score_reveal_factor = 2.0;
+
+    /// Write score into textctrl and add a comment
+    void	UpdateScore();
+
+    /// Stopwatch measuring how long this query is taking
+    wxStopWatch	stopwatch;
+
 private:
     // begin wxGlade: PTWQuery::methods
     void set_properties();
