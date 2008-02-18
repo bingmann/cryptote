@@ -20,7 +20,8 @@ noinst_HEADERS = \
 	pwtutor-32.h \
 	pwtutor-48.h \
 	edit_add.h \
-	edit_remove.h
+	edit_remove.h \
+	web-16.h
 
 EXTRA_DIST = \
 	pwgen-16.png \
@@ -36,4 +37,5 @@ EXTRA_DIST = \
 	pwtutor-128.png \
 	pwtutor.ico \
 	edit_add.png \
-	edit_remove.png
+	edit_remove.png \
+	web-16.png

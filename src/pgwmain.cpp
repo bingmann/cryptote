@@ -395,10 +395,10 @@ void PGWMain::OnButtonClose(wxCommandEvent& WXUNUSED(event))
     Close();
 }
 
-void PGWMain::OnButtonAbout(wxCommandEvent& event)
+void PGWMain::OnButtonAbout(wxCommandEvent& WXUNUSED(event))
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (PGWMain::OnButtonAbout) not implemented yet"));
+    PGWAbout dlg(this);
+    dlg.ShowModal();
 }
 
 // wxGlade: add PGWMain event handlers
@@ -745,3 +745,71 @@ wxString PGWMain::MakePassword(unsigned int passlen)
 
     return _T("");
 }
+
+// *** PGWAbout - Password Generator About Dialog ***
+
+PGWAbout::PGWAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+{
+    // begin wxGlade: PGWAbout::PGWAbout
+    bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
+    buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+
+    #include "art/pwgen-48.h"
+    bitmapIcon->SetBitmap( wxBitmapFromMemory(pwgen_48_png) );
+
+    #include "art/web-16.h"
+    bitmapWeb->SetBitmap( wxBitmapFromMemory(web_16_png) );
+
+    Layout();
+    GetSizer()->Fit(this);
+    Centre();
+}
+
+void PGWAbout::set_properties()
+{
+    // begin wxGlade: PGWAbout::set_properties
+    SetTitle(_("About CryptoTE Password Generator"));
+    // end wxGlade
+}
+
+void PGWAbout::do_layout()
+{
+    // begin wxGlade: PGWAbout::do_layout
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_3 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer5 = new wxBoxSizer(wxVERTICAL);
+    sizer2->Add(bitmapIcon, 0, wxALL, 8);
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE\nPassword Generator v0.1"));
+    label1->SetFont(wxFont(18, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
+    sizer_3->Add(label1, 0, wxALL, 6);
+    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("This is a stand-alone program containing only the\nrandom password generator found in CryptoTE\ntext editor and CryptoTE password tutor components."));
+    sizer_3->Add(label2, 0, wxALL, 6);
+    wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("The random password generator can generate\npronounceable English passwords or general upper-\nand/or lowercase letter and digit combinations.\nIt also displays the theoretic strength in key bits of\nthe chosen generator settings."));
+    sizer_3->Add(label3, 0, wxALL, 6);
+    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Copyright 2008 Timo Bingmann\nReleased under the GNU General Public License v2"));
+    sizer_3->Add(label4, 0, wxALL, 6);
+    sizer4->Add(bitmapWeb, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer5->Add(hyperlink1, 1, wxEXPAND, 0);
+    wxStaticText* label5 = new wxStaticText(this, wxID_ANY, _("for updates and more."));
+    sizer5->Add(label5, 0, wxALL, 0);
+    sizer4->Add(sizer5, 1, wxEXPAND, 0);
+    sizer_3->Add(sizer4, 0, wxALL|wxEXPAND, 6);
+    sizer2->Add(sizer_3, 1, wxEXPAND, 0);
+    sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 6);
+    sizer1->Add(buttonOK, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
+    SetSizer(sizer1);
+    sizer1->Fit(this);
+    Layout();
+    // end wxGlade
+}
+
+// wxGlade: add PGWAbout event handlers

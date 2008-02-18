@@ -3,6 +3,8 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
+#include <wx/hyperlink.h>
+
 // begin wxGlade: ::dependencies
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
@@ -168,6 +170,29 @@ public:
     virtual void OnButtonAbout(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonPresetAdd(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonPresetRemove(wxCommandEvent &event); // wxGlade: <event_handler>
+}; // wxGlade: end class
+
+class PGWAbout : public wxDialog
+{
+public:
+    // begin wxGlade: PGWAbout::ids
+    // end wxGlade
+
+    PGWAbout(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+private:
+    // begin wxGlade: PGWAbout::methods
+    void set_properties();
+    void do_layout();
+    // end wxGlade
+
+protected:
+    // begin wxGlade: PGWAbout::attributes
+    wxStaticBitmap* bitmapIcon;
+    wxStaticBitmap* bitmapWeb;
+    wxHyperlinkCtrl* hyperlink1;
+    wxButton* buttonOK;
+    // end wxGlade
 }; // wxGlade: end class
 
 #endif // WGENPASS_H
