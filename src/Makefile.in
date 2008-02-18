@@ -47,18 +47,19 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_cryptote_OBJECTS = main.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
-	fips181.$(OBJEXT)
+	fips181.$(OBJEXT) hyperlink.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 am_pwgen_OBJECTS = pwgen.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
-	fips181.$(OBJEXT)
+	fips181.$(OBJEXT) hyperlink.$(OBJEXT)
 pwgen_OBJECTS = $(am_pwgen_OBJECTS)
 pwgen_LDADD = $(LDADD)
 pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwgen_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_pwtutor_OBJECTS = pwtutor.$(OBJEXT) ptwmain.$(OBJEXT) \
 	ptwnew.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
-	fips181.$(OBJEXT) ptwquery.$(OBJEXT) ptwstats.$(OBJEXT)
+	fips181.$(OBJEXT) hyperlink.$(OBJEXT) ptwquery.$(OBJEXT) \
+	ptwstats.$(OBJEXT)
 pwtutor_OBJECTS = $(am_pwtutor_OBJECTS)
 pwtutor_LDADD = $(LDADD)
 pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwtutor_LDFLAGS) \
@@ -202,7 +203,8 @@ SUBDIRS = art .
 cryptote_SOURCES = main.cpp \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
-	fips181.cpp fips181.h
+	fips181.cpp fips181.h \
+	hyperlink.cpp hyperlink.h
 
 pwtutor_SOURCES = pwtutor.cpp \
 	ptwmain.cpp ptmwain.h \
@@ -210,13 +212,15 @@ pwtutor_SOURCES = pwtutor.cpp \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
+	hyperlink.cpp hyperlink.h \
 	ptwquery.cpp ptwquery.h \
 	ptwstats.cpp ptwstats.h
 
 pwgen_SOURCES = pwgen.cpp \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
-	fips181.cpp fips181.h
+	fips181.cpp fips181.h \
+	hyperlink.cpp hyperlink.h
 
 AM_CFLAGS = -W -Wall $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
@@ -297,6 +301,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hyperlink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pgwmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
