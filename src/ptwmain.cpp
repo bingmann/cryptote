@@ -62,6 +62,13 @@ PTWMain::PTWMain(wxWindow* parent, int id, const wxString& title, const wxPoint&
     listctrlPasslist->SetColumnWidth(2, wxLIST_AUTOSIZE_USEHEADER);
 
     loadPasslist();
+
+    taskbaricon = new PTTaskBarIcon(this);
+}
+
+PTWMain::~PTWMain()
+{
+    delete taskbaricon;
 }
 
 void PTWMain::set_properties()
@@ -104,6 +111,8 @@ BEGIN_EVENT_TABLE(PTWMain, wxFrame)
     EVT_BUTTON(myID_ABOUT, PTWMain::OnButtonAbout)
     EVT_BUTTON(myID_HIDE, PTWMain::OnButtonClose)
     // end wxGlade
+
+    EVT_CLOSE(PTWMain::OnClose)
 
     EVT_MENU(myID_MENU_STATS, PTWMain::OnMenuStatistics)
     EVT_MENU(myID_MENU_QUERY, PTWMain::OnMenuQuery)
@@ -162,6 +171,19 @@ void PTWMain::OnButtonAbout(wxCommandEvent &event)
 void PTWMain::OnButtonClose(wxCommandEvent& WXUNUSED(event))
 {
     Close();
+}
+
+void PTWMain::OnClose(wxCloseEvent& event)
+{
+    if (!event.CanVeto())
+    {
+	Destroy();
+    }
+    else
+    {
+	Hide();
+	taskbaricon->Install();
+    }
 }
 
 void PTWMain::OnMenuStatistics(wxCommandEvent& WXUNUSED(event))
@@ -783,3 +805,61 @@ void PTWMain::savePasslist()
 
     cfg->Flush();
 }
+
+// *** PTTaskBarIcon class ***
+
+PTTaskBarIcon::PTTaskBarIcon(class PTWMain* wmain)
+    : wxTaskBarIcon(),
+      ptwmain(wmain)
+{
+    #include "art/pwtutor-22.h"
+    
+    tbicon = wxIconFromMemory(pwtutor_22_png);
+}
+
+void PTTaskBarIcon::Install()
+{
+    SetIcon(tbicon, _("CryptoTE PWTutor"));
+}
+
+void PTTaskBarIcon::Remove()
+{
+    RemoveIcon();
+}
+
+wxMenu* PTTaskBarIcon::CreatePopupMenu()
+{
+    wxMenu *menu = new wxMenu;
+
+    menu->Append(myID_RESTORE, _T("&Restore"));
+
+#ifndef __WXMAC_OSX__ /* Mac has built-in quit menu */
+    menu->AppendSeparator();
+    menu->Append(wxID_EXIT, _T("E&xit"));
+#endif
+
+    return menu;
+}
+
+void PTTaskBarIcon::OnLeftButtonDoubleClick(wxTaskBarIconEvent& WXUNUSED(event))
+{
+    ptwmain->Show();
+    Remove();
+}
+
+void PTTaskBarIcon::OnMenuRestore(wxCommandEvent& WXUNUSED(event))
+{
+    ptwmain->Show();
+    Remove();
+}
+
+void PTTaskBarIcon::OnMenuExit(wxCommandEvent& WXUNUSED(event))
+{
+    ptwmain->Destroy();
+}
+
+BEGIN_EVENT_TABLE(PTTaskBarIcon, wxTaskBarIcon)
+    EVT_TASKBAR_LEFT_DCLICK(PTTaskBarIcon::OnLeftButtonDoubleClick)
+    EVT_MENU(myID_RESTORE, PTTaskBarIcon::OnMenuRestore)
+    EVT_MENU(wxID_EXIT, PTTaskBarIcon::OnMenuExit)
+END_EVENT_TABLE()

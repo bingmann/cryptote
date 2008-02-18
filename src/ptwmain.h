@@ -5,6 +5,7 @@
 #include <wx/image.h>
 #include <wx/datetime.h>
 #include <wx/imaglist.h>
+#include <wx/taskbar.h>
 // begin wxGlade: ::dependencies
 #include <wx/listctrl.h>
 // end wxGlade
@@ -49,6 +50,38 @@ struct PTPassEntry
     std::vector<int>	scores;
 };
 
+class PTTaskBarIcon : public wxTaskBarIcon
+{
+protected:
+    /// Icon which is set, loaded from compiled-in PNG
+    wxIcon		tbicon;
+
+    /// Reference to main window which is Show()-ed
+    class PTWMain*	ptwmain;
+
+public:
+    enum {
+        myID_RESTORE = wxID_HIGHEST + 2000
+    };
+
+    PTTaskBarIcon(class PTWMain* wmain);
+
+    // Install and remove the icon
+    void	Install();
+    void	Remove();
+
+    /// Create menu when use use right-clicks the icon
+    virtual wxMenu*	CreatePopupMenu();
+
+    // *** Event Handlers ***
+    void	OnLeftButtonDoubleClick(wxTaskBarIconEvent& event);
+    void	OnMenuRestore(wxCommandEvent& event);
+    void	OnMenuExit(wxCommandEvent& event);
+
+
+    DECLARE_EVENT_TABLE();
+};
+
 class PTWMain : public wxFrame
 {
 public:
@@ -69,6 +102,8 @@ public:
     };
 
     PTWMain(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+
+    ~PTWMain();
 
 protected:
 
@@ -106,6 +141,10 @@ protected:
     /// Create a bitmap representing the passentry's score
     static wxBitmap MakeScoreBitmap(const PTPassEntry& passentry);
 
+    // *** Hide Password Tutor to TaskBar
+
+    PTTaskBarIcon*	taskbaricon;
+
 private:
     // begin wxGlade: PTWMain::methods
     void set_properties();
@@ -124,6 +163,8 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
+    virtual void OnClose(wxCloseEvent& event);
+
     virtual void OnMenuStatistics(wxCommandEvent& event);
     virtual void OnMenuQuery(wxCommandEvent& event);
     virtual void OnMenuStop(wxCommandEvent& event);
