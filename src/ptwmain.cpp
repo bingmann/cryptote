@@ -54,11 +54,13 @@ PTWMain::PTWMain(wxWindow* parent, int id, const wxString& title, const wxPoint&
     listctrlPasslist->InsertColumn(1, _("Description"), wxLIST_FORMAT_LEFT, 100);
     listctrlPasslist->InsertColumn(2, _("Queries / Right / Wrong / Revealed"), wxLIST_FORMAT_LEFT, 100);
 
-    loadPasslist();
+    listctrlPasslist->SetImageList(&PassImageList, wxIMAGE_LIST_SMALL);
 
-    listctrlPasslist->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
+    listctrlPasslist->SetColumnWidth(0, 80+4);
     listctrlPasslist->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
     listctrlPasslist->SetColumnWidth(2, wxLIST_AUTOSIZE_USEHEADER);
+
+    loadPasslist();
 }
 
 void PTWMain::set_properties()
@@ -161,28 +163,6 @@ void PTWMain::OnButtonClose(wxCommandEvent& WXUNUSED(event))
     Close();
 }
 
-// wxGlade: add PTWMain event handlers
-
-// *** PassEntry Management Functions ***
-
-void PTWMain::AppendPassEntry(struct PTPassEntry& WXUNUSED(pe))
-{
-    int ni = listctrlPasslist->GetItemCount();
-
-    ni = listctrlPasslist->InsertItem(ni, wxT("?"));
-
-    UpdatePassEntry(ni);
-}
-
-void PTWMain::UpdatePassEntry(int ni)
-{
-    struct PTPassEntry& pe = passlist[ni];
-
-    // listctrlPasslist->SetItemColumnImage(ni, 0, 0);
-    listctrlPasslist->SetItem(ni, 1, pe.description);
-    listctrlPasslist->SetItem(ni, 2, wxString::Format(_("%d / %d / %d / %d"), pe.scores.size(), pe.rights, pe.wrongs, pe.revealed) );
-}
-
 void PTWMain::OnMenuStatistics(wxCommandEvent& WXUNUSED(event))
 {
     int ni = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
@@ -223,6 +203,89 @@ void PTWMain::OnMenuErase(wxCommandEvent& WXUNUSED(event))
     savePasslist();
 
     listctrlPasslist->DeleteItem(ni);
+    PassImageList.Remove(ni); // TODO: this does not work.
+}
+
+// wxGlade: add PTWMain event handlers
+
+// *** PassEntry Management Functions ***
+
+void PTWMain::AppendPassEntry(struct PTPassEntry& WXUNUSED(pe))
+{
+    int ni = listctrlPasslist->GetItemCount();
+
+    ni = listctrlPasslist->InsertItem(ni, _T(""));
+
+    UpdatePassEntry(ni);
+}
+
+void PTWMain::UpdatePassEntry(int ni)
+{
+    struct PTPassEntry& pe = passlist[ni];
+
+    UpdatePassImageList(ni);
+
+    listctrlPasslist->SetItemColumnImage(ni, 0, ni);
+    listctrlPasslist->SetItem(ni, 1, pe.description);
+    listctrlPasslist->SetItem(ni, 2, wxString::Format(_("%d / %d / %d / %d"), pe.scores.size(), pe.rights, pe.wrongs, pe.revealed) );
+}
+
+void PTWMain::UpdatePassImageList(int ni)
+{
+    wxBitmap bmp = MakeScoreBitmap(passlist[ni]);
+
+    if (PassImageList.GetImageCount() <= ni)
+    {
+	assert(PassImageList.GetImageCount() == ni);
+	PassImageList.Add(bmp);
+    }
+    else {
+	PassImageList.Replace(ni, bmp);
+    }
+
+    listctrlPasslist->Refresh();
+}
+
+wxBitmap PTWMain::MakeScoreBitmap(const PTPassEntry& passentry)
+{
+    const int height = 16;
+    const int width = 80;
+
+    wxBitmap bitmap(width, height);
+    wxMemoryDC dc;
+    dc.SelectObject(bitmap);
+
+    dc.SetBackground(*wxBLACK_BRUSH);
+    dc.Clear();
+
+    double step = (double)(width-2) / std::min<double>(passentry.scores.size(), 6);
+
+    // support points in gradient
+
+    static const struct GradientPoint gradient[] =
+	{
+	    {   0, wxColour(  0, 242, 0) },
+	    {   1, wxColour(194, 242, 0) },
+	    {  10, wxColour(242, 214, 0) },
+	    {  40, wxColour(242,   0, 0) }
+	};
+
+    for(unsigned int i = 0; i < passentry.scores.size() && i < 6; ++i)
+    {
+	const int& score = passentry.scores[ passentry.scores.size() - 1 - i ];
+
+	wxColour colour = InterpolateGradient(score, gradient, sizeof(gradient) / sizeof(gradient[0]));
+
+	dc.SetBrush( wxBrush(colour) );
+	dc.SetPen(*wxTRANSPARENT_PEN);
+
+	int rectw = wxCoord(step)+1;
+	if (i+1 == passentry.scores.size() || i == 5) rectw = width-2 - wxCoord(i*step);
+
+	dc.DrawRectangle( 1+wxCoord(i*step), 1, rectw, height-2);
+    }
+
+    return bitmap;
 }
 
 // *** PassEntry Functions to Load and Save the List Encrypted ***

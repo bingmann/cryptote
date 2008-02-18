@@ -4,6 +4,7 @@
 #include <wx/wx.h>
 #include <wx/image.h>
 #include <wx/datetime.h>
+#include <wx/imaglist.h>
 // begin wxGlade: ::dependencies
 #include <wx/listctrl.h>
 // end wxGlade
@@ -95,6 +96,15 @@ protected:
 
     /// Update a pass entry in the wxListBox
     void	UpdatePassEntry(int ni);
+
+    /// Image list associated with the wxListCtrl
+    wxImageList	PassImageList;
+
+    /// Update an entry in the image list
+    void	UpdatePassImageList(int ni);
+
+    /// Create a bitmap representing the passentry's score
+    static wxBitmap MakeScoreBitmap(const PTPassEntry& passentry);
 
 private:
     // begin wxGlade: PTWMain::methods
