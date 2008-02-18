@@ -186,8 +186,35 @@ wxBitmap PTWStats::MakeScoreBitmap()
     wxMemoryDC dc;
     dc.SelectObject(bitmap);
 
-    dc.SetBackground(*wxGREEN_BRUSH);
+    dc.SetBackground(*wxBLACK_BRUSH);
     dc.Clear();
+
+    double step = (double)(width-2) / (double)passentry.scores.size();
+
+    // support points in gradient
+
+    static const struct GradientPoint gradient[] =
+	{
+	    {   0, wxColour(  0, 242, 0) },
+	    {   1, wxColour(194, 242, 0) },
+	    {  10, wxColour(242, 214, 0) },
+	    {  40, wxColour(242,   0, 0) }
+	};
+
+    for(unsigned int i = 0; i < passentry.scores.size(); ++i)
+    {
+	const int& score = passentry.scores[ passentry.scores.size() - 1 - i ];
+
+	wxColour colour = InterpolateGradient(score, gradient, sizeof(gradient) / sizeof(gradient[0]));
+
+	dc.SetBrush( wxBrush(colour) );
+	dc.SetPen(*wxTRANSPARENT_PEN);
+
+	int rectw = wxCoord(step)+1;
+	if (i+1 == passentry.scores.size()) rectw = width-2 - wxCoord(i*step);
+
+	dc.DrawRectangle( 1+wxCoord(i*step), 1, rectw, height-2);
+    }
 
     return bitmap;
 }

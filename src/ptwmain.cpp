@@ -119,6 +119,7 @@ void PTWMain::OnPasslistItemActivated(wxListEvent& event)
     {
 	UpdatePassEntry(ni);
     }
+    savePasslist();
 }
 
 void PTWMain::OnPasslistItemRightClick(wxListEvent& event)
@@ -193,6 +194,7 @@ void PTWMain::OnMenuStatistics(wxCommandEvent& WXUNUSED(event))
     {
 	UpdatePassEntry(ni);
     }
+    savePasslist();
 }
 
 void PTWMain::OnMenuQuery(wxCommandEvent& WXUNUSED(event))

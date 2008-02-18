@@ -3,6 +3,7 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
+#include <wx/datetime.h>
 // begin wxGlade: ::dependencies
 #include <wx/listctrl.h>
 // end wxGlade
