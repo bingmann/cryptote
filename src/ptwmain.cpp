@@ -54,7 +54,8 @@ PTWMain::PTWMain(wxWindow* parent, int id, const wxString& title, const wxPoint&
     listctrlPasslist->InsertColumn(1, _("Description"), wxLIST_FORMAT_LEFT, 100);
     listctrlPasslist->InsertColumn(2, _("Queries / Right / Wrong / Revealed"), wxLIST_FORMAT_LEFT, 100);
 
-    listctrlPasslist->SetImageList(&PassImageList, wxIMAGE_LIST_SMALL);
+    PassImageList = new wxImageList(80, 16);
+    listctrlPasslist->AssignImageList(PassImageList, wxIMAGE_LIST_SMALL);
 
     listctrlPasslist->SetColumnWidth(0, 80+4);
     listctrlPasslist->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
@@ -186,7 +187,9 @@ void PTWMain::OnMenuQuery(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() == wxID_OK)
     {
+	UpdatePassEntry(ni);
     }
+    savePasslist();
 }
 
 void PTWMain::OnMenuStop(wxCommandEvent& WXUNUSED(event))
@@ -203,7 +206,7 @@ void PTWMain::OnMenuErase(wxCommandEvent& WXUNUSED(event))
     savePasslist();
 
     listctrlPasslist->DeleteItem(ni);
-    PassImageList.Remove(ni); // TODO: this does not work.
+    PassImageList->Remove(ni); // TODO: this does not work.
 }
 
 // wxGlade: add PTWMain event handlers
@@ -234,13 +237,13 @@ void PTWMain::UpdatePassImageList(int ni)
 {
     wxBitmap bmp = MakeScoreBitmap(passlist[ni]);
 
-    if (PassImageList.GetImageCount() <= ni)
+    if (PassImageList->GetImageCount() <= ni)
     {
-	assert(PassImageList.GetImageCount() == ni);
-	PassImageList.Add(bmp);
+	assert(PassImageList->GetImageCount() == ni);
+	PassImageList->Add(bmp);
     }
     else {
-	PassImageList.Replace(ni, bmp);
+	PassImageList->Replace(ni, bmp);
     }
 
     listctrlPasslist->Refresh();

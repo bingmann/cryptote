@@ -98,7 +98,7 @@ protected:
     void	UpdatePassEntry(int ni);
 
     /// Image list associated with the wxListCtrl
-    wxImageList	PassImageList;
+    wxImageList*PassImageList;
 
     /// Update an entry in the image list
     void	UpdatePassImageList(int ni);
