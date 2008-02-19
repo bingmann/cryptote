@@ -2,10 +2,14 @@
 
 #include <wx/wx.h>
 
-#include "pgwmain.h"
+#include "cewmain.h"
 
 class App : public wxApp
 {
+private:
+    /// CryptoTE main dialog
+    class CEWMain*	wmain;
+
 public:
     /// This function is called during application start-up.
     virtual bool	OnInit()
@@ -16,10 +20,11 @@ public:
 	SetVendorName(_("idlebox.net"));
 
 	// Create main window frame
-	PGWMain dlg(NULL, false);
-	dlg.ShowModal();
+	wmain = new CEWMain(NULL);
+	SetTopWindow(wmain);
+	wmain->Show();
 
-	return false;
+	return true;
     }
 
     /// Application exit function
