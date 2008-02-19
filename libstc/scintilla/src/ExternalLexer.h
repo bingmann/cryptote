@@ -11,7 +11,11 @@
 #if PLAT_WIN
 #define EXT_LEXER_DECL __stdcall
 #else
-#define EXT_LEXER_DECL 
+#define EXT_LEXER_DECL
+#endif
+
+#ifdef SCI_NAMESPACE
+namespace Scintilla {
 #endif
 
 // External Lexer function definitions...
@@ -91,5 +95,9 @@ class LMMinder {
 public:
 	~LMMinder();
 };
+
+#ifdef SCI_NAMESPACE
+}
+#endif
 
 #endif
