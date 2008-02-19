@@ -576,7 +576,7 @@ PACKAGE_VERSION='0.1'
 PACKAGE_STRING='cryptote 0.1'
 PACKAGE_BUGREPORT=''
 
-ac_unique_file="src/main.cpp"
+ac_unique_file="src/cryptote.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -5428,7 +5428,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/art/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile src/Makefile src/art/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6038,6 +6038,7 @@ do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "libstc/Makefile") CONFIG_FILES="$CONFIG_FILES libstc/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/art/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/Makefile" ;;
 

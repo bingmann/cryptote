@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT(cryptote, 0.1)
-AC_CONFIG_SRCDIR(src/main.cpp)
+AC_CONFIG_SRCDIR(src/cryptote.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 AC_CANONICAL_HOST
 
@@ -74,6 +74,7 @@ AM_CONDITIONAL(GOT_RESCOMP, test x$RESCOMP != x)
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
+		 libstc/Makefile
 		 src/Makefile
 		 src/art/Makefile])
 AC_OUTPUT

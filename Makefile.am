@@ -1,3 +1,3 @@
 # $Id$
 
-SUBDIRS = src
+SUBDIRS = libstc src
