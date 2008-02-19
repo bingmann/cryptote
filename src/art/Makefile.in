@@ -183,6 +183,14 @@ noinst_HEADERS = \
 	pwtutor-22.h \
 	pwtutor-32.h \
 	pwtutor-48.h \
+	document_new.h \
+	document_open.h \
+	document_save.h \
+	document_saveas.h \
+	document_revert.h \
+	document_close.h \
+	application_exit.h \
+	application_info.h \
 	edit_add.h \
 	edit_remove.h \
 	web-16.h
@@ -200,6 +208,14 @@ EXTRA_DIST = \
 	pwtutor-48.png \
 	pwtutor-128.png \
 	pwtutor.ico \
+	document_new.png \
+	document_open.png \
+	document_save.png \
+	document_saveas.png \
+	document_revert.png \
+	document_close.png \
+	application_exit.png \
+	application_info.png \
 	edit_add.png \
 	edit_remove.png \
 	web-16.png

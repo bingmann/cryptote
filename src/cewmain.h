@@ -36,6 +36,8 @@ protected:
     // *** Menu and Status Bars of the main window ***
 
     wxMenuBar*	menubar;
+    wxToolBar*	toolbar;
+
     void 	CreateMenuBar();
 
     wxStatusBar* statusbar;
