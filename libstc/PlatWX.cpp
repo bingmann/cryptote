@@ -20,7 +20,7 @@
 
 #include "Platform.h"
 #include "PlatWX.h"
-#include "wx/stc/stc.h"
+#include "stc.h"
 
 
 
@@ -701,11 +701,15 @@ void Window::SetCursor(Cursor curs) {
        }
 }
 
-
 void Window::SetTitle(const char *s) {
     GETWIN(id)->SetLabel(stc2wx(s));
 }
 
+/* Returns rectangle of monitor pt is on, both rect and pt are in Window's
+   gdk window coordinates */
+PRectangle Window::GetMonitorRect(Point pt) {
+    return PRectangle();
+}
 
 //----------------------------------------------------------------------
 // Helper classes for ListBox
@@ -1521,25 +1525,21 @@ double ElapsedTime::Duration(bool reset) {
 // Convert using Scintilla's functions instead of wx's, Scintilla's are more
 // forgiving and won't assert...
 
-wxString stc2wx(const char* str, size_t len)
-{
-    if (!len)
-        return wxEmptyString;
-
-    size_t wclen = UCS2Length(str, len);
-    wxWCharBuffer buffer(wclen+1);
-
-    size_t actualLen = UCS2FromUTF8(str, len, buffer.data(), wclen+1);
-    return wxString(buffer.data(), actualLen);
-}
-
-
-
 wxString stc2wx(const char* str)
 {
     return stc2wx(str, strlen(str));
 }
 
+wxString stc2wx(const char* str, size_t len)
+{
+    if (!len) return wxEmptyString;
+
+    size_t wclen = UTF16Length(str, len);
+    wxWCharBuffer buffer(wclen+1);
+
+    size_t actualLen = UTF16FromUTF8(str, len, buffer.data(), wclen+1);
+    return wxString(buffer.data(), actualLen);
+}
 
 const wxWX2MBbuf wx2stc(const wxString& str)
 {
@@ -1548,10 +1548,23 @@ const wxWX2MBbuf wx2stc(const wxString& str)
     size_t len           = UTF8Length(wcstr, wclen);
 
     wxCharBuffer buffer(len+1);
-    UTF8FromUCS2(wcstr, wclen, buffer.data(), len);
+    UTF8FromUTF16(wcstr, wclen, buffer.data(), len);
 
     // TODO check NULL termination!!
 
+    return buffer;
+}
+
+const wxWX2MBbuf wx2stc(const wxString& str, size_t& outsize)
+{
+    const wchar_t* wcstr = str.c_str();
+    size_t wclen         = str.length();
+    size_t len           = UTF8Length(wcstr, wclen);
+
+    wxCharBuffer buffer(len+1);
+    UTF8FromUTF16(wcstr, wclen, buffer.data(), len);
+
+    outsize = len;
     return buffer;
 }
 

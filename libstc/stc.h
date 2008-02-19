@@ -3599,6 +3599,7 @@ typedef void (wxEvtHandler::*wxStyledTextEventFunction)(wxStyledTextEvent&);
 WXDLLIMPEXP_STC wxString stc2wx(const char* str);
 WXDLLIMPEXP_STC wxString stc2wx(const char* str, size_t len);
 WXDLLIMPEXP_STC const wxWX2MBbuf wx2stc(const wxString& str);
+WXDLLIMPEXP_STC const wxWX2MBbuf wx2stc(const wxString& str, size_t& outsize);
 
 #else // not UNICODE
 
@@ -3609,6 +3610,10 @@ inline wxString stc2wx(const char* str, size_t len) {
     return wxString(str, len);
 }
 inline const wxWX2MBbuf wx2stc(const wxString& str) {
+    return str.mbc_str();
+}
+inline const wxWX2MBbuf wx2stc(const wxString& str, size_t& outsize) {
+    outsize = str.length();
     return str.mbc_str();
 }
 

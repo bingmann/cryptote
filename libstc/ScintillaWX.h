@@ -29,12 +29,26 @@
 #include "Scintilla.h"
 #include "CharClassify.h"
 #include "XPM.h"
+
+#include "SplitVector.h"
+#include "Partitioning.h"
+#include "RunStyles.h"
+#include "Decoration.h"
+#include "CellBuffer.h"
+#include "Document.h"
+#include "Style.h"
+#include "Indicator.h"
+#include "LineMarker.h"
+#include "ViewStyle.h"
+#include "PositionCache.h"
+
 #ifdef SCI_LEXER
 #include "SciLexer.h"
 #include "PropSet.h"
 #include "Accessor.h"
 #include "KeyWords.h"
 #endif
+
 #include "ContractionState.h"
 #include "SVector.h"
 #include "CellBuffer.h"

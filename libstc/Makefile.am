@@ -21,8 +21,11 @@ libstc_a_SOURCES = \
 	scintilla/src/CellBuffer.h \
 	scintilla/src/CharClassify.cxx \
 	scintilla/src/CharClassify.h \
+	scintilla/src/CharacterSet.h \
 	scintilla/src/ContractionState.cxx \
 	scintilla/src/ContractionState.h \
+	scintilla/src/Decoration.cxx \
+	scintilla/src/Decoration.h \
 	scintilla/src/Document.cxx \
 	scintilla/src/Document.h \
 	scintilla/src/DocumentAccessor.cxx \
@@ -37,8 +40,10 @@ libstc_a_SOURCES = \
 	scintilla/src/KeyMap.h \
 	scintilla/src/KeyWords.cxx \
 	scintilla/src/LexAPDL.cxx \
+	scintilla/src/LexASY.cxx \
 	scintilla/src/LexAU3.cxx \
 	scintilla/src/LexAVE.cxx \
+	scintilla/src/LexAbaqus.cxx \
 	scintilla/src/LexAda.cxx \
 	scintilla/src/LexAsm.cxx \
 	scintilla/src/LexAsn1.cxx \
@@ -50,15 +55,19 @@ libstc_a_SOURCES = \
 	scintilla/src/LexCPP.cxx \
 	scintilla/src/LexCSS.cxx \
 	scintilla/src/LexCaml.cxx \
+	scintilla/src/LexCmake.cxx \
 	scintilla/src/LexConf.cxx \
 	scintilla/src/LexCrontab.cxx \
 	scintilla/src/LexCsound.cxx \
+	scintilla/src/LexD.cxx \
 	scintilla/src/LexEScript.cxx \
 	scintilla/src/LexEiffel.cxx \
 	scintilla/src/LexErlang.cxx \
 	scintilla/src/LexFlagship.cxx \
 	scintilla/src/LexForth.cxx \
 	scintilla/src/LexFortran.cxx \
+	scintilla/src/LexGAP.cxx \
+	scintilla/src/LexGen.py \
 	scintilla/src/LexGui4Cli.cxx \
 	scintilla/src/LexHTML.cxx \
 	scintilla/src/LexHaskell.cxx \
@@ -76,11 +85,14 @@ libstc_a_SOURCES = \
 	scintilla/src/LexOpal.cxx \
 	scintilla/src/LexOthers.cxx \
 	scintilla/src/LexPB.cxx \
+	scintilla/src/LexPLM.cxx \
 	scintilla/src/LexPOV.cxx \
 	scintilla/src/LexPS.cxx \
 	scintilla/src/LexPascal.cxx \
 	scintilla/src/LexPerl.cxx \
+	scintilla/src/LexProgress.cxx \
 	scintilla/src/LexPython.cxx \
+	scintilla/src/LexR.cxx \
 	scintilla/src/LexRebol.cxx \
 	scintilla/src/LexRuby.cxx \
 	scintilla/src/LexSQL.cxx \
@@ -97,12 +109,18 @@ libstc_a_SOURCES = \
 	scintilla/src/LexYAML.cxx \
 	scintilla/src/LineMarker.cxx \
 	scintilla/src/LineMarker.h \
+	scintilla/src/Partitioning.h \
+	scintilla/src/PositionCache.cxx \
+	scintilla/src/PositionCache.h \
 	scintilla/src/PropSet.cxx \
 	scintilla/src/RESearch.cxx \
 	scintilla/src/RESearch.h \
+	scintilla/src/RunStyles.cxx \
+	scintilla/src/RunStyles.h \
 	scintilla/src/SVector.h \
 	scintilla/src/ScintillaBase.cxx \
 	scintilla/src/ScintillaBase.h \
+	scintilla/src/SplitVector.h \
 	scintilla/src/Style.cxx \
 	scintilla/src/Style.h \
 	scintilla/src/StyleContext.cxx \
@@ -122,7 +140,9 @@ libstc_a_SOURCES = \
 	stc.cpp \
 	stc.h
 
-EXTRA_DIST = README.txt scintilla/README.txt
+EXTRA_DIST = README.txt \
+	scintilla/README.txt \
+	scintilla/License.txt
 
 AM_CFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -Iscintilla/include -Iscintilla/src $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -Iscintilla/include -Iscintilla/src $(WX_CXXFLAGS)
