@@ -1265,7 +1265,7 @@ void ListBoxImpl::GetValue(int n, char *value, int len) {
     item.SetColumn(1);
     item.SetMask(wxLIST_MASK_TEXT);
     GETLB(id)->GetItem(item);
-    strncpy(value, wx2stc(item.GetText()), len);
+    strncpy(value, wx2stcz(item.GetText()), len);
     value[len-1] = '\0';
 }
 
@@ -1541,7 +1541,7 @@ wxString stc2wx(const char* str, size_t len)
     return wxString(buffer.data(), actualLen);
 }
 
-const wxWX2MBbuf wx2stc(const wxString& str)
+const wxWX2MBbuf wx2stcz(const wxString& str)
 {
     const wchar_t* wcstr = str.c_str();
     size_t wclen         = str.length();

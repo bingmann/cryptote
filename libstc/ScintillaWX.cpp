@@ -22,7 +22,7 @@
 
 #include "ScintillaWX.h"
 #include "ExternalLexer.h"
-#include "wx/stc/stc.h"
+#include "stc.h"
 #include "PlatWX.h"
 
 #ifdef __WXMSW__
@@ -516,16 +516,16 @@ void ScintillaWX::Paste() {
     if (gotData) {
         wxString   text = wxTextBuffer::Translate(data.GetText(),
                                                   wxConvertEOLMode(pdoc->eolMode));
-        wxWX2MBbuf buf = (wxWX2MBbuf)wx2stc(text);
+	size_t buflen;
+        wxWX2MBbuf buf = (wxWX2MBbuf)wx2stc(text, buflen);
 
 #if wxUSE_UNICODE
         // free up the old character buffer in case the text is real big
         data.SetText(wxEmptyString); 
         text = wxEmptyString;
 #endif
-        int len = strlen(buf);
-        pdoc->InsertString(currentPos, buf, len);
-        SetEmptySelection(currentPos + len);
+        pdoc->InsertString(currentPos, buf, buflen);
+        SetEmptySelection(currentPos + buflen);
     }
 #endif // wxUSE_DATAOBJ
 
@@ -900,10 +900,10 @@ void ScintillaWX::DoMiddleButtonUp(Point pt) {
     if (gotData) {
         wxString   text = wxTextBuffer::Translate(data.GetText(),
                                                   wxConvertEOLMode(pdoc->eolMode));
-        wxWX2MBbuf buf = (wxWX2MBbuf)wx2stc(text);
-        int        len = strlen(buf);
-        pdoc->InsertString(currentPos, buf, len);
-        SetEmptySelection(currentPos + len);
+	size_t buflen;
+        wxWX2MBbuf buf = (wxWX2MBbuf)wx2stc(text, buflen);
+        pdoc->InsertString(currentPos, buf, buflen);
+        SetEmptySelection(currentPos + buflen);
     }
     pdoc->EndUndoAction();
     NotifyChange();
@@ -923,7 +923,7 @@ void ScintillaWX::DoAddChar(int key) {
     wxChar wszChars[2];
     wszChars[0] = (wxChar)key;
     wszChars[1] = 0;
-    wxWX2MBbuf buf = (wxWX2MBbuf)wx2stc(wszChars);
+    wxWX2MBbuf buf = (wxWX2MBbuf)wx2stcz(wszChars);
     AddCharUTF((char*)buf.data(), strlen(buf));
 #else
     AddChar((char)key);
@@ -1049,7 +1049,7 @@ bool ScintillaWX::DoDropText(long x, long y, const wxString& data) {
     dragResult = evt.GetDragResult();
     if (dragResult == wxDragMove || dragResult == wxDragCopy) {
         DropAt(evt.GetPosition(),
-               wx2stc(evt.GetDragText()),
+               wx2stcz(evt.GetDragText()),
                dragResult == wxDragMove,
                false); // TODO: rectangular?
         return true;

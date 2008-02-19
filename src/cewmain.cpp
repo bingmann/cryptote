@@ -20,15 +20,22 @@ CEWMain::CEWMain(wxWindow* parent)
     Centre();
 }
 
+void CEWMain::UpdateTitle()
+{
+    SetTitle( edit->GetFileBasename() + _(" - ") + _("Secretilla"));
+}
+
+void CEWMain::UpdateStatusBar(const wxString& str)
+{
+    statusbar->SetStatusText(str);
+}
+
 void CEWMain::CreateMenuBar()
 {
     // *** File
 
     wxMenu *menuFile = new wxMenu;
 
-    menuFile->Append(wxID_NEW,
-		     _("&New ...\tCtrl+N"),
-		     _("Clear the editor and start with a empty file."));
     menuFile->Append(wxID_OPEN,
 		     _("&Open ..\tCtrl+O"),
 		     _("Open an existing file in the editor."));
@@ -67,34 +74,48 @@ void CEWMain::CreateMenuBar()
     SetMenuBar(menubar);
 }
 
-void CEWMain::OnMenuFileNew(wxCommandEvent& WXUNUSED(event))
-{
-    wxLogMessage(_T("OnMenuFileNew() called."));
-}
 
 void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 {
-    wxLogMessage(_T("OnMenuFileOpen() called."));
+    wxFileDialog dlg(this,
+		     _("Open file"), wxEmptyString, wxEmptyString, _("Any file (*)|*"),
+                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR);
+
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    edit->FileOpen( dlg.GetPath() );
+
+    UpdateTitle();
 }
 
-void CEWMain::OnMenuFileSave(wxCommandEvent& WXUNUSED(event))
+void CEWMain::OnMenuFileSave(wxCommandEvent& event)
 {
-    wxLogMessage(_T("OnMenuFileSave() called."));
+    if (!edit->HasFilename()) {
+	return OnMenuFileSaveAs(event);
+    }
+
+    edit->FileSave();
 }
 
 void CEWMain::OnMenuFileSaveAs(wxCommandEvent& WXUNUSED(event))
 {
-    wxLogMessage(_T("OnMenuFileSaveAs() called."));
+    wxFileDialog dlg(this,
+		     _("Save file"), wxEmptyString, edit->GetFileBasename(), _("Any file (*)|*"),
+		     wxSAVE | wxOVERWRITE_PROMPT);
+
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    edit->FileSaveAs( dlg.GetPath() );
 }
 
 void CEWMain::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))
 {
-    wxLogMessage(_T("OnMenuFileRevert() called."));
+    edit->FileRevert();
 }
 
 void CEWMain::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
 {
-    wxLogMessage(_T("OnMenuFileClose() called."));
+    edit->FileNew();
 }
 
 void CEWMain::OnMenuFileQuit(wxCommandEvent& WXUNUSED(event))
@@ -112,7 +133,6 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     // *** Menu Items
 
     // File
-    EVT_MENU	(wxID_NEW,		CEWMain::OnMenuFileNew)
     EVT_MENU	(wxID_OPEN,		CEWMain::OnMenuFileOpen)
     EVT_MENU	(wxID_SAVE,		CEWMain::OnMenuFileSave)
     EVT_MENU	(wxID_SAVEAS,		CEWMain::OnMenuFileSaveAs)

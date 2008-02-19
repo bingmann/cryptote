@@ -10,11 +10,18 @@ class CEWMain : public wxFrame
 public:
     CEWMain(wxWindow* parent);
 
+    // *** Operations ***
+
+    /// Update the title bar with the currently loaded text file name
+    void	UpdateTitle();
+
+    /// Update status bar to show given text.
+    void	UpdateStatusBar(const wxString& str);
+
     // *** Event Handlers ***
 
     // Menu Events
 
-    void	OnMenuFileNew(wxCommandEvent& event);
     void	OnMenuFileOpen(wxCommandEvent& event);
     void	OnMenuFileSave(wxCommandEvent& event);
     void	OnMenuFileSaveAs(wxCommandEvent& event);
