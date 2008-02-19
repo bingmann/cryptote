@@ -283,9 +283,6 @@ public:
 class Font {
 protected:
 	FontID id;
-#if PLAT_WX
-	int ascent;
-#endif
 	// Private so Font objects can not be copied
 	Font(const Font &) {}
 	Font &operator=(const Font &) { id=0; return *this; }
@@ -302,6 +299,10 @@ public:
 	void SetID(FontID id_) { id = id_; }
 	friend class Surface;
         friend class SurfaceImpl;
+
+#if PLAT_WX
+	int ascent;
+#endif
 };
 
 /**

@@ -99,7 +99,7 @@ private:
 
 //----------------------------------------------------------------------
 
-class ScintillaWX : public ScintillaBase {
+class ScintillaWX : public Scintilla::ScintillaBase {
 public:
 
     ScintillaWX(wxStyledTextCtrl* win);
@@ -119,9 +119,9 @@ public:
     virtual bool ModifyScrollBars(int nMax, int nPage);
     virtual void Copy();
     virtual void Paste();
-    virtual void CopyToClipboard(const SelectionText &selectedText);
+    virtual void CopyToClipboard(const Scintilla::SelectionText &selectedText);
 
-    virtual void CreateCallTipWindow(PRectangle rc);
+    virtual void CreateCallTipWindow(Scintilla::PRectangle rc);
     virtual void AddToPopUp(const char *label, int cmd = 0, bool enabled = true);
     virtual void ClaimSelection();
 
@@ -133,7 +133,7 @@ public:
                          long lParam);
 
     virtual void NotifyChange();
-    virtual void NotifyParent(SCNotification scn);
+    virtual void NotifyParent(Scintilla::SCNotification scn);
 
     virtual void CancelModes();
 
@@ -147,10 +147,10 @@ public:
     void DoLoseFocus();
     void DoGainFocus();
     void DoSysColourChange();
-    void DoLeftButtonDown(Point pt, unsigned int curTime, bool shift, bool ctrl, bool alt);
-    void DoLeftButtonUp(Point pt, unsigned int curTime, bool ctrl);
-    void DoLeftButtonMove(Point pt);
-    void DoMiddleButtonUp(Point pt);
+    void DoLeftButtonDown(Scintilla::Point pt, unsigned int curTime, bool shift, bool ctrl, bool alt);
+    void DoLeftButtonUp(Scintilla::Point pt, unsigned int curTime, bool ctrl);
+    void DoLeftButtonMove(Scintilla::Point pt);
+    void DoMiddleButtonUp(Scintilla::Point pt);
     void DoMouseWheel(int rotation, int delta, int linesPerAction, int ctrlDown, bool isPageScroll);
     void DoAddChar(int key);
     int  DoKeyDown(const wxKeyEvent& event, bool* consumed);
@@ -166,7 +166,7 @@ public:
 #endif
 
     void DoCommand(int ID);
-    void DoContextMenu(Point pt);
+    void DoContextMenu(Scintilla::Point pt);
     void DoOnListBox();
 
 
@@ -176,7 +176,7 @@ public:
     bool GetHideSelection() { return hideSelection; }
     void DoScrollToLine(int line);
     void DoScrollToColumn(int column);
-    void ClipChildren(wxDC& dc, PRectangle rect);
+    void ClipChildren(wxDC& dc, Scintilla::PRectangle rect);
     void SetUseAntiAliasing(bool useAA);
     bool GetUseAntiAliasing();
 

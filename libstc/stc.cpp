@@ -26,6 +26,8 @@
 #include "stc.h"
 #include "ScintillaWX.h"
 
+using namespace Scintilla;
+
 //----------------------------------------------------------------------
 
 const wxChar* wxSTCNameStr = wxT("stcwindow");

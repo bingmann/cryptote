@@ -1797,7 +1797,10 @@
 
 class  ScintillaWX;                      // forward declare
 class  WordList;
-struct SCNotification;
+
+namespace Scintilla {
+class SCNotification;
+}
 
 #ifndef SWIG
 extern WXDLLIMPEXP_STC const wxChar* wxSTCNameStr;
@@ -3381,7 +3384,7 @@ protected:
 
     // Turn notifications from Scintilla into events
     void NotifyChange();
-    void NotifyParent(SCNotification* scn);
+    void NotifyParent(class Scintilla::SCNotification* scn);
 
 private:
     DECLARE_EVENT_TABLE()

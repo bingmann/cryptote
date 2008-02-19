@@ -25,6 +25,8 @@
 #include "stc.h"
 #include "PlatWX.h"
 
+using namespace Scintilla;
+
 #ifdef __WXMSW__
     // GetHwndOf()
     #include "wx/msw/private.h"

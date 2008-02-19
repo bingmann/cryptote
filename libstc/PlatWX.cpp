@@ -22,7 +22,7 @@
 #include "PlatWX.h"
 #include "stc.h"
 
-
+using namespace Scintilla;
 
 Point Point::FromLong(long lpoint) {
     return Point(lpoint & 0xFFFF, lpoint >> 16);

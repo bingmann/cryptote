@@ -2,7 +2,7 @@
 
 
 
-wxRect wxRectFromPRectangle(PRectangle prc);
-PRectangle PRectangleFromwxRect(wxRect rc);
-wxColour wxColourFromCA(const ColourAllocated& ca);
+wxRect wxRectFromPRectangle(Scintilla::PRectangle prc);
+Scintilla::PRectangle PRectangleFromwxRect(wxRect rc);
+wxColour wxColourFromCA(const Scintilla::ColourAllocated& ca);
 
