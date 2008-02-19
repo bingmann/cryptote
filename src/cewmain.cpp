@@ -1,6 +1,7 @@
 // $Id$
 
 #include "cewmain.h"
+#include "cewedit.h"
 
 CEWMain::CEWMain(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),
@@ -11,6 +12,10 @@ CEWMain::CEWMain(wxWindow* parent)
 
     statusbar = CreateStatusBar(1, wxST_SIZEGRIP);
     statusbar->SetStatusText(_("Welcome to CryptoTE..."));
+
+    edit = new CEWEdit(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+		       wxBORDER_SUNKEN);
+    edit->SetFocus();
 
     Centre();
 }

@@ -33,6 +33,10 @@ protected:
 
     wxStatusBar* statusbar;
 
+    // *** Styled Text Edit control ***
+
+    class CEWEdit* edit;
+
     DECLARE_EVENT_TABLE()
 };
 

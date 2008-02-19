@@ -23,7 +23,7 @@
 #include "wx/image.h"
 #include "wx/file.h"
 
-#include "wx/stc/stc.h"
+#include "stc.h"
 #include "ScintillaWX.h"
 
 //----------------------------------------------------------------------
@@ -179,7 +179,7 @@ bool wxStyledTextCtrl::Create(wxWindow *parent,
     SetCodePage(wxSTC_CP_UTF8);
 #endif
 
-    SetInitialSize(size);
+    SetSize(size);
 
     // Reduces flicker on GTK+/X11
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);

@@ -6,6 +6,7 @@ bin_PROGRAMS = cryptote pwtutor pwgen
 
 cryptote_SOURCES = cryptote.cpp \
 	cewmain.cpp cewmain.h \
+	cewedit.cpp cewedit.h \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
@@ -27,9 +28,9 @@ pwgen_SOURCES = pwgen.cpp \
 	fips181.cpp fips181.h \
 	hyperlink.cpp hyperlink.h
 
-AM_CFLAGS = -W -Wall $(WX_CFLAGS)
-AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
-LIBS = $(WX_LIBS)
+AM_CFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CFLAGS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CXXFLAGS)
+LIBS = $(top_builddir)/libstc/libstc.a $(WX_LIBS)
 
 if GOT_RESCOMP
 

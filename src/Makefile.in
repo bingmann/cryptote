@@ -47,8 +47,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_cryptote_OBJECTS = cryptote.$(OBJEXT) cewmain.$(OBJEXT) \
-	pgwmain.$(OBJEXT) prng.$(OBJEXT) fips181.$(OBJEXT) \
-	hyperlink.$(OBJEXT)
+	cewedit.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
+	fips181.$(OBJEXT) hyperlink.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 am_pwgen_OBJECTS = pwgen.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
@@ -122,7 +122,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(WX_LIBS)
+LIBS = $(top_builddir)/libstc/libstc.a $(WX_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -203,6 +203,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = art .
 cryptote_SOURCES = cryptote.cpp \
 	cewmain.cpp cewmain.h \
+	cewedit.cpp cewedit.h \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
@@ -224,8 +225,8 @@ pwgen_SOURCES = pwgen.cpp \
 	fips181.cpp fips181.h \
 	hyperlink.cpp hyperlink.h
 
-AM_CFLAGS = -W -Wall $(WX_CFLAGS)
-AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
+AM_CFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CFLAGS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CXXFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o
 @GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
 @GOT_RESCOMP_TRUE@pwtutor_LDFLAGS = pwtutor-rc.o
@@ -302,6 +303,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cewedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cewmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cryptote.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
