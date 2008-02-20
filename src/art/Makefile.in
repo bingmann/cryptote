@@ -204,6 +204,8 @@ noinst_HEADERS = \
 	go_down.h \
 	go_next.h \
 	window_close.h \
+	stock_lock.h \
+	stock_unlock.h \
 	web-16.h
 
 EXTRA_DIST = \
@@ -240,6 +242,8 @@ EXTRA_DIST = \
 	go_down.png \
 	go_next.png \
 	window_close.png \
+	stock_lock.png \
+	stock_unlock.png \
 	web-16.png
 
 all: all-am

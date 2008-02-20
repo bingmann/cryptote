@@ -15,7 +15,8 @@ CEWMain::CEWMain(wxWindow* parent)
 
     SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE) );
 
-    statusbar = CreateStatusBar(1, wxST_SIZEGRIP);
+    statusbar = new CEWStatusBar(this);
+    SetStatusBar(statusbar);
     statusbar->SetStatusText(_("Welcome to CryptoTE..."));
 
     // *** Create Controls ***
@@ -637,6 +638,19 @@ void CEWMain::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
     toolbar->EnableTool(wxID_CUT, HasSelection);
     toolbar->EnableTool(wxID_COPY, HasSelection);
     toolbar->EnableTool(wxID_CLEAR, HasSelection);
+
+    // Update status bar field
+    {
+	int pos = editctrl->GetCurrentPos();
+	int row = editctrl->LineFromPosition(pos);
+	int col = editctrl->GetColumn(pos);
+	int sel = editctrl->GetSelectionEnd () - editctrl->GetSelectionStart();
+
+	wxString sb;
+	sb.Printf( _("Ln %d Col %d Sel %d"), row, col, sel);
+
+	statusbar->SetStatusText(sb, 1);
+    }
 }
 
 void CEWMain::UpdateOnSavePoint()
@@ -645,6 +659,8 @@ void CEWMain::UpdateOnSavePoint()
     menubar->Enable(wxID_REVERT, editctrl->ModifiedFlag());
 
     toolbar->EnableTool(wxID_SAVE, editctrl->ModifiedFlag());
+
+    // statusbar->SetLock( editctrl->IsEncrypted() );
 
     UpdateTitle();
 }
@@ -883,3 +899,51 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     EVT_BUTTON	(myID_GOTO_CLOSE,	CEWMain::OnButtonGotoClose)
 
 END_EVENT_TABLE()
+
+CEWStatusBar::CEWStatusBar(wxWindow *parent)
+    : wxStatusBar(parent, wxID_ANY, 0)
+{
+
+    static const int statusbar_widths[3] = { -1, 150, 28 };
+
+    SetFieldsCount(3);
+    SetStatusWidths(3, statusbar_widths);
+
+    #include "art/stock_lock.h"
+
+    lockbitmap = new wxStaticBitmap(this, wxID_ANY, wxIconFromMemory(stock_lock_png));
+}
+
+void CEWStatusBar::OnSize(wxSizeEvent& event)
+{
+    // move bitmap to position
+    wxRect rect;
+    GetFieldRect(2, rect);
+    wxSize size = lockbitmap->GetSize();
+
+    lockbitmap->Move(rect.x + (rect.width - size.x) / 2,
+		     rect.y + (rect.height - size.y) / 2);
+
+    event.Skip();
+}
+
+void CEWStatusBar::SetLock(bool on)
+{
+    #include "art/stock_lock.h"
+    #include "art/stock_unlock.h"
+
+    if (on) {
+	lockbitmap->SetBitmap(wxIconFromMemory(stock_lock_png));
+	lockbitmap->SetToolTip(_("Text file is encrypted."));
+    }
+    else {
+	lockbitmap->SetBitmap(wxIconFromMemory(stock_unlock_png));
+	lockbitmap->SetToolTip(_("Text file is NOT encrypted."));
+    }
+}
+
+BEGIN_EVENT_TABLE(CEWStatusBar, wxStatusBar)
+
+    EVT_SIZE	(CEWStatusBar::OnSize)
+
+END_EVENT_TABLE();

@@ -114,7 +114,7 @@ protected:
 
     void 	CreateMenuBar();
 
-    wxStatusBar* statusbar;
+    class CEWStatusBar* statusbar;
 
 public:
     // *** Styled Text Edit control ***
@@ -141,6 +141,20 @@ protected:
     // *** Current Modeless Dialogs ***
 
     class CEWFind*	findreplace_dlg;
+
+private:
+    DECLARE_EVENT_TABLE()
+};
+
+class CEWStatusBar : public wxStatusBar
+{
+public:
+    CEWStatusBar(wxWindow *parent);
+
+    void		OnSize(wxSizeEvent& event);
+    void		SetLock(bool on);
+
+    wxStaticBitmap*	lockbitmap;
 
 private:
     DECLARE_EVENT_TABLE()
