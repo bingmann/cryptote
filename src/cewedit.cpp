@@ -10,7 +10,7 @@ CEWEdit::CEWEdit(class CEWMain* parent, wxWindowID id,
 		 const wxPoint &pos, const wxSize &size,
 		 long style)
     : wxStyledTextCtrl(parent, id, pos, size, style),
-      wmain(*parent)
+      wmain(parent)
 {
     // set some styles
 
@@ -22,6 +22,18 @@ CEWEdit::CEWEdit(class CEWMain* parent, wxWindowID id,
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
     StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour(_T("DARK GREY")));
+
+    // Set Default View Options
+    SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
+
+    SetWrapMode(wxSTC_WRAP_WORD);
+    SetWrapVisualFlags(wxSTC_WRAPVISUALFLAG_END);
+
+    // Set up margin for line numbers
+    SetMarginType(MARGIN_LINENUMBER, wxSTC_MARGIN_NUMBER);
+    StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
+    StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
+    SetMarginWidth(MARGIN_LINENUMBER, 0); // set width to 0
 }
 
 void CEWEdit::FileNew()
@@ -45,7 +57,7 @@ bool CEWEdit::FileOpen(const wxString& filename)
     if (!currentfilename.IsAbsolute())
 	currentfilename.MakeAbsolute();
 
-    wmain.UpdateStatusBar(
+    wmain->UpdateStatusBar(
 	wxString::Format(_("Loaded %1$lu bytes from %2$S"),
 			 GetLength(),
 			 currentfilename.GetFullPath().c_str()));
@@ -80,7 +92,7 @@ bool CEWEdit::FileSaveAs(const wxString& filename)
 	    currentfilename.MakeAbsolute();
 
         SetSavePoint();
-	wmain.UpdateStatusBar(
+	wmain->UpdateStatusBar(
 	    wxString::Format(_("Wrote %1$lu bytes to %2$S"),
 			     buflen,
 			     currentfilename.GetFullPath().c_str()));
@@ -159,7 +171,7 @@ bool CEWEdit::LoadInputStream(wxInputStream& stream)
 void CEWEdit::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
 {
     if (!CanUndo()) {
-	wmain.UpdateStatusBar(_("No more change operations to undo."));
+	wmain->UpdateStatusBar(_("No more change operations to undo."));
 	return;
     }
     Undo();
@@ -168,7 +180,7 @@ void CEWEdit::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
 void CEWEdit::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
 {
     if (!CanRedo()) {
-	wmain.UpdateStatusBar(_("No more change operations to redo."));
+	wmain->UpdateStatusBar(_("No more change operations to redo."));
 	return;
     }
     Redo();
@@ -177,18 +189,18 @@ void CEWEdit::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
 void CEWEdit::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
 {
     if (GetReadOnly()) {
-	wmain.UpdateStatusBar(_("Buffer is read-only."));
+	wmain->UpdateStatusBar(_("Buffer is read-only."));
 	return;
     }
     if (GetSelectionEnd() <= GetSelectionStart()) {
-	wmain.UpdateStatusBar(_("Nothing selected."));
+	wmain->UpdateStatusBar(_("Nothing selected."));
 	return;
     }
 
     int cutlen = GetSelectionEnd() - GetSelectionStart();
     Cut();
 
-    wmain.UpdateStatusBar(
+    wmain->UpdateStatusBar(
 	wxString::Format(_("Cut %u characters into clipboard."), cutlen)
 	);
 }
@@ -196,7 +208,7 @@ void CEWEdit::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
 void CEWEdit::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
 {
     if (GetSelectionEnd() <= GetSelectionStart()) {
-	wmain.UpdateStatusBar(_("Nothing selected."));
+	wmain->UpdateStatusBar(_("Nothing selected."));
 	return;
     }
 
@@ -204,7 +216,7 @@ void CEWEdit::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
     
     Copy();
 
-    wmain.UpdateStatusBar(
+    wmain->UpdateStatusBar(
 	wxString::Format(_("Copied %u characters into clipboard."), copylen)
 	);
 }
@@ -212,7 +224,7 @@ void CEWEdit::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
 void CEWEdit::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
 {
     if (!CanPaste()) {
-	wmain.UpdateStatusBar(_("Nothing pasted, the clipboard is empty."));
+	wmain->UpdateStatusBar(_("Nothing pasted, the clipboard is empty."));
 	return;
     }
 
@@ -221,7 +233,7 @@ void CEWEdit::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
 
     Paste();
 
-    wmain.UpdateStatusBar(
+    wmain->UpdateStatusBar(
 	wxString::Format(_("Pasted %u characters from clipboard."),
 			 GetTextLength() - prevlen)
 	);
@@ -230,11 +242,11 @@ void CEWEdit::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
 void CEWEdit::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
 {
     if (GetReadOnly()) {
-	wmain.UpdateStatusBar(_("Buffer is read-only."));
+	wmain->UpdateStatusBar(_("Buffer is read-only."));
 	return;
     }
     if (GetSelectionEnd() <= GetSelectionStart()) {
-	wmain.UpdateStatusBar(_("Nothing selected."));
+	wmain->UpdateStatusBar(_("Nothing selected."));
 	return;
     }
 
@@ -242,7 +254,7 @@ void CEWEdit::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
 
     Clear();
 
-    wmain.UpdateStatusBar(
+    wmain->UpdateStatusBar(
 	wxString::Format(_("Deleted %u characters from buffer."), deletelen)
 	);
 }
@@ -258,6 +270,18 @@ void CEWEdit::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
     int lineEnd = PositionFromLine(GetCurrentLine() + 1);
 
     SetSelection(lineStart, lineEnd);
+}
+
+// *** Display Settings ***
+
+void CEWEdit::ShowLineNumber(bool on)
+{
+    if (!on) 
+        SetMarginWidth(MARGIN_LINENUMBER, 0);
+    else {
+	int marginwidth = TextWidth(wxSTC_STYLE_LINENUMBER, _T("_99999"));
+	SetMarginWidth(MARGIN_LINENUMBER, marginwidth);
+    }
 }
 
 BEGIN_EVENT_TABLE(CEWEdit, wxStyledTextCtrl)

@@ -25,7 +25,14 @@ public:
 	myID_GOTO,
 	myID_GOTOTEXT,
 	myID_GOTO_GO,
-	myID_GOTO_CLOSE
+	myID_GOTO_CLOSE,
+
+	myID_MENU_LINEWRAP,
+	myID_MENU_LINENUMBER,
+	myID_MENU_WHITESPACE,	
+	myID_MENU_ENDOFLINE,
+	myID_MENU_INDENTGUIDE,
+	myID_MENU_LONGLINEGUIDE
     };
 
     // *** Operations ***
@@ -39,9 +46,16 @@ public:
     /// Enable or Disable Save and SaveAs depending on if the buffer is modified.
     void	UpdateOnSavePoint();
 
+    /// Ture if the user is allowed to close the window.
+    bool	AllowCloseModified();
+
     // *** Event Handlers ***
 
+    // Generic Events
+
     void	OnChar(wxKeyEvent& event);
+
+    void	OnClose(wxCloseEvent& event);
 
     // Menu Events
 
@@ -60,6 +74,13 @@ public:
     void	OnMenuEditFindReplace(wxCommandEvent& event);
 
     void	OnMenuEditGoto(wxCommandEvent& event);
+
+    void	OnMenuViewLineWrap(wxCommandEvent& event);
+    void	OnMenuViewLineNumber(wxCommandEvent& event);
+    void	OnMenuViewWhitespace(wxCommandEvent& event);
+    void	OnMenuViewEndOfLine(wxCommandEvent& event);
+    void	OnMenuViewIndentGuide(wxCommandEvent& event);
+    void	OnMenuViewLonglineGuide(wxCommandEvent& event);
 
     void	OnMenuHelpAbout(wxCommandEvent& event);
 

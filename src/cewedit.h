@@ -9,6 +9,22 @@
 
 class CEWEdit : public wxStyledTextCtrl
 {
+protected:
+
+    /// Parent window class
+    class CEWMain*	wmain;
+
+    /// Currently opened file name
+    class wxFileName	currentfilename;
+
+    /// True if buffer modified in editor
+    bool		modified;
+
+    /// Margins Enumeration
+    enum margin_num {
+	MARGIN_LINENUMBER = 0
+    };
+
 public:
     CEWEdit(class CEWMain* parent, wxWindowID id = wxID_ANY,
 	    const wxPoint& pos = wxDefaultPosition,
@@ -47,6 +63,10 @@ public:
     // _Updateable_ reference to modification flag of current file.
     bool&	ModifiedFlag();
 
+    // *** Display Settings ***
+
+    void	ShowLineNumber(bool on);
+
     // *** Event Handlers ***
 
     // Edit Menu
@@ -61,17 +81,7 @@ public:
     void	OnMenuEditSelectAll(wxCommandEvent &event);
     void	OnMenuEditSelectLine(wxCommandEvent &event);
 
-protected:
-
-    /// Parent window class
-    class CEWMain&	wmain;
-
-    /// Currently opened file name
-    class wxFileName	currentfilename;
-
-    /// True if buffer modified in editor
-    bool		modified;
-
+private:
     DECLARE_EVENT_TABLE()
 };
 

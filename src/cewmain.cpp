@@ -334,6 +334,34 @@ void CEWMain::CreateMenuBar()
 		     _("Select &line\tCtrl+L"),
 		     _("Select whole line at the current cursor position."));
 
+    // *** View
+
+    wxMenu *menuView = new wxMenu;
+
+    menuView->AppendCheckItem(myID_MENU_LINEWRAP,
+			      _("&Wrap long lines"),
+			      _("Wrap long lines in editor."));
+
+    menuView->AppendCheckItem(myID_MENU_LINENUMBER,
+			      _("Show line &numbers"),
+			      _("Show line numbers on left margin."));
+
+    menuView->AppendCheckItem(myID_MENU_WHITESPACE,
+			      _("Show white&space"),
+			      _("Show white space (space and tab) in buffer."));
+
+    menuView->AppendCheckItem(myID_MENU_ENDOFLINE,
+			      _("Show &end of line symbols"),
+			      _("Show end of line symbols (new-line and carriage-return) in buffer."));
+
+    menuView->AppendCheckItem(myID_MENU_INDENTGUIDE,
+			      _("Show &indent guide lines"),
+			      _("Show guide lines following the indention depth."));
+
+    menuView->AppendCheckItem(myID_MENU_LONGLINEGUIDE,
+			      _("Show guide line at &column 80"),
+			      _("Show guide line at column 80 to display over-long lines."));
+
     // *** Help
 
     wxMenu *menuHelp = new wxMenu;
@@ -350,9 +378,26 @@ void CEWMain::CreateMenuBar()
 
     menubar->Append(menuFile, _("&File"));
     menubar->Append(menuEdit, _("&Edit"));
+    menubar->Append(menuView, _("&View"));
     menubar->Append(menuHelp, _("&Help"));
 
     SetMenuBar(menubar);
+    toolbar->Realize();
+}
+
+void CEWMain::OnClose(wxCloseEvent& event)
+{
+    if (!event.CanVeto()) {
+	Destroy();
+	return;
+    }
+
+    if (AllowCloseModified()) {
+	Destroy();
+    }
+    else {
+	event.Veto();
+    }
 }
 
 void CEWMain::OnChar(wxKeyEvent& event)
@@ -377,8 +422,46 @@ void CEWMain::OnChar(wxKeyEvent& event)
     }
 }
 
+bool CEWMain::AllowCloseModified()
+{
+    if (editctrl->ModifiedFlag())
+    {
+	return false;
+	while(1)
+	{
+#if 0
+	    WMessageDialog dlg(this,
+			       wxString::Format(_("Save modified text file \"%s\"?"), editctrl->GetFileBasename().c_str()),
+			       _("Close Application"),
+			       wxICON_ERROR,
+			       wxID_SAVE, wxID_NO, wxID_CANCEL);
+
+	    int id = dlg.ShowModal();
+#endif
+	    int id = 0;
+
+	    if (id == wxID_SAVE)
+	    {
+		//if (FileSave()) return true;
+	    }
+	    if (id == wxID_NO)
+	    {
+		return true;
+	    }
+	    if (id == wxID_CANCEL)
+	    {
+		return false;
+	    }
+	}
+    }
+
+    return true;
+}
+
 void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 {
+    if (!AllowCloseModified()) return;
+
     wxFileDialog dlg(this,
 		     _("Open file"), wxEmptyString, wxEmptyString, _("Any file (*)|*"),
                      wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR);
@@ -417,6 +500,8 @@ void CEWMain::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))
 
 void CEWMain::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
 {
+    if (!AllowCloseModified()) return;
+
     editctrl->FileNew();
 }
 
@@ -489,6 +574,37 @@ void CEWMain::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
     quickgoto_visible = true;
 
     textctrlGoto->SetFocus();
+}
+
+void CEWMain::OnMenuViewLineWrap(wxCommandEvent& event)
+{
+    editctrl->SetWrapMode(event.IsChecked() ? wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
+}
+
+void CEWMain::OnMenuViewLineNumber(wxCommandEvent& event)
+{
+    editctrl->ShowLineNumber(event.IsChecked());
+}
+
+void CEWMain::OnMenuViewWhitespace(wxCommandEvent& event)
+{
+    editctrl->SetViewWhiteSpace(event.IsChecked() ? wxSTC_WS_VISIBLEALWAYS : wxSTC_WS_INVISIBLE);
+}
+
+void CEWMain::OnMenuViewEndOfLine(wxCommandEvent& event)
+{
+    editctrl->SetViewEOL(event.IsChecked());
+}
+
+void CEWMain::OnMenuViewIndentGuide(wxCommandEvent& event)
+{
+    editctrl->SetIndentationGuides(event.IsChecked());
+}
+
+void CEWMain::OnMenuViewLonglineGuide(wxCommandEvent& event)
+{
+    editctrl->SetEdgeColumn(80);
+    editctrl->SetEdgeMode(event.IsChecked() ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
 }
 
 void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
@@ -700,6 +816,10 @@ void CEWMain::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
 
 BEGIN_EVENT_TABLE(CEWMain, wxFrame)
 
+    // *** Generic Events
+
+    EVT_CLOSE	(CEWMain::OnClose)
+
     EVT_CHAR	(CEWMain::OnChar)
 
     // *** Menu Items
@@ -730,6 +850,14 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
 
     EVT_MENU	(wxID_SELECTALL,	CEWMain::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_SELECTLINE,	CEWMain::OnMenuEditGeneric)
+
+    // View
+    EVT_MENU	(myID_MENU_LINEWRAP,	CEWMain::OnMenuViewLineWrap)
+    EVT_MENU	(myID_MENU_LINENUMBER,	CEWMain::OnMenuViewLineNumber)
+    EVT_MENU	(myID_MENU_WHITESPACE,	CEWMain::OnMenuViewWhitespace)
+    EVT_MENU	(myID_MENU_ENDOFLINE,	CEWMain::OnMenuViewEndOfLine)
+    EVT_MENU	(myID_MENU_INDENTGUIDE,	CEWMain::OnMenuViewIndentGuide)
+    EVT_MENU	(myID_MENU_LONGLINEGUIDE, CEWMain::OnMenuViewLonglineGuide)
 
     // Help
     EVT_MENU	(wxID_ABOUT,		CEWMain::OnMenuHelpAbout)
