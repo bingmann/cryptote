@@ -17,10 +17,62 @@ CEWMain::CEWMain(wxWindow* parent)
     statusbar = CreateStatusBar(1, wxST_SIZEGRIP);
     statusbar->SetStatusText(_("Welcome to CryptoTE..."));
 
+    // *** Create Controls ***
+
     editctrl = new CEWEdit(this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
 			   wxBORDER_SUNKEN);
     editctrl->SetFocus();
 
+    // Quick-Find Bar
+
+    #include "art/window_close.h"
+    #include "art/go_up.h"
+    #include "art/go_down.h"
+
+    wxBitmapButton* buttonQuickFindClose
+	= new wxBitmapButton(this, myID_QUICKFIND_CLOSE, wxBitmapFromMemory(window_close_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonQuickFindClose->SetLabel(_("Close"));
+    buttonQuickFindClose->SetToolTip(_("Close Quick-Find bar"));
+
+    wxStaticText* labelQuickFind = new wxStaticText(this, wxID_ANY, _("Find: "));
+
+    textctrlQuickFind = new wxTextCtrl(this, myID_QUICKFIND_TEXT, wxEmptyString);
+
+    wxBitmapButton* buttonQuickFindNext
+	= new wxBitmapButton(this, myID_QUICKFIND_NEXT, wxBitmapFromMemory(go_down_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonQuickFindNext->SetLabel(_("Next"));
+    buttonQuickFindNext->SetToolTip(_("Search for next occurance"));
+
+    wxBitmapButton* buttonQuickFindPrev
+	= new wxBitmapButton(this, myID_QUICKFIND_PREV, wxBitmapFromMemory(go_up_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonQuickFindPrev->SetLabel(_("Previous"));
+    buttonQuickFindPrev->SetToolTip(_("Search for previous occurance"));
+
+    // *** Frame Layout ***
+
+    // Quick-Find Bar
+
+    sizerQuickFind = new wxBoxSizer(wxHORIZONTAL);
+    sizerQuickFind->Add(buttonQuickFindClose, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(labelQuickFind, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(textctrlQuickFind, 1, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(buttonQuickFindNext, 0, wxALL, 2);
+    sizerQuickFind->Add(buttonQuickFindPrev, 0, wxALL, 2);
+
+    // Main Frame
+
+    sizerMain = new wxBoxSizer(wxVERTICAL);
+    sizerMain->Add(editctrl, 1, wxEXPAND, 0);
+
+    sizerMain->Add(sizerQuickFind, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
+    sizerMain->Hide(sizerQuickFind);
+    quickfind_visible = false;
+
+    SetSizer(sizerMain);
+    Layout();
     Centre();
 }
 
@@ -127,6 +179,7 @@ void CEWMain::CreateMenuBar()
     #include "art/edit_copy.h"
     #include "art/edit_paste.h"
     #include "art/edit_clear.h"
+    #include "art/edit_find.h"
 
     menuEdit->Append( createMenuItem(menuEdit, wxID_UNDO,
 				     _("&Undo\tCtrl+Z"),
@@ -196,6 +249,13 @@ void CEWMain::CreateMenuBar()
 
     toolbar->AddSeparator();
 
+    menuEdit->Append( createMenuItem(menuEdit, myID_QUICKFIND,
+				     _("&Quick-Find\tCtrl+F"),
+				     _("Find a string in the buffer."),
+				     wxBitmapFromMemory(edit_find_png)) );
+
+    menuEdit->AppendSeparator();
+
     menuEdit->Append(wxID_SELECTALL,
 		     _("&Select all\tCtrl+A"),
 		     _("Select all text in the current buffer."));
@@ -225,6 +285,19 @@ void CEWMain::CreateMenuBar()
     SetMenuBar(menubar);
 }
 
+void CEWMain::OnChar(wxKeyEvent& event)
+{
+    if (event.GetKeyCode() == WXK_ESCAPE)
+    {
+	// Hide Quick-Find Bar
+	if (quickfind_visible) {
+	    sizerMain->Hide(sizerQuickFind);
+	    sizerMain->Layout();
+
+	    quickfind_visible = false;
+	}
+    }
+}
 
 void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 {
@@ -279,10 +352,41 @@ void CEWMain::OnMenuEditGeneric(wxCommandEvent& event)
     editctrl->ProcessEvent(event);
 }
 
+void CEWMain::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
+{
+    if (quickfind_visible)
+    {
+	// pushing Ctrl+F again is equivalent to Search-Next
+
+	textctrlQuickFind->SetFocus();
+
+	quickfind_startpos = editctrl->GetSelectionEnd();
+
+	QuickFind(true);
+    }
+    else
+    {
+	// make quick find bar visible
+
+	sizerMain->Show(sizerQuickFind);
+	// sizerMain->Hide(sizerQuickGoto);
+	sizerMain->Layout();
+
+	textctrlQuickFind->SetFocus();
+	textctrlQuickFind->SetValue(wxT(""));
+
+	// quickgoto_visible = false;
+	quickfind_visible = true;
+	quickfind_startpos = editctrl->GetCurrentPos();
+    }
+}
+
 void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxLogMessage(_T("OnMenuHelpAbout() called."));
 }
+
+// *** Scintilla Callbacks ***
 
 void CEWMain::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
 {
@@ -337,7 +441,126 @@ void CEWMain::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
     UpdateOnSavePoint();
 }
 
+// *** Quick-Find Bar ***
+
+void CEWMain::QuickFind(bool forward)
+{
+    wxString findtext = textctrlQuickFind->GetValue();
+
+    if (findtext.IsEmpty())
+    {
+	// move cursor and screen back to search start position
+	
+	editctrl->SetSelection(quickfind_startpos, quickfind_startpos);
+	
+	UpdateStatusBar( wxT("") );
+	
+	textctrlQuickFind->SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW) );
+	textctrlQuickFind->Refresh();
+
+	return;
+    }
+
+    if (forward)
+    {
+	editctrl->SetTargetStart(quickfind_startpos);
+	editctrl->SetTargetEnd(editctrl->GetLength());
+    }
+    else
+    {
+	editctrl->SetTargetStart(quickfind_startpos);
+	editctrl->SetTargetEnd(0);
+    }
+
+    editctrl->SetSearchFlags(0);
+
+    int respos = editctrl->SearchInTarget(findtext);
+
+    bool wrapped = false;
+
+    if (respos < 0)
+    {
+	// wrap-around search
+	wrapped = true;
+
+	if (forward)
+	{
+	    editctrl->SetTargetStart(0);
+	    editctrl->SetTargetEnd(quickfind_startpos);
+	}
+	else
+	{
+	    editctrl->SetTargetStart(editctrl->GetLength());
+	    editctrl->SetTargetEnd(quickfind_startpos);
+	}
+
+	respos = editctrl->SearchInTarget(findtext);
+    }
+
+    bool found = false;
+    if (respos >= 0)
+    {
+	found = true;
+	int start = editctrl->GetTargetStart();
+	int end = editctrl->GetTargetEnd();
+
+	editctrl->EnsureVisible( editctrl->LineFromPosition(start) );
+	editctrl->SetSelection(start, end);
+    }
+
+    if (found && !wrapped) {
+	UpdateStatusBar( wxT("") );
+    }
+    else if (found && wrapped) {
+	if (forward)
+	    UpdateStatusBar( _("Search wrapped to beginning of document.") );
+	else
+	    UpdateStatusBar( _("Search wrapped to end of document.") );
+    }
+    else if (!found) {
+	UpdateStatusBar( _("Search string not found in document.") );
+    }
+
+    wxColor clr;
+    if (found) clr = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+    else clr = wxColor(255, 102, 102);
+
+    textctrlQuickFind->SetBackgroundColour(clr);
+    textctrlQuickFind->Refresh();
+}
+
+void CEWMain::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
+{
+    QuickFind(true);
+}
+
+void CEWMain::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
+{
+    quickfind_startpos = editctrl->GetSelectionEnd();
+
+    QuickFind(true);
+}
+
+void CEWMain::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
+{
+    quickfind_startpos = editctrl->GetSelectionStart();
+
+    QuickFind(false);
+}
+
+void CEWMain::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
+{
+    sizerMain->Hide(sizerQuickFind);
+    sizerMain->Layout();
+
+    quickfind_visible = false;
+
+    editctrl->SetFocus();
+}
+
 BEGIN_EVENT_TABLE(CEWMain, wxFrame)
+
+    EVT_CHAR	(CEWMain::OnChar)
 
     // *** Menu Items
 
@@ -359,6 +582,8 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     EVT_MENU	(wxID_PASTE,		CEWMain::OnMenuEditGeneric)
     EVT_MENU	(wxID_CLEAR,		CEWMain::OnMenuEditGeneric)
 
+    EVT_MENU	(myID_QUICKFIND,	CEWMain::OnMenuEditQuickFind)
+
     EVT_MENU	(wxID_SELECTALL,	CEWMain::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_SELECTLINE,	CEWMain::OnMenuEditGeneric)
 
@@ -370,5 +595,13 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     EVT_STC_UPDATEUI(myID_EDITCTRL,		CEWMain::OnScintillaUpdateUI)
     EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	CEWMain::OnScintillaSavePointReached)
     EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	CEWMain::OnScintillaSavePointLeft)
+
+    // *** Quick-Find Bar
+
+    EVT_TEXT	(myID_QUICKFIND_TEXT,	CEWMain::OnTextQuickFind)
+
+    EVT_BUTTON	(myID_QUICKFIND_NEXT,	CEWMain::OnButtonQuickFindNext)
+    EVT_BUTTON	(myID_QUICKFIND_PREV,	CEWMain::OnButtonQuickFindPrev)
+    EVT_BUTTON	(myID_QUICKFIND_CLOSE,	CEWMain::OnButtonQuickFindClose)
 
 END_EVENT_TABLE()

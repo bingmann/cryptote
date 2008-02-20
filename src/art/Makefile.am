@@ -33,8 +33,12 @@ noinst_HEADERS = \
 	edit_copy.h \
 	edit_paste.h \
 	edit_clear.h \
+	edit_find.h \
 	edit_add.h \
 	edit_remove.h \
+	go_up.h \
+	go_down.h \
+	window_close.h \
 	web-16.h
 
 EXTRA_DIST = \
@@ -64,6 +68,10 @@ EXTRA_DIST = \
 	edit_copy.png \
 	edit_paste.png \
 	edit_clear.png \
+	edit_find.png \
 	edit_add.png \
 	edit_remove.png \
+	go_up.png \
+	go_down.png \
+	window_close.png \
 	web-16.png
