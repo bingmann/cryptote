@@ -7,6 +7,7 @@ bin_PROGRAMS = cryptote pwtutor pwgen
 cryptote_SOURCES = cryptote.cpp \
 	cewmain.cpp cewmain.h \
 	cewedit.cpp cewedit.h \
+	cewfind.cpp cewfind.h \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \

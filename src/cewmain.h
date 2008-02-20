@@ -56,6 +56,8 @@ public:
     void	OnMenuEditGeneric(wxCommandEvent& event);
 
     void	OnMenuEditQuickFind(wxCommandEvent& event);
+    void	OnMenuEditFind(wxCommandEvent& event);
+    void	OnMenuEditFindReplace(wxCommandEvent& event);
 
     void	OnMenuEditGoto(wxCommandEvent& event);
 
@@ -93,10 +95,12 @@ protected:
 
     wxStatusBar* statusbar;
 
+public:
     // *** Styled Text Edit control ***
 
     class CEWEdit* editctrl;
 
+protected:
     // *** Quick-Find Popup Bar ***
 
     class wxBoxSizer*	sizerQuickFind;
@@ -107,12 +111,17 @@ protected:
 
     void		QuickFind(bool forward);
 
-    // *** Quick-Goto Popup Bar
+    // *** Quick-Goto Popup Bar ***
     class wxBoxSizer*	sizerQuickGoto;
     class wxTextCtrl*	textctrlGoto;
 
     bool		quickgoto_visible;
 
+    // *** Current Modeless Dialogs ***
+
+    class CEWFind*	findreplace_dlg;
+
+private:
     DECLARE_EVENT_TABLE()
 };
 

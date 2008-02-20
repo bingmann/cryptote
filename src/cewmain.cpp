@@ -2,6 +2,7 @@
 
 #include "cewmain.h"
 #include "cewedit.h"
+#include "cewfind.h"
 
 #include "tools.h"
 
@@ -107,6 +108,11 @@ CEWMain::CEWMain(wxWindow* parent)
     SetSizer(sizerMain);
     Layout();
     Centre();
+
+    // Default Settings
+
+    UpdateTitle();
+    findreplace_dlg = NULL;
 }
 
 void CEWMain::UpdateTitle()
@@ -288,7 +294,29 @@ void CEWMain::CreateMenuBar()
 				     _("Find a string in the buffer."),
 				     wxBitmapFromMemory(edit_find_png)) );
 
+    menuEdit->Append( createMenuItem(menuEdit, wxID_FIND,
+				     _("&Find...\tCtrl+Shift+F"),
+				     _("Open find dialog to search for a string in the buffer."),
+				     wxBitmapFromMemory(edit_find_png)) );
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_REPLACE,
+				     _("&Replace\tCtrl+H"),
+				     _("Open find and replace dialog to search for and replace a string in the buffer."),
+				     wxBitmapFromMemory(edit_find_png)) );
+
     menuEdit->AppendSeparator();
+
+    toolbar->AddTool(wxID_FIND,
+		     _("Find Text"),
+		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Find Text"),
+		     _("Open find dialog to search for a string in the buffer."));
+
+    toolbar->AddTool(wxID_REPLACE,
+		     _("Find and Replace Text"),
+		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Find and Replace Text"),
+		     _("Open find and replace dialog to search for and replace a string in the buffer."));
 
     menuEdit->Append( createMenuItem(menuEdit, myID_GOTO,
 				     _("&Go to Line...\tCtrl+G"),
@@ -429,6 +457,26 @@ void CEWMain::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 	quickfind_visible = true;
 	quickfind_startpos = editctrl->GetCurrentPos();
     }
+}
+
+void CEWMain::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
+{
+    if (!findreplace_dlg) {
+	findreplace_dlg = new CEWFind(this);
+    }
+
+    findreplace_dlg->ShowReplace(false);
+    findreplace_dlg->Show();
+}
+
+void CEWMain::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
+{
+    if (!findreplace_dlg) {
+	findreplace_dlg = new CEWFind(this);
+    }
+
+    findreplace_dlg->ShowReplace(true);
+    findreplace_dlg->Show();
 }
 
 void CEWMain::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
@@ -675,6 +723,8 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     EVT_MENU	(wxID_CLEAR,		CEWMain::OnMenuEditGeneric)
 
     EVT_MENU	(myID_QUICKFIND,	CEWMain::OnMenuEditQuickFind)
+    EVT_MENU	(wxID_FIND,		CEWMain::OnMenuEditFind)
+    EVT_MENU	(wxID_REPLACE,		CEWMain::OnMenuEditFindReplace)
 
     EVT_MENU	(myID_GOTO,		CEWMain::OnMenuEditGoto)
 
