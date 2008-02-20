@@ -129,7 +129,7 @@ CEWMain::CEWMain(wxWindow* parent)
 
     editctrl->FileNew();
 
-    menubar->Check(myID_VIEW_LINEWRAP, true);
+    menubar->Check(myID_MENU_LINEWRAP, true);
 
     UpdateTitle();
     findreplace_dlg = NULL;
@@ -175,7 +175,11 @@ bool CEWMain::FileSaveAs()
 {
     wxFileDialog dlg(this,
 		     _("Save file"), wxEmptyString, editctrl->GetFileBasename(), _("Any file (*)|*"),
+#if wxCHECK_VERSION(2,8,0)
+		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+#else
 		     wxSAVE | wxOVERWRITE_PROMPT);
+#endif
 
     if (dlg.ShowModal() != wxID_OK) return false;
 
@@ -510,7 +514,11 @@ void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 
     wxFileDialog dlg(this,
 		     _("Open file"), wxEmptyString, wxEmptyString, _("Any file (*)|*"),
+#if wxCHECK_VERSION(2,8,0)
+                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR);
+#else
                      wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR);
+#endif
 
     if (dlg.ShowModal() != wxID_OK) return;
 
