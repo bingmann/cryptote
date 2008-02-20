@@ -22,7 +22,11 @@
 #include "PlatWX.h"
 #include "stc.h"
 
-using namespace Scintilla;
+#if wxUSE_POPUPWIN
+#include <wx/popupwin.h>
+#endif
+
+namespace Scintilla {
 
 Point Point::FromLong(long lpoint) {
     return Point(lpoint & 0xFFFF, lpoint >> 16);
@@ -773,8 +777,6 @@ END_EVENT_TABLE()
 
 
 #if wxUSE_POPUPWIN //-----------------------------------
-#include <wx/popupwin.h>
-
 
 //
 // TODO: Refactor these two classes to have a common base (or a mix-in) to get
@@ -1515,6 +1517,7 @@ double ElapsedTime::Duration(bool reset) {
     return result;
 }
 
+} // namespace Scintilla
 
 //----------------------------------------------------------------------
 
