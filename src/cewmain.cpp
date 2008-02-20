@@ -51,6 +51,27 @@ CEWMain::CEWMain(wxWindow* parent)
     buttonQuickFindPrev->SetLabel(_("Previous"));
     buttonQuickFindPrev->SetToolTip(_("Search for previous occurance"));
 
+    // Quick-Goto Bar
+
+    #include "art/go_next.h"
+
+    wxBitmapButton* buttonGotoCancel
+	= new wxBitmapButton(this, myID_GOTO_CLOSE, wxBitmapFromMemory(window_close_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonGotoCancel->SetLabel(_("Cancel"));
+    buttonGotoCancel->SetToolTip(_("Cancel Go to Line"));
+
+    wxStaticText* labelGoto = new wxStaticText(this, wxID_ANY, _("Goto: "));
+
+    textctrlGoto = new wxTextCtrl(this, myID_GOTOTEXT, wxEmptyString,
+				   wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+
+    wxBitmapButton* buttonGotoGo
+	= new wxBitmapButton(this, myID_GOTO_GO, wxBitmapFromMemory(go_next_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonGotoGo->SetLabel(_("Go"));
+    buttonGotoGo->SetToolTip(_("Go to Line"));
+
     // *** Frame Layout ***
 
     // Quick-Find Bar
@@ -62,6 +83,14 @@ CEWMain::CEWMain(wxWindow* parent)
     sizerQuickFind->Add(buttonQuickFindNext, 0, wxALL, 2);
     sizerQuickFind->Add(buttonQuickFindPrev, 0, wxALL, 2);
 
+    // Quick-Goto Bar
+
+    sizerQuickGoto = new wxBoxSizer(wxHORIZONTAL);
+    sizerQuickGoto->Add(buttonGotoCancel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickGoto->Add(labelGoto, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickGoto->Add(textctrlGoto, 1, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickGoto->Add(buttonGotoGo, 0, wxALL, 2);
+
     // Main Frame
 
     sizerMain = new wxBoxSizer(wxVERTICAL);
@@ -70,6 +99,10 @@ CEWMain::CEWMain(wxWindow* parent)
     sizerMain->Add(sizerQuickFind, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
     sizerMain->Hide(sizerQuickFind);
     quickfind_visible = false;
+
+    sizerMain->Add(sizerQuickGoto, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
+    sizerMain->Hide(sizerQuickGoto);
+    quickgoto_visible = false;
 
     SetSizer(sizerMain);
     Layout();
@@ -180,6 +213,7 @@ void CEWMain::CreateMenuBar()
     #include "art/edit_paste.h"
     #include "art/edit_clear.h"
     #include "art/edit_find.h"
+    #include "art/go_next.h"
 
     menuEdit->Append( createMenuItem(menuEdit, wxID_UNDO,
 				     _("&Undo\tCtrl+Z"),
@@ -256,6 +290,14 @@ void CEWMain::CreateMenuBar()
 
     menuEdit->AppendSeparator();
 
+    menuEdit->Append( createMenuItem(menuEdit, myID_GOTO,
+				     _("&Go to Line...\tCtrl+G"),
+				     _("Jump to the entered line number."),
+				     wxBitmapFromMemory(go_next_png)) );
+
+    menuEdit->AppendSeparator();
+
+
     menuEdit->Append(wxID_SELECTALL,
 		     _("&Select all\tCtrl+A"),
 		     _("Select all text in the current buffer."));
@@ -295,6 +337,14 @@ void CEWMain::OnChar(wxKeyEvent& event)
 	    sizerMain->Layout();
 
 	    quickfind_visible = false;
+	}
+
+	// Hide Quick-Goto Bar
+	if (quickgoto_visible) {
+	    sizerMain->Hide(sizerQuickGoto);
+	    sizerMain->Layout();
+
+	    quickgoto_visible = false;
 	}
     }
 }
@@ -369,16 +419,28 @@ void CEWMain::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 	// make quick find bar visible
 
 	sizerMain->Show(sizerQuickFind);
-	// sizerMain->Hide(sizerQuickGoto);
+	sizerMain->Hide(sizerQuickGoto);
 	sizerMain->Layout();
 
 	textctrlQuickFind->SetFocus();
 	textctrlQuickFind->SetValue(wxT(""));
 
-	// quickgoto_visible = false;
+	quickgoto_visible = false;
 	quickfind_visible = true;
 	quickfind_startpos = editctrl->GetCurrentPos();
     }
+}
+
+void CEWMain::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
+{
+    sizerMain->Show(sizerQuickGoto);
+    sizerMain->Hide(sizerQuickFind);
+    sizerMain->Layout();
+
+    quickfind_visible = false;
+    quickgoto_visible = true;
+
+    textctrlGoto->SetFocus();
 }
 
 void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
@@ -558,6 +620,36 @@ void CEWMain::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
     editctrl->SetFocus();
 }
 
+// *** Quick-Goto Bar ***
+
+void CEWMain::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
+{
+    long linenum;
+
+    if (! textctrlGoto->GetValue().ToLong(&linenum) ) {
+	UpdateStatusBar(_("Yeah right. Enter a number smarty."));
+	textctrlGoto->SetFocus();
+	return;
+    }
+
+    editctrl->GotoLine(linenum);
+    UpdateStatusBar(wxString::Format(_("Jumped to line %d."), editctrl->GetCurrentLine()));
+
+    sizerMain->Hide(sizerQuickGoto);
+    sizerMain->Layout();
+
+    editctrl->SetFocus();
+}
+
+void CEWMain::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
+{
+    sizerMain->Hide(sizerQuickGoto);
+    sizerMain->Layout();
+
+    editctrl->SetFocus();
+}
+
+
 BEGIN_EVENT_TABLE(CEWMain, wxFrame)
 
     EVT_CHAR	(CEWMain::OnChar)
@@ -584,6 +676,8 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
 
     EVT_MENU	(myID_QUICKFIND,	CEWMain::OnMenuEditQuickFind)
 
+    EVT_MENU	(myID_GOTO,		CEWMain::OnMenuEditGoto)
+
     EVT_MENU	(wxID_SELECTALL,	CEWMain::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_SELECTLINE,	CEWMain::OnMenuEditGeneric)
 
@@ -603,5 +697,11 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     EVT_BUTTON	(myID_QUICKFIND_NEXT,	CEWMain::OnButtonQuickFindNext)
     EVT_BUTTON	(myID_QUICKFIND_PREV,	CEWMain::OnButtonQuickFindPrev)
     EVT_BUTTON	(myID_QUICKFIND_CLOSE,	CEWMain::OnButtonQuickFindClose)
+
+    // *** Quick-Goto Bar
+
+    EVT_TEXT_ENTER(myID_GOTOTEXT,	CEWMain::OnButtonGotoGo)
+    EVT_BUTTON	(myID_GOTO_GO,		CEWMain::OnButtonGotoGo)
+    EVT_BUTTON	(myID_GOTO_CLOSE,	CEWMain::OnButtonGotoClose)
 
 END_EVENT_TABLE()

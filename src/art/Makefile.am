@@ -38,6 +38,7 @@ noinst_HEADERS = \
 	edit_remove.h \
 	go_up.h \
 	go_down.h \
+	go_next.h \
 	window_close.h \
 	web-16.h
 
@@ -73,5 +74,6 @@ EXTRA_DIST = \
 	edit_remove.png \
 	go_up.png \
 	go_down.png \
+	go_next.png \
 	window_close.png \
 	web-16.png

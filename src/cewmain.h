@@ -20,7 +20,12 @@ public:
 	myID_QUICKFIND_TEXT,
 	myID_QUICKFIND_CLOSE,
 	myID_QUICKFIND_NEXT,
-	myID_QUICKFIND_PREV
+	myID_QUICKFIND_PREV,
+
+	myID_GOTO,
+	myID_GOTOTEXT,
+	myID_GOTO_GO,
+	myID_GOTO_CLOSE
     };
 
     // *** Operations ***
@@ -52,6 +57,8 @@ public:
 
     void	OnMenuEditQuickFind(wxCommandEvent& event);
 
+    void	OnMenuEditGoto(wxCommandEvent& event);
+
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
     // Scintilla Callbacks
@@ -67,6 +74,11 @@ public:
     void	OnButtonQuickFindNext(wxCommandEvent& event);
     void	OnButtonQuickFindPrev(wxCommandEvent& event);
     void	OnButtonQuickFindClose(wxCommandEvent& event);
+
+    // Quick-Goto Bar
+
+    void	OnButtonGotoGo(wxCommandEvent& event);
+    void	OnButtonGotoClose(wxCommandEvent& event);
 
 protected:
 
@@ -94,6 +106,12 @@ protected:
     int			quickfind_startpos;
 
     void		QuickFind(bool forward);
+
+    // *** Quick-Goto Popup Bar
+    class wxBoxSizer*	sizerQuickGoto;
+    class wxTextCtrl*	textctrlGoto;
+
+    bool		quickgoto_visible;
 
     DECLARE_EVENT_TABLE()
 };
