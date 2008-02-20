@@ -3,6 +3,7 @@
 #include "cewmain.h"
 #include "cewedit.h"
 #include "cewfind.h"
+#include "wmsgdlg.h"
 
 #include "tools.h"
 
@@ -133,6 +134,36 @@ void CEWMain::UpdateTitle()
 void CEWMain::UpdateStatusBar(const wxString& str)
 {
     statusbar->SetStatusText(str);
+}
+
+bool CEWMain::FileOpen(const wxString& filename)
+{
+    bool b = editctrl->FileOpen(filename);
+
+    UpdateTitle();
+    return b;
+}
+
+bool CEWMain::FileSave()
+{
+    if (!editctrl->HasFilename()) {
+	return FileSaveAs();
+    }
+
+    return editctrl->FileSave();
+}
+
+bool CEWMain::FileSaveAs()
+{
+    wxFileDialog dlg(this,
+		     _("Save file"), wxEmptyString, editctrl->GetFileBasename(), _("Any file (*)|*"),
+		     wxSAVE | wxOVERWRITE_PROMPT);
+
+    if (dlg.ShowModal() != wxID_OK) return false;
+
+    editctrl->FileSaveAs( dlg.GetPath() );
+
+    return true;
 }
 
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
@@ -427,23 +458,19 @@ bool CEWMain::AllowCloseModified()
 {
     if (editctrl->ModifiedFlag())
     {
-	return false;
 	while(1)
 	{
-#if 0
 	    WMessageDialog dlg(this,
 			       wxString::Format(_("Save modified text file \"%s\"?"), editctrl->GetFileBasename().c_str()),
 			       _("Close Application"),
-			       wxICON_ERROR,
+			       wxICON_WARNING,
 			       wxID_SAVE, wxID_NO, wxID_CANCEL);
 
 	    int id = dlg.ShowModal();
-#endif
-	    int id = 0;
 
 	    if (id == wxID_SAVE)
 	    {
-		//if (FileSave()) return true;
+		if (FileSave()) return true;
 	    }
 	    if (id == wxID_NO)
 	    {
@@ -476,22 +503,12 @@ void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 
 void CEWMain::OnMenuFileSave(wxCommandEvent& event)
 {
-    if (!editctrl->HasFilename()) {
-	return OnMenuFileSaveAs(event);
-    }
-
-    editctrl->FileSave();
+    FileSave();
 }
 
 void CEWMain::OnMenuFileSaveAs(wxCommandEvent& WXUNUSED(event))
 {
-    wxFileDialog dlg(this,
-		     _("Save file"), wxEmptyString, editctrl->GetFileBasename(), _("Any file (*)|*"),
-		     wxSAVE | wxOVERWRITE_PROMPT);
-
-    if (dlg.ShowModal() != wxID_OK) return;
-
-    editctrl->FileSaveAs( dlg.GetPath() );
+    FileSaveAs();
 }
 
 void CEWMain::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))

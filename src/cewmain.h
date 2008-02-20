@@ -43,6 +43,16 @@ public:
     /// Update status bar to show given text.
     void	UpdateStatusBar(const wxString& str);
 
+    /// Load a file into the editor, discard any current buffer.
+    bool	FileOpen(const wxString& filename);
+
+    /// Save the buffer into the associated file, query for a file name if none
+    /// is associated.
+    bool	FileSave();
+
+    /// Query for a file name and save the buffer into the associated file.
+    bool	FileSaveAs();
+
     /// Enable or Disable Save and SaveAs depending on if the buffer is modified.
     void	UpdateOnSavePoint();
 

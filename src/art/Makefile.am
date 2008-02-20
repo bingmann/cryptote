@@ -42,6 +42,9 @@ noinst_HEADERS = \
 	window_close.h \
 	stock_lock.h \
 	stock_unlock.h \
+	messagebox_error.h \
+	messagebox_warning.h \
+	messagebox_info.h \
 	web-16.h
 
 EXTRA_DIST = \
@@ -80,4 +83,7 @@ EXTRA_DIST = \
 	window_close.png \
 	stock_lock.png \
 	stock_unlock.png \
+	messagebox_error.png \
+	messagebox_warning.png \
+	messagebox_info.png \
 	web-16.png

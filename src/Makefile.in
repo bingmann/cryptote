@@ -48,7 +48,8 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_cryptote_OBJECTS = cryptote.$(OBJEXT) cewmain.$(OBJEXT) \
 	cewedit.$(OBJEXT) cewfind.$(OBJEXT) pgwmain.$(OBJEXT) \
-	prng.$(OBJEXT) fips181.$(OBJEXT) hyperlink.$(OBJEXT)
+	prng.$(OBJEXT) fips181.$(OBJEXT) hyperlink.$(OBJEXT) \
+	wmsgdlg.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 am_pwgen_OBJECTS = pwgen.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
@@ -208,7 +209,8 @@ cryptote_SOURCES = cryptote.cpp \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
-	hyperlink.cpp hyperlink.h
+	hyperlink.cpp hyperlink.h \
+	wmsgdlg.cpp wmsgdlg.h
 
 pwtutor_SOURCES = pwtutor.cpp \
 	ptwmain.cpp ptmwain.h \
@@ -318,6 +320,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptwstats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwtutor.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wmsgdlg.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

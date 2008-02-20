@@ -11,7 +11,8 @@ cryptote_SOURCES = cryptote.cpp \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
-	hyperlink.cpp hyperlink.h
+	hyperlink.cpp hyperlink.h \
+	wmsgdlg.cpp wmsgdlg.h
 
 pwtutor_SOURCES = pwtutor.cpp \
 	ptwmain.cpp ptmwain.h \
