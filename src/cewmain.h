@@ -5,6 +5,12 @@
 
 #include <wx/wx.h>
 
+#if wxCHECK_VERSION(2,8,0)
+#include <wx/hyperlink.h>
+#else
+#include "hyperlink.h"
+#endif
+
 class CEWMain : public wxFrame
 {
 public:
@@ -169,5 +175,28 @@ public:
 private:
     DECLARE_EVENT_TABLE()
 };
+
+class CEWAbout : public wxDialog
+{
+public:
+    // begin wxGlade: CEWAbout::ids
+    // end wxGlade
+
+    CEWAbout(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+private:
+    // begin wxGlade: CEWAbout::methods
+    void set_properties();
+    void do_layout();
+    // end wxGlade
+
+protected:
+    // begin wxGlade: CEWAbout::attributes
+    wxStaticBitmap* bitmapIcon;
+    wxStaticBitmap* bitmapWeb;
+    wxHyperlinkCtrl* hyperlink1;
+    wxButton* buttonOK;
+    // end wxGlade
+}; // wxGlade: end class
 
 #endif // CEWMAIN_H

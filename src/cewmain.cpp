@@ -653,7 +653,8 @@ void CEWMain::OnMenuViewLonglineGuide(wxCommandEvent& event)
 
 void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
-    wxLogMessage(_T("OnMenuHelpAbout() called."));
+    CEWAbout dlg(this);
+    dlg.ShowModal();
 }
 
 // *** Scintilla Callbacks ***
@@ -990,3 +991,65 @@ BEGIN_EVENT_TABLE(CEWStatusBar, wxStatusBar)
     EVT_SIZE	(CEWStatusBar::OnSize)
 
 END_EVENT_TABLE();
+
+CEWAbout::CEWAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+{
+    // begin wxGlade: CEWAbout::CEWAbout
+    bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
+    buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+
+    #include "art/cryptote-48.h"
+    bitmapIcon->SetBitmap( wxBitmapFromMemory(cryptote_48_png) );
+
+    #include "art/web-16.h"
+    bitmapWeb->SetBitmap( wxBitmapFromMemory(web_16_png) );
+
+    Layout();
+    GetSizer()->Fit(this);
+    Centre();
+}
+
+void CEWAbout::set_properties()
+{
+    // begin wxGlade: CEWAbout::set_properties
+    SetTitle(_("About CryptoTE"));
+    // end wxGlade
+}
+
+void CEWAbout::do_layout()
+{
+    // begin wxGlade: CEWAbout::do_layout
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer3 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer5 = new wxBoxSizer(wxVERTICAL);
+    sizer2->Add(bitmapIcon, 0, wxALL, 8);
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE v0.1"));
+    label1->SetFont(wxFont(18, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
+    sizer3->Add(label1, 0, wxALL, 6);
+    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("CryptoTE is a text editor built upon the popular\nScintilla editing widget. Text is saved encrypted\nand compressed to secure sensitive data."));
+    sizer3->Add(label2, 0, wxALL, 6);
+    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Copyright 2008 Timo Bingmann\nReleased under the GNU General Public License v2"));
+    sizer3->Add(label4, 0, wxALL, 6);
+    sizer4->Add(bitmapWeb, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer5->Add(hyperlink1, 1, wxEXPAND, 0);
+    wxStaticText* label5 = new wxStaticText(this, wxID_ANY, _("for updates and more."));
+    sizer5->Add(label5, 0, wxALL, 0);
+    sizer4->Add(sizer5, 1, wxEXPAND, 0);
+    sizer3->Add(sizer4, 0, wxALL|wxEXPAND, 6);
+    sizer2->Add(sizer3, 1, wxEXPAND, 0);
+    sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 6);
+    sizer1->Add(buttonOK, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
+    SetSizer(sizer1);
+    sizer1->Fit(this);
+    Layout();
+    // end wxGlade
+}
