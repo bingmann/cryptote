@@ -1,0 +1,40 @@
+// $Id$
+
+#include <windows.h>
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+1   ICON                    "art/cryptote.ico"
+
+1   RT_MANIFEST             "cryptote.xml"
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+1   VERSIONINFO
+    FILEVERSION 0,1,0,0
+    PRODUCTVERSION 0,1,0,0
+    FILEFLAGSMASK 0x17L
+    FILEFLAGS 0x0L
+    FILEOS 0x4L
+    FILETYPE 0x1L
+    FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "ProductName", "CryptoTE"
+            VALUE "ProductVersion", "0,1,0,0"
+            VALUE "CompanyName", "Timo Bingmann"
+            VALUE "FileDescription", "CryptoTE - Text Editor with Secure Encryption"
+            VALUE "FileVersion", "0,1,0,0"
+            VALUE "Comments", "http://idlebox.net/2008/cryptote/"
+            VALUE "LegalCopyright", "Copyright (C) 2008 Timo Bingmann"
+            VALUE "OriginalFilename", "cryptote.exe"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1252
+    END
+END

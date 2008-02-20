@@ -11,6 +11,20 @@ CEWMain::CEWMain(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),
 	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
 {
+    {	// Program Icon
+    
+        #include "art/cryptote-16.h"
+        #include "art/cryptote-32.h"
+        #include "art/cryptote-48.h"
+
+	wxIconBundle progicon;
+	progicon.AddIcon( wxIconFromMemory(cryptote_16_png) );
+	progicon.AddIcon( wxIconFromMemory(cryptote_32_png) );
+	progicon.AddIcon( wxIconFromMemory(cryptote_48_png) );
+
+	SetIcons(progicon);
+    }
+
     SetTitle(_("CryptoTE v0.1"));
     CreateMenuBar();
 
@@ -112,6 +126,10 @@ CEWMain::CEWMain(wxWindow* parent)
     Centre();
 
     // Default Settings
+
+    editctrl->FileNew();
+
+    menubar->Check(myID_VIEW_LINEWRAP, true);
 
     UpdateTitle();
     findreplace_dlg = NULL;
@@ -501,7 +519,7 @@ void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
     UpdateTitle();
 }
 
-void CEWMain::OnMenuFileSave(wxCommandEvent& event)
+void CEWMain::OnMenuFileSave(wxCommandEvent& WXUNUSED(event))
 {
     FileSave();
 }

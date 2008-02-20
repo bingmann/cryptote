@@ -183,6 +183,9 @@ noinst_HEADERS = \
 	pwtutor-22.h \
 	pwtutor-32.h \
 	pwtutor-48.h \
+	cryptote-16.h \
+	cryptote-32.h \
+	cryptote-48.h \
 	document_new.h \
 	document_open.h \
 	document_save.h \
@@ -224,6 +227,11 @@ EXTRA_DIST = \
 	pwtutor-48.png \
 	pwtutor-128.png \
 	pwtutor.ico \
+	cryptote-16.png \
+	cryptote-32.png \
+	cryptote-48.png \
+	cryptote.ico \
+	cryptote.svg \
 	document_new.png \
 	document_open.png \
 	document_save.png \
