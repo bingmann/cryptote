@@ -52,6 +52,8 @@ am_cryptote_OBJECTS = cryptote.$(OBJEXT) cewmain.$(OBJEXT) \
 	wmsgdlg.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
+cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(cryptote_LDFLAGS) $(LDFLAGS) -o $@
 am_pwgen_OBJECTS = pwgen.$(OBJEXT) pgwmain.$(OBJEXT) prng.$(OBJEXT) \
 	fips181.$(OBJEXT) hyperlink.$(OBJEXT)
 pwgen_OBJECTS = $(am_pwgen_OBJECTS)
@@ -230,9 +232,10 @@ pwgen_SOURCES = pwgen.cpp \
 
 AM_CFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CXXFLAGS)
-@GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o
+@GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o cryptote-rc.o
 @GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
 @GOT_RESCOMP_TRUE@pwtutor_LDFLAGS = pwtutor-rc.o
+@GOT_RESCOMP_TRUE@cryptote_LDFLAGS = cryptote-rc.o
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -292,7 +295,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 cryptote$(EXEEXT): $(cryptote_OBJECTS) $(cryptote_DEPENDENCIES) 
 	@rm -f cryptote$(EXEEXT)
-	$(CXXLINK) $(cryptote_OBJECTS) $(cryptote_LDADD) $(LIBS)
+	$(cryptote_LINK) $(cryptote_OBJECTS) $(cryptote_LDADD) $(LIBS)
 pwgen$(EXEEXT): $(pwgen_OBJECTS) $(pwgen_DEPENDENCIES) 
 	@rm -f pwgen$(EXEEXT)
 	$(pwgen_LINK) $(pwgen_OBJECTS) $(pwgen_LDADD) $(LIBS)
@@ -625,6 +628,9 @@ uninstall-am: uninstall-binPROGRAMS
 @GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
 
 @GOT_RESCOMP_TRUE@pwtutor-rc.o: pwtutor.rc
+@GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
+
+@GOT_RESCOMP_TRUE@cryptote-rc.o: cryptote.rc
 @GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

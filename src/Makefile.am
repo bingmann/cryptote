@@ -36,7 +36,7 @@ LIBS = $(top_builddir)/libstc/libstc.a $(WX_LIBS)
 
 if GOT_RESCOMP
 
-BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o
+BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o cryptote-rc.o
 
 pwgen-rc.o: pwgen.rc
 	$(RESCOMP) -I$(srcdir) $< $@
@@ -44,8 +44,13 @@ pwgen-rc.o: pwgen.rc
 pwtutor-rc.o: pwtutor.rc
 	$(RESCOMP) -I$(srcdir) $< $@
 
+cryptote-rc.o: cryptote.rc
+	$(RESCOMP) -I$(srcdir) $< $@
+
 pwgen_LDFLAGS = pwgen-rc.o
 
 pwtutor_LDFLAGS = pwtutor-rc.o
+
+cryptote_LDFLAGS = cryptote-rc.o
 
 endif
