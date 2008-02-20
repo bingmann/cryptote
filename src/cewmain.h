@@ -10,6 +10,13 @@ class CEWMain : public wxFrame
 public:
     CEWMain(wxWindow* parent);
 
+    // *** Identifiers ***
+
+    enum {
+	myID_EDITCTRL = wxID_HIGHEST + 1,
+	myID_MENU_SELECTLINE
+    };
+
     // *** Operations ***
 
     /// Update the title bar with the currently loaded text file name
@@ -30,6 +37,8 @@ public:
 
     void	OnMenuFileQuit(wxCommandEvent& event);
 
+    void	OnMenuEditGeneric(wxCommandEvent& event);
+
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
 protected:
@@ -44,7 +53,7 @@ protected:
 
     // *** Styled Text Edit control ***
 
-    class CEWEdit* edit;
+    class CEWEdit* editctrl;
 
     DECLARE_EVENT_TABLE()
 };

@@ -149,6 +149,124 @@ bool CEWEdit::LoadInputStream(wxInputStream& stream)
     return true;
 }
 
+// *** Event Handlers ***
+
+void CEWEdit::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
+{
+    if (!CanUndo()) {
+	wmain.UpdateStatusBar(_("No more change operations to undo."));
+	return;
+    }
+    Undo();
+}
+
+void CEWEdit::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
+{
+    if (!CanRedo()) {
+	wmain.UpdateStatusBar(_("No more change operations to redo."));
+	return;
+    }
+    Redo();
+}
+
+void CEWEdit::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
+{
+    if (GetReadOnly()) {
+	wmain.UpdateStatusBar(_("Buffer is read-only."));
+	return;
+    }
+    if (GetSelectionEnd() <= GetSelectionStart()) {
+	wmain.UpdateStatusBar(_("Nothing selected."));
+	return;
+    }
+
+    int cutlen = GetSelectionEnd() - GetSelectionStart();
+    Cut();
+
+    wmain.UpdateStatusBar(
+	wxString::Format(_("Cut %u characters into clipboard."), cutlen)
+	);
+}
+
+void CEWEdit::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
+{
+    if (GetSelectionEnd() <= GetSelectionStart()) {
+	wmain.UpdateStatusBar(_("Nothing selected."));
+	return;
+    }
+
+    int copylen = GetSelectionEnd() - GetSelectionStart();
+    
+    Copy();
+
+    wmain.UpdateStatusBar(
+	wxString::Format(_("Copied %u characters into clipboard."), copylen)
+	);
+}
+
+void CEWEdit::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
+{
+    if (!CanPaste()) {
+	wmain.UpdateStatusBar(_("Nothing pasted, the clipboard is empty."));
+	return;
+    }
+
+    int prevlen = GetTextLength();
+    prevlen -= GetSelectionEnd() - GetSelectionStart();
+
+    Paste();
+
+    wmain.UpdateStatusBar(
+	wxString::Format(_("Pasted %u characters from clipboard."),
+			 GetTextLength() - prevlen)
+	);
+}
+
+void CEWEdit::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
+{
+    if (GetReadOnly()) {
+	wmain.UpdateStatusBar(_("Buffer is read-only."));
+	return;
+    }
+    if (GetSelectionEnd() <= GetSelectionStart()) {
+	wmain.UpdateStatusBar(_("Nothing selected."));
+	return;
+    }
+
+    int deletelen = GetSelectionEnd() - GetSelectionStart();
+
+    Clear();
+
+    wmain.UpdateStatusBar(
+	wxString::Format(_("Deleted %u characters from buffer."), deletelen)
+	);
+}
+
+void CEWEdit::OnMenuEditSelectAll(wxCommandEvent& WXUNUSED(event))
+{
+    SetSelection(0, GetTextLength());
+}
+
+void CEWEdit::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
+{
+    int lineStart = PositionFromLine(GetCurrentLine());
+    int lineEnd = PositionFromLine(GetCurrentLine() + 1);
+
+    SetSelection(lineStart, lineEnd);
+}
+
 BEGIN_EVENT_TABLE(CEWEdit, wxStyledTextCtrl)
+
+    // Edit Menu
+    EVT_MENU	(wxID_UNDO,		CEWEdit::OnMenuEditUndo)
+    EVT_MENU	(wxID_REDO,		CEWEdit::OnMenuEditRedo)
+
+    EVT_MENU	(wxID_CUT,		CEWEdit::OnMenuEditCut)
+    EVT_MENU	(wxID_COPY,		CEWEdit::OnMenuEditCopy)
+    EVT_MENU	(wxID_PASTE,		CEWEdit::OnMenuEditPaste)
+    EVT_MENU	(wxID_CLEAR,		CEWEdit::OnMenuEditDelete)
+
+    EVT_MENU	(wxID_SELECTALL,	CEWEdit::OnMenuEditSelectAll)
+    EVT_MENU	(CEWMain::myID_MENU_SELECTLINE, CEWEdit::OnMenuEditSelectLine)
 
 END_EVENT_TABLE()

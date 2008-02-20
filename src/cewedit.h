@@ -46,6 +46,18 @@ public:
 
     // *** Event Handlers ***
 
+    // Edit Menu
+    void	OnMenuEditUndo(wxCommandEvent& event);
+    void	OnMenuEditRedo(wxCommandEvent& event);
+
+    void	OnMenuEditCut(wxCommandEvent& event);
+    void	OnMenuEditCopy(wxCommandEvent& event);
+    void	OnMenuEditPaste(wxCommandEvent& event);
+    void	OnMenuEditDelete(wxCommandEvent& event);
+
+    void	OnMenuEditSelectAll(wxCommandEvent &event);
+    void	OnMenuEditSelectLine(wxCommandEvent &event);
+
 protected:
 
     /// Parent window class

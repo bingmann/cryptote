@@ -15,16 +15,16 @@ CEWMain::CEWMain(wxWindow* parent)
     statusbar = CreateStatusBar(1, wxST_SIZEGRIP);
     statusbar->SetStatusText(_("Welcome to CryptoTE..."));
 
-    edit = new CEWEdit(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-		       wxBORDER_SUNKEN);
-    edit->SetFocus();
+    editctrl = new CEWEdit(this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
+			   wxBORDER_SUNKEN);
+    editctrl->SetFocus();
 
     Centre();
 }
 
 void CEWMain::UpdateTitle()
 {
-    SetTitle( edit->GetFileBasename() + _(" - ") + _("Secretilla"));
+    SetTitle( editctrl->GetFileBasename() + _(" - ") + _("Secretilla"));
 }
 
 void CEWMain::UpdateStatusBar(const wxString& str)
@@ -106,6 +106,93 @@ void CEWMain::CreateMenuBar()
 				     _("Exit CryptoTE"),
 				     wxBitmapFromMemory(application_exit_png)) );
 
+    // *** Edit
+
+    wxMenu *menuEdit = new wxMenu;
+
+    #include "art/edit_undo.h"
+    #include "art/edit_redo.h"
+    #include "art/edit_cut.h"
+    #include "art/edit_copy.h"
+    #include "art/edit_paste.h"
+    #include "art/edit_clear.h"
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_UNDO,
+				     _("&Undo\tCtrl+Z"),
+				     _("Undo the last change."),
+				     wxBitmapFromMemory(edit_undo_png)) );
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_REDO,
+				     _("&Redo\tCtrl+Shift+Z"),
+				     _("Redo the previously undone change."),
+				     wxBitmapFromMemory(edit_redo_png)) );
+
+    menuEdit->AppendSeparator();
+
+    toolbar->AddTool(wxID_UNDO,
+		     _("Undo Operation"),
+		     wxBitmapFromMemory(edit_undo_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Undo Operation"),
+		     _("Undo the last change."));
+
+    toolbar->AddTool(wxID_REDO,
+		     _("Redo Operation"),
+		     wxBitmapFromMemory(edit_redo_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Redo Operation"),
+		     _("Redo the previously undone change."));
+
+    toolbar->AddSeparator();
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_CUT,
+				     _("Cu&t\tCtrl+X"),
+				     _("Cut selected text into clipboard."),
+				     wxBitmapFromMemory(edit_cut_png)) );
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_COPY,
+				     _("&Copy\tCtrl+C"),
+				     _("Copy selected text into clipboard."),
+				     wxBitmapFromMemory(edit_copy_png)) );
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_PASTE,
+				     _("&Paste\tCtrl+V"),
+				     _("Paste clipboard contents at the current text position."),
+				     wxBitmapFromMemory(edit_paste_png)) );
+
+    menuEdit->Append( createMenuItem(menuEdit, wxID_CLEAR,
+				     _("&Delete\tDel"),
+				     _("Delete selected text."),
+				     wxBitmapFromMemory(edit_clear_png)) );
+
+    menuEdit->AppendSeparator();
+
+    toolbar->AddTool(wxID_CUT,
+		     _("Cut Selection"),
+		     wxBitmapFromMemory(edit_cut_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Cut Selection"),
+		     _("Cut selected text into clipboard."));
+
+    toolbar->AddTool(wxID_COPY,
+		     _("Copy Selection"),
+		     wxBitmapFromMemory(edit_copy_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Copy Selection"),
+		     _("Copy selected text into clipboard."));
+
+    toolbar->AddTool(wxID_PASTE,
+		     _("Paste Clipboard"),
+		     wxBitmapFromMemory(edit_paste_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Paste Clipboard"),
+		     _("Paste clipboard contents at the current text position."));
+
+    toolbar->AddSeparator();
+
+    menuEdit->Append(wxID_SELECTALL,
+		     _("&Select all\tCtrl+A"),
+		     _("Select all text in the current buffer."));
+
+    menuEdit->Append(myID_MENU_SELECTLINE,
+		     _("Select &line\tCtrl+L"),
+		     _("Select whole line at the current cursor position."));
+
     // *** Help
 
     wxMenu *menuHelp = new wxMenu;
@@ -121,6 +208,7 @@ void CEWMain::CreateMenuBar()
     menubar = new wxMenuBar;
 
     menubar->Append(menuFile, _("&File"));
+    menubar->Append(menuEdit, _("&Edit"));
     menubar->Append(menuHelp, _("&Help"));
 
     SetMenuBar(menubar);
@@ -135,44 +223,49 @@ void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() != wxID_OK) return;
 
-    edit->FileOpen( dlg.GetPath() );
+    editctrl->FileOpen( dlg.GetPath() );
 
     UpdateTitle();
 }
 
 void CEWMain::OnMenuFileSave(wxCommandEvent& event)
 {
-    if (!edit->HasFilename()) {
+    if (!editctrl->HasFilename()) {
 	return OnMenuFileSaveAs(event);
     }
 
-    edit->FileSave();
+    editctrl->FileSave();
 }
 
 void CEWMain::OnMenuFileSaveAs(wxCommandEvent& WXUNUSED(event))
 {
     wxFileDialog dlg(this,
-		     _("Save file"), wxEmptyString, edit->GetFileBasename(), _("Any file (*)|*"),
+		     _("Save file"), wxEmptyString, editctrl->GetFileBasename(), _("Any file (*)|*"),
 		     wxSAVE | wxOVERWRITE_PROMPT);
 
     if (dlg.ShowModal() != wxID_OK) return;
 
-    edit->FileSaveAs( dlg.GetPath() );
+    editctrl->FileSaveAs( dlg.GetPath() );
 }
 
 void CEWMain::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))
 {
-    edit->FileRevert();
+    editctrl->FileRevert();
 }
 
 void CEWMain::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
 {
-    edit->FileNew();
+    editctrl->FileNew();
 }
 
 void CEWMain::OnMenuFileQuit(wxCommandEvent& WXUNUSED(event))
 {
     Close();
+}
+
+void CEWMain::OnMenuEditGeneric(wxCommandEvent& event)
+{
+    editctrl->ProcessEvent(event);
 }
 
 void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
@@ -192,6 +285,18 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
     EVT_MENU	(wxID_CLOSE,		CEWMain::OnMenuFileClose)
 
     EVT_MENU	(wxID_EXIT,		CEWMain::OnMenuFileQuit)
+
+    // Edit
+    EVT_MENU	(wxID_UNDO,		CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_REDO,		CEWMain::OnMenuEditGeneric)
+
+    EVT_MENU	(wxID_CUT,		CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_COPY,		CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_PASTE,		CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_CLEAR,		CEWMain::OnMenuEditGeneric)
+
+    EVT_MENU	(wxID_SELECTALL,	CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(myID_MENU_SELECTLINE,	CEWMain::OnMenuEditGeneric)
 
     // Help
     EVT_MENU	(wxID_ABOUT,		CEWMain::OnMenuHelpAbout)

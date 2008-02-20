@@ -191,6 +191,12 @@ noinst_HEADERS = \
 	document_close.h \
 	application_exit.h \
 	application_info.h \
+	edit_undo.h \
+	edit_redo.h \
+	edit_cut.h \
+	edit_copy.h \
+	edit_paste.h \
+	edit_clear.h \
 	edit_add.h \
 	edit_remove.h \
 	web-16.h
@@ -216,6 +222,12 @@ EXTRA_DIST = \
 	document_close.png \
 	application_exit.png \
 	application_info.png \
+	edit_undo.png \
+	edit_redo.png \
+	edit_cut.png \
+	edit_copy.png \
+	edit_paste.png \
+	edit_clear.png \
 	edit_add.png \
 	edit_remove.png \
 	web-16.png
