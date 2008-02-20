@@ -12,6 +12,8 @@ CEWMain::CEWMain(wxWindow* parent)
     SetTitle(_("CryptoTE v0.1"));
     CreateMenuBar();
 
+    SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE) );
+
     statusbar = CreateStatusBar(1, wxST_SIZEGRIP);
     statusbar->SetStatusText(_("Welcome to CryptoTE..."));
 
@@ -24,7 +26,16 @@ CEWMain::CEWMain(wxWindow* parent)
 
 void CEWMain::UpdateTitle()
 {
-    SetTitle( editctrl->GetFileBasename() + _(" - ") + _("Secretilla"));
+    wxString title = editctrl->GetFileBasename();
+
+    if (editctrl->ModifiedFlag()) {
+	title += _(" (Modified)");
+    }
+
+    title += _(" - ");
+    title += _("CryptoTE");
+
+    SetTitle(title);
 }
 
 void CEWMain::UpdateStatusBar(const wxString& str)
@@ -273,6 +284,59 @@ void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
     wxLogMessage(_T("OnMenuHelpAbout() called."));
 }
 
+void CEWMain::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
+{
+    // Enable or Disable Menu Items and Tool Bar Items
+
+    menubar->Enable(wxID_UNDO, editctrl->CanUndo());
+    menubar->Enable(wxID_REDO, editctrl->CanRedo());
+
+    menubar->Enable(wxID_PASTE, editctrl->CanPaste());
+
+    toolbar->EnableTool(wxID_UNDO, editctrl->CanUndo());
+    toolbar->EnableTool(wxID_REDO, editctrl->CanRedo());
+
+    toolbar->EnableTool(wxID_PASTE, editctrl->CanPaste());
+
+    bool HasSelection = editctrl->GetSelectionEnd() > editctrl->GetSelectionStart();
+
+    menubar->Enable(wxID_CUT, HasSelection);
+    menubar->Enable(wxID_COPY, HasSelection);
+    menubar->Enable(wxID_CLEAR, HasSelection);
+
+    toolbar->EnableTool(wxID_CUT, HasSelection);
+    toolbar->EnableTool(wxID_COPY, HasSelection);
+    toolbar->EnableTool(wxID_CLEAR, HasSelection);
+}
+
+void CEWMain::UpdateOnSavePoint()
+{
+    menubar->Enable(wxID_SAVE, editctrl->ModifiedFlag());
+    menubar->Enable(wxID_REVERT, editctrl->ModifiedFlag());
+
+    toolbar->EnableTool(wxID_SAVE, editctrl->ModifiedFlag());
+
+    UpdateTitle();
+}
+
+void CEWMain::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
+{
+    // Document is un-modified
+    
+    editctrl->ModifiedFlag() = false;
+
+    UpdateOnSavePoint();
+}
+
+void CEWMain::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
+{
+    // Document is modified
+
+    editctrl->ModifiedFlag() = true;
+
+    UpdateOnSavePoint();
+}
+
 BEGIN_EVENT_TABLE(CEWMain, wxFrame)
 
     // *** Menu Items
@@ -300,5 +364,11 @@ BEGIN_EVENT_TABLE(CEWMain, wxFrame)
 
     // Help
     EVT_MENU	(wxID_ABOUT,		CEWMain::OnMenuHelpAbout)
+
+    // *** Scintilla Edit Callbacks
+
+    EVT_STC_UPDATEUI(myID_EDITCTRL,		CEWMain::OnScintillaUpdateUI)
+    EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	CEWMain::OnScintillaSavePointReached)
+    EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	CEWMain::OnScintillaSavePointLeft)
 
 END_EVENT_TABLE()

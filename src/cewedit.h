@@ -44,6 +44,9 @@ public:
     /// Return only the file name component with extension.
     wxString	GetFileBasename() const;
 
+    // _Updateable_ reference to modification flag of current file.
+    bool&	ModifiedFlag();
+
     // *** Event Handlers ***
 
     // Edit Menu
@@ -65,6 +68,9 @@ protected:
 
     /// Currently opened file name
     class wxFileName	currentfilename;
+
+    /// True if buffer modified in editor
+    bool		modified;
 
     DECLARE_EVENT_TABLE()
 };

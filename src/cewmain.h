@@ -25,6 +25,9 @@ public:
     /// Update status bar to show given text.
     void	UpdateStatusBar(const wxString& str);
 
+    /// Enable or Disable Save and SaveAs depending on if the buffer is modified.
+    void	UpdateOnSavePoint();
+
     // *** Event Handlers ***
 
     // Menu Events
@@ -40,6 +43,10 @@ public:
     void	OnMenuEditGeneric(wxCommandEvent& event);
 
     void	OnMenuHelpAbout(wxCommandEvent& event);
+
+    void	OnScintillaUpdateUI(class wxStyledTextEvent& event);
+    void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
+    void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
 
 protected:
     // *** Menu and Status Bars of the main window ***

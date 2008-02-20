@@ -118,6 +118,11 @@ wxString CEWEdit::GetFileBasename() const
     return currentfilename.GetFullName();
 }
 
+bool& CEWEdit::ModifiedFlag()
+{
+    return modified;
+}
+
 bool CEWEdit::LoadInputStream(wxInputStream& stream)
 {
     const wxFileOffset stream_len = stream.GetLength();
