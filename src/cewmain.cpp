@@ -1,7 +1,7 @@
 // $Id$
 
 #include "cewmain.h"
-#include "cewedit.h"
+#include "ceweditctrl.h"
 #include "cewfind.h"
 #include "wmsgdlg.h"
 
@@ -36,8 +36,8 @@ CEWMain::CEWMain(wxWindow* parent)
 
     // *** Create Controls ***
 
-    editctrl = new CEWEdit(this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
-			   wxBORDER_SUNKEN);
+    editctrl = new CEWEditCtrl(this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
+			       wxBORDER_SUNKEN);
     editctrl->SetFocus();
 
     // Quick-Find Bar

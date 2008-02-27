@@ -135,7 +135,7 @@ protected:
 public:
     // *** Styled Text Edit control ***
 
-    class CEWEdit* editctrl;
+    class CEWEditCtrl*	editctrl;
 
 protected:
     // *** Quick-Find Popup Bar ***

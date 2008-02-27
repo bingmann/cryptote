@@ -1,13 +1,13 @@
 // $Id$
 
-#ifndef CEWEDIT_H
-#define CEWEDIT_H
+#ifndef CEWEDITCTRL_H
+#define CEWEDITCTRL_H
 
 #include <wx/wx.h>
 #include <wx/filename.h>
 #include <stc.h>
 
-class CEWEdit : public wxStyledTextCtrl
+class CEWEditCtrl : public wxStyledTextCtrl
 {
 protected:
 
@@ -26,10 +26,10 @@ protected:
     };
 
 public:
-    CEWEdit(class CEWMain* parent, wxWindowID id = wxID_ANY,
-	    const wxPoint& pos = wxDefaultPosition,
-	    const wxSize& size = wxDefaultSize,
-	    long style = 0);
+    CEWEditCtrl(class CEWMain* parent, wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = 0);
 
     // *** File operations ***
 
@@ -85,4 +85,4 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-#endif // CEWEDIT_H
+#endif // CEWEDITCTRL_H

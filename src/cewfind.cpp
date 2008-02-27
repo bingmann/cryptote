@@ -3,7 +3,7 @@
 
 #include "cewfind.h"
 #include "cewmain.h"
-#include "cewedit.h"
+#include "ceweditctrl.h"
 
 #include "tools.h"
 
@@ -141,7 +141,7 @@ void CEWFind::OnButtonFind(wxCommandEvent& WXUNUSED(event))
 
     bool forward = !checkboxSearchBackwards->GetValue();
 
-    CEWEdit* editctrl = wmain->editctrl;
+    CEWEditCtrl* editctrl = wmain->editctrl;
 
     if (forward)
     {

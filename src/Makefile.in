@@ -47,7 +47,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_cryptote_OBJECTS = cryptote.$(OBJEXT) cewmain.$(OBJEXT) \
-	cewedit.$(OBJEXT) cewfind.$(OBJEXT) pgwmain.$(OBJEXT) \
+	ceweditctrl.$(OBJEXT) cewfind.$(OBJEXT) pgwmain.$(OBJEXT) \
 	prng.$(OBJEXT) fips181.$(OBJEXT) hyperlink.$(OBJEXT) \
 	wmsgdlg.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
@@ -206,7 +206,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = art .
 cryptote_SOURCES = cryptote.cpp \
 	cewmain.cpp cewmain.h \
-	cewedit.cpp cewedit.h \
+	ceweditctrl.cpp ceweditctrl.h \
 	cewfind.cpp cewfind.h \
 	pgwmain.cpp pgwmain.h \
 	prng.cpp prng.h \
@@ -309,7 +309,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cewedit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ceweditctrl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cewfind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cewmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cryptote.Po@am__quote@

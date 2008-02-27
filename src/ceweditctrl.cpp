@@ -1,14 +1,14 @@
 // $Id$
 
-#include "cewedit.h"
+#include "ceweditctrl.h"
 #include "cewmain.h"
 
 #include <wx/file.h>
 #include <wx/wfstream.h>
 
-CEWEdit::CEWEdit(class CEWMain* parent, wxWindowID id,
-		 const wxPoint &pos, const wxSize &size,
-		 long style)
+CEWEditCtrl::CEWEditCtrl(class CEWMain* parent, wxWindowID id,
+			 const wxPoint &pos, const wxSize &size,
+			 long style)
     : wxStyledTextCtrl(parent, id, pos, size, style),
       wmain(parent)
 {
@@ -36,7 +36,7 @@ CEWEdit::CEWEdit(class CEWMain* parent, wxWindowID id,
     SetMarginWidth(MARGIN_LINENUMBER, 0); // set width to 0
 }
 
-void CEWEdit::FileNew()
+void CEWEditCtrl::FileNew()
 {
     ClearAll();
     EmptyUndoBuffer();
@@ -45,7 +45,7 @@ void CEWEdit::FileNew()
     currentfilename.Clear();
 }
 
-bool CEWEdit::FileOpen(const wxString& filename)
+bool CEWEditCtrl::FileOpen(const wxString& filename)
 {
     wxFileInputStream stream(filename);
 
@@ -65,7 +65,7 @@ bool CEWEdit::FileOpen(const wxString& filename)
     return true;
 }
 
-bool CEWEdit::FileSave()
+bool CEWEditCtrl::FileSave()
 {
     if (!HasFilename()) {
 	wxLogError(_("Current buffer has no file name assigned."));
@@ -75,7 +75,7 @@ bool CEWEdit::FileSave()
     return FileSaveAs( currentfilename.GetFullPath() );
 }
 
-bool CEWEdit::FileSaveAs(const wxString& filename)
+bool CEWEditCtrl::FileSaveAs(const wxString& filename)
 {
     wxFile file(filename, wxFile::write);
     if (!file.IsOpened()) return false;
@@ -102,7 +102,7 @@ bool CEWEdit::FileSaveAs(const wxString& filename)
     return false;
 }
 
-bool CEWEdit::FileRevert()
+bool CEWEditCtrl::FileRevert()
 {
     if (!HasFilename()) {
 	wxLogError(_("Current buffer has no file name assigned."));
@@ -112,17 +112,17 @@ bool CEWEdit::FileRevert()
     return FileOpen( currentfilename.GetFullPath() );
 }
 
-bool CEWEdit::HasFilename() const
+bool CEWEditCtrl::HasFilename() const
 {
     return currentfilename.IsOk();
 }
 
-wxString CEWEdit::GetFileFullpath() const
+wxString CEWEditCtrl::GetFileFullpath() const
 {
     return currentfilename.GetFullPath();
 }
 
-wxString CEWEdit::GetFileBasename() const
+wxString CEWEditCtrl::GetFileBasename() const
 {
     if (!currentfilename.IsOk()) {
 	return _("Untitled.txt");
@@ -130,12 +130,12 @@ wxString CEWEdit::GetFileBasename() const
     return currentfilename.GetFullName();
 }
 
-bool& CEWEdit::ModifiedFlag()
+bool& CEWEditCtrl::ModifiedFlag()
 {
     return modified;
 }
 
-bool CEWEdit::LoadInputStream(wxInputStream& stream)
+bool CEWEditCtrl::LoadInputStream(wxInputStream& stream)
 {
     const wxFileOffset stream_len = stream.GetLength();
 
@@ -168,7 +168,7 @@ bool CEWEdit::LoadInputStream(wxInputStream& stream)
 
 // *** Event Handlers ***
 
-void CEWEdit::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
 {
     if (!CanUndo()) {
 	wmain->UpdateStatusBar(_("No more change operations to undo."));
@@ -177,7 +177,7 @@ void CEWEdit::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
     Undo();
 }
 
-void CEWEdit::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
 {
     if (!CanRedo()) {
 	wmain->UpdateStatusBar(_("No more change operations to redo."));
@@ -186,7 +186,7 @@ void CEWEdit::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
     Redo();
 }
 
-void CEWEdit::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
 {
     if (GetReadOnly()) {
 	wmain->UpdateStatusBar(_("Buffer is read-only."));
@@ -205,7 +205,7 @@ void CEWEdit::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
 	);
 }
 
-void CEWEdit::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
 {
     if (GetSelectionEnd() <= GetSelectionStart()) {
 	wmain->UpdateStatusBar(_("Nothing selected."));
@@ -221,7 +221,7 @@ void CEWEdit::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
 	);
 }
 
-void CEWEdit::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
 {
     if (!CanPaste()) {
 	wmain->UpdateStatusBar(_("Nothing pasted, the clipboard is empty."));
@@ -239,7 +239,7 @@ void CEWEdit::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
 	);
 }
 
-void CEWEdit::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
 {
     if (GetReadOnly()) {
 	wmain->UpdateStatusBar(_("Buffer is read-only."));
@@ -259,12 +259,12 @@ void CEWEdit::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
 	);
 }
 
-void CEWEdit::OnMenuEditSelectAll(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditSelectAll(wxCommandEvent& WXUNUSED(event))
 {
     SetSelection(0, GetTextLength());
 }
 
-void CEWEdit::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
+void CEWEditCtrl::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
 {
     int lineStart = PositionFromLine(GetCurrentLine());
     int lineEnd = PositionFromLine(GetCurrentLine() + 1);
@@ -274,7 +274,7 @@ void CEWEdit::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
 
 // *** Display Settings ***
 
-void CEWEdit::ShowLineNumber(bool on)
+void CEWEditCtrl::ShowLineNumber(bool on)
 {
     if (!on) 
         SetMarginWidth(MARGIN_LINENUMBER, 0);
@@ -284,18 +284,18 @@ void CEWEdit::ShowLineNumber(bool on)
     }
 }
 
-BEGIN_EVENT_TABLE(CEWEdit, wxStyledTextCtrl)
+BEGIN_EVENT_TABLE(CEWEditCtrl, wxStyledTextCtrl)
 
     // Edit Menu
-    EVT_MENU	(wxID_UNDO,		CEWEdit::OnMenuEditUndo)
-    EVT_MENU	(wxID_REDO,		CEWEdit::OnMenuEditRedo)
+    EVT_MENU	(wxID_UNDO,		CEWEditCtrl::OnMenuEditUndo)
+    EVT_MENU	(wxID_REDO,		CEWEditCtrl::OnMenuEditRedo)
 
-    EVT_MENU	(wxID_CUT,		CEWEdit::OnMenuEditCut)
-    EVT_MENU	(wxID_COPY,		CEWEdit::OnMenuEditCopy)
-    EVT_MENU	(wxID_PASTE,		CEWEdit::OnMenuEditPaste)
-    EVT_MENU	(wxID_CLEAR,		CEWEdit::OnMenuEditDelete)
+    EVT_MENU	(wxID_CUT,		CEWEditCtrl::OnMenuEditCut)
+    EVT_MENU	(wxID_COPY,		CEWEditCtrl::OnMenuEditCopy)
+    EVT_MENU	(wxID_PASTE,		CEWEditCtrl::OnMenuEditPaste)
+    EVT_MENU	(wxID_CLEAR,		CEWEditCtrl::OnMenuEditDelete)
 
-    EVT_MENU	(wxID_SELECTALL,	CEWEdit::OnMenuEditSelectAll)
-    EVT_MENU	(CEWMain::myID_MENU_SELECTLINE, CEWEdit::OnMenuEditSelectLine)
+    EVT_MENU	(wxID_SELECTALL,	CEWEditCtrl::OnMenuEditSelectAll)
+    EVT_MENU	(CEWMain::myID_MENU_SELECTLINE, CEWEditCtrl::OnMenuEditSelectLine)
 
 END_EVENT_TABLE()
