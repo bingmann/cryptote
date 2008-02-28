@@ -1,6 +1,7 @@
 // $Id$
 
 #include "wcryptote.h"
+#include "wtextpage.h"
 
 #include "common/tools.h"
 
@@ -28,7 +29,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     statusbar = new WStatusBar(this);
     SetStatusBar(statusbar);
-    // SetStatusBar(_("Welcome to CryptoTE..."));
+    UpdateStatusBar(_("Welcome to CryptoTE..."));
 
     // *** Set up Main Windows ***
 
@@ -39,7 +40,8 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     auinotebook->SetArtProvider(new wxAuiSimpleTabArt);
 
-    auinotebook->AddPage(new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), wxT("Test wxAUI"));
+    auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"));
+    auinotebook->AddPage(new WTextPage(this), wxT("Test2 wxAUI"));
 
     // *** wxAUI Layout ***
 
@@ -61,6 +63,11 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 WCryptoTE::~WCryptoTE()
 {
     auimgr.UnInit();
+}
+
+void WCryptoTE::UpdateStatusBar(const wxString& str)
+{
+    statusbar->SetStatusText(str);
 }
 
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
@@ -148,6 +155,23 @@ void WCryptoTE::CreateMenuBar()
 		       wxBitmapFromMemory(application_exit_png))
 	);
 
+    // *** SubFile
+
+    wxMenu *menuSubFile = new wxMenu;
+
+    menuSubFile->Append(
+	createMenuItem(menuSubFile, myID_MENU_SUBFILE_NEW,
+		       _("&New ...\tCtrl+Shift+N"),
+		       _("Create new encrypted subfile in the current container."),
+		       wxBitmapFromMemory(document_open_png))
+	);
+    menuSubFile->Append(
+	createMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
+		       _("&Import ...\tCtrl+Shift+I"),
+		       _("Import external text or data file into the current container."),
+		       wxNullBitmap)
+	);
+
     // *** Help
 
     wxMenu *menuHelp = new wxMenu;
@@ -165,6 +189,7 @@ void WCryptoTE::CreateMenuBar()
     menubar = new wxMenuBar;
 
     menubar->Append(menuContainer, _("&Container"));
+    menubar->Append(menuSubFile, _("&SubFile"));
     // menubar->Append(menuEdit, _("&Edit"));
     // menubar->Append(menuView, _("&View"));
     menubar->Append(menuHelp, _("&Help"));
@@ -198,6 +223,25 @@ void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
     Close();
 }
 
+void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
+{
+    auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"), true);
+}
+
+void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
+{
+    wxFileDialog dlg(this,
+		     _("Import file"), wxEmptyString, wxEmptyString, _("Any file (*)|*"),
+#if wxCHECK_VERSION(2,8,0)
+                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR);
+#else
+                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR);
+#endif
+
+    if (dlg.ShowModal() != wxID_OK) return;
+
+}
+
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     WAbout dlg(this);
@@ -216,6 +260,10 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_CLOSE,		WCryptoTE::OnMenuContainerClose)
 
     EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
+
+    // SubFile
+    EVT_MENU	(myID_MENU_SUBFILE_NEW, WCryptoTE::OnMenuSubFileNew)
+    EVT_MENU	(myID_MENU_SUBFILE_IMPORT, WCryptoTE::OnMenuSubFileImport)
 
     // Help
     EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
@@ -342,11 +390,6 @@ void WCryptoTE::UpdateTitle()
     title += _("CryptoTE");
 
     SetTitle(title);
-}
-
-void WCryptoTE::UpdateStatusBar(const wxString& str)
-{
-    statusbar->SetStatusText(str);
 }
 
 bool WCryptoTE::FileOpen(const wxString& filename)
@@ -1021,9 +1064,6 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_INDENTGUIDE,	WCryptoTE::OnMenuViewIndentGuide)
     EVT_MENU	(myID_MENU_LONGLINEGUIDE, WCryptoTE::OnMenuViewLonglineGuide)
 
-    // Help
-    EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
-
     // *** Scintilla Edit Callbacks
 
     EVT_STC_UPDATEUI(myID_EDITCTRL,		WCryptoTE::OnScintillaUpdateUI)
@@ -1048,6 +1088,8 @@ END_EVENT_TABLE()
 
 /*****************************************************************************/
 #endif
+
+// *** WStatusBar ***
 
 WStatusBar::WStatusBar(wxWindow *parent)
     : wxStatusBar(parent, wxID_ANY, 0)
@@ -1096,6 +1138,8 @@ BEGIN_EVENT_TABLE(WStatusBar, wxStatusBar)
     EVT_SIZE	(WStatusBar::OnSize)
 
 END_EVENT_TABLE();
+
+// *** WAbout ***
 
 WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
@@ -1158,3 +1202,13 @@ void WAbout::do_layout()
     Layout();
     // end wxGlade
 }
+
+// *** WNotePage ***
+
+WNotePage::WNotePage(class WCryptoTE* _wmain)
+    : wxPanel(_wmain),
+      wmain(_wmain)
+{
+}
+
+IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);

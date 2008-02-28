@@ -1,18 +1,25 @@
 // $Id$
 
-#ifndef CEWEDITCTRL_H
-#define CEWEDITCTRL_H
+#ifndef WTEXTPAGE_H
+#define WTEXTPAGE_H
 
 #include <wx/wx.h>
 #include <wx/filename.h>
 #include <stc.h>
 
-class CEWEditCtrl : public wxStyledTextCtrl
-{
-protected:
+#include "wcryptote.h"
 
-    /// Parent window class
-    class CEWMain*	wmain;
+class WTextPage : public WNotePage
+{
+public:
+
+    WTextPage(class WCryptoTE* parent);
+
+    /// Return the text to display in the notebook
+    virtual wxString	GetCaption();
+
+#if 0
+/*****************************************************************************/
 
     /// Currently opened file name
     class wxFileName	currentfilename;
@@ -26,11 +33,6 @@ protected:
     };
 
 public:
-    CEWEditCtrl(class CEWMain* parent, wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize,
-		long style = 0);
-
     // *** File operations ***
 
     /// Clear the currently loaded file and start a new one
@@ -81,8 +83,11 @@ public:
     void	OnMenuEditSelectAll(wxCommandEvent &event);
     void	OnMenuEditSelectLine(wxCommandEvent &event);
 
+/*****************************************************************************/
+#endif
+
 private:
     DECLARE_EVENT_TABLE()
 };
 
-#endif // CEWEDITCTRL_H
+#endif // WTEXTPAGE_H

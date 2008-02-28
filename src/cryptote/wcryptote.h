@@ -19,6 +19,7 @@ public:
     ~WCryptoTE();
 
     // *** Identifiers ***
+
     enum {
 	myID_FIRST = wxID_HIGHEST + 1,
 
@@ -28,7 +29,14 @@ public:
 
 	// Menu Items
 
+	myID_MENU_SUBFILE_NEW,
+	myID_MENU_SUBFILE_IMPORT,
     };
+
+    // *** Operations ***
+
+    /// Temporarily set status bar to show given text.
+    void	UpdateStatusBar(const wxString& str);
 
     // *** Event Handlers ***
 
@@ -41,6 +49,9 @@ public:
     void	OnMenuContainerClose(wxCommandEvent& event);
 
     void	OnMenuContainerQuit(wxCommandEvent& event);
+
+    void	OnMenuSubFileNew(wxCommandEvent& event);
+    void	OnMenuSubFileImport(wxCommandEvent& event);
 
     void	OnMenuHelpAbout(wxCommandEvent& event);
  
@@ -87,14 +98,11 @@ protected:
 	myID_MENU_LONGLINEGUIDE
     };
 
-    // *** Operations ***
 
     /// Update the title bar with the currently loaded text file name
     void	UpdateTitle();
 
-    /// Update status bar to show given text.
-    void	UpdateStatusBar(const wxString& str);
-
+ 
     /// Load a file into the editor, discard any current buffer.
     bool	FileOpen(const wxString& filename);
 
@@ -238,5 +246,22 @@ protected:
     wxButton* buttonOK;
     // end wxGlade
 }; // wxGlade: end class
+
+class WNotePage : public wxPanel
+{
+protected:
+
+    WNotePage(class WCryptoTE* _wmain);
+
+    /// Reference to parent window class
+    class WCryptoTE*	wmain;
+
+public:
+
+    /// Return the text to display in the notebook
+    virtual wxString	GetCaption() = 0;
+
+    DECLARE_ABSTRACT_CLASS(WNotePage);
+};
 
 #endif // WCRYPTOTE_H

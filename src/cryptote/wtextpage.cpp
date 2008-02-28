@@ -1,16 +1,35 @@
 // $Id$
 
-#include "ceweditctrl.h"
-#include "cewmain.h"
+#include "wtextpage.h"
 
 #include <wx/file.h>
 #include <wx/wfstream.h>
 
-CEWEditCtrl::CEWEditCtrl(class CEWMain* parent, wxWindowID id,
-			 const wxPoint &pos, const wxSize &size,
-			 long style)
-    : wxStyledTextCtrl(parent, id, pos, size, style),
-      wmain(parent)
+WTextPage::WTextPage(class WCryptoTE* parent)
+    : WNotePage(parent)
+{
+
+    wxTextCtrl* editctrl = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+ 
+    wxBoxSizer* sizerMain = new wxBoxSizer(wxVERTICAL);
+    sizerMain->Add(editctrl, 1, wxEXPAND, 0);
+
+    SetSizer(sizerMain);
+    Layout();
+}
+
+wxString WTextPage::GetCaption()
+{
+    return _T("Test Caption");
+}
+
+BEGIN_EVENT_TABLE(WTextPage, wxPanel)
+
+END_EVENT_TABLE()
+
+#if 0
+/*****************************************************************************/
+
 {
     // set some styles
 
@@ -299,3 +318,6 @@ BEGIN_EVENT_TABLE(CEWEditCtrl, wxStyledTextCtrl)
     EVT_MENU	(CEWMain::myID_MENU_SELECTLINE, CEWEditCtrl::OnMenuEditSelectLine)
 
 END_EVENT_TABLE()
+
+/*****************************************************************************/
+#endif
