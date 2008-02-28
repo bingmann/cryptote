@@ -44,17 +44,16 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE
 
-# Check for wxWidgets 2.6.0 or later
+# Check for wxWidgets 2.8.0 or later
 AM_OPTIONS_WXCONFIG
 
-AM_PATH_WXCONFIG(2.6.0, wxWin=1)
+AM_PATH_WXCONFIG(2.8.0, wxWin=1)
 
 if test "$wxWin" != 1; then
     AC_MSG_WARN([
 	wxWidgets does not seem to be installed on your system.
-	The wxParserDemo will not be built!
 
-        If you think wxWidgets >= 2.6.0 is installed,
+        If you think wxWidgets >= 2.8.0 is installed,
 	please check that wx-config is in path, the directory
 	where wxWidgets libraries are installed (returned by
 	'wx-config --libs' command) is in LD_LIBRARY_PATH or

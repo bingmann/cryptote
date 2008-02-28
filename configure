@@ -5026,7 +5026,7 @@ _ACEOF
 esac
 
 
-# Check for wxWidgets 2.6.0 or later
+# Check for wxWidgets 2.8.0 or later
 
 
 # Check whether --with-wxdir was given.
@@ -5134,7 +5134,7 @@ fi
   if test "$WX_CONFIG_PATH" != "no" ; then
     WX_VERSION=""
 
-    min_wx_version=2.6.0
+    min_wx_version=2.8.0
     if test -z "" ; then
       { echo "$as_me:$LINENO: checking for wxWidgets version >= $min_wx_version" >&5
 echo $ECHO_N "checking for wxWidgets version >= $min_wx_version... $ECHO_C" >&6; }
@@ -5295,9 +5295,8 @@ echo "${ECHO_T}no (version $WX_VERSION is not new enough)" >&6; }
 if test "$wxWin" != 1; then
     { echo "$as_me:$LINENO: WARNING:
 	wxWidgets does not seem to be installed on your system.
-	The wxParserDemo will not be built!
 
-        If you think wxWidgets >= 2.6.0 is installed,
+        If you think wxWidgets >= 2.8.0 is installed,
 	please check that wx-config is in path, the directory
 	where wxWidgets libraries are installed (returned by
 	'wx-config --libs' command) is in LD_LIBRARY_PATH or
@@ -5305,9 +5304,8 @@ if test "$wxWin" != 1; then
     " >&5
 echo "$as_me: WARNING:
 	wxWidgets does not seem to be installed on your system.
-	The wxParserDemo will not be built!
 
-        If you think wxWidgets >= 2.6.0 is installed,
+        If you think wxWidgets >= 2.8.0 is installed,
 	please check that wx-config is in path, the directory
 	where wxWidgets libraries are installed (returned by
 	'wx-config --libs' command) is in LD_LIBRARY_PATH or
