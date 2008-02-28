@@ -24,17 +24,211 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     SetTitle(_("CryptoTE v0.1"));
 
+    CreateMenuBar();
+
+    statusbar = new WStatusBar(this);
+    SetStatusBar(statusbar);
+    // SetStatusBar(_("Welcome to CryptoTE..."));
+
+    // *** Set up Main Windows ***
+
+    // Create Controls
+
+    auinotebook = new wxAuiNotebook(this, myID_AUINOTEBOOK, wxDefaultPosition, wxDefaultSize,
+				    wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
+
+    auinotebook->SetArtProvider(new wxAuiSimpleTabArt);
+
+    auinotebook->AddPage(new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), wxT("Test wxAUI"));
+
+    // *** wxAUI Layout ***
+
+    // tell wxAuiManager to manage this frame
+    auimgr.SetManagedWindow(this);
+
+    // add panes to the manager
+
+    auimgr.AddPane(auinotebook, wxAuiPaneInfo().
+		   Name(wxT("notebook")).Caption(_("Notebook")).
+		   CenterPane().PaneBorder(false));
+
+    // "commit" all changes made to wxAuiManager
+    auimgr.Update();
+
+    Centre();
+}
+
+WCryptoTE::~WCryptoTE()
+{
+    auimgr.UnInit();
+}
+
+static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
+					 const wxString& text, const wxString& helpString,
+					 const wxBitmap& bmp)
+{
+    wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
+    mi->SetBitmap(bmp);
+    return mi;
+}
+
+void WCryptoTE::CreateMenuBar()
+{
+    toolbar = CreateToolBar(wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT);
+    toolbar->SetToolBitmapSize(wxSize(16, 16));
+
+    // *** Container
+
+    wxMenu *menuContainer = new wxMenu;
+
+    #include "art/document_open.h"
+    #include "art/document_save.h"
+    #include "art/document_saveas.h"
+    #include "art/document_revert.h"
+    #include "art/document_close.h"
+    #include "art/application_exit.h"
+
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_OPEN,
+		       _("&Open ..\tCtrl+O"),
+		       _("Open an existing encrypted container in the editor."),
+		       wxBitmapFromMemory(document_open_png))
+	);
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_SAVE,
+		       _("&Save\tCtrl+S"),
+		       _("Save the current encrypted container to disk."),	
+		       wxBitmapFromMemory(document_save_png))
+	);
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_SAVEAS,
+		       _("Save &as ..\tCtrl+Shift+S"),
+		       _("Choose a file name and save the current encrypted container to disk."),
+		       wxBitmapFromMemory(document_saveas_png))
+	);
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_REVERT,
+		       _("&Revert\tShift+Ctrl+W"),
+		       _("Revert the current container by reloading it from disk and losing all unsaved changes."),
+		       wxBitmapFromMemory(document_revert_png))
+	);
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_CLOSE,
+		       _("&Close\tCtrl+W"),
+		       _("Close the current encrypted container."),
+		       wxBitmapFromMemory(document_close_png))
+	);
+
+    menuContainer->AppendSeparator();
+
+    toolbar->AddTool(wxID_OPEN,
+		     _("Open Container"),
+		     wxBitmapFromMemory(document_open_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Open Container"),
+		     _("Open an existing encrypted container in the editor."));
+
+    toolbar->AddTool(wxID_SAVE,
+		     _("Save Container"),
+		     wxBitmapFromMemory(document_save_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Save Container"),
+		     _("Save the current encrypted container to disk."));
+
+    toolbar->AddTool(wxID_SAVEAS,
+		     _("Save Container as..."),
+		     wxBitmapFromMemory(document_saveas_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Save Container as..."),
+		     _("Choose a file name and save the current encrypted container to disk."));
+
+    toolbar->AddSeparator();
+
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_EXIT,
+		       _("&Quit\tCtrl+Q"),
+		       _("Exit CryptoTE"),
+		       wxBitmapFromMemory(application_exit_png))
+	);
+
+    // *** Help
+
+    wxMenu *menuHelp = new wxMenu;
+
+    #include "art/application_info.h"
+
+    menuHelp->Append(
+	createMenuItem(menuHelp, wxID_ABOUT,
+		       _("&About\tShift+F1"),
+		       _("Show some information about CryptoTE."),
+		       wxBitmapFromMemory(application_info_png))
+	);
+
+    // construct menubar and add it to the window
+    menubar = new wxMenuBar;
+
+    menubar->Append(menuContainer, _("&Container"));
+    // menubar->Append(menuEdit, _("&Edit"));
+    // menubar->Append(menuView, _("&View"));
+    menubar->Append(menuHelp, _("&Help"));
+
+    SetMenuBar(menubar);
+    toolbar->Realize();
+}
+
+void WCryptoTE::OnMenuContainerOpen(wxCommandEvent& WXUNUSED(event))
+{
+}
+
+void WCryptoTE::OnMenuContainerSave(wxCommandEvent& WXUNUSED(event))
+{
+}
+
+void WCryptoTE::OnMenuContainerSaveAs(wxCommandEvent& WXUNUSED(event))
+{
+}
+
+void WCryptoTE::OnMenuContainerRevert(wxCommandEvent& WXUNUSED(event))
+{
+}
+
+void WCryptoTE::OnMenuContainerClose(wxCommandEvent& WXUNUSED(event))
+{
+}
+
+void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
+{
+    Close();
+}
+
+void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
+{
+    WAbout dlg(this);
+    dlg.ShowModal();
+}
+
+BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
+
+    // *** Menu Items
+
+    // Container
+    EVT_MENU	(wxID_OPEN,		WCryptoTE::OnMenuContainerOpen)
+    EVT_MENU	(wxID_SAVE,		WCryptoTE::OnMenuContainerSave)
+    EVT_MENU	(wxID_SAVEAS,		WCryptoTE::OnMenuContainerSaveAs)
+    EVT_MENU	(wxID_REVERT,		WCryptoTE::OnMenuContainerRevert)
+    EVT_MENU	(wxID_CLOSE,		WCryptoTE::OnMenuContainerClose)
+
+    EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
+
+    // Help
+    EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
+
+END_EVENT_TABLE()
+
 #if 0
 /*****************************************************************************/
 
-    CreateMenuBar();
 
     SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE) );
 
-    statusbar = new CEWStatusBar(this);
-    SetStatusBar(statusbar);
-    statusbar->SetStatusText(_("Welcome to CryptoTE..."));
-
+ 
     // *** Create Controls ***
 
     editctrl = new CEWEditCtrl(this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
@@ -134,12 +328,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     UpdateTitle();
     findreplace_dlg = NULL;
-/*****************************************************************************/
-#endif
 }
-
-#if 0
-/*****************************************************************************/
 
 void WCryptoTE::UpdateTitle()
 {
@@ -194,80 +383,8 @@ bool WCryptoTE::FileSaveAs()
     return true;
 }
 
-static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
-					 const wxString& text, const wxString& helpString,
-					 const wxBitmap& bmp)
-{
-    wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
-    mi->SetBitmap(bmp);
-    return mi;
-}
-
 void WCryptoTE::CreateMenuBar()
 {
-    toolbar = CreateToolBar(wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT);
-    toolbar->SetToolBitmapSize(wxSize(16, 16));
-
-    // *** File
-
-    wxMenu *menuFile = new wxMenu;
-
-    #include "art/document_open.h"
-    #include "art/document_save.h"
-    #include "art/document_saveas.h"
-    #include "art/document_revert.h"
-    #include "art/document_close.h"
-    #include "art/application_exit.h"
-
-    menuFile->Append( createMenuItem(menuFile, wxID_OPEN,
-				     _("&Open ..\tCtrl+O"),
-				     _("Open an existing file in the editor."),
-				     wxBitmapFromMemory(document_open_png)) );
-    menuFile->Append( createMenuItem(menuFile, wxID_SAVE,
-				     _("&Save\tCtrl+S"),
-				     _("Save the currently displayed buffer to the disk."),	
-				     wxBitmapFromMemory(document_save_png)) );
-    menuFile->Append( createMenuItem(menuFile, wxID_SAVEAS,
-				     _("Save &as ..\tCtrl+Shift+S"),
-				     _("Choose a file name and save the currently displayed buffer to the disk."),
-				     wxBitmapFromMemory(document_saveas_png)) );
-    menuFile->Append( createMenuItem(menuFile, wxID_REVERT,
-				     _("&Revert\tShift+Ctrl+W"),
-				     _("Revert the currently displayed file losing all unsaved changes."),
-				     wxBitmapFromMemory(document_revert_png)) );
-
-    menuFile->Append( createMenuItem(menuFile, wxID_CLOSE,
-				     _("&Close\tCtrl+W"),
-				     _("Close the currently displayed file."),
-				     wxBitmapFromMemory(document_close_png)) );
-
-    menuFile->AppendSeparator();
-
-    toolbar->AddTool(wxID_OPEN,
-		     _("Open File"),
-		     wxBitmapFromMemory(document_open_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Open File"),
-		     _("Open an existing file in the editor."));
-
-    toolbar->AddTool(wxID_SAVE,
-		     _("Save File"),
-		     wxBitmapFromMemory(document_save_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Save File"),
-		     _("Save the currently displayed buffer to the disk."));
-
-    toolbar->AddTool(wxID_SAVEAS,
-		     _("Save File as..."),
-		     wxBitmapFromMemory(document_saveas_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Save File as..."),
-		     _("Choose a file name and save the currently displayed buffer to the disk."));
-
-    toolbar->AddSeparator();
-
-    menuFile->Append( createMenuItem(menuFile, wxID_EXIT,
-				     _("&Quit\tCtrl+Q"),
-				     _("Exit CryptoTE"),
-				     wxBitmapFromMemory(application_exit_png)) );
-
     // *** Edit
 
     wxMenu *menuEdit = new wxMenu;
@@ -422,27 +539,6 @@ void WCryptoTE::CreateMenuBar()
 			      _("Show guide line at &column 80"),
 			      _("Show guide line at column 80 to display over-long lines."));
 
-    // *** Help
-
-    wxMenu *menuHelp = new wxMenu;
-
-    #include "art/application_info.h"
-
-    menuHelp->Append( createMenuItem(menuFile, wxID_ABOUT,
-				     _("&About\tShift+F1"),
-				     _("Show some information about CryptoTE."),
-				     wxBitmapFromMemory(application_info_png)) );
-
-    // construct menubar and add it to the window
-    menubar = new wxMenuBar;
-
-    menubar->Append(menuFile, _("&File"));
-    menubar->Append(menuEdit, _("&Edit"));
-    menubar->Append(menuView, _("&View"));
-    menubar->Append(menuHelp, _("&Help"));
-
-    SetMenuBar(menubar);
-    toolbar->Realize();
 }
 
 void WCryptoTE::OnClose(wxCloseEvent& event)
@@ -950,7 +1046,10 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
 END_EVENT_TABLE()
 
-CEWStatusBar::CEWStatusBar(wxWindow *parent)
+/*****************************************************************************/
+#endif
+
+WStatusBar::WStatusBar(wxWindow *parent)
     : wxStatusBar(parent, wxID_ANY, 0)
 {
 
@@ -964,7 +1063,7 @@ CEWStatusBar::CEWStatusBar(wxWindow *parent)
     lockbitmap = new wxStaticBitmap(this, wxID_ANY, wxIconFromMemory(stock_lock_png));
 }
 
-void CEWStatusBar::OnSize(wxSizeEvent& event)
+void WStatusBar::OnSize(wxSizeEvent& event)
 {
     // move bitmap to position
     wxRect rect;
@@ -977,7 +1076,7 @@ void CEWStatusBar::OnSize(wxSizeEvent& event)
     event.Skip();
 }
 
-void CEWStatusBar::SetLock(bool on)
+void WStatusBar::SetLock(bool on)
 {
     #include "art/stock_lock.h"
     #include "art/stock_unlock.h"
@@ -992,16 +1091,16 @@ void CEWStatusBar::SetLock(bool on)
     }
 }
 
-BEGIN_EVENT_TABLE(CEWStatusBar, wxStatusBar)
+BEGIN_EVENT_TABLE(WStatusBar, wxStatusBar)
 
-    EVT_SIZE	(CEWStatusBar::OnSize)
+    EVT_SIZE	(WStatusBar::OnSize)
 
 END_EVENT_TABLE();
 
-CEWAbout::CEWAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
-    // begin wxGlade: CEWAbout::CEWAbout
+    // begin wxGlade: WAbout::WAbout
     bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
@@ -1022,16 +1121,16 @@ CEWAbout::CEWAbout(wxWindow* parent, int id, const wxString& title, const wxPoin
     Centre();
 }
 
-void CEWAbout::set_properties()
+void WAbout::set_properties()
 {
-    // begin wxGlade: CEWAbout::set_properties
+    // begin wxGlade: WAbout::set_properties
     SetTitle(_("About CryptoTE"));
     // end wxGlade
 }
 
-void CEWAbout::do_layout()
+void WAbout::do_layout()
 {
-    // begin wxGlade: CEWAbout::do_layout
+    // begin wxGlade: WAbout::do_layout
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer3 = new wxBoxSizer(wxVERTICAL);
@@ -1059,6 +1158,3 @@ void CEWAbout::do_layout()
     Layout();
     // end wxGlade
 }
-
-/*****************************************************************************/
-#endif

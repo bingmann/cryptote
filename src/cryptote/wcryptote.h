@@ -1,9 +1,10 @@
 // $Id$
 
-#ifndef CEWMAIN_H
-#define CEWMAIN_H
+#ifndef WCRYPTOTE_H
+#define WCRYPTOTE_H
 
 #include <wx/wx.h>
+#include <wx/aui/aui.h>
 
 #if wxCHECK_VERSION(2,8,0)
 #include <wx/hyperlink.h>
@@ -15,13 +16,56 @@ class WCryptoTE : public wxFrame
 {
 public:
     WCryptoTE(wxWindow* parent);
+    ~WCryptoTE();
+
+    // *** Identifiers ***
+    enum {
+	myID_FIRST = wxID_HIGHEST + 1,
+
+	// Main Window Controls
+
+	myID_AUINOTEBOOK,
+
+	// Menu Items
+
+    };
+
+    // *** Event Handlers ***
+
+    // Menu Events
+
+    void	OnMenuContainerOpen(wxCommandEvent& event);
+    void	OnMenuContainerSave(wxCommandEvent& event);
+    void	OnMenuContainerSaveAs(wxCommandEvent& event);
+    void	OnMenuContainerRevert(wxCommandEvent& event);
+    void	OnMenuContainerClose(wxCommandEvent& event);
+
+    void	OnMenuContainerQuit(wxCommandEvent& event);
+
+    void	OnMenuHelpAbout(wxCommandEvent& event);
+ 
+protected:
+
+    // *** Menu, Tool and Status Bars of the Main Window ***
+
+    class wxMenuBar*	menubar;
+    class wxToolBar*	toolbar;
+
+    class WStatusBar*	statusbar;
+
+    void 		CreateMenuBar();
+
+    // *** wxAUI Window Manager ***
+
+    wxAuiManager 	auimgr;
+
+    // *** Displayed or Hidden Panes ***
+
+    wxAuiNotebook*	auinotebook;
 
 #if 0
 /*****************************************************************************/
-    // *** Identifiers ***
 
-    enum {
-	myID_EDITCTRL = wxID_HIGHEST + 1,
 	myID_MENU_SELECTLINE,
 
 	myID_QUICKFIND,
@@ -125,15 +169,6 @@ protected:
 
     wxBoxSizer*	sizerMain;
 
-    // *** Menu and Status Bars of the main window ***
-
-    wxMenuBar*	menubar;
-    wxToolBar*	toolbar;
-
-    void 	CreateMenuBar();
-
-    class CEWStatusBar* statusbar;
-
 public:
     // *** Styled Text Edit control ***
 
@@ -160,19 +195,17 @@ protected:
 
     class CEWFind*	findreplace_dlg;
 
-private:
-    DECLARE_EVENT_TABLE()
 /*****************************************************************************/
 #endif
+
+private:
+    DECLARE_EVENT_TABLE()
 };
 
-#if 0
-/*****************************************************************************/
-
-class CEWStatusBar : public wxStatusBar
+class WStatusBar : public wxStatusBar
 {
 public:
-    CEWStatusBar(wxWindow *parent);
+    WStatusBar(wxWindow *parent);
 
     void		OnSize(wxSizeEvent& event);
     void		SetLock(bool on);
@@ -183,22 +216,22 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-class CEWAbout : public wxDialog
+class WAbout : public wxDialog
 {
 public:
-    // begin wxGlade: CEWAbout::ids
+    // begin wxGlade: WAbout::ids
     // end wxGlade
 
-    CEWAbout(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WAbout(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
-    // begin wxGlade: CEWAbout::methods
+    // begin wxGlade: WAbout::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: CEWAbout::attributes
+    // begin wxGlade: WAbout::attributes
     wxStaticBitmap* bitmapIcon;
     wxStaticBitmap* bitmapWeb;
     wxHyperlinkCtrl* hyperlink1;
@@ -206,7 +239,4 @@ protected:
     // end wxGlade
 }; // wxGlade: end class
 
-/*****************************************************************************/
-#endif
-
-#endif // CEWMAIN_H
+#endif // WCRYPTOTE_H
