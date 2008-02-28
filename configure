@@ -576,7 +576,7 @@ PACKAGE_VERSION='0.1'
 PACKAGE_STRING='cryptote 0.1'
 PACKAGE_BUGREPORT=''
 
-ac_unique_file="src/cryptote.cpp"
+ac_unique_file="src/cryptote/main.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -5428,7 +5428,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile src/Makefile src/art/Makefile src/pwgen/Makefile src/pwtutor/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile src/Makefile src/art/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6043,6 +6043,7 @@ do
     "src/art/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/Makefile" ;;
     "src/pwgen/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwgen/Makefile" ;;
     "src/pwtutor/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwtutor/Makefile" ;;
+    "src/cryptote/Makefile") CONFIG_FILES="$CONFIG_FILES src/cryptote/Makefile" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

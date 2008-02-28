@@ -2,13 +2,13 @@
 
 #include <wx/wx.h>
 
-#include "cewmain.h"
+#include "wcryptote.h"
 
 class App : public wxApp
 {
 private:
     /// CryptoTE main dialog
-    class CEWMain*	wmain;
+    class WCryptoTE*	wmain;
 
 public:
     /// This function is called during application start-up.
@@ -20,7 +20,7 @@ public:
 	SetVendorName(_("idlebox.net"));
 
 	// Create main window frame
-	wmain = new CEWMain(NULL);
+	wmain = new WCryptoTE(NULL);
 	SetTopWindow(wmain);
 	wmain->Show();
 

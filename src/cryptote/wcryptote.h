@@ -11,11 +11,13 @@
 #include "common/hyperlink.h"
 #endif
 
-class CEWMain : public wxFrame
+class WCryptoTE : public wxFrame
 {
 public:
-    CEWMain(wxWindow* parent);
+    WCryptoTE(wxWindow* parent);
 
+#if 0
+/*****************************************************************************/
     // *** Identifiers ***
 
     enum {
@@ -160,7 +162,12 @@ protected:
 
 private:
     DECLARE_EVENT_TABLE()
+/*****************************************************************************/
+#endif
 };
+
+#if 0
+/*****************************************************************************/
 
 class CEWStatusBar : public wxStatusBar
 {
@@ -198,5 +205,8 @@ protected:
     wxButton* buttonOK;
     // end wxGlade
 }; // wxGlade: end class
+
+/*****************************************************************************/
+#endif
 
 #endif // CEWMAIN_H

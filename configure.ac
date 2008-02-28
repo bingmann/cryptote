@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT(cryptote, 0.1)
-AC_CONFIG_SRCDIR(src/cryptote.cpp)
+AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 AC_CANONICAL_HOST
 
@@ -78,5 +78,6 @@ AC_CONFIG_FILES([Makefile
 		 src/Makefile
 		 src/art/Makefile
 		 src/pwgen/Makefile
-		 src/pwtutor/Makefile])
+		 src/pwtutor/Makefile
+		 src/cryptote/Makefile])
 AC_OUTPUT

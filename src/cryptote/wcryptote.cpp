@@ -1,13 +1,10 @@
 // $Id$
 
-#include "cewmain.h"
-#include "ceweditctrl.h"
-#include "cewfind.h"
-#include "wmsgdlg.h"
+#include "wcryptote.h"
 
 #include "common/tools.h"
 
-CEWMain::CEWMain(wxWindow* parent)
+WCryptoTE::WCryptoTE(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),
 	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
 {
@@ -26,6 +23,10 @@ CEWMain::CEWMain(wxWindow* parent)
     }
 
     SetTitle(_("CryptoTE v0.1"));
+
+#if 0
+/*****************************************************************************/
+
     CreateMenuBar();
 
     SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE) );
@@ -133,9 +134,14 @@ CEWMain::CEWMain(wxWindow* parent)
 
     UpdateTitle();
     findreplace_dlg = NULL;
+/*****************************************************************************/
+#endif
 }
 
-void CEWMain::UpdateTitle()
+#if 0
+/*****************************************************************************/
+
+void WCryptoTE::UpdateTitle()
 {
     wxString title = editctrl->GetFileBasename();
 
@@ -149,12 +155,12 @@ void CEWMain::UpdateTitle()
     SetTitle(title);
 }
 
-void CEWMain::UpdateStatusBar(const wxString& str)
+void WCryptoTE::UpdateStatusBar(const wxString& str)
 {
     statusbar->SetStatusText(str);
 }
 
-bool CEWMain::FileOpen(const wxString& filename)
+bool WCryptoTE::FileOpen(const wxString& filename)
 {
     bool b = editctrl->FileOpen(filename);
 
@@ -162,7 +168,7 @@ bool CEWMain::FileOpen(const wxString& filename)
     return b;
 }
 
-bool CEWMain::FileSave()
+bool WCryptoTE::FileSave()
 {
     if (!editctrl->HasFilename()) {
 	return FileSaveAs();
@@ -171,7 +177,7 @@ bool CEWMain::FileSave()
     return editctrl->FileSave();
 }
 
-bool CEWMain::FileSaveAs()
+bool WCryptoTE::FileSaveAs()
 {
     wxFileDialog dlg(this,
 		     _("Save file"), wxEmptyString, editctrl->GetFileBasename(), _("Any file (*)|*"),
@@ -197,7 +203,7 @@ static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
     return mi;
 }
 
-void CEWMain::CreateMenuBar()
+void WCryptoTE::CreateMenuBar()
 {
     toolbar = CreateToolBar(wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT);
     toolbar->SetToolBitmapSize(wxSize(16, 16));
@@ -439,7 +445,7 @@ void CEWMain::CreateMenuBar()
     toolbar->Realize();
 }
 
-void CEWMain::OnClose(wxCloseEvent& event)
+void WCryptoTE::OnClose(wxCloseEvent& event)
 {
     if (!event.CanVeto()) {
 	Destroy();
@@ -454,7 +460,7 @@ void CEWMain::OnClose(wxCloseEvent& event)
     }
 }
 
-void CEWMain::OnChar(wxKeyEvent& event)
+void WCryptoTE::OnChar(wxKeyEvent& event)
 {
     if (event.GetKeyCode() == WXK_ESCAPE)
     {
@@ -476,7 +482,7 @@ void CEWMain::OnChar(wxKeyEvent& event)
     }
 }
 
-bool CEWMain::AllowCloseModified()
+bool WCryptoTE::AllowCloseModified()
 {
     if (editctrl->ModifiedFlag())
     {
@@ -508,7 +514,7 @@ bool CEWMain::AllowCloseModified()
     return true;
 }
 
-void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 {
     if (!AllowCloseModified()) return;
 
@@ -527,39 +533,39 @@ void CEWMain::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
     UpdateTitle();
 }
 
-void CEWMain::OnMenuFileSave(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuFileSave(wxCommandEvent& WXUNUSED(event))
 {
     FileSave();
 }
 
-void CEWMain::OnMenuFileSaveAs(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuFileSaveAs(wxCommandEvent& WXUNUSED(event))
 {
     FileSaveAs();
 }
 
-void CEWMain::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))
 {
     editctrl->FileRevert();
 }
 
-void CEWMain::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
 {
     if (!AllowCloseModified()) return;
 
     editctrl->FileNew();
 }
 
-void CEWMain::OnMenuFileQuit(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuFileQuit(wxCommandEvent& WXUNUSED(event))
 {
     Close();
 }
 
-void CEWMain::OnMenuEditGeneric(wxCommandEvent& event)
+void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
 {
     editctrl->ProcessEvent(event);
 }
 
-void CEWMain::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 {
     if (quickfind_visible)
     {
@@ -588,7 +594,7 @@ void CEWMain::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
     }
 }
 
-void CEWMain::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
 {
     if (!findreplace_dlg) {
 	findreplace_dlg = new CEWFind(this);
@@ -598,7 +604,7 @@ void CEWMain::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
     findreplace_dlg->Show();
 }
 
-void CEWMain::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
 {
     if (!findreplace_dlg) {
 	findreplace_dlg = new CEWFind(this);
@@ -608,7 +614,7 @@ void CEWMain::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
     findreplace_dlg->Show();
 }
 
-void CEWMain::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
 {
     sizerMain->Show(sizerQuickGoto);
     sizerMain->Hide(sizerQuickFind);
@@ -620,38 +626,38 @@ void CEWMain::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
     textctrlGoto->SetFocus();
 }
 
-void CEWMain::OnMenuViewLineWrap(wxCommandEvent& event)
+void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
 {
     editctrl->SetWrapMode(event.IsChecked() ? wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
 }
 
-void CEWMain::OnMenuViewLineNumber(wxCommandEvent& event)
+void WCryptoTE::OnMenuViewLineNumber(wxCommandEvent& event)
 {
     editctrl->ShowLineNumber(event.IsChecked());
 }
 
-void CEWMain::OnMenuViewWhitespace(wxCommandEvent& event)
+void WCryptoTE::OnMenuViewWhitespace(wxCommandEvent& event)
 {
     editctrl->SetViewWhiteSpace(event.IsChecked() ? wxSTC_WS_VISIBLEALWAYS : wxSTC_WS_INVISIBLE);
 }
 
-void CEWMain::OnMenuViewEndOfLine(wxCommandEvent& event)
+void WCryptoTE::OnMenuViewEndOfLine(wxCommandEvent& event)
 {
     editctrl->SetViewEOL(event.IsChecked());
 }
 
-void CEWMain::OnMenuViewIndentGuide(wxCommandEvent& event)
+void WCryptoTE::OnMenuViewIndentGuide(wxCommandEvent& event)
 {
     editctrl->SetIndentationGuides(event.IsChecked());
 }
 
-void CEWMain::OnMenuViewLonglineGuide(wxCommandEvent& event)
+void WCryptoTE::OnMenuViewLonglineGuide(wxCommandEvent& event)
 {
     editctrl->SetEdgeColumn(80);
     editctrl->SetEdgeMode(event.IsChecked() ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
 }
 
-void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     CEWAbout dlg(this);
     dlg.ShowModal();
@@ -659,7 +665,7 @@ void CEWMain::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 
 // *** Scintilla Callbacks ***
 
-void CEWMain::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
+void WCryptoTE::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
 {
     // Enable or Disable Menu Items and Tool Bar Items
 
@@ -697,7 +703,7 @@ void CEWMain::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
     }
 }
 
-void CEWMain::UpdateOnSavePoint()
+void WCryptoTE::UpdateOnSavePoint()
 {
     menubar->Enable(wxID_SAVE, editctrl->ModifiedFlag());
     menubar->Enable(wxID_REVERT, editctrl->ModifiedFlag());
@@ -709,7 +715,7 @@ void CEWMain::UpdateOnSavePoint()
     UpdateTitle();
 }
 
-void CEWMain::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
+void WCryptoTE::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
 {
     // Document is un-modified
     
@@ -718,7 +724,7 @@ void CEWMain::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
     UpdateOnSavePoint();
 }
 
-void CEWMain::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
+void WCryptoTE::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
 {
     // Document is modified
 
@@ -729,7 +735,7 @@ void CEWMain::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
 
 // *** Quick-Find Bar ***
 
-void CEWMain::QuickFind(bool forward)
+void WCryptoTE::QuickFind(bool forward)
 {
     wxString findtext = textctrlQuickFind->GetValue();
 
@@ -815,26 +821,26 @@ void CEWMain::QuickFind(bool forward)
     textctrlQuickFind->Refresh();
 }
 
-void CEWMain::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
 {
     QuickFind(true);
 }
 
-void CEWMain::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
 {
     quickfind_startpos = editctrl->GetSelectionEnd();
 
     QuickFind(true);
 }
 
-void CEWMain::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
 {
     quickfind_startpos = editctrl->GetSelectionStart();
 
     QuickFind(false);
 }
 
-void CEWMain::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
 {
     sizerMain->Hide(sizerQuickFind);
     sizerMain->Layout();
@@ -846,7 +852,7 @@ void CEWMain::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
 
 // *** Quick-Goto Bar ***
 
-void CEWMain::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
 {
     long linenum;
 
@@ -865,7 +871,7 @@ void CEWMain::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
     editctrl->SetFocus();
 }
 
-void CEWMain::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
 {
     sizerMain->Hide(sizerQuickGoto);
     sizerMain->Layout();
@@ -874,73 +880,73 @@ void CEWMain::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
 }
 
 
-BEGIN_EVENT_TABLE(CEWMain, wxFrame)
+BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     // *** Generic Events
 
-    EVT_CLOSE	(CEWMain::OnClose)
+    EVT_CLOSE	(WCryptoTE::OnClose)
 
-    EVT_CHAR	(CEWMain::OnChar)
+    EVT_CHAR	(WCryptoTE::OnChar)
 
     // *** Menu Items
 
     // File
-    EVT_MENU	(wxID_OPEN,		CEWMain::OnMenuFileOpen)
-    EVT_MENU	(wxID_SAVE,		CEWMain::OnMenuFileSave)
-    EVT_MENU	(wxID_SAVEAS,		CEWMain::OnMenuFileSaveAs)
-    EVT_MENU	(wxID_REVERT,		CEWMain::OnMenuFileRevert)
-    EVT_MENU	(wxID_CLOSE,		CEWMain::OnMenuFileClose)
+    EVT_MENU	(wxID_OPEN,		WCryptoTE::OnMenuFileOpen)
+    EVT_MENU	(wxID_SAVE,		WCryptoTE::OnMenuFileSave)
+    EVT_MENU	(wxID_SAVEAS,		WCryptoTE::OnMenuFileSaveAs)
+    EVT_MENU	(wxID_REVERT,		WCryptoTE::OnMenuFileRevert)
+    EVT_MENU	(wxID_CLOSE,		WCryptoTE::OnMenuFileClose)
 
-    EVT_MENU	(wxID_EXIT,		CEWMain::OnMenuFileQuit)
+    EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuFileQuit)
 
     // Edit
-    EVT_MENU	(wxID_UNDO,		CEWMain::OnMenuEditGeneric)
-    EVT_MENU	(wxID_REDO,		CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_UNDO,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_REDO,		WCryptoTE::OnMenuEditGeneric)
 
-    EVT_MENU	(wxID_CUT,		CEWMain::OnMenuEditGeneric)
-    EVT_MENU	(wxID_COPY,		CEWMain::OnMenuEditGeneric)
-    EVT_MENU	(wxID_PASTE,		CEWMain::OnMenuEditGeneric)
-    EVT_MENU	(wxID_CLEAR,		CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_CUT,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_COPY,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_PASTE,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_CLEAR,		WCryptoTE::OnMenuEditGeneric)
 
-    EVT_MENU	(myID_QUICKFIND,	CEWMain::OnMenuEditQuickFind)
-    EVT_MENU	(wxID_FIND,		CEWMain::OnMenuEditFind)
-    EVT_MENU	(wxID_REPLACE,		CEWMain::OnMenuEditFindReplace)
+    EVT_MENU	(myID_QUICKFIND,	WCryptoTE::OnMenuEditQuickFind)
+    EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
+    EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
 
-    EVT_MENU	(myID_GOTO,		CEWMain::OnMenuEditGoto)
+    EVT_MENU	(myID_GOTO,		WCryptoTE::OnMenuEditGoto)
 
-    EVT_MENU	(wxID_SELECTALL,	CEWMain::OnMenuEditGeneric)
-    EVT_MENU	(myID_MENU_SELECTLINE,	CEWMain::OnMenuEditGeneric)
+    EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(myID_MENU_SELECTLINE,	WCryptoTE::OnMenuEditGeneric)
 
     // View
-    EVT_MENU	(myID_MENU_LINEWRAP,	CEWMain::OnMenuViewLineWrap)
-    EVT_MENU	(myID_MENU_LINENUMBER,	CEWMain::OnMenuViewLineNumber)
-    EVT_MENU	(myID_MENU_WHITESPACE,	CEWMain::OnMenuViewWhitespace)
-    EVT_MENU	(myID_MENU_ENDOFLINE,	CEWMain::OnMenuViewEndOfLine)
-    EVT_MENU	(myID_MENU_INDENTGUIDE,	CEWMain::OnMenuViewIndentGuide)
-    EVT_MENU	(myID_MENU_LONGLINEGUIDE, CEWMain::OnMenuViewLonglineGuide)
+    EVT_MENU	(myID_MENU_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)
+    EVT_MENU	(myID_MENU_LINENUMBER,	WCryptoTE::OnMenuViewLineNumber)
+    EVT_MENU	(myID_MENU_WHITESPACE,	WCryptoTE::OnMenuViewWhitespace)
+    EVT_MENU	(myID_MENU_ENDOFLINE,	WCryptoTE::OnMenuViewEndOfLine)
+    EVT_MENU	(myID_MENU_INDENTGUIDE,	WCryptoTE::OnMenuViewIndentGuide)
+    EVT_MENU	(myID_MENU_LONGLINEGUIDE, WCryptoTE::OnMenuViewLonglineGuide)
 
     // Help
-    EVT_MENU	(wxID_ABOUT,		CEWMain::OnMenuHelpAbout)
+    EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
 
     // *** Scintilla Edit Callbacks
 
-    EVT_STC_UPDATEUI(myID_EDITCTRL,		CEWMain::OnScintillaUpdateUI)
-    EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	CEWMain::OnScintillaSavePointReached)
-    EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	CEWMain::OnScintillaSavePointLeft)
+    EVT_STC_UPDATEUI(myID_EDITCTRL,		WCryptoTE::OnScintillaUpdateUI)
+    EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	WCryptoTE::OnScintillaSavePointReached)
+    EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WCryptoTE::OnScintillaSavePointLeft)
 
     // *** Quick-Find Bar
 
-    EVT_TEXT	(myID_QUICKFIND_TEXT,	CEWMain::OnTextQuickFind)
+    EVT_TEXT	(myID_QUICKFIND_TEXT,	WCryptoTE::OnTextQuickFind)
 
-    EVT_BUTTON	(myID_QUICKFIND_NEXT,	CEWMain::OnButtonQuickFindNext)
-    EVT_BUTTON	(myID_QUICKFIND_PREV,	CEWMain::OnButtonQuickFindPrev)
-    EVT_BUTTON	(myID_QUICKFIND_CLOSE,	CEWMain::OnButtonQuickFindClose)
+    EVT_BUTTON	(myID_QUICKFIND_NEXT,	WCryptoTE::OnButtonQuickFindNext)
+    EVT_BUTTON	(myID_QUICKFIND_PREV,	WCryptoTE::OnButtonQuickFindPrev)
+    EVT_BUTTON	(myID_QUICKFIND_CLOSE,	WCryptoTE::OnButtonQuickFindClose)
 
     // *** Quick-Goto Bar
 
-    EVT_TEXT_ENTER(myID_GOTOTEXT,	CEWMain::OnButtonGotoGo)
-    EVT_BUTTON	(myID_GOTO_GO,		CEWMain::OnButtonGotoGo)
-    EVT_BUTTON	(myID_GOTO_CLOSE,	CEWMain::OnButtonGotoClose)
+    EVT_TEXT_ENTER(myID_GOTOTEXT,	WCryptoTE::OnButtonGotoGo)
+    EVT_BUTTON	(myID_GOTO_GO,		WCryptoTE::OnButtonGotoGo)
+    EVT_BUTTON	(myID_GOTO_CLOSE,	WCryptoTE::OnButtonGotoClose)
 
 END_EVENT_TABLE()
 
@@ -1053,3 +1059,6 @@ void CEWAbout::do_layout()
     Layout();
     // end wxGlade
 }
+
+/*****************************************************************************/
+#endif
