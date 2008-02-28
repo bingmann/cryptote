@@ -4,31 +4,31 @@
 #include <wx/wx.h>
 #include <wx/stopwatch.h>
 
-#include "ptwmain.h"
+#include "wpwtutor.h"
 
 // begin wxGlade: ::dependencies
 // end wxGlade
 
-#ifndef PTWQUERY_H
-#define PTWQUERY_H
+#ifndef WQUERY_H
+#define WQUERY_H
 
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class PTWQuery : public wxDialog
+class WQueryPass : public wxDialog
 {
 public:
-    // begin wxGlade: PTWQuery::ids
+    // begin wxGlade: WQueryPass::ids
     enum {
         myID_PASSTEXT = wxID_HIGHEST + 1000,
         myID_GIVEUP = wxID_HIGHEST + 1002
     };
     // end wxGlade
 
-    PTWQuery(struct PTPassEntry& passentry, wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WQueryPass(struct PassEntry& passentry, wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
     /// Updated reference to currently asked password entry.
-    struct PTPassEntry&	passentry;
+    struct PassEntry&	passentry;
 
     /// Number of wrong entries during this query
     int		mywrongs;
@@ -58,13 +58,13 @@ public:
     wxStopWatch	stopwatch;
 
 private:
-    // begin wxGlade: PTWQuery::methods
+    // begin wxGlade: WQueryPass::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: PTWQuery::attributes
+    // begin wxGlade: WQueryPass::attributes
     wxStaticBox* sizer2_staticbox;
     wxTextCtrl* textctrlDescription;
     wxTextCtrl* textctrlPass;
@@ -85,4 +85,4 @@ public:
     virtual void OnButtonGiveUp(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
-#endif // PTWQUERY_H
+#endif // WQUERY_H

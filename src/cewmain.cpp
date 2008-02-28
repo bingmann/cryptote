@@ -5,7 +5,7 @@
 #include "cewfind.h"
 #include "wmsgdlg.h"
 
-#include "tools.h"
+#include "common/tools.h"
 
 CEWMain::CEWMain(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),

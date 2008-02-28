@@ -3,7 +3,7 @@
 
 #include "wmsgdlg.h"
 
-#include "tools.h"
+#include "common/tools.h"
 
 WMessageDialog::WMessageDialog(wxWindow *parent, const wxString& message,
 			       const wxString& caption, long style,

@@ -7,7 +7,7 @@
 #if wxCHECK_VERSION(2,8,0)
 #include <wx/hyperlink.h>
 #else
-#include "hyperlink.h"
+#include "common/hyperlink.h"
 #endif
 
 // begin wxGlade: ::dependencies
@@ -18,16 +18,16 @@
 
 #include <vector>
 
-#ifndef WGENPASS_H
-#define WGENPASS_H
+#ifndef WPASSGEN_H
+#define WPASSGEN_H
 
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class PGWMain : public wxDialog
+class WPassGen : public wxDialog
 {
 public:
-    // begin wxGlade: PGWMain::ids
+    // begin wxGlade: WPassGen::ids
     enum {
         myID_PRESET = wxID_HIGHEST + 1000,
         myID_PRESET_ADD = wxID_HIGHEST + 1002,
@@ -42,7 +42,7 @@ public:
     };
     // end wxGlade
 
-    PGWMain(wxWindow* parent, bool standalone, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WPassGen(wxWindow* parent, bool standalone, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
     /// Set if running as stand-alone program.
     bool	standalone;
@@ -130,13 +130,13 @@ protected:
     wxString		MakePassword(unsigned int passlen);
 
 private:
-    // begin wxGlade: PGWMain::methods
+    // begin wxGlade: WPassGen::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: PGWMain::attributes
+    // begin wxGlade: WPassGen::attributes
     wxStaticBox* sizer2_staticbox;
     wxChoice* choicePreset;
     wxBitmapButton* buttonPresetAdd;
@@ -200,4 +200,4 @@ protected:
     // end wxGlade
 }; // wxGlade: end class
 
-#endif // WGENPASS_H
+#endif // WPASSGEN_H

@@ -8,7 +8,7 @@
 #if wxCHECK_VERSION(2,8,0)
 #include <wx/hyperlink.h>
 #else
-#include "hyperlink.h"
+#include "common/hyperlink.h"
 #endif
 
 class CEWMain : public wxFrame

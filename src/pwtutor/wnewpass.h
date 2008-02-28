@@ -7,7 +7,7 @@
 // begin wxGlade: ::dependencies
 // end wxGlade
 
-#include "ptwmain.h"
+#include "wpwtutor.h"
 
 #ifndef PTWNEW_H
 #define PTWNEW_H
@@ -15,31 +15,31 @@
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class PTWNew : public wxDialog
+class WNewPass : public wxDialog
 {
 public:
-    // begin wxGlade: PTWNew::ids
+    // begin wxGlade: WNewPass::ids
     enum {
         myID_GENPASS = wxID_HIGHEST + 1000
     };
     // end wxGlade
 
-    PTWNew(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WNewPass(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 public:
 
     /// Password entry with all fields, this is later added to the list of
     /// passes to learn.
-    class	PTPassEntry	passentry;
+    class	PassEntry	passentry;
 
 private:
-    // begin wxGlade: PTWNew::methods
+    // begin wxGlade: WNewPass::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: PTWNew::attributes
+    // begin wxGlade: WNewPass::attributes
     wxStaticBox* sizer2_staticbox;
     wxTextCtrl* textctrlDescription;
     wxTextCtrl* textctrlPass;

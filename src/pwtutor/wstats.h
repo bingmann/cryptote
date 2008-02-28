@@ -7,26 +7,26 @@
 #include <wx/tglbtn.h>
 // end wxGlade
 
-#ifndef PTWSTATS_H
-#define PTWSTATS_H
+#ifndef WSTATS_H
+#define WSTATS_H
 
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class PTWStats : public wxDialog
+class WPassStats : public wxDialog
 {
 public:
-    // begin wxGlade: PTWStats::ids
+    // begin wxGlade: WPassStats::ids
     enum {
         myID_REVEAL = wxID_HIGHEST + 1000,
         myID_QUERYNOW = wxID_HIGHEST + 1002
     };
     // end wxGlade
 
-    PTWStats(struct PTPassEntry& passentry, wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WPassStats(struct PassEntry& passentry, wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
     /// Reference to currently displayed password entry.
-    struct PTPassEntry&	passentry;
+    struct PassEntry&	passentry;
 
     /// Update dialog fields from PassEntry structure
     void	UpdateValues();
@@ -35,13 +35,13 @@ public:
     wxBitmap	MakeScoreBitmap();
 
 private:
-    // begin wxGlade: PTWStats::methods
+    // begin wxGlade: WPassStats::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: PTWStats::attributes
+    // begin wxGlade: WPassStats::attributes
     wxStaticBox* sizer5_staticbox;
     wxStaticBox* sizer2_staticbox;
     wxTextCtrl* textctrlDescription;
@@ -68,4 +68,4 @@ public:
     virtual void OnButtonQueryNow(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
-#endif // PTWSTATS_H
+#endif // WSTATS_H

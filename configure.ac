@@ -76,5 +76,7 @@ AM_CONDITIONAL(GOT_RESCOMP, test x$RESCOMP != x)
 AC_CONFIG_FILES([Makefile
 		 libstc/Makefile
 		 src/Makefile
-		 src/art/Makefile])
+		 src/art/Makefile
+		 src/pwgen/Makefile
+		 src/pwtutor/Makefile])
 AC_OUTPUT

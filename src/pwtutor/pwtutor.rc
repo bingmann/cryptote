@@ -4,9 +4,9 @@
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
-1   ICON                    "art/pwgen.ico"
+1   ICON                    "../art/pwtutor.ico"
 
-1   RT_MANIFEST             "pwgen.xml"
+1   RT_MANIFEST             "pwtutor.xml"
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
@@ -23,14 +23,14 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "ProductName", "CryptoTE Password Generator"
+            VALUE "ProductName", "CryptoTE Password Tutor"
             VALUE "ProductVersion", "0,1,0,0"
             VALUE "CompanyName", "Timo Bingmann"
-            VALUE "FileDescription", "Stand-alone Password Generator"
+            VALUE "FileDescription", "Helps you learn strong passwords by heart."
             VALUE "FileVersion", "0,1,0,0"
             VALUE "Comments", "http://idlebox.net/2008/cryptote/"
             VALUE "LegalCopyright", "Copyright (C) 2008 Timo Bingmann"
-            VALUE "OriginalFilename", "pwgen.exe"
+            VALUE "OriginalFilename", "pwtutor.exe"
         END
     END
     BLOCK "VarFileInfo"

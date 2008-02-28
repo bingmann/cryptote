@@ -19,7 +19,7 @@
 // end wxGlade
 
 /// Structure holding all information about a password begin learned.
-struct PTPassEntry
+struct PassEntry
 {
     /// Description given by the user
     wxString	description;
@@ -50,21 +50,21 @@ struct PTPassEntry
     std::vector<int>	scores;
 };
 
-class PTTaskBarIcon : public wxTaskBarIcon
+class WTaskBarIcon : public wxTaskBarIcon
 {
 protected:
     /// Icon which is set, loaded from compiled-in PNG
     wxIcon		tbicon;
 
     /// Reference to main window which is Show()-ed
-    class PTWMain*	ptwmain;
+    class WPWTutor*	ptwmain;
 
 public:
     enum {
         myID_RESTORE = wxID_HIGHEST + 2000
     };
 
-    PTTaskBarIcon(class PTWMain* wmain);
+    WTaskBarIcon(class WPWTutor* wmain);
 
     // Install and remove the icon
     void	Install();
@@ -82,10 +82,10 @@ public:
     DECLARE_EVENT_TABLE();
 };
 
-class PTWMain : public wxFrame
+class WPWTutor : public wxFrame
 {
 public:
-    // begin wxGlade: PTWMain::ids
+    // begin wxGlade: WPWTutor::ids
     enum {
         myID_PASSLIST = wxID_HIGHEST + 1000,
         myID_NEWPASS = wxID_HIGHEST + 1002,
@@ -101,18 +101,18 @@ public:
 	myID_MENU_ERASE
     };
 
-    PTWMain(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+    WPWTutor(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
-    ~PTWMain();
+    ~WPWTutor();
 
 protected:
 
     // *** PassEntry Management Functions ***
 
-    typedef std::vector<struct PTPassEntry> passlist_type;
+    typedef std::vector<struct PassEntry> passlist_type;
 
     /// List of all learned passwords
-    std::vector<struct PTPassEntry> passlist;
+    std::vector<struct PassEntry> passlist;
 
     /// Load passlist from config file as encrypted strings
     void	loadPasslist();
@@ -127,7 +127,7 @@ protected:
     void	savePasslistTo(class wxConfigBase& cfg);
 
     /// Append a single new pass entry to the wxListBox
-    void	AppendPassEntry(struct PTPassEntry& pe);
+    void	AppendPassEntry(struct PassEntry& pe);
 
     /// Update a pass entry in the wxListBox
     void	UpdatePassEntry(int ni);
@@ -139,20 +139,20 @@ protected:
     void	UpdatePassImageList(int ni);
 
     /// Create a bitmap representing the passentry's score
-    static wxBitmap MakeScoreBitmap(const PTPassEntry& passentry);
+    static wxBitmap MakeScoreBitmap(const PassEntry& passentry);
 
     // *** Hide Password Tutor to TaskBar
 
-    PTTaskBarIcon*	taskbaricon;
+    WTaskBarIcon*	taskbaricon;
 
 private:
-    // begin wxGlade: PTWMain::methods
+    // begin wxGlade: WPWTutor::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: PTWMain::attributes
+    // begin wxGlade: WPWTutor::attributes
     wxStaticBox* sizer2_staticbox;
     wxListCtrl* listctrlPasslist;
     wxButton* buttonNewPass;

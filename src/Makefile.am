@@ -1,55 +1,28 @@
 # $Id$
 
-SUBDIRS = art .
+SUBDIRS = art pwgen pwtutor .
 
-bin_PROGRAMS = cryptote pwtutor pwgen
+bin_PROGRAMS = cryptote
 
 cryptote_SOURCES = cryptote.cpp \
 	cewmain.cpp cewmain.h \
 	ceweditctrl.cpp ceweditctrl.h \
 	cewfind.cpp cewfind.h \
-	pgwmain.cpp pgwmain.h \
-	prng.cpp prng.h \
-	fips181.cpp fips181.h \
-	hyperlink.cpp hyperlink.h \
+	pwgen/wpassgen.cpp pwgen/wpassgen.h \
+	pwgen/prng.cpp pwgen/prng.h \
+	pwgen/fips181.cpp pwgen/fips181.h \
+	common/hyperlink.cpp common/hyperlink.h \
 	wmsgdlg.cpp wmsgdlg.h
 
-pwtutor_SOURCES = pwtutor.cpp \
-	ptwmain.cpp ptmwain.h \
-	ptwnew.cpp ptwnew.h \
-	pgwmain.cpp pgwmain.h \
-	prng.cpp prng.h \
-	fips181.cpp fips181.h \
-	hyperlink.cpp hyperlink.h \
-	ptwquery.cpp ptwquery.h \
-	ptwstats.cpp ptwstats.h
-
-pwgen_SOURCES = pwgen.cpp \
-	pgwmain.cpp pgwmain.h \
-	prng.cpp prng.h \
-	fips181.cpp fips181.h \
-	hyperlink.cpp hyperlink.h
-
-AM_CFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libstc $(WX_CXXFLAGS)
 LIBS = $(top_builddir)/libstc/libstc.a $(WX_LIBS)
 
 if GOT_RESCOMP
 
-BUILT_SOURCES = pwgen-rc.o pwtutor-rc.o cryptote-rc.o
-
-pwgen-rc.o: pwgen.rc
-	$(RESCOMP) -I$(srcdir) $< $@
-
-pwtutor-rc.o: pwtutor.rc
-	$(RESCOMP) -I$(srcdir) $< $@
+BUILT_SOURCES = cryptote-rc.o
 
 cryptote-rc.o: cryptote.rc
 	$(RESCOMP) -I$(srcdir) $< $@
-
-pwgen_LDFLAGS = pwgen-rc.o
-
-pwtutor_LDFLAGS = pwtutor-rc.o
 
 cryptote_LDFLAGS = cryptote-rc.o
 

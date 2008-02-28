@@ -2,13 +2,13 @@
 
 #include <wx/wx.h>
 
-#include "pgwmain.h"
+#include "wpwtutor.h"
 
 class App : public wxApp
 {
 private:
-    /// Password generator main dialog
-    class PGWMain*	wmain;
+    /// Password Tutor main dialog
+    class WPWTutor*	wmain;
 
 public:
     /// This function is called during application start-up.
@@ -20,7 +20,7 @@ public:
 	SetVendorName(_("idlebox.net"));
 
 	// Create main window frame
-	wmain = new PGWMain(NULL, true);
+	wmain = new WPWTutor(NULL);
 	SetTopWindow(wmain);
 	wmain->Show();
 

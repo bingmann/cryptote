@@ -5,7 +5,7 @@
 #include "cewmain.h"
 #include "ceweditctrl.h"
 
-#include "tools.h"
+#include "common/tools.h"
 
 // begin wxGlade: ::extracode
 // end wxGlade
