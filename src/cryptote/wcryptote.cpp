@@ -9,6 +9,8 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),
 	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
 {
+    cpage = NULL;
+
     {	// Program Icon
     
         #include "art/cryptote-16.h"
@@ -50,6 +52,11 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     // add panes to the manager
 
+    auimgr.AddPane(toolbar, wxAuiPaneInfo().
+		   Name(wxT("toolbar")).Caption(_("Toolbar")).
+		   ToolbarPane().Top().
+		   LeftDockable(false).RightDockable(false));
+
     auimgr.AddPane(auinotebook, wxAuiPaneInfo().
 		   Name(wxT("notebook")).Caption(_("Notebook")).
 		   CenterPane().PaneBorder(false));
@@ -81,7 +88,8 @@ static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
 
 void WCryptoTE::CreateMenuBar()
 {
-    toolbar = CreateToolBar(wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT);
+    toolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+			    wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT);
     toolbar->SetToolBitmapSize(wxSize(16, 16));
 
     // *** Container
@@ -172,6 +180,142 @@ void WCryptoTE::CreateMenuBar()
 		       wxNullBitmap)
 	);
 
+    // *** Edit
+
+    wxMenu *menuEdit = new wxMenu;
+
+    #include "art/edit_undo.h"
+    #include "art/edit_redo.h"
+    #include "art/edit_cut.h"
+    #include "art/edit_copy.h"
+    #include "art/edit_paste.h"
+    #include "art/edit_clear.h"
+    #include "art/edit_find.h"
+    #include "art/go_next.h"
+
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_UNDO,
+		       _("&Undo\tCtrl+Z"),
+		       _("Undo the last change."),
+		       wxBitmapFromMemory(edit_undo_png))
+	);
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_REDO,
+		       _("&Redo\tCtrl+Shift+Z"),
+		       _("Redo the previously undone change."),
+		       wxBitmapFromMemory(edit_redo_png))
+	);
+    menuEdit->AppendSeparator();
+
+    toolbar->AddTool(wxID_UNDO,
+		     _("Undo Operation"),
+		     wxBitmapFromMemory(edit_undo_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Undo Operation"),
+		     _("Undo the last change."));
+
+    toolbar->AddTool(wxID_REDO,
+		     _("Redo Operation"),
+		     wxBitmapFromMemory(edit_redo_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Redo Operation"),
+		     _("Redo the previously undone change."));
+
+    toolbar->AddSeparator();
+
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_CUT,
+		       _("Cu&t\tCtrl+X"),
+		       _("Cut selected text into clipboard."),
+		       wxBitmapFromMemory(edit_cut_png))
+	);
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_COPY,
+		       _("&Copy\tCtrl+C"),
+		       _("Copy selected text into clipboard."),
+		       wxBitmapFromMemory(edit_copy_png))
+	);
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_PASTE,
+		       _("&Paste\tCtrl+V"),
+		       _("Paste clipboard contents at the current text position."),
+		       wxBitmapFromMemory(edit_paste_png))
+	);
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_CLEAR,
+		       _("&Delete\tDel"),
+		       _("Delete selected text."),
+		       wxBitmapFromMemory(edit_clear_png))
+	);
+    menuEdit->AppendSeparator();
+
+    toolbar->AddTool(wxID_CUT,
+		     _("Cut Selection"),
+		     wxBitmapFromMemory(edit_cut_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Cut Selection"),
+		     _("Cut selected text into clipboard."));
+
+    toolbar->AddTool(wxID_COPY,
+		     _("Copy Selection"),
+		     wxBitmapFromMemory(edit_copy_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Copy Selection"),
+		     _("Copy selected text into clipboard."));
+
+    toolbar->AddTool(wxID_PASTE,
+		     _("Paste Clipboard"),
+		     wxBitmapFromMemory(edit_paste_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Paste Clipboard"),
+		     _("Paste clipboard contents at the current text position."));
+
+    toolbar->AddSeparator();
+
+    menuEdit->Append(
+	createMenuItem(menuEdit, myID_MENU_EDIT_QUICKFIND,
+		       _("&Quick-Find\tCtrl+F"),
+		       _("Find a string in the buffer."),
+		       wxBitmapFromMemory(edit_find_png))
+	);
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_FIND,
+		       _("&Find...\tCtrl+Shift+F"),
+		       _("Open find dialog to search for a string in the buffer."),
+		       wxBitmapFromMemory(edit_find_png))
+	);
+    menuEdit->Append(
+	createMenuItem(menuEdit, wxID_REPLACE,
+		       _("&Replace\tCtrl+H"),
+		       _("Open find and replace dialog to search for and replace a string in the buffer."),
+		       wxBitmapFromMemory(edit_find_png))
+	);
+    menuEdit->AppendSeparator();
+
+    toolbar->AddTool(wxID_FIND,
+		     _("Find Text"),
+		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Find Text"),
+		     _("Open find dialog to search for a string in the buffer."));
+
+    toolbar->AddTool(wxID_REPLACE,
+		     _("Find and Replace Text"),
+		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Find and Replace Text"),
+		     _("Open find and replace dialog to search for and replace a string in the buffer."));
+
+    menuEdit->Append(
+	createMenuItem(menuEdit, myID_MENU_EDIT_GOTO,
+		       _("&Go to Line...\tCtrl+G"),
+		       _("Jump to the entered line number."),
+		       wxBitmapFromMemory(go_next_png))
+	);
+    menuEdit->AppendSeparator();
+
+
+    menuEdit->Append(wxID_SELECTALL,
+		     _("&Select all\tCtrl+A"),
+		     _("Select all text in the current buffer."));
+
+    menuEdit->Append(myID_MENU_EDIT_SELECTLINE,
+		     _("Select &line\tCtrl+L"),
+		     _("Select whole line at the current cursor position."));
+
     // *** Help
 
     wxMenu *menuHelp = new wxMenu;
@@ -190,13 +334,15 @@ void WCryptoTE::CreateMenuBar()
 
     menubar->Append(menuContainer, _("&Container"));
     menubar->Append(menuSubFile, _("&SubFile"));
-    // menubar->Append(menuEdit, _("&Edit"));
+    menubar->Append(menuEdit, _("&Edit"));
     // menubar->Append(menuView, _("&View"));
     menubar->Append(menuHelp, _("&Help"));
 
     SetMenuBar(menubar);
     toolbar->Realize();
 }
+
+// *** Menu Events ***
 
 void WCryptoTE::OnMenuContainerOpen(wxCommandEvent& WXUNUSED(event))
 {
@@ -242,10 +388,42 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
 
 }
 
+void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
+{
+    // This is actually very dangerous: the page window MUST process the event
+    // otherwise it will be passed up to the parent window, and will be caught
+    // by this event handler and passed down again.
+
+    if (cpage) cpage->ProcessEvent(event);
+}
+
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     WAbout dlg(this);
     dlg.ShowModal();
+}
+
+// *** wxAuiNotebook Callbacks ***
+
+void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
+{
+    wxWindow* sel = auinotebook->GetPage( event.GetSelection() );
+
+    if (sel && sel->IsKindOf(CLASSINFO(WNotePage)))
+    {
+	printf("page changed: %d\n", event.GetSelection());
+	cpage = (WNotePage*)sel;
+    }
+}
+
+void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
+{
+    printf("page close: %d - %d\n", event.GetSelection(), auinotebook->GetPageCount());
+
+    if (auinotebook->GetPageCount() == 1) {
+	// will be empty after the last page is closed
+	cpage = NULL;
+    }
 }
 
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
@@ -265,8 +443,31 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_SUBFILE_NEW, WCryptoTE::OnMenuSubFileNew)
     EVT_MENU	(myID_MENU_SUBFILE_IMPORT, WCryptoTE::OnMenuSubFileImport)
 
+    // Edit
+    EVT_MENU	(wxID_UNDO,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_REDO,		WCryptoTE::OnMenuEditGeneric)
+
+    EVT_MENU	(wxID_CUT,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_COPY,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_PASTE,		WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(wxID_CLEAR,		WCryptoTE::OnMenuEditGeneric)
+
+//    EVT_MENU	(myID_MENU_QUICKFIND,	WCryptoTE::OnMenuEditQuickFind)
+//    EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
+//    EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
+
+//    EVT_MENU	(myID_GOTO,		WCryptoTE::OnMenuEditGoto)
+
+    EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
+    EVT_MENU	(myID_MENU_EDIT_SELECTLINE, WCryptoTE::OnMenuEditGeneric)
+
     // Help
     EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
+
+    // *** wxAuiNotebook Callbacks
+
+    EVT_AUINOTEBOOK_PAGE_CHANGED(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageChanged)
+    EVT_AUINOTEBOOK_PAGE_CLOSE(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageClose)
 
 END_EVENT_TABLE()
 
@@ -428,132 +629,6 @@ bool WCryptoTE::FileSaveAs()
 
 void WCryptoTE::CreateMenuBar()
 {
-    // *** Edit
-
-    wxMenu *menuEdit = new wxMenu;
-
-    #include "art/edit_undo.h"
-    #include "art/edit_redo.h"
-    #include "art/edit_cut.h"
-    #include "art/edit_copy.h"
-    #include "art/edit_paste.h"
-    #include "art/edit_clear.h"
-    #include "art/edit_find.h"
-    #include "art/go_next.h"
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_UNDO,
-				     _("&Undo\tCtrl+Z"),
-				     _("Undo the last change."),
-				     wxBitmapFromMemory(edit_undo_png)) );
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_REDO,
-				     _("&Redo\tCtrl+Shift+Z"),
-				     _("Redo the previously undone change."),
-				     wxBitmapFromMemory(edit_redo_png)) );
-
-    menuEdit->AppendSeparator();
-
-    toolbar->AddTool(wxID_UNDO,
-		     _("Undo Operation"),
-		     wxBitmapFromMemory(edit_undo_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Undo Operation"),
-		     _("Undo the last change."));
-
-    toolbar->AddTool(wxID_REDO,
-		     _("Redo Operation"),
-		     wxBitmapFromMemory(edit_redo_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Redo Operation"),
-		     _("Redo the previously undone change."));
-
-    toolbar->AddSeparator();
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_CUT,
-				     _("Cu&t\tCtrl+X"),
-				     _("Cut selected text into clipboard."),
-				     wxBitmapFromMemory(edit_cut_png)) );
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_COPY,
-				     _("&Copy\tCtrl+C"),
-				     _("Copy selected text into clipboard."),
-				     wxBitmapFromMemory(edit_copy_png)) );
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_PASTE,
-				     _("&Paste\tCtrl+V"),
-				     _("Paste clipboard contents at the current text position."),
-				     wxBitmapFromMemory(edit_paste_png)) );
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_CLEAR,
-				     _("&Delete\tDel"),
-				     _("Delete selected text."),
-				     wxBitmapFromMemory(edit_clear_png)) );
-
-    menuEdit->AppendSeparator();
-
-    toolbar->AddTool(wxID_CUT,
-		     _("Cut Selection"),
-		     wxBitmapFromMemory(edit_cut_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Cut Selection"),
-		     _("Cut selected text into clipboard."));
-
-    toolbar->AddTool(wxID_COPY,
-		     _("Copy Selection"),
-		     wxBitmapFromMemory(edit_copy_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Copy Selection"),
-		     _("Copy selected text into clipboard."));
-
-    toolbar->AddTool(wxID_PASTE,
-		     _("Paste Clipboard"),
-		     wxBitmapFromMemory(edit_paste_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Paste Clipboard"),
-		     _("Paste clipboard contents at the current text position."));
-
-    toolbar->AddSeparator();
-
-    menuEdit->Append( createMenuItem(menuEdit, myID_QUICKFIND,
-				     _("&Quick-Find\tCtrl+F"),
-				     _("Find a string in the buffer."),
-				     wxBitmapFromMemory(edit_find_png)) );
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_FIND,
-				     _("&Find...\tCtrl+Shift+F"),
-				     _("Open find dialog to search for a string in the buffer."),
-				     wxBitmapFromMemory(edit_find_png)) );
-
-    menuEdit->Append( createMenuItem(menuEdit, wxID_REPLACE,
-				     _("&Replace\tCtrl+H"),
-				     _("Open find and replace dialog to search for and replace a string in the buffer."),
-				     wxBitmapFromMemory(edit_find_png)) );
-
-    menuEdit->AppendSeparator();
-
-    toolbar->AddTool(wxID_FIND,
-		     _("Find Text"),
-		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Find Text"),
-		     _("Open find dialog to search for a string in the buffer."));
-
-    toolbar->AddTool(wxID_REPLACE,
-		     _("Find and Replace Text"),
-		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Find and Replace Text"),
-		     _("Open find and replace dialog to search for and replace a string in the buffer."));
-
-    menuEdit->Append( createMenuItem(menuEdit, myID_GOTO,
-				     _("&Go to Line...\tCtrl+G"),
-				     _("Jump to the entered line number."),
-				     wxBitmapFromMemory(go_next_png)) );
-
-    menuEdit->AppendSeparator();
-
-
-    menuEdit->Append(wxID_SELECTALL,
-		     _("&Select all\tCtrl+A"),
-		     _("Select all text in the current buffer."));
-
-    menuEdit->Append(myID_MENU_SELECTLINE,
-		     _("Select &line\tCtrl+L"),
-		     _("Select whole line at the current cursor position."));
-
     // *** View
 
     wxMenu *menuView = new wxMenu;
@@ -1029,23 +1104,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     // *** Menu Items
 
-    // File
-    EVT_MENU	(wxID_OPEN,		WCryptoTE::OnMenuFileOpen)
-    EVT_MENU	(wxID_SAVE,		WCryptoTE::OnMenuFileSave)
-    EVT_MENU	(wxID_SAVEAS,		WCryptoTE::OnMenuFileSaveAs)
-    EVT_MENU	(wxID_REVERT,		WCryptoTE::OnMenuFileRevert)
-    EVT_MENU	(wxID_CLOSE,		WCryptoTE::OnMenuFileClose)
 
-    EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuFileQuit)
-
-    // Edit
-    EVT_MENU	(wxID_UNDO,		WCryptoTE::OnMenuEditGeneric)
-    EVT_MENU	(wxID_REDO,		WCryptoTE::OnMenuEditGeneric)
-
-    EVT_MENU	(wxID_CUT,		WCryptoTE::OnMenuEditGeneric)
-    EVT_MENU	(wxID_COPY,		WCryptoTE::OnMenuEditGeneric)
-    EVT_MENU	(wxID_PASTE,		WCryptoTE::OnMenuEditGeneric)
-    EVT_MENU	(wxID_CLEAR,		WCryptoTE::OnMenuEditGeneric)
 
     EVT_MENU	(myID_QUICKFIND,	WCryptoTE::OnMenuEditQuickFind)
     EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
@@ -1053,8 +1112,6 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     EVT_MENU	(myID_GOTO,		WCryptoTE::OnMenuEditGoto)
 
-    EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
-    EVT_MENU	(myID_MENU_SELECTLINE,	WCryptoTE::OnMenuEditGeneric)
 
     // View
     EVT_MENU	(myID_MENU_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)
@@ -1209,6 +1266,11 @@ WNotePage::WNotePage(class WCryptoTE* _wmain)
     : wxPanel(_wmain),
       wmain(_wmain)
 {
+}
+
+void WNotePage::UpdateStatusBar(const wxString& str)
+{
+    wmain->UpdateStatusBar(str);
 }
 
 IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);

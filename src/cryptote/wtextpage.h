@@ -5,7 +5,6 @@
 
 #include <wx/wx.h>
 #include <wx/filename.h>
-#include <stc.h>
 
 #include "wcryptote.h"
 
@@ -18,6 +17,38 @@ public:
     /// Return the text to display in the notebook
     virtual wxString	GetCaption();
 
+    // *** Identifiers ***
+
+    enum {
+	myID_FIRST = wxID_HIGHEST + 1,
+
+	myID_EDITCTRL,
+    };
+
+    /// Margins Enumeration
+    enum margin_num {
+	MARGIN_LINENUMBER = 0
+    };
+
+    // *** Event Handlers ***
+
+    // Edit Menu
+    void	OnMenuEditUndo(wxCommandEvent& event);
+    void	OnMenuEditRedo(wxCommandEvent& event);
+
+    void	OnMenuEditCut(wxCommandEvent& event);
+    void	OnMenuEditCopy(wxCommandEvent& event);
+    void	OnMenuEditPaste(wxCommandEvent& event);
+    void	OnMenuEditDelete(wxCommandEvent& event);
+
+    void	OnMenuEditSelectAll(wxCommandEvent &event);
+    void	OnMenuEditSelectLine(wxCommandEvent &event);
+
+protected:
+
+    /// The Scintilla edit control
+    class wxStyledTextCtrl*	editctrl;
+
 #if 0
 /*****************************************************************************/
 
@@ -26,11 +57,6 @@ public:
 
     /// True if buffer modified in editor
     bool		modified;
-
-    /// Margins Enumeration
-    enum margin_num {
-	MARGIN_LINENUMBER = 0
-    };
 
 public:
     // *** File operations ***
@@ -68,21 +94,7 @@ public:
     // *** Display Settings ***
 
     void	ShowLineNumber(bool on);
-
-    // *** Event Handlers ***
-
-    // Edit Menu
-    void	OnMenuEditUndo(wxCommandEvent& event);
-    void	OnMenuEditRedo(wxCommandEvent& event);
-
-    void	OnMenuEditCut(wxCommandEvent& event);
-    void	OnMenuEditCopy(wxCommandEvent& event);
-    void	OnMenuEditPaste(wxCommandEvent& event);
-    void	OnMenuEditDelete(wxCommandEvent& event);
-
-    void	OnMenuEditSelectAll(wxCommandEvent &event);
-    void	OnMenuEditSelectLine(wxCommandEvent &event);
-
+ 
 /*****************************************************************************/
 #endif
 

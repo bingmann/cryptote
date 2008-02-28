@@ -4,18 +4,46 @@
 
 #include <wx/file.h>
 #include <wx/wfstream.h>
+#include <stc.h>
 
 WTextPage::WTextPage(class WCryptoTE* parent)
     : WNotePage(parent)
 {
+    // *** Create Control ***
 
-    wxTextCtrl* editctrl = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    editctrl = new wxStyledTextCtrl(this, myID_EDITCTRL);
+    editctrl->SetFocus();
+
+    // *** Set up Sizer ***
  
     wxBoxSizer* sizerMain = new wxBoxSizer(wxVERTICAL);
     sizerMain->Add(editctrl, 1, wxEXPAND, 0);
 
     SetSizer(sizerMain);
     Layout();
+
+    // *** Set some default styles ***
+
+    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL);
+
+    editctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
+    editctrl->StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxBLACK);
+    editctrl->StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxWHITE);
+    editctrl->StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
+    editctrl->StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
+    editctrl->StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour(_T("DARK GREY")));
+
+    // Set Default View Options
+    editctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
+
+    editctrl->SetWrapMode(wxSTC_WRAP_WORD);
+    editctrl->SetWrapVisualFlags(wxSTC_WRAPVISUALFLAG_END);
+
+    // Set up margin for line numbers
+    editctrl->SetMarginType(MARGIN_LINENUMBER, wxSTC_MARGIN_NUMBER);
+    editctrl->StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
+    editctrl->StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
+    editctrl->SetMarginWidth(MARGIN_LINENUMBER, 0); // set width initially to 0
 }
 
 wxString WTextPage::GetCaption()
@@ -23,37 +51,137 @@ wxString WTextPage::GetCaption()
     return _T("Test Caption");
 }
 
+// *** Event Handlers ***
+
+void WTextPage::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
+{
+    if (!editctrl->CanUndo()) {
+	UpdateStatusBar(_("No more change operations to undo."));
+	return;
+    }
+
+    editctrl->Undo();
+}
+
+void WTextPage::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
+{
+    if (!editctrl->CanRedo()) {
+	UpdateStatusBar(_("No more change operations to redo."));
+	return;
+    }
+
+    editctrl->Redo();
+}
+
+void WTextPage::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
+{
+    if (editctrl->GetReadOnly()) {
+	UpdateStatusBar(_("Buffer is read-only."));
+	return;
+    }
+    if (editctrl->GetSelectionEnd() <= editctrl->GetSelectionStart()) {
+	UpdateStatusBar(_("Nothing selected."));
+	return;
+    }
+
+    int cutlen = editctrl->GetSelectionEnd() - editctrl->GetSelectionStart();
+
+    editctrl->Cut();
+
+    UpdateStatusBar( wxString::Format(_("Cut %u characters into clipboard."), cutlen) );
+}
+
+void WTextPage::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
+{
+    if (editctrl->GetSelectionEnd() <= editctrl->GetSelectionStart()) {
+	UpdateStatusBar(_("Nothing selected."));
+	return;
+    }
+
+    int copylen = editctrl->GetSelectionEnd() - editctrl->GetSelectionStart();
+    
+    editctrl->Copy();
+
+    UpdateStatusBar( wxString::Format(_("Copied %u characters into clipboard."), copylen) );
+}
+
+void WTextPage::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
+{
+    if (!editctrl->CanPaste()) {
+	UpdateStatusBar(_("Nothing pasted, the clipboard is empty."));
+	return;
+    }
+
+    int prevlen = editctrl->GetTextLength();
+    prevlen -= editctrl->GetSelectionEnd() - editctrl->GetSelectionStart();
+
+    editctrl->Paste();
+
+    UpdateStatusBar(
+	wxString::Format(_("Pasted %u characters from clipboard."),
+			 editctrl->GetTextLength() - prevlen)
+	);
+}
+
+void WTextPage::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
+{
+    if (editctrl->GetReadOnly()) {
+	UpdateStatusBar(_("Buffer is read-only."));
+	return;
+    }
+    if (editctrl->GetSelectionEnd() <= editctrl->GetSelectionStart()) {
+	UpdateStatusBar(_("Nothing selected."));
+	return;
+    }
+
+    int deletelen = editctrl->GetSelectionEnd() - editctrl->GetSelectionStart();
+
+    editctrl->Clear();
+    
+    UpdateStatusBar( wxString::Format(_("Deleted %u characters from buffer."), deletelen) );
+}
+
+void WTextPage::OnMenuEditSelectAll(wxCommandEvent& WXUNUSED(event))
+{
+    editctrl->SetSelection(0, editctrl->GetTextLength());
+
+    UpdateStatusBar(
+	wxString::Format(_("Selected all %u characters in buffer."),
+			 editctrl->GetTextLength())
+	);
+}
+
+void WTextPage::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
+{
+    int lineStart = editctrl->PositionFromLine(editctrl->GetCurrentLine());
+    int lineEnd = editctrl->PositionFromLine(editctrl->GetCurrentLine() + 1);
+
+    editctrl->SetSelection(lineStart, lineEnd);
+
+    UpdateStatusBar(
+	wxString::Format(_("Selected %u characters on line."),
+			 lineEnd - lineStart)
+	);
+}
+
 BEGIN_EVENT_TABLE(WTextPage, wxPanel)
+
+    // Edit Menu
+    EVT_MENU	(wxID_UNDO,		WTextPage::OnMenuEditUndo)
+    EVT_MENU	(wxID_REDO,		WTextPage::OnMenuEditRedo)
+
+    EVT_MENU	(wxID_CUT,		WTextPage::OnMenuEditCut)
+    EVT_MENU	(wxID_COPY,		WTextPage::OnMenuEditCopy)
+    EVT_MENU	(wxID_PASTE,		WTextPage::OnMenuEditPaste)
+    EVT_MENU	(wxID_CLEAR,		WTextPage::OnMenuEditDelete)
+
+    EVT_MENU	(wxID_SELECTALL,	WTextPage::OnMenuEditSelectAll)
+    EVT_MENU	(WCryptoTE::myID_MENU_EDIT_SELECTLINE, WTextPage::OnMenuEditSelectLine)
 
 END_EVENT_TABLE()
 
 #if 0
 /*****************************************************************************/
-
-{
-    // set some styles
-
-    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL);
-
-    StyleSetFont(wxSTC_STYLE_DEFAULT, font);
-    StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxBLACK);
-    StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxWHITE);
-    StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
-    StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
-    StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour(_T("DARK GREY")));
-
-    // Set Default View Options
-    SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
-
-    SetWrapMode(wxSTC_WRAP_WORD);
-    SetWrapVisualFlags(wxSTC_WRAPVISUALFLAG_END);
-
-    // Set up margin for line numbers
-    SetMarginType(MARGIN_LINENUMBER, wxSTC_MARGIN_NUMBER);
-    StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
-    StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
-    SetMarginWidth(MARGIN_LINENUMBER, 0); // set width to 0
-}
 
 void CEWEditCtrl::FileNew()
 {
@@ -76,7 +204,7 @@ bool CEWEditCtrl::FileOpen(const wxString& filename)
     if (!currentfilename.IsAbsolute())
 	currentfilename.MakeAbsolute();
 
-    wmain->UpdateStatusBar(
+    UpdateStatusBar(
 	wxString::Format(_("Loaded %1$lu bytes from %2$S"),
 			 GetLength(),
 			 currentfilename.GetFullPath().c_str()));
@@ -111,7 +239,7 @@ bool CEWEditCtrl::FileSaveAs(const wxString& filename)
 	    currentfilename.MakeAbsolute();
 
         SetSavePoint();
-	wmain->UpdateStatusBar(
+	UpdateStatusBar(
 	    wxString::Format(_("Wrote %1$lu bytes to %2$S"),
 			     buflen,
 			     currentfilename.GetFullPath().c_str()));
@@ -185,112 +313,6 @@ bool CEWEditCtrl::LoadInputStream(wxInputStream& stream)
     return true;
 }
 
-// *** Event Handlers ***
-
-void CEWEditCtrl::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
-{
-    if (!CanUndo()) {
-	wmain->UpdateStatusBar(_("No more change operations to undo."));
-	return;
-    }
-    Undo();
-}
-
-void CEWEditCtrl::OnMenuEditRedo(wxCommandEvent& WXUNUSED(event))
-{
-    if (!CanRedo()) {
-	wmain->UpdateStatusBar(_("No more change operations to redo."));
-	return;
-    }
-    Redo();
-}
-
-void CEWEditCtrl::OnMenuEditCut(wxCommandEvent& WXUNUSED(event))
-{
-    if (GetReadOnly()) {
-	wmain->UpdateStatusBar(_("Buffer is read-only."));
-	return;
-    }
-    if (GetSelectionEnd() <= GetSelectionStart()) {
-	wmain->UpdateStatusBar(_("Nothing selected."));
-	return;
-    }
-
-    int cutlen = GetSelectionEnd() - GetSelectionStart();
-    Cut();
-
-    wmain->UpdateStatusBar(
-	wxString::Format(_("Cut %u characters into clipboard."), cutlen)
-	);
-}
-
-void CEWEditCtrl::OnMenuEditCopy(wxCommandEvent& WXUNUSED(event))
-{
-    if (GetSelectionEnd() <= GetSelectionStart()) {
-	wmain->UpdateStatusBar(_("Nothing selected."));
-	return;
-    }
-
-    int copylen = GetSelectionEnd() - GetSelectionStart();
-    
-    Copy();
-
-    wmain->UpdateStatusBar(
-	wxString::Format(_("Copied %u characters into clipboard."), copylen)
-	);
-}
-
-void CEWEditCtrl::OnMenuEditPaste(wxCommandEvent& WXUNUSED(event))
-{
-    if (!CanPaste()) {
-	wmain->UpdateStatusBar(_("Nothing pasted, the clipboard is empty."));
-	return;
-    }
-
-    int prevlen = GetTextLength();
-    prevlen -= GetSelectionEnd() - GetSelectionStart();
-
-    Paste();
-
-    wmain->UpdateStatusBar(
-	wxString::Format(_("Pasted %u characters from clipboard."),
-			 GetTextLength() - prevlen)
-	);
-}
-
-void CEWEditCtrl::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
-{
-    if (GetReadOnly()) {
-	wmain->UpdateStatusBar(_("Buffer is read-only."));
-	return;
-    }
-    if (GetSelectionEnd() <= GetSelectionStart()) {
-	wmain->UpdateStatusBar(_("Nothing selected."));
-	return;
-    }
-
-    int deletelen = GetSelectionEnd() - GetSelectionStart();
-
-    Clear();
-
-    wmain->UpdateStatusBar(
-	wxString::Format(_("Deleted %u characters from buffer."), deletelen)
-	);
-}
-
-void CEWEditCtrl::OnMenuEditSelectAll(wxCommandEvent& WXUNUSED(event))
-{
-    SetSelection(0, GetTextLength());
-}
-
-void CEWEditCtrl::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
-{
-    int lineStart = PositionFromLine(GetCurrentLine());
-    int lineEnd = PositionFromLine(GetCurrentLine() + 1);
-
-    SetSelection(lineStart, lineEnd);
-}
-
 // *** Display Settings ***
 
 void CEWEditCtrl::ShowLineNumber(bool on)
@@ -304,18 +326,6 @@ void CEWEditCtrl::ShowLineNumber(bool on)
 }
 
 BEGIN_EVENT_TABLE(CEWEditCtrl, wxStyledTextCtrl)
-
-    // Edit Menu
-    EVT_MENU	(wxID_UNDO,		CEWEditCtrl::OnMenuEditUndo)
-    EVT_MENU	(wxID_REDO,		CEWEditCtrl::OnMenuEditRedo)
-
-    EVT_MENU	(wxID_CUT,		CEWEditCtrl::OnMenuEditCut)
-    EVT_MENU	(wxID_COPY,		CEWEditCtrl::OnMenuEditCopy)
-    EVT_MENU	(wxID_PASTE,		CEWEditCtrl::OnMenuEditPaste)
-    EVT_MENU	(wxID_CLEAR,		CEWEditCtrl::OnMenuEditDelete)
-
-    EVT_MENU	(wxID_SELECTALL,	CEWEditCtrl::OnMenuEditSelectAll)
-    EVT_MENU	(CEWMain::myID_MENU_SELECTLINE, CEWEditCtrl::OnMenuEditSelectLine)
 
 END_EVENT_TABLE()
 

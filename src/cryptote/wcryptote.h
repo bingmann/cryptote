@@ -31,6 +31,10 @@ public:
 
 	myID_MENU_SUBFILE_NEW,
 	myID_MENU_SUBFILE_IMPORT,
+
+	myID_MENU_EDIT_QUICKFIND,
+	myID_MENU_EDIT_GOTO,
+	myID_MENU_EDIT_SELECTLINE,
     };
 
     // *** Operations ***
@@ -53,8 +57,15 @@ public:
     void	OnMenuSubFileNew(wxCommandEvent& event);
     void	OnMenuSubFileImport(wxCommandEvent& event);
 
+    void	OnMenuEditGeneric(wxCommandEvent& event);
+
     void	OnMenuHelpAbout(wxCommandEvent& event);
- 
+
+    // wxAuiNotebook Callbacks
+
+    void	OnNotebookPageChanged(wxAuiNotebookEvent& event);
+    void	OnNotebookPageClose(wxAuiNotebookEvent& event);
+
 protected:
 
     // *** Menu, Tool and Status Bars of the Main Window ***
@@ -74,18 +85,18 @@ protected:
 
     wxAuiNotebook*	auinotebook;
 
+    /// Currently selected notebook page (or NULL).
+    class WNotePage*	cpage;
+
 #if 0
 /*****************************************************************************/
 
-	myID_MENU_SELECTLINE,
 
-	myID_QUICKFIND,
 	myID_QUICKFIND_TEXT,
 	myID_QUICKFIND_CLOSE,
 	myID_QUICKFIND_NEXT,
 	myID_QUICKFIND_PREV,
 
-	myID_GOTO,
 	myID_GOTOTEXT,
 	myID_GOTO_GO,
 	myID_GOTO_CLOSE,
@@ -255,6 +266,9 @@ protected:
 
     /// Reference to parent window class
     class WCryptoTE*	wmain;
+
+    /// Temporarily set status bar to show given text. Just forwards via wmain.
+    void	UpdateStatusBar(const wxString& str);
 
 public:
 
