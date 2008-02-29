@@ -17,11 +17,15 @@ public:
     /// Return the text to display in the notebook
     virtual wxString	GetCaption();
 
+    // *** Variables ***
+
+    /// True if buffer modified in editor
+    bool		modified;
+
     // *** Identifiers ***
 
     enum {
 	myID_FIRST = wxID_HIGHEST + 1,
-
 	myID_EDITCTRL,
     };
 
@@ -29,6 +33,11 @@ public:
     enum margin_num {
 	MARGIN_LINENUMBER = 0
     };
+
+    // *** Operations ***
+
+    /// Enable or Disable Save and SaveAs depending on if the buffer is modified.
+    void	UpdateOnSavePoint();
 
     // *** Event Handlers ***
 
@@ -46,19 +55,60 @@ public:
 
     // *** Virtual Callbacks via WNotePage ***
 
+    /// Called when the notebook page is activated/focused.
+    virtual void	PageFocused();
+
+    /// Called when the notebook page is deactivated.
+    virtual void	PageBlurred();
+
     virtual void PrepareQuickFind(bool backwards, bool reset);
     virtual void DoQuickFind(bool backwards, const wxString& findtext);
     virtual bool DoQuickGoto(const wxString& gototext);
+
+    // *** Scintilla Callbacks ***
+
+    void	OnScintillaUpdateUI(class wxStyledTextEvent& event);
+    void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
+    void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
 
     // *** Control ***
 
     /// The Scintilla edit control
     class wxStyledTextCtrl*	editctrl;
 
+    // *** Set/Get View Options ***
+
+    void	SetViewLineWrap(bool on);
+    bool	GetViewLineWrap();
+
+    void	SetViewLineNumber(bool on);
+    bool	GetViewLineNumber();
+
+    void	SetViewWhitespace(bool on);
+    bool	GetViewWhitespace();
+
+    void	SetViewEndOfLine(bool on);
+    bool	GetViewEndOfLine();
+
+    void	SetViewIndentGuide(bool on);
+    bool	GetViewIndentGuide();
+    
+    void	SetViewLonglineGuide(bool on);
+    bool	GetViewLonglineGuide();
+
 protected:
 
     /// Current starting position for incremental Quick-Find
     int			quickfind_startpos;
+
+    /// Settings of current View Options
+
+    bool	view_linewrap;
+    bool	view_linenumber;
+    bool	view_whitespace;
+    bool	view_endofline;
+    bool	view_indentguide;
+    bool	view_longlineguide;
 
 #if 0
 /*****************************************************************************/
@@ -66,8 +116,6 @@ protected:
     /// Currently opened file name
     class wxFileName	currentfilename;
 
-    /// True if buffer modified in editor
-    bool		modified;
 
 public:
     // *** File operations ***
@@ -102,10 +150,6 @@ public:
     // _Updateable_ reference to modification flag of current file.
     bool&	ModifiedFlag();
 
-    // *** Display Settings ***
-
-    void	ShowLineNumber(bool on);
- 
 /*****************************************************************************/
 #endif
 

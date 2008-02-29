@@ -10,6 +10,13 @@
 WTextPage::WTextPage(class WCryptoTE* parent)
     : WNotePage(parent)
 {
+    view_linewrap = false;
+    view_linenumber = false;
+    view_whitespace = false;
+    view_endofline = false;
+    view_indentguide = false;
+    view_longlineguide = false;
+
     // *** Create Control ***
 
     editctrl = new wxStyledTextCtrl(this, myID_EDITCTRL);
@@ -45,6 +52,8 @@ WTextPage::WTextPage(class WCryptoTE* parent)
     editctrl->StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
     editctrl->StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
     editctrl->SetMarginWidth(MARGIN_LINENUMBER, 0); // set width initially to 0
+
+    SetViewLineWrap(true);
 }
 
 wxString WTextPage::GetCaption()
@@ -167,6 +176,30 @@ void WTextPage::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
 
 // *** Virtual Callbacks via WNotePage ***
 
+void WTextPage::PageFocused()
+{
+    wxMenuBar* menubar = wmain->menubar;
+
+    // Update Menu -> View with current options
+
+    menubar->Check(WCryptoTE::myID_MENU_VIEW_LINEWRAP, view_linewrap);
+    menubar->Check(WCryptoTE::myID_MENU_VIEW_LINENUMBER, view_linenumber);
+    menubar->Check(WCryptoTE::myID_MENU_VIEW_WHITESPACE, view_whitespace);
+    menubar->Check(WCryptoTE::myID_MENU_VIEW_ENDOFLINE, view_endofline);
+    menubar->Check(WCryptoTE::myID_MENU_VIEW_INDENTGUIDE, view_indentguide);
+    menubar->Check(WCryptoTE::myID_MENU_VIEW_LONGLINEGUIDE, view_longlineguide);
+
+    // Synthesize UpdateUI event
+    wxStyledTextEvent event;
+    OnScintillaUpdateUI(event);
+
+    UpdateOnSavePoint();
+}
+
+void WTextPage::PageBlurred()
+{
+}
+
 void WTextPage::PrepareQuickFind(bool backwards, bool reset)
 {
     if (reset)
@@ -274,20 +307,169 @@ bool WTextPage::DoQuickGoto(const wxString& gototext)
 {
     long linenum;
 
-    if (! gototext.ToLong(&linenum) ) {
+    if (! gototext.ToLong(&linenum) || linenum <= 0 ) {
 	UpdateStatusBar(_("Yeah right. Enter a number smarty."));
 	return false;
     }
 
-    editctrl->GotoLine(linenum);
-    UpdateStatusBar(wxString::Format(_("Jumped to line %d."), editctrl->GetCurrentLine()));
+    editctrl->GotoLine(linenum-1);
+    UpdateStatusBar(wxString::Format(_("Jumped to line %d."), editctrl->GetCurrentLine()+1));
 
     return true;
 }
 
+// *** Scintilla Callbacks ***
+
+void WTextPage::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
+{
+    wxMenuBar* menubar = wmain->menubar;
+    wxToolBar* toolbar = wmain->toolbar;
+
+    // Enable or Disable Menu Items and Tool Bar Items
+
+    menubar->Enable(wxID_UNDO, editctrl->CanUndo());
+    menubar->Enable(wxID_REDO, editctrl->CanRedo());
+
+    menubar->Enable(wxID_PASTE, editctrl->CanPaste());
+
+    toolbar->EnableTool(wxID_UNDO, editctrl->CanUndo());
+    toolbar->EnableTool(wxID_REDO, editctrl->CanRedo());
+
+    toolbar->EnableTool(wxID_PASTE, editctrl->CanPaste());
+
+    bool HasSelection = editctrl->GetSelectionEnd() > editctrl->GetSelectionStart();
+
+    menubar->Enable(wxID_CUT, HasSelection);
+    menubar->Enable(wxID_COPY, HasSelection);
+    menubar->Enable(wxID_CLEAR, HasSelection);
+
+    toolbar->EnableTool(wxID_CUT, HasSelection);
+    toolbar->EnableTool(wxID_COPY, HasSelection);
+    toolbar->EnableTool(wxID_CLEAR, HasSelection);
+
+    // Update status bar field
+    {
+	int pos = editctrl->GetCurrentPos();
+	int row = editctrl->LineFromPosition(pos);
+	int col = editctrl->GetColumn(pos);
+	int sel = editctrl->GetSelectionEnd () - editctrl->GetSelectionStart();
+
+	wxString sb;
+	sb.Printf( _("Ln %d Col %d Sel %d"), row, col, sel);
+
+	wmain->statusbar->SetStatusText(sb, 1);
+    }
+}
+
+void WTextPage::UpdateOnSavePoint()
+{
+    wxMenuBar* menubar = wmain->menubar;
+    wxToolBar* toolbar = wmain->toolbar;
+
+    menubar->Enable(wxID_SAVE, modified);
+    menubar->Enable(wxID_REVERT, modified);
+
+    toolbar->EnableTool(wxID_SAVE, modified);
+
+    // statusbar->SetLock( editctrl->IsEncrypted() );
+
+    // UpdateTitle();
+}
+
+void WTextPage::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
+{
+    // Document is un-modified (via Undo or Save)
+    
+    modified = false;
+
+    UpdateOnSavePoint();
+}
+
+void WTextPage::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
+{
+    // Document is modified
+
+    modified = true;
+
+    UpdateOnSavePoint();
+}
+
+// *** Set/Get View Options ***
+
+void WTextPage::SetViewLineWrap(bool on)
+{
+    view_linewrap = on;
+    editctrl->SetWrapMode(view_linewrap ? wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
+}
+
+bool WTextPage::GetViewLineWrap()
+{
+    return view_linewrap;
+}
+
+void WTextPage::SetViewLineNumber(bool on)
+{
+    view_linenumber = on;
+
+    if (!view_linenumber) {
+        editctrl->SetMarginWidth(MARGIN_LINENUMBER, 0);
+    }
+    else {
+	int marginwidth = editctrl->TextWidth(wxSTC_STYLE_LINENUMBER, _T("_99999"));
+	editctrl->SetMarginWidth(MARGIN_LINENUMBER, marginwidth);
+    }
+}
+bool WTextPage::GetViewLineNumber()
+{
+    return view_linenumber;
+}
+
+void WTextPage::SetViewWhitespace(bool on)
+{
+    view_whitespace = on;
+    editctrl->SetViewWhiteSpace(view_whitespace ? wxSTC_WS_VISIBLEALWAYS : wxSTC_WS_INVISIBLE);
+}
+bool WTextPage::GetViewWhitespace()
+{
+    return view_whitespace;
+}
+
+void WTextPage::SetViewEndOfLine(bool on)
+{
+    view_endofline = on;
+    editctrl->SetViewEOL(view_endofline);
+}
+bool WTextPage::GetViewEndOfLine()
+{
+    return view_endofline;
+}
+
+void WTextPage::SetViewIndentGuide(bool on)
+{
+    view_indentguide = on;
+    editctrl->SetIndentationGuides(view_indentguide);
+}
+bool WTextPage::GetViewIndentGuide()
+{
+    return view_indentguide;
+}
+    
+void WTextPage::SetViewLonglineGuide(bool on)
+{
+    view_longlineguide = on;
+    editctrl->SetEdgeColumn(80);
+    editctrl->SetEdgeMode(view_longlineguide ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
+}
+bool WTextPage::GetViewLonglineGuide()
+{
+    return view_longlineguide;
+}
+
+
 BEGIN_EVENT_TABLE(WTextPage, wxPanel)
 
-    // Edit Menu
+    // *** Edit Menu Event passed down by WCryptoTE
+
     EVT_MENU	(wxID_UNDO,		WTextPage::OnMenuEditUndo)
     EVT_MENU	(wxID_REDO,		WTextPage::OnMenuEditRedo)
 
@@ -298,6 +480,12 @@ BEGIN_EVENT_TABLE(WTextPage, wxPanel)
 
     EVT_MENU	(wxID_SELECTALL,	WTextPage::OnMenuEditSelectAll)
     EVT_MENU	(WCryptoTE::myID_MENU_EDIT_SELECTLINE, WTextPage::OnMenuEditSelectLine)
+
+    // *** Scintilla Edit Callbacks
+
+    EVT_STC_UPDATEUI(myID_EDITCTRL,		WTextPage::OnScintillaUpdateUI)
+    EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	WTextPage::OnScintillaSavePointReached)
+    EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WTextPage::OnScintillaSavePointLeft)
 
 END_EVENT_TABLE()
 

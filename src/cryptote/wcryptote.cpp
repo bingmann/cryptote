@@ -351,6 +351,34 @@ void WCryptoTE::CreateMenuBar()
 		     _("Select &line\tCtrl+L"),
 		     _("Select whole line at the current cursor position."));
 
+    // *** View
+
+    wxMenu *menuView = new wxMenu;
+
+    menuView->AppendCheckItem(myID_MENU_VIEW_LINEWRAP,
+			      _("&Wrap long lines"),
+			      _("Wrap long lines in editor."));
+
+    menuView->AppendCheckItem(myID_MENU_VIEW_LINENUMBER,
+			      _("Show line &numbers"),
+			      _("Show line numbers on left margin."));
+
+    menuView->AppendCheckItem(myID_MENU_VIEW_WHITESPACE,
+			      _("Show white&space"),
+			      _("Show white space (space and tab) in buffer."));
+
+    menuView->AppendCheckItem(myID_MENU_VIEW_ENDOFLINE,
+			      _("Show &end of line symbols"),
+			      _("Show end of line symbols (new-line and carriage-return) in buffer."));
+
+    menuView->AppendCheckItem(myID_MENU_VIEW_INDENTGUIDE,
+			      _("Show &indent guide lines"),
+			      _("Show guide lines following the indention depth."));
+
+    menuView->AppendCheckItem(myID_MENU_VIEW_LONGLINEGUIDE,
+			      _("Show guide line at &column 80"),
+			      _("Show guide line at column 80 to display over-long lines."));
+
     // *** Help
 
     wxMenu *menuHelp = new wxMenu;
@@ -370,7 +398,7 @@ void WCryptoTE::CreateMenuBar()
     menubar->Append(menuContainer, _("&Container"));
     menubar->Append(menuSubFile, _("&SubFile"));
     menubar->Append(menuEdit, _("&Edit"));
-    // menubar->Append(menuView, _("&View"));
+    menubar->Append(menuView, _("&View"));
     menubar->Append(menuHelp, _("&Help"));
 
     SetMenuBar(menubar);
@@ -427,7 +455,7 @@ void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
 {
     // This is actually very dangerous: the page window MUST process the event
     // otherwise it will be passed up to the parent window, and will be caught
-    // by this event handler and passed down again.
+    // by this event handler and passed down again, creating an infinite loop.
 
     if (cpage) cpage->ProcessEvent(event);
 }
@@ -486,6 +514,54 @@ void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetViewLineWrap(event.IsChecked());
+}
+
+void WCryptoTE::OnMenuViewLineNumber(wxCommandEvent& event)
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetViewLineNumber(event.IsChecked());
+}
+
+void WCryptoTE::OnMenuViewWhitespace(wxCommandEvent& event)
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetViewWhitespace(event.IsChecked());
+}
+
+void WCryptoTE::OnMenuViewEndOfLine(wxCommandEvent& event)
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetViewEndOfLine(event.IsChecked());
+}
+
+void WCryptoTE::OnMenuViewIndentGuide(wxCommandEvent& event)
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetViewIndentGuide(event.IsChecked());
+}
+
+void WCryptoTE::OnMenuViewLonglineGuide(wxCommandEvent& event)
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetViewLonglineGuide(event.IsChecked());
+}
+
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     WAbout dlg(this);
@@ -521,8 +597,15 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 
     if (sel && sel->IsKindOf(CLASSINFO(WNotePage)))
     {
+	if (cpage) cpage->PageBlurred();
+
 	printf("page changed: %d\n", event.GetSelection());
 	cpage = (WNotePage*)sel;
+
+	cpage->PageFocused();
+    }
+    else {
+	wxLogError(_T("Invalid notebook page activated."));
     }
 }
 
@@ -688,6 +771,14 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_EDIT_SELECTLINE, WCryptoTE::OnMenuEditGeneric)
 
+    // View
+    EVT_MENU	(myID_MENU_VIEW_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)
+    EVT_MENU	(myID_MENU_VIEW_LINENUMBER,	WCryptoTE::OnMenuViewLineNumber)
+    EVT_MENU	(myID_MENU_VIEW_WHITESPACE,	WCryptoTE::OnMenuViewWhitespace)
+    EVT_MENU	(myID_MENU_VIEW_ENDOFLINE,	WCryptoTE::OnMenuViewEndOfLine)
+    EVT_MENU	(myID_MENU_VIEW_INDENTGUIDE,	WCryptoTE::OnMenuViewIndentGuide)
+    EVT_MENU	(myID_MENU_VIEW_LONGLINEGUIDE,	WCryptoTE::OnMenuViewLonglineGuide)
+
     // Help
     EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
 
@@ -782,34 +873,6 @@ bool WCryptoTE::FileSaveAs()
 
 void WCryptoTE::CreateMenuBar()
 {
-    // *** View
-
-    wxMenu *menuView = new wxMenu;
-
-    menuView->AppendCheckItem(myID_MENU_LINEWRAP,
-			      _("&Wrap long lines"),
-			      _("Wrap long lines in editor."));
-
-    menuView->AppendCheckItem(myID_MENU_LINENUMBER,
-			      _("Show line &numbers"),
-			      _("Show line numbers on left margin."));
-
-    menuView->AppendCheckItem(myID_MENU_WHITESPACE,
-			      _("Show white&space"),
-			      _("Show white space (space and tab) in buffer."));
-
-    menuView->AppendCheckItem(myID_MENU_ENDOFLINE,
-			      _("Show &end of line symbols"),
-			      _("Show end of line symbols (new-line and carriage-return) in buffer."));
-
-    menuView->AppendCheckItem(myID_MENU_INDENTGUIDE,
-			      _("Show &indent guide lines"),
-			      _("Show guide lines following the indention depth."));
-
-    menuView->AppendCheckItem(myID_MENU_LONGLINEGUIDE,
-			      _("Show guide line at &column 80"),
-			      _("Show guide line at column 80 to display over-long lines."));
-
 }
 
 void WCryptoTE::OnClose(wxCloseEvent& event)
@@ -900,107 +963,6 @@ void WCryptoTE::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
     editctrl->FileNew();
 }
 
-void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
-{
-    editctrl->SetWrapMode(event.IsChecked() ? wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
-}
-
-void WCryptoTE::OnMenuViewLineNumber(wxCommandEvent& event)
-{
-    editctrl->ShowLineNumber(event.IsChecked());
-}
-
-void WCryptoTE::OnMenuViewWhitespace(wxCommandEvent& event)
-{
-    editctrl->SetViewWhiteSpace(event.IsChecked() ? wxSTC_WS_VISIBLEALWAYS : wxSTC_WS_INVISIBLE);
-}
-
-void WCryptoTE::OnMenuViewEndOfLine(wxCommandEvent& event)
-{
-    editctrl->SetViewEOL(event.IsChecked());
-}
-
-void WCryptoTE::OnMenuViewIndentGuide(wxCommandEvent& event)
-{
-    editctrl->SetIndentationGuides(event.IsChecked());
-}
-
-void WCryptoTE::OnMenuViewLonglineGuide(wxCommandEvent& event)
-{
-    editctrl->SetEdgeColumn(80);
-    editctrl->SetEdgeMode(event.IsChecked() ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
-}
-
-// *** Scintilla Callbacks ***
-
-void WCryptoTE::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
-{
-    // Enable or Disable Menu Items and Tool Bar Items
-
-    menubar->Enable(wxID_UNDO, editctrl->CanUndo());
-    menubar->Enable(wxID_REDO, editctrl->CanRedo());
-
-    menubar->Enable(wxID_PASTE, editctrl->CanPaste());
-
-    toolbar->EnableTool(wxID_UNDO, editctrl->CanUndo());
-    toolbar->EnableTool(wxID_REDO, editctrl->CanRedo());
-
-    toolbar->EnableTool(wxID_PASTE, editctrl->CanPaste());
-
-    bool HasSelection = editctrl->GetSelectionEnd() > editctrl->GetSelectionStart();
-
-    menubar->Enable(wxID_CUT, HasSelection);
-    menubar->Enable(wxID_COPY, HasSelection);
-    menubar->Enable(wxID_CLEAR, HasSelection);
-
-    toolbar->EnableTool(wxID_CUT, HasSelection);
-    toolbar->EnableTool(wxID_COPY, HasSelection);
-    toolbar->EnableTool(wxID_CLEAR, HasSelection);
-
-    // Update status bar field
-    {
-	int pos = editctrl->GetCurrentPos();
-	int row = editctrl->LineFromPosition(pos);
-	int col = editctrl->GetColumn(pos);
-	int sel = editctrl->GetSelectionEnd () - editctrl->GetSelectionStart();
-
-	wxString sb;
-	sb.Printf( _("Ln %d Col %d Sel %d"), row, col, sel);
-
-	statusbar->SetStatusText(sb, 1);
-    }
-}
-
-void WCryptoTE::UpdateOnSavePoint()
-{
-    menubar->Enable(wxID_SAVE, editctrl->ModifiedFlag());
-    menubar->Enable(wxID_REVERT, editctrl->ModifiedFlag());
-
-    toolbar->EnableTool(wxID_SAVE, editctrl->ModifiedFlag());
-
-    // statusbar->SetLock( editctrl->IsEncrypted() );
-
-    UpdateTitle();
-}
-
-void WCryptoTE::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
-{
-    // Document is un-modified
-    
-    editctrl->ModifiedFlag() = false;
-
-    UpdateOnSavePoint();
-}
-
-void WCryptoTE::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
-{
-    // Document is modified
-
-    editctrl->ModifiedFlag() = true;
-
-    UpdateOnSavePoint();
-}
-
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     // *** Generic Events
@@ -1012,19 +974,6 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
     EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
 
-    // View
-    EVT_MENU	(myID_MENU_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)
-    EVT_MENU	(myID_MENU_LINENUMBER,	WCryptoTE::OnMenuViewLineNumber)
-    EVT_MENU	(myID_MENU_WHITESPACE,	WCryptoTE::OnMenuViewWhitespace)
-    EVT_MENU	(myID_MENU_ENDOFLINE,	WCryptoTE::OnMenuViewEndOfLine)
-    EVT_MENU	(myID_MENU_INDENTGUIDE,	WCryptoTE::OnMenuViewIndentGuide)
-    EVT_MENU	(myID_MENU_LONGLINEGUIDE, WCryptoTE::OnMenuViewLonglineGuide)
-
-    // *** Scintilla Edit Callbacks
-
-    EVT_STC_UPDATEUI(myID_EDITCTRL,		WCryptoTE::OnScintillaUpdateUI)
-    EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	WCryptoTE::OnScintillaSavePointReached)
-    EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WCryptoTE::OnScintillaSavePointLeft)
 
 END_EVENT_TABLE()
 

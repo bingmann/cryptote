@@ -20,7 +20,7 @@ public:
 
     // *** Identifiers ***
 
-    enum {
+    enum ids {
 	myID_FIRST = wxID_HIGHEST + 1,
 
 	// Main Window Controls
@@ -35,6 +35,13 @@ public:
 	myID_MENU_EDIT_QUICKFIND,
 	myID_MENU_EDIT_GOTO,
 	myID_MENU_EDIT_SELECTLINE,
+
+	myID_MENU_VIEW_LINEWRAP,
+	myID_MENU_VIEW_LINENUMBER,
+	myID_MENU_VIEW_WHITESPACE,	
+	myID_MENU_VIEW_ENDOFLINE,
+	myID_MENU_VIEW_INDENTGUIDE,
+	myID_MENU_VIEW_LONGLINEGUIDE,
 
 	// (Other) Accelerators
 
@@ -83,6 +90,13 @@ public:
     void	OnMenuEditFind(wxCommandEvent& event);
     void	OnMenuEditFindReplace(wxCommandEvent& event);
 
+    void	OnMenuViewLineWrap(wxCommandEvent& event);
+    void	OnMenuViewLineNumber(wxCommandEvent& event);
+    void	OnMenuViewWhitespace(wxCommandEvent& event);
+    void	OnMenuViewEndOfLine(wxCommandEvent& event);
+    void	OnMenuViewIndentGuide(wxCommandEvent& event);
+    void	OnMenuViewLonglineGuide(wxCommandEvent& event);
+
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
     // Accelerator Events
@@ -111,13 +125,14 @@ protected:
 
     // *** Menu, Tool and Status Bars of the Main Window ***
 
+public:
     class wxMenuBar*	menubar;
     class wxToolBar*	toolbar;
-
     class WStatusBar*	statusbar;
 
     void 		CreateMenuBar();
 
+protected:
     // *** wxAUI Window Manager ***
 
     wxAuiManager 	auimgr;
@@ -145,12 +160,6 @@ public:
 #if 0
 /*****************************************************************************/
 
-	myID_MENU_LINEWRAP,
-	myID_MENU_LINENUMBER,
-	myID_MENU_WHITESPACE,	
-	myID_MENU_ENDOFLINE,
-	myID_MENU_INDENTGUIDE,
-	myID_MENU_LONGLINEGUIDE
     };
 
 
@@ -191,18 +200,6 @@ public:
     void	OnMenuFileClose(wxCommandEvent& event);
 
 
-    void	OnMenuViewLineWrap(wxCommandEvent& event);
-    void	OnMenuViewLineNumber(wxCommandEvent& event);
-    void	OnMenuViewWhitespace(wxCommandEvent& event);
-    void	OnMenuViewEndOfLine(wxCommandEvent& event);
-    void	OnMenuViewIndentGuide(wxCommandEvent& event);
-    void	OnMenuViewLonglineGuide(wxCommandEvent& event);
-
-    // Scintilla Callbacks
-
-    void	OnScintillaUpdateUI(class wxStyledTextEvent& event);
-    void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
-    void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
 
 /*****************************************************************************/
 #endif
@@ -264,6 +261,12 @@ public:
 
     /// Return the text to display in the notebook
     virtual wxString	GetCaption() = 0;
+
+    /// Called when the notebook page is activated/focused.
+    virtual void	PageFocused() = 0;
+
+    /// Called when the notebook page is deactivated.
+    virtual void	PageBlurred() = 0;
 
     /// Prepare for a Quick-Find by setting the search anchor point, backwards
     /// for searching backwards and reset for terminating incremental search
