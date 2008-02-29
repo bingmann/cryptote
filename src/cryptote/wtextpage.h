@@ -50,10 +50,12 @@ public:
     virtual void DoQuickFind(bool backwards, const wxString& findtext);
     virtual bool DoQuickGoto(const wxString& gototext);
 
-protected:
+    // *** Control ***
 
     /// The Scintilla edit control
     class wxStyledTextCtrl*	editctrl;
+
+protected:
 
     /// Current starting position for incremental Quick-Find
     int			quickfind_startpos;

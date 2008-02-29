@@ -59,6 +59,9 @@ public:
     /// Temporarily set status bar to show given text.
     void	UpdateStatusBar(const wxString& str);
 
+    /// Callback from any subdialog to hide it's pane 
+    void	HidePane(wxWindow* child);
+
     // *** Event Handlers ***
 
     // Menu Events
@@ -77,6 +80,8 @@ public:
     void	OnMenuEditGeneric(wxCommandEvent& event);
     void	OnMenuEditQuickFind(wxCommandEvent& event);
     void	OnMenuEditGoto(wxCommandEvent& event);
+    void	OnMenuEditFind(wxCommandEvent& event);
+    void	OnMenuEditFindReplace(wxCommandEvent& event);
 
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
@@ -121,16 +126,21 @@ protected:
 
     wxAuiNotebook*	auinotebook;
 
+public:
+
     /// Currently selected notebook page (or NULL).
     class WNotePage*	cpage;
 
-public:
-
+    /// Quick-Find Bar activated with Ctrl+F
     class WQuickFindBar* quickfindbar;
     bool		quickfindbar_visible;
 
+    /// Quick-Goto Bar activated with Ctrl+G
     class WQuickGotoBar* quickgotobar;
     bool		quickgotobar_visible;
+
+    /// (Slow) Find & Replace Dialog activated with Ctrl+Shift+F
+    class WFindReplace*	findreplacedlg;
 
 #if 0
 /*****************************************************************************/
@@ -180,8 +190,6 @@ public:
     void	OnMenuFileRevert(wxCommandEvent& event);
     void	OnMenuFileClose(wxCommandEvent& event);
 
-    void	OnMenuEditFind(wxCommandEvent& event);
-    void	OnMenuEditFindReplace(wxCommandEvent& event);
 
     void	OnMenuViewLineWrap(wxCommandEvent& event);
     void	OnMenuViewLineNumber(wxCommandEvent& event);
@@ -190,17 +198,11 @@ public:
     void	OnMenuViewIndentGuide(wxCommandEvent& event);
     void	OnMenuViewLonglineGuide(wxCommandEvent& event);
 
-    void	OnMenuHelpAbout(wxCommandEvent& event);
-
     // Scintilla Callbacks
 
     void	OnScintillaUpdateUI(class wxStyledTextEvent& event);
     void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
     void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
-
-    // *** Current Modeless Dialogs ***
-
-    class CEWFind*	findreplace_dlg;
 
 /*****************************************************************************/
 #endif

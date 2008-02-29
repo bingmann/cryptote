@@ -7,30 +7,30 @@
 #include <wx/statline.h>
 // end wxGlade
 
-#ifndef CEWFIND_H
-#define CEWFIND_H
+#ifndef WFINDREPLACE_H
+#define WFINDREPLACE_H
 
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class CEWFind : public wxDialog
+class WFindReplace : public wxPanel
 {
 public:
-    // begin wxGlade: CEWFind::ids
+    // begin wxGlade: WFindReplace::ids
     enum {
         myID_COMBO_FIND = wxID_HIGHEST + 1000,
         myID_REPLACEALL = wxID_HIGHEST + 1002
     };
     // end wxGlade
 
-    CEWFind(class CEWMain* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WFindReplace(class WCryptoTE* parent, int id=wxID_ANY, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=0);
 
     /// Change dialog to show replacement controls
     void	ShowReplace(bool show);
 
 protected:
     /// Reference to main window
-    class CEWMain* wmain;
+    class WCryptoTE* wmain;
 
     /// Whether this is a find&replace box
     bool	showreplace;
@@ -39,13 +39,13 @@ protected:
     bool	havefound;
 
 private:
-    // begin wxGlade: CEWFind::methods
+    // begin wxGlade: WFindReplace::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: CEWFind::attributes
+    // begin wxGlade: WFindReplace::attributes
     wxStaticBox* sizer3_staticbox;
     wxComboBox* comboFind;
     wxStaticText* labelReplace;
@@ -71,4 +71,4 @@ public:
     virtual void OnButtonClose(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
-#endif // CEWFIND_H
+#endif // WFINDREPLACE_H

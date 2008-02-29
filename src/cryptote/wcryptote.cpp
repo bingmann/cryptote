@@ -2,6 +2,7 @@
 
 #include "wcryptote.h"
 #include "wtextpage.h"
+#include "wfind.h"
 
 #include "common/tools.h"
 
@@ -57,6 +58,8 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"));
     auinotebook->AddPage(new WTextPage(this), wxT("Test2 wxAUI"));
 
+    findreplacedlg = NULL;
+
     // *** wxAUI Layout ***
 
     // tell wxAuiManager to manage this frame
@@ -101,6 +104,12 @@ WCryptoTE::~WCryptoTE()
 void WCryptoTE::UpdateStatusBar(const wxString& str)
 {
     statusbar->SetStatusText(str);
+}
+
+void WCryptoTE::HidePane(wxWindow* child)
+{
+    auimgr.GetPane(child).Hide();
+    auimgr.Update();
 }
 
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
@@ -610,6 +619,40 @@ void WCryptoTE::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+void WCryptoTE::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
+{
+    if (!findreplacedlg)
+    {
+	findreplacedlg = new WFindReplace(this);
+
+	auimgr.AddPane(findreplacedlg, wxAuiPaneInfo().
+		       Name(wxT("findreplacedlg")).
+		       Dockable(false).Float());
+    }
+
+    findreplacedlg->ShowReplace(false);
+
+    auimgr.GetPane(findreplacedlg).Show().Caption(_("Find"));
+    auimgr.Update();
+}
+
+void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
+{
+    if (!findreplacedlg)
+    {
+	findreplacedlg = new WFindReplace(this);
+
+	auimgr.AddPane(findreplacedlg, wxAuiPaneInfo().
+		       Name(wxT("findreplacedlg")).
+		       Dockable(false).Float());
+    }
+
+    findreplacedlg->ShowReplace(true);
+
+    auimgr.GetPane(findreplacedlg).Show().Caption(_("Find & Replace"));
+    auimgr.Update();
+}
+
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     // *** Menu Items
@@ -637,8 +680,8 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_CLEAR,		WCryptoTE::OnMenuEditGeneric)
 
     EVT_MENU	(myID_MENU_EDIT_QUICKFIND, WCryptoTE::OnMenuEditQuickFind)
-//    EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
-//    EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
+    EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
+    EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
 
     EVT_MENU	(myID_MENU_EDIT_GOTO,	WCryptoTE::OnMenuEditGoto)
 
@@ -855,26 +898,6 @@ void WCryptoTE::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
     if (!AllowCloseModified()) return;
 
     editctrl->FileNew();
-}
-
-void WCryptoTE::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
-{
-    if (!findreplace_dlg) {
-	findreplace_dlg = new CEWFind(this);
-    }
-
-    findreplace_dlg->ShowReplace(false);
-    findreplace_dlg->Show();
-}
-
-void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
-{
-    if (!findreplace_dlg) {
-	findreplace_dlg = new CEWFind(this);
-    }
-
-    findreplace_dlg->ShowReplace(true);
-    findreplace_dlg->Show();
 }
 
 void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
