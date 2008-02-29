@@ -35,6 +35,23 @@ public:
 	myID_MENU_EDIT_QUICKFIND,
 	myID_MENU_EDIT_GOTO,
 	myID_MENU_EDIT_SELECTLINE,
+
+	// (Other) Accelerators
+
+	myID_ACCEL_ESCAPE,
+
+	// Quick-Find Bar
+
+	myID_QUICKFIND_TEXT,
+	myID_QUICKFIND_CLOSE,
+	myID_QUICKFIND_NEXT,
+	myID_QUICKFIND_PREV,
+
+	// Quick-Goto Bar
+
+	myID_QUICKGOTO_TEXT,
+	myID_QUICKGOTO_GO,
+	myID_QUICKGOTO_CLOSE,
     };
 
     // *** Operations ***
@@ -58,13 +75,32 @@ public:
     void	OnMenuSubFileImport(wxCommandEvent& event);
 
     void	OnMenuEditGeneric(wxCommandEvent& event);
+    void	OnMenuEditQuickFind(wxCommandEvent& event);
+    void	OnMenuEditGoto(wxCommandEvent& event);
 
     void	OnMenuHelpAbout(wxCommandEvent& event);
+
+    // Accelerator Events
+
+    void	OnAccelEscape(wxCommandEvent& event);
 
     // wxAuiNotebook Callbacks
 
     void	OnNotebookPageChanged(wxAuiNotebookEvent& event);
     void	OnNotebookPageClose(wxAuiNotebookEvent& event);
+
+    // Quick-Find Bar
+
+    void	OnTextQuickFind(wxCommandEvent& event);
+
+    void	OnButtonQuickFindNext(wxCommandEvent& event);
+    void	OnButtonQuickFindPrev(wxCommandEvent& event);
+    void	OnButtonQuickFindClose(wxCommandEvent& event);
+
+    // Quick-Goto Bar
+
+    void	OnButtonGotoGo(wxCommandEvent& event);
+    void	OnButtonGotoClose(wxCommandEvent& event);
 
 protected:
 
@@ -88,18 +124,16 @@ protected:
     /// Currently selected notebook page (or NULL).
     class WNotePage*	cpage;
 
+public:
+
+    class WQuickFindBar* quickfindbar;
+    bool		quickfindbar_visible;
+
+    class WQuickGotoBar* quickgotobar;
+    bool		quickgotobar_visible;
+
 #if 0
 /*****************************************************************************/
-
-
-	myID_QUICKFIND_TEXT,
-	myID_QUICKFIND_CLOSE,
-	myID_QUICKFIND_NEXT,
-	myID_QUICKFIND_PREV,
-
-	myID_GOTOTEXT,
-	myID_GOTO_GO,
-	myID_GOTO_CLOSE,
 
 	myID_MENU_LINEWRAP,
 	myID_MENU_LINENUMBER,
@@ -146,15 +180,8 @@ protected:
     void	OnMenuFileRevert(wxCommandEvent& event);
     void	OnMenuFileClose(wxCommandEvent& event);
 
-    void	OnMenuFileQuit(wxCommandEvent& event);
-
-    void	OnMenuEditGeneric(wxCommandEvent& event);
-
-    void	OnMenuEditQuickFind(wxCommandEvent& event);
     void	OnMenuEditFind(wxCommandEvent& event);
     void	OnMenuEditFindReplace(wxCommandEvent& event);
-
-    void	OnMenuEditGoto(wxCommandEvent& event);
 
     void	OnMenuViewLineWrap(wxCommandEvent& event);
     void	OnMenuViewLineNumber(wxCommandEvent& event);
@@ -170,45 +197,6 @@ protected:
     void	OnScintillaUpdateUI(class wxStyledTextEvent& event);
     void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
     void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
-
-    // Quick-Find Bar
-
-    void	OnTextQuickFind(wxCommandEvent& event);
-
-    void	OnButtonQuickFindNext(wxCommandEvent& event);
-    void	OnButtonQuickFindPrev(wxCommandEvent& event);
-    void	OnButtonQuickFindClose(wxCommandEvent& event);
-
-    // Quick-Goto Bar
-
-    void	OnButtonGotoGo(wxCommandEvent& event);
-    void	OnButtonGotoClose(wxCommandEvent& event);
-
-protected:
-
-    wxBoxSizer*	sizerMain;
-
-public:
-    // *** Styled Text Edit control ***
-
-    class CEWEditCtrl*	editctrl;
-
-protected:
-    // *** Quick-Find Popup Bar ***
-
-    class wxBoxSizer*	sizerQuickFind;
-    class wxTextCtrl*	textctrlQuickFind;
-
-    bool		quickfind_visible;
-    int			quickfind_startpos;
-
-    void		QuickFind(bool forward);
-
-    // *** Quick-Goto Popup Bar ***
-    class wxBoxSizer*	sizerQuickGoto;
-    class wxTextCtrl*	textctrlGoto;
-
-    bool		quickgoto_visible;
 
     // *** Current Modeless Dialogs ***
 
@@ -274,6 +262,18 @@ public:
 
     /// Return the text to display in the notebook
     virtual wxString	GetCaption() = 0;
+
+    /// Prepare for a Quick-Find by setting the search anchor point, backwards
+    /// for searching backwards and reset for terminating incremental search
+    /// and restarting.
+    virtual void	PrepareQuickFind(bool backwards, bool reset) = 0;
+
+    /// Execute Quick-Find for a search string.
+    virtual void	DoQuickFind(bool backwards, const wxString& findtext) = 0;
+
+    /// Execute Quick-Goto for a given string or set an error message. The goto
+    /// window will close if the function returns true.
+    virtual bool	DoQuickGoto(const wxString& gototext) = 0;
 
     DECLARE_ABSTRACT_CLASS(WNotePage);
 };

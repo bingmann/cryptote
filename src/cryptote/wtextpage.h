@@ -44,10 +44,19 @@ public:
     void	OnMenuEditSelectAll(wxCommandEvent &event);
     void	OnMenuEditSelectLine(wxCommandEvent &event);
 
+    // *** Virtual Callbacks via WNotePage ***
+
+    virtual void PrepareQuickFind(bool backwards, bool reset);
+    virtual void DoQuickFind(bool backwards, const wxString& findtext);
+    virtual bool DoQuickGoto(const wxString& gototext);
+
 protected:
 
     /// The Scintilla edit control
     class wxStyledTextCtrl*	editctrl;
+
+    /// Current starting position for incremental Quick-Find
+    int			quickfind_startpos;
 
 #if 0
 /*****************************************************************************/
@@ -100,6 +109,26 @@ public:
 
 private:
     DECLARE_EVENT_TABLE()
+};
+
+class WQuickFindBar : public wxPanel
+{
+public:
+
+    WQuickFindBar(class WCryptoTE* wmain);
+
+    class wxBoxSizer*	sizerQuickFind;
+    class wxTextCtrl*	textctrlQuickFind;
+};
+
+class WQuickGotoBar : public wxPanel
+{
+public:
+
+    WQuickGotoBar(class WCryptoTE* wmain);
+
+    class wxBoxSizer*	sizerQuickGoto;
+    class wxTextCtrl*	textctrlGoto;
 };
 
 #endif // WTEXTPAGE_H

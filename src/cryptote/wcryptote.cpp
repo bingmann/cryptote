@@ -33,6 +33,14 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     SetStatusBar(statusbar);
     UpdateStatusBar(_("Welcome to CryptoTE..."));
 
+    { // Accelerator to handle ESC key
+
+	wxAcceleratorEntry entries[1];
+	entries[0].Set(wxACCEL_NORMAL, WXK_ESCAPE, myID_ACCEL_ESCAPE);
+	wxAcceleratorTable accel(1, entries);
+	SetAcceleratorTable(accel);
+    }
+
     // *** Set up Main Windows ***
 
     // Create Controls
@@ -41,6 +49,10 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 				    wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
 
     auinotebook->SetArtProvider(new wxAuiSimpleTabArt);
+
+    quickfindbar = new WQuickFindBar(this);
+
+    quickgotobar = new WQuickGotoBar(this);
 
     auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"));
     auinotebook->AddPage(new WTextPage(this), wxT("Test2 wxAUI"));
@@ -61,10 +73,24 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 		   Name(wxT("notebook")).Caption(_("Notebook")).
 		   CenterPane().PaneBorder(false));
 
+    auimgr.AddPane(quickfindbar, wxAuiPaneInfo().Hide().
+		   Name(wxT("quickfindbar")).Caption(_("Quick-Find")).
+		   CaptionVisible(false).PaneBorder(false).
+		   Bottom().DockFixed().Gripper().
+		   LeftDockable(false).RightDockable(false));
+
+    auimgr.AddPane(quickgotobar, wxAuiPaneInfo().Hide().
+		   Name(wxT("quickgotobar")).Caption(_("Quick-Goto")).
+		   CaptionVisible(false).PaneBorder(false).
+		   Bottom().DockFixed().Gripper().
+		   LeftDockable(false).RightDockable(false));
+
     // "commit" all changes made to wxAuiManager
     auimgr.Update();
 
     Centre();
+
+    if (cpage) cpage->SetFocus();
 }
 
 WCryptoTE::~WCryptoTE()
@@ -397,10 +423,85 @@ void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
     if (cpage) cpage->ProcessEvent(event);
 }
 
+void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
+{
+    if (!cpage) return;
+
+    if (quickfindbar_visible)
+    {
+	// pushing Ctrl+F again is equivalent to Search-Next
+
+	quickfindbar->textctrlQuickFind->SetFocus();
+	
+	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+
+	cpage->PrepareQuickFind(false, false);
+
+	cpage->DoQuickFind(false, findtext);
+    }
+    else
+    {
+	// make Quick-Find bar visible
+
+	auimgr.GetPane(quickfindbar).Show();
+	auimgr.GetPane(quickgotobar).Hide();
+	auimgr.Update();
+
+	quickgotobar_visible = false;
+	quickfindbar_visible = true;
+
+	cpage->PrepareQuickFind(false, true);
+
+	quickfindbar->textctrlQuickFind->SetFocus();
+	quickfindbar->textctrlQuickFind->SetValue(wxT(""));
+    }
+}
+
+void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
+{
+    if (!quickgotobar_visible)
+    {
+	auimgr.GetPane(quickgotobar).Show();
+	auimgr.GetPane(quickfindbar).Hide();
+	auimgr.Update();
+
+	quickfindbar_visible = false;
+	quickgotobar_visible = true;
+
+	quickgotobar->textctrlGoto->SetFocus();
+	quickfindbar->textctrlQuickFind->SetValue(wxT(""));
+    }
+    else
+    {
+	quickgotobar->textctrlGoto->SetFocus();
+    }
+}
+
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     WAbout dlg(this);
     dlg.ShowModal();
+}
+
+void WCryptoTE::OnAccelEscape(wxCommandEvent& WXUNUSED(event))
+{
+    // Hide Quick-Find Bar
+    if (quickfindbar_visible) {
+	auimgr.GetPane(quickfindbar).Hide();
+	auimgr.Update();
+
+	quickfindbar_visible = false;
+    }
+
+    // Hide Quick-Goto Bar
+    if (quickgotobar_visible) {
+	auimgr.GetPane(quickgotobar).Hide();
+	auimgr.Update();
+
+	quickgotobar_visible = false;
+    }
+
+    if (cpage) cpage->SetFocus();
 }
 
 // *** wxAuiNotebook Callbacks ***
@@ -423,6 +524,89 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
     if (auinotebook->GetPageCount() == 1) {
 	// will be empty after the last page is closed
 	cpage = NULL;
+    }
+}
+
+// *** WQuickFindBar Callbacks ***
+
+void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
+{
+    if (quickfindbar_visible)
+    {
+	auimgr.GetPane(quickfindbar).Hide();
+	auimgr.Update();
+
+	quickfindbar_visible = false;
+
+	if (cpage) cpage->SetFocus();
+    }
+}
+
+void WCryptoTE::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
+{
+    if (cpage)
+    {
+	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+
+	cpage->DoQuickFind(false, findtext);
+    }
+}
+
+void WCryptoTE::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
+{
+    if (cpage)
+    {
+	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+
+	cpage->PrepareQuickFind(false, false);
+
+	cpage->DoQuickFind(false, findtext);
+    }
+}
+
+void WCryptoTE::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
+{
+    if (cpage)
+    {
+	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+
+	cpage->PrepareQuickFind(true, false);
+
+	cpage->DoQuickFind(true, findtext);
+    }
+}
+// *** WQuickGotoBar Callbacks ***
+
+void WCryptoTE::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
+{
+    if (quickgotobar_visible)
+    {
+	auimgr.GetPane(quickgotobar).Hide();
+	auimgr.Update();
+
+	quickgotobar_visible = false;
+
+	if (cpage) cpage->SetFocus();
+    }
+}
+
+void WCryptoTE::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
+{
+    if (cpage)
+    {
+	bool r = cpage->DoQuickGoto( quickgotobar->textctrlGoto->GetValue() );
+
+	if (!r) {
+	    quickgotobar->textctrlGoto->SetFocus();
+	}
+	else {
+	    auimgr.GetPane(quickgotobar).Hide();
+	    auimgr.Update();
+
+	    quickgotobar_visible = false;
+	    
+	    cpage->SetFocus();
+	}
     }
 }
 
@@ -452,11 +636,11 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_PASTE,		WCryptoTE::OnMenuEditGeneric)
     EVT_MENU	(wxID_CLEAR,		WCryptoTE::OnMenuEditGeneric)
 
-//    EVT_MENU	(myID_MENU_QUICKFIND,	WCryptoTE::OnMenuEditQuickFind)
+    EVT_MENU	(myID_MENU_EDIT_QUICKFIND, WCryptoTE::OnMenuEditQuickFind)
 //    EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
 //    EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
 
-//    EVT_MENU	(myID_GOTO,		WCryptoTE::OnMenuEditGoto)
+    EVT_MENU	(myID_MENU_EDIT_GOTO,	WCryptoTE::OnMenuEditGoto)
 
     EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_EDIT_SELECTLINE, WCryptoTE::OnMenuEditGeneric)
@@ -464,10 +648,28 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     // Help
     EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
 
+    // *** Accelerators
+
+    EVT_MENU	(myID_ACCEL_ESCAPE,	WCryptoTE::OnAccelEscape)
+
     // *** wxAuiNotebook Callbacks
 
     EVT_AUINOTEBOOK_PAGE_CHANGED(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageChanged)
     EVT_AUINOTEBOOK_PAGE_CLOSE(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageClose)
+
+    // *** Quick-Find Bar
+
+    EVT_TEXT	(myID_QUICKFIND_TEXT,	WCryptoTE::OnTextQuickFind)
+
+    EVT_BUTTON	(myID_QUICKFIND_NEXT,	WCryptoTE::OnButtonQuickFindNext)
+    EVT_BUTTON	(myID_QUICKFIND_PREV,	WCryptoTE::OnButtonQuickFindPrev)
+    EVT_BUTTON	(myID_QUICKFIND_CLOSE,	WCryptoTE::OnButtonQuickFindClose)
+
+    // *** Quick-Goto Bar
+
+    EVT_TEXT_ENTER(myID_QUICKGOTO_TEXT,	WCryptoTE::OnButtonGotoGo)
+    EVT_BUTTON	(myID_QUICKGOTO_GO,	WCryptoTE::OnButtonGotoGo)
+    EVT_BUTTON	(myID_QUICKGOTO_CLOSE,	WCryptoTE::OnButtonGotoClose)
 
 END_EVENT_TABLE()
 
@@ -476,98 +678,6 @@ END_EVENT_TABLE()
 
 
     SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE) );
-
- 
-    // *** Create Controls ***
-
-    editctrl = new CEWEditCtrl(this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
-			       wxBORDER_SUNKEN);
-    editctrl->SetFocus();
-
-    // Quick-Find Bar
-
-    #include "art/window_close.h"
-    #include "art/go_up.h"
-    #include "art/go_down.h"
-
-    wxBitmapButton* buttonQuickFindClose
-	= new wxBitmapButton(this, myID_QUICKFIND_CLOSE, wxBitmapFromMemory(window_close_png),
-			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-    buttonQuickFindClose->SetLabel(_("Close"));
-    buttonQuickFindClose->SetToolTip(_("Close Quick-Find bar"));
-
-    wxStaticText* labelQuickFind = new wxStaticText(this, wxID_ANY, _("Find: "));
-
-    textctrlQuickFind = new wxTextCtrl(this, myID_QUICKFIND_TEXT, wxEmptyString);
-
-    wxBitmapButton* buttonQuickFindNext
-	= new wxBitmapButton(this, myID_QUICKFIND_NEXT, wxBitmapFromMemory(go_down_png),
-			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-    buttonQuickFindNext->SetLabel(_("Next"));
-    buttonQuickFindNext->SetToolTip(_("Search for next occurance"));
-
-    wxBitmapButton* buttonQuickFindPrev
-	= new wxBitmapButton(this, myID_QUICKFIND_PREV, wxBitmapFromMemory(go_up_png),
-			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-    buttonQuickFindPrev->SetLabel(_("Previous"));
-    buttonQuickFindPrev->SetToolTip(_("Search for previous occurance"));
-
-    // Quick-Goto Bar
-
-    #include "art/go_next.h"
-
-    wxBitmapButton* buttonGotoCancel
-	= new wxBitmapButton(this, myID_GOTO_CLOSE, wxBitmapFromMemory(window_close_png),
-			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-    buttonGotoCancel->SetLabel(_("Cancel"));
-    buttonGotoCancel->SetToolTip(_("Cancel Go to Line"));
-
-    wxStaticText* labelGoto = new wxStaticText(this, wxID_ANY, _("Goto: "));
-
-    textctrlGoto = new wxTextCtrl(this, myID_GOTOTEXT, wxEmptyString,
-				   wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
-
-    wxBitmapButton* buttonGotoGo
-	= new wxBitmapButton(this, myID_GOTO_GO, wxBitmapFromMemory(go_next_png),
-			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-    buttonGotoGo->SetLabel(_("Go"));
-    buttonGotoGo->SetToolTip(_("Go to Line"));
-
-    // *** Frame Layout ***
-
-    // Quick-Find Bar
-
-    sizerQuickFind = new wxBoxSizer(wxHORIZONTAL);
-    sizerQuickFind->Add(buttonQuickFindClose, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-    sizerQuickFind->Add(labelQuickFind, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-    sizerQuickFind->Add(textctrlQuickFind, 1, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-    sizerQuickFind->Add(buttonQuickFindNext, 0, wxALL, 2);
-    sizerQuickFind->Add(buttonQuickFindPrev, 0, wxALL, 2);
-
-    // Quick-Goto Bar
-
-    sizerQuickGoto = new wxBoxSizer(wxHORIZONTAL);
-    sizerQuickGoto->Add(buttonGotoCancel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-    sizerQuickGoto->Add(labelGoto, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-    sizerQuickGoto->Add(textctrlGoto, 1, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-    sizerQuickGoto->Add(buttonGotoGo, 0, wxALL, 2);
-
-    // Main Frame
-
-    sizerMain = new wxBoxSizer(wxVERTICAL);
-    sizerMain->Add(editctrl, 1, wxEXPAND, 0);
-
-    sizerMain->Add(sizerQuickFind, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
-    sizerMain->Hide(sizerQuickFind);
-    quickfind_visible = false;
-
-    sizerMain->Add(sizerQuickGoto, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
-    sizerMain->Hide(sizerQuickGoto);
-    quickgoto_visible = false;
-
-    SetSizer(sizerMain);
-    Layout();
-    Centre();
 
     // Default Settings
 
@@ -674,28 +784,6 @@ void WCryptoTE::OnClose(wxCloseEvent& event)
     }
 }
 
-void WCryptoTE::OnChar(wxKeyEvent& event)
-{
-    if (event.GetKeyCode() == WXK_ESCAPE)
-    {
-	// Hide Quick-Find Bar
-	if (quickfind_visible) {
-	    sizerMain->Hide(sizerQuickFind);
-	    sizerMain->Layout();
-
-	    quickfind_visible = false;
-	}
-
-	// Hide Quick-Goto Bar
-	if (quickgoto_visible) {
-	    sizerMain->Hide(sizerQuickGoto);
-	    sizerMain->Layout();
-
-	    quickgoto_visible = false;
-	}
-    }
-}
-
 bool WCryptoTE::AllowCloseModified()
 {
     if (editctrl->ModifiedFlag())
@@ -769,45 +857,6 @@ void WCryptoTE::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
     editctrl->FileNew();
 }
 
-void WCryptoTE::OnMenuFileQuit(wxCommandEvent& WXUNUSED(event))
-{
-    Close();
-}
-
-void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
-{
-    editctrl->ProcessEvent(event);
-}
-
-void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
-{
-    if (quickfind_visible)
-    {
-	// pushing Ctrl+F again is equivalent to Search-Next
-
-	textctrlQuickFind->SetFocus();
-
-	quickfind_startpos = editctrl->GetSelectionEnd();
-
-	QuickFind(true);
-    }
-    else
-    {
-	// make quick find bar visible
-
-	sizerMain->Show(sizerQuickFind);
-	sizerMain->Hide(sizerQuickGoto);
-	sizerMain->Layout();
-
-	textctrlQuickFind->SetFocus();
-	textctrlQuickFind->SetValue(wxT(""));
-
-	quickgoto_visible = false;
-	quickfind_visible = true;
-	quickfind_startpos = editctrl->GetCurrentPos();
-    }
-}
-
 void WCryptoTE::OnMenuEditFind(wxCommandEvent& WXUNUSED(event))
 {
     if (!findreplace_dlg) {
@@ -826,18 +875,6 @@ void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
 
     findreplace_dlg->ShowReplace(true);
     findreplace_dlg->Show();
-}
-
-void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
-{
-    sizerMain->Show(sizerQuickGoto);
-    sizerMain->Hide(sizerQuickFind);
-    sizerMain->Layout();
-
-    quickfind_visible = false;
-    quickgoto_visible = true;
-
-    textctrlGoto->SetFocus();
 }
 
 void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
@@ -869,12 +906,6 @@ void WCryptoTE::OnMenuViewLonglineGuide(wxCommandEvent& event)
 {
     editctrl->SetEdgeColumn(80);
     editctrl->SetEdgeMode(event.IsChecked() ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
-}
-
-void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
-{
-    CEWAbout dlg(this);
-    dlg.ShowModal();
 }
 
 // *** Scintilla Callbacks ***
@@ -947,171 +978,16 @@ void WCryptoTE::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
     UpdateOnSavePoint();
 }
 
-// *** Quick-Find Bar ***
-
-void WCryptoTE::QuickFind(bool forward)
-{
-    wxString findtext = textctrlQuickFind->GetValue();
-
-    if (findtext.IsEmpty())
-    {
-	// move cursor and screen back to search start position
-	
-	editctrl->SetSelection(quickfind_startpos, quickfind_startpos);
-	
-	UpdateStatusBar( wxT("") );
-	
-	textctrlQuickFind->SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW) );
-	textctrlQuickFind->Refresh();
-
-	return;
-    }
-
-    if (forward)
-    {
-	editctrl->SetTargetStart(quickfind_startpos);
-	editctrl->SetTargetEnd(editctrl->GetLength());
-    }
-    else
-    {
-	editctrl->SetTargetStart(quickfind_startpos);
-	editctrl->SetTargetEnd(0);
-    }
-
-    editctrl->SetSearchFlags(0);
-
-    int respos = editctrl->SearchInTarget(findtext);
-
-    bool wrapped = false;
-
-    if (respos < 0)
-    {
-	// wrap-around search
-	wrapped = true;
-
-	if (forward)
-	{
-	    editctrl->SetTargetStart(0);
-	    editctrl->SetTargetEnd(quickfind_startpos);
-	}
-	else
-	{
-	    editctrl->SetTargetStart(editctrl->GetLength());
-	    editctrl->SetTargetEnd(quickfind_startpos);
-	}
-
-	respos = editctrl->SearchInTarget(findtext);
-    }
-
-    bool found = false;
-    if (respos >= 0)
-    {
-	found = true;
-	int start = editctrl->GetTargetStart();
-	int end = editctrl->GetTargetEnd();
-
-	editctrl->EnsureVisible( editctrl->LineFromPosition(start) );
-	editctrl->SetSelection(start, end);
-    }
-
-    if (found && !wrapped) {
-	UpdateStatusBar( wxT("") );
-    }
-    else if (found && wrapped) {
-	if (forward)
-	    UpdateStatusBar( _("Search wrapped to beginning of document.") );
-	else
-	    UpdateStatusBar( _("Search wrapped to end of document.") );
-    }
-    else if (!found) {
-	UpdateStatusBar( _("Search string not found in document.") );
-    }
-
-    wxColor clr;
-    if (found) clr = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-    else clr = wxColor(255, 102, 102);
-
-    textctrlQuickFind->SetBackgroundColour(clr);
-    textctrlQuickFind->Refresh();
-}
-
-void WCryptoTE::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
-{
-    QuickFind(true);
-}
-
-void WCryptoTE::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
-{
-    quickfind_startpos = editctrl->GetSelectionEnd();
-
-    QuickFind(true);
-}
-
-void WCryptoTE::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
-{
-    quickfind_startpos = editctrl->GetSelectionStart();
-
-    QuickFind(false);
-}
-
-void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
-{
-    sizerMain->Hide(sizerQuickFind);
-    sizerMain->Layout();
-
-    quickfind_visible = false;
-
-    editctrl->SetFocus();
-}
-
-// *** Quick-Goto Bar ***
-
-void WCryptoTE::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
-{
-    long linenum;
-
-    if (! textctrlGoto->GetValue().ToLong(&linenum) ) {
-	UpdateStatusBar(_("Yeah right. Enter a number smarty."));
-	textctrlGoto->SetFocus();
-	return;
-    }
-
-    editctrl->GotoLine(linenum);
-    UpdateStatusBar(wxString::Format(_("Jumped to line %d."), editctrl->GetCurrentLine()));
-
-    sizerMain->Hide(sizerQuickGoto);
-    sizerMain->Layout();
-
-    editctrl->SetFocus();
-}
-
-void WCryptoTE::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
-{
-    sizerMain->Hide(sizerQuickGoto);
-    sizerMain->Layout();
-
-    editctrl->SetFocus();
-}
-
-
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     // *** Generic Events
 
     EVT_CLOSE	(WCryptoTE::OnClose)
 
-    EVT_CHAR	(WCryptoTE::OnChar)
-
     // *** Menu Items
 
-
-
-    EVT_MENU	(myID_QUICKFIND,	WCryptoTE::OnMenuEditQuickFind)
     EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
     EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
-
-    EVT_MENU	(myID_GOTO,		WCryptoTE::OnMenuEditGoto)
-
 
     // View
     EVT_MENU	(myID_MENU_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)
@@ -1126,20 +1002,6 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_STC_UPDATEUI(myID_EDITCTRL,		WCryptoTE::OnScintillaUpdateUI)
     EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	WCryptoTE::OnScintillaSavePointReached)
     EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WCryptoTE::OnScintillaSavePointLeft)
-
-    // *** Quick-Find Bar
-
-    EVT_TEXT	(myID_QUICKFIND_TEXT,	WCryptoTE::OnTextQuickFind)
-
-    EVT_BUTTON	(myID_QUICKFIND_NEXT,	WCryptoTE::OnButtonQuickFindNext)
-    EVT_BUTTON	(myID_QUICKFIND_PREV,	WCryptoTE::OnButtonQuickFindPrev)
-    EVT_BUTTON	(myID_QUICKFIND_CLOSE,	WCryptoTE::OnButtonQuickFindClose)
-
-    // *** Quick-Goto Bar
-
-    EVT_TEXT_ENTER(myID_GOTOTEXT,	WCryptoTE::OnButtonGotoGo)
-    EVT_BUTTON	(myID_GOTO_GO,		WCryptoTE::OnButtonGotoGo)
-    EVT_BUTTON	(myID_GOTO_CLOSE,	WCryptoTE::OnButtonGotoClose)
 
 END_EVENT_TABLE()
 

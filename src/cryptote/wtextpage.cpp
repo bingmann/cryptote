@@ -1,6 +1,7 @@
 // $Id$
 
 #include "wtextpage.h"
+#include "common/tools.h"
 
 #include <wx/file.h>
 #include <wx/wfstream.h>
@@ -162,6 +163,126 @@ void WTextPage::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
 	wxString::Format(_("Selected %u characters on line."),
 			 lineEnd - lineStart)
 	);
+}
+
+// *** Virtual Callbacks via WNotePage ***
+
+void WTextPage::PrepareQuickFind(bool backwards, bool reset)
+{
+    if (reset)
+    {
+	quickfind_startpos = editctrl->GetCurrentPos();
+    }
+    else
+    {
+	if (!backwards)
+	{
+	    quickfind_startpos = editctrl->GetSelectionEnd();
+	}
+	else
+	{
+	    quickfind_startpos = editctrl->GetSelectionStart();
+	}
+    }
+}
+
+void WTextPage::DoQuickFind(bool backwards, const wxString& findtext)
+{
+    if (findtext.IsEmpty())
+    {
+	// move cursor and screen back to search start position
+	
+	editctrl->SetSelection(quickfind_startpos, quickfind_startpos);
+	
+	UpdateStatusBar( wxT("") );
+	
+	wmain->quickfindbar->textctrlQuickFind->SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW) );
+	wmain->quickfindbar->textctrlQuickFind->Refresh();
+
+	return;
+    }
+
+    if (!backwards)
+    {
+	editctrl->SetTargetStart(quickfind_startpos);
+	editctrl->SetTargetEnd(editctrl->GetLength());
+    }
+    else
+    {
+	editctrl->SetTargetStart(quickfind_startpos);
+	editctrl->SetTargetEnd(0);
+    }
+
+    editctrl->SetSearchFlags(0);
+
+    int respos = editctrl->SearchInTarget(findtext);
+
+    bool wrapped = false;
+
+    if (respos < 0)
+    {
+	// wrap-around search
+	wrapped = true;
+
+	if (!backwards)
+	{
+	    editctrl->SetTargetStart(0);
+	    editctrl->SetTargetEnd(quickfind_startpos);
+	}
+	else
+	{
+	    editctrl->SetTargetStart(editctrl->GetLength());
+	    editctrl->SetTargetEnd(quickfind_startpos);
+	}
+
+	respos = editctrl->SearchInTarget(findtext);
+    }
+
+    bool found = false;
+    if (respos >= 0)
+    {
+	found = true;
+	int start = editctrl->GetTargetStart();
+	int end = editctrl->GetTargetEnd();
+
+	editctrl->EnsureVisible( editctrl->LineFromPosition(start) );
+	editctrl->SetSelection(start, end);
+    }
+
+    if (found && !wrapped) {
+	UpdateStatusBar( wxT("") );
+    }
+    else if (found && wrapped) {
+	if (!backwards)
+	    UpdateStatusBar( _("Search wrapped to beginning of document.") );
+	else
+	    UpdateStatusBar( _("Search wrapped to end of document.") );
+    }
+    else if (!found) {
+	UpdateStatusBar( _("Search string not found in document.") );
+    }
+
+    wxColor clr;
+    if (found) clr = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+    else clr = wxColor(255, 102, 102);
+
+    wmain->quickfindbar->textctrlQuickFind->SetBackgroundColour(clr);
+    wmain->quickfindbar->textctrlQuickFind->Refresh();
+}
+
+bool WTextPage::DoQuickGoto(const wxString& gototext)
+{
+    long linenum;
+
+    if (! gototext.ToLong(&linenum) ) {
+	UpdateStatusBar(_("Yeah right. Enter a number smarty."));
+	return false;
+    }
+
+    editctrl->GotoLine(linenum);
+    UpdateStatusBar(wxString::Format(_("Jumped to line %d."), editctrl->GetCurrentLine()));
+
+    return true;
 }
 
 BEGIN_EVENT_TABLE(WTextPage, wxPanel)
@@ -331,3 +452,92 @@ END_EVENT_TABLE()
 
 /*****************************************************************************/
 #endif
+
+// *** WQuickFindBar ***
+
+WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
+    : wxPanel(parent)
+{
+    #include "art/window_close.h"
+    #include "art/go_up.h"
+    #include "art/go_down.h"
+
+    wxBitmapButton* buttonQuickFindClose
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_CLOSE, wxBitmapFromMemory(window_close_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonQuickFindClose->SetLabel(_("Close"));
+    buttonQuickFindClose->SetToolTip(_("Close Quick-Find bar"));
+
+    wxStaticText* labelQuickFind = new wxStaticText(this, wxID_ANY, _("Find: "));
+
+    textctrlQuickFind = new wxTextCtrl(this, WCryptoTE::myID_QUICKFIND_TEXT, wxEmptyString);
+
+    wxBitmapButton* buttonQuickFindNext
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_NEXT, wxBitmapFromMemory(go_down_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonQuickFindNext->SetLabel(_("Next"));
+    buttonQuickFindNext->SetToolTip(_("Search for next occurance"));
+
+    wxBitmapButton* buttonQuickFindPrev
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_PREV, wxBitmapFromMemory(go_up_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonQuickFindPrev->SetLabel(_("Previous"));
+    buttonQuickFindPrev->SetToolTip(_("Search for previous occurance"));
+
+    // Set up sizers
+
+    sizerQuickFind = new wxBoxSizer(wxHORIZONTAL);
+    sizerQuickFind->Add(buttonQuickFindClose, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(labelQuickFind, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(textctrlQuickFind, 1, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(buttonQuickFindNext, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickFind->Add(buttonQuickFindPrev, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+
+    wxSizer* sizerMain = new wxBoxSizer(wxVERTICAL);
+    sizerMain->Add(sizerQuickFind, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
+
+    SetSizer(sizerMain);
+    Layout();
+    sizerMain->Fit(this);
+}
+
+// *** WQuickGotoBar ***
+
+WQuickGotoBar::WQuickGotoBar(class WCryptoTE* parent)
+    : wxPanel(parent)
+{
+    #include "art/window_close.h"
+    #include "art/go_next.h"
+
+    wxBitmapButton* buttonGotoCancel
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_CLOSE, wxBitmapFromMemory(window_close_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonGotoCancel->SetLabel(_("Cancel"));
+    buttonGotoCancel->SetToolTip(_("Cancel Go to Line"));
+
+    wxStaticText* labelGoto = new wxStaticText(this, wxID_ANY, _("Goto: "));
+
+    textctrlGoto = new wxTextCtrl(this, WCryptoTE::myID_QUICKGOTO_TEXT, wxEmptyString,
+				   wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+
+    wxBitmapButton* buttonGotoGo
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_GO, wxBitmapFromMemory(go_next_png),
+			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+    buttonGotoGo->SetLabel(_("Go"));
+    buttonGotoGo->SetToolTip(_("Go to Line"));
+
+    // Set up sizers
+
+    sizerQuickGoto = new wxBoxSizer(wxHORIZONTAL);
+    sizerQuickGoto->Add(buttonGotoCancel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickGoto->Add(labelGoto, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickGoto->Add(textctrlGoto, 1, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    sizerQuickGoto->Add(buttonGotoGo, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+
+    wxSizer* sizerMain = new wxBoxSizer(wxVERTICAL);
+    sizerMain->Add(sizerQuickGoto, 0, wxLEFT | wxRIGHT | wxEXPAND, 2);
+
+    SetSizer(sizerMain);
+    Layout();
+    sizerMain->Fit(this);
+}
