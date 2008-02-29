@@ -44,7 +44,6 @@ WFindReplace::WFindReplace(class WCryptoTE* parent, int id, const wxPoint& pos, 
 void WFindReplace::set_properties()
 {
     // begin wxGlade: WFindReplace::set_properties
-    // SetTitle(_("Find & Replace - CryptoTE"));
     // end wxGlade
 }
 
@@ -55,11 +54,15 @@ void WFindReplace::do_layout()
     wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
     wxStaticBoxSizer* sizer3 = new wxStaticBoxSizer(sizer3_staticbox, wxVERTICAL);
     wxFlexGridSizer* sizer2 = new wxFlexGridSizer(2, 2, 0, 0);
+    wxBoxSizer* sizer_2 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_1 = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Find:"));
     sizer2->Add(label1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 4);
-    sizer2->Add(comboFind, 0, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 4);
+    sizer_1->Add(comboFind, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 4);
+    sizer2->Add(sizer_1, 1, wxEXPAND, 0);
     sizer2->Add(labelReplace, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 4);
-    sizer2->Add(comboReplace, 0, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 4);
+    sizer_2->Add(comboReplace, 1, wxALL|wxALIGN_CENTER_VERTICAL, 4);
+    sizer2->Add(sizer_2, 1, wxEXPAND, 0);
     sizer2->AddGrowableRow(0);
     sizer2->AddGrowableRow(1);
     sizer2->AddGrowableCol(1);
@@ -78,8 +81,6 @@ void WFindReplace::do_layout()
     sizer1->Add(sizer4, 0, wxEXPAND, 0);
     SetSizer(sizer1);
     sizer1->Fit(this);
-    Layout();
-    Centre();
     // end wxGlade
 }
 
