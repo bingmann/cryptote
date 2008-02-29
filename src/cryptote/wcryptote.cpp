@@ -817,10 +817,7 @@ END_EVENT_TABLE()
 
     editctrl->FileNew();
 
-    menubar->Check(myID_MENU_LINEWRAP, true);
-
     UpdateTitle();
-    findreplace_dlg = NULL;
 }
 
 void WCryptoTE::UpdateTitle()
@@ -968,12 +965,6 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     // *** Generic Events
 
     EVT_CLOSE	(WCryptoTE::OnClose)
-
-    // *** Menu Items
-
-    EVT_MENU	(wxID_FIND,		WCryptoTE::OnMenuEditFind)
-    EVT_MENU	(wxID_REPLACE,		WCryptoTE::OnMenuEditFindReplace)
-
 
 END_EVENT_TABLE()
 

@@ -160,14 +160,10 @@ public:
 #if 0
 /*****************************************************************************/
 
-    };
-
-
     /// Update the title bar with the currently loaded text file name
     void	UpdateTitle();
 
- 
-    /// Load a file into the editor, discard any current buffer.
+     /// Load a file into the editor, discard any current buffer.
     bool	FileOpen(const wxString& filename);
 
     /// Save the buffer into the associated file, query for a file name if none

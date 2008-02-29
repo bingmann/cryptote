@@ -586,11 +586,6 @@ wxString CEWEditCtrl::GetFileBasename() const
     return currentfilename.GetFullName();
 }
 
-bool& CEWEditCtrl::ModifiedFlag()
-{
-    return modified;
-}
-
 bool CEWEditCtrl::LoadInputStream(wxInputStream& stream)
 {
     const wxFileOffset stream_len = stream.GetLength();
@@ -621,22 +616,6 @@ bool CEWEditCtrl::LoadInputStream(wxInputStream& stream)
 
     return true;
 }
-
-// *** Display Settings ***
-
-void CEWEditCtrl::ShowLineNumber(bool on)
-{
-    if (!on) 
-        SetMarginWidth(MARGIN_LINENUMBER, 0);
-    else {
-	int marginwidth = TextWidth(wxSTC_STYLE_LINENUMBER, _T("_99999"));
-	SetMarginWidth(MARGIN_LINENUMBER, marginwidth);
-    }
-}
-
-BEGIN_EVENT_TABLE(CEWEditCtrl, wxStyledTextCtrl)
-
-END_EVENT_TABLE()
 
 /*****************************************************************************/
 #endif

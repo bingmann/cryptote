@@ -36,7 +36,8 @@ public:
 
     // *** Operations ***
 
-    /// Enable or Disable Save and SaveAs depending on if the buffer is modified.
+    /// Enable or Disable Save and SaveAs depending on if the buffer is
+    /// modified.
     void	UpdateOnSavePoint();
 
     // *** Event Handlers ***
@@ -61,9 +62,9 @@ public:
     /// Called when the notebook page is deactivated.
     virtual void	PageBlurred();
 
-    virtual void PrepareQuickFind(bool backwards, bool reset);
-    virtual void DoQuickFind(bool backwards, const wxString& findtext);
-    virtual bool DoQuickGoto(const wxString& gototext);
+    virtual void	PrepareQuickFind(bool backwards, bool reset);
+    virtual void	DoQuickFind(bool backwards, const wxString& findtext);
+    virtual bool	DoQuickGoto(const wxString& gototext);
 
     // *** Scintilla Callbacks ***
 
@@ -99,7 +100,7 @@ public:
 protected:
 
     /// Current starting position for incremental Quick-Find
-    int			quickfind_startpos;
+    int		quickfind_startpos;
 
     /// Settings of current View Options
 
@@ -109,49 +110,6 @@ protected:
     bool	view_endofline;
     bool	view_indentguide;
     bool	view_longlineguide;
-
-#if 0
-/*****************************************************************************/
-
-    /// Currently opened file name
-    class wxFileName	currentfilename;
-
-
-public:
-    // *** File operations ***
-
-    /// Clear the currently loaded file and start a new one
-    void	FileNew();
-
-    /// Attempt to open and load an existing file
-    bool	FileOpen(const wxString& filename);
-
-    /// Save currently opened buffer into the associated file name
-    bool	FileSave();
-
-    /// Save buffer into new file name
-    bool	FileSaveAs(const wxString& filename);
-
-    /// Reload the associated file
-    bool	FileRevert();
-
-    /// Load a file from the given wxInputStream
-    bool	LoadInputStream(wxInputStream& stream);
-
-    /// Has an associated file, used by FileSave()
-    bool	HasFilename() const;
-
-    /// Return full path the associated file
-    wxString	GetFileFullpath() const;
-
-    /// Return only the file name component with extension.
-    wxString	GetFileBasename() const;
-
-    // _Updateable_ reference to modification flag of current file.
-    bool&	ModifiedFlag();
-
-/*****************************************************************************/
-#endif
 
 private:
     DECLARE_EVENT_TABLE()
