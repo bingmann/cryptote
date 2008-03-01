@@ -37,7 +37,7 @@ int main()
 
     for (unsigned int ri = 0; ri < 1000; ++ri)
     {
-	size_t len = (rand() % 65536);
+	size_t len = rand() % 65536;
 
 	// create random block
 	for (size_t i = 0; i < len; ++i) {
