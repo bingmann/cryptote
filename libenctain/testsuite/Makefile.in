@@ -36,8 +36,8 @@ build_triplet = @build@
 host_triplet = @host@
 TESTS = $(am__EXEEXT_1)
 noinst_PROGRAMS = $(am__EXEEXT_1)
-@HAVE_LIBGCRYPT_TRUE@am__append_1 = test_crc32
-@HAVE_LIBGCRYPT_TRUE@am__append_2 = test_crc32
+@HAVE_LIBGCRYPT_TRUE@am__append_1 = test_crc32 test_serpent_ecb test_serpent_cbc
+@HAVE_LIBGCRYPT_TRUE@am__append_2 = test_crc32 test_serpent_ecb test_serpent_cbc
 @HAVE_LIBGCRYPT_TRUE@am__append_3 = $(LIBGCRYPT_CFLAGS)
 @HAVE_LIBGCRYPT_TRUE@am__append_4 = $(LIBGCRYPT_LIBS)
 subdir = libenctain/testsuite
@@ -48,12 +48,24 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
-@HAVE_LIBGCRYPT_TRUE@am__EXEEXT_1 = test_crc32$(EXEEXT)
+@HAVE_LIBGCRYPT_TRUE@am__EXEEXT_1 = test_crc32$(EXEEXT) \
+@HAVE_LIBGCRYPT_TRUE@	test_serpent_ecb$(EXEEXT) \
+@HAVE_LIBGCRYPT_TRUE@	test_serpent_cbc$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am__test_crc32_SOURCES_DIST = test_crc32.cpp
 @HAVE_LIBGCRYPT_TRUE@am_test_crc32_OBJECTS = test_crc32.$(OBJEXT)
 test_crc32_OBJECTS = $(am_test_crc32_OBJECTS)
 test_crc32_LDADD = $(LDADD)
+am__test_serpent_cbc_SOURCES_DIST = test_serpent_cbc.cpp
+@HAVE_LIBGCRYPT_TRUE@am_test_serpent_cbc_OBJECTS =  \
+@HAVE_LIBGCRYPT_TRUE@	test_serpent_cbc.$(OBJEXT)
+test_serpent_cbc_OBJECTS = $(am_test_serpent_cbc_OBJECTS)
+test_serpent_cbc_LDADD = $(LDADD)
+am__test_serpent_ecb_SOURCES_DIST = test_serpent_ecb.cpp
+@HAVE_LIBGCRYPT_TRUE@am_test_serpent_ecb_OBJECTS =  \
+@HAVE_LIBGCRYPT_TRUE@	test_serpent_ecb.$(OBJEXT)
+test_serpent_ecb_OBJECTS = $(am_test_serpent_ecb_OBJECTS)
+test_serpent_ecb_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
 am__depfiles_maybe = depfiles
@@ -62,8 +74,11 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(test_crc32_SOURCES)
-DIST_SOURCES = $(am__test_crc32_SOURCES_DIST)
+SOURCES = $(test_crc32_SOURCES) $(test_serpent_cbc_SOURCES) \
+	$(test_serpent_ecb_SOURCES)
+DIST_SOURCES = $(am__test_crc32_SOURCES_DIST) \
+	$(am__test_serpent_cbc_SOURCES_DIST) \
+	$(am__test_serpent_ecb_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -181,6 +196,8 @@ top_srcdir = @top_srcdir@
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) \
 	$(am__append_3)
 @HAVE_LIBGCRYPT_TRUE@test_crc32_SOURCES = test_crc32.cpp
+@HAVE_LIBGCRYPT_TRUE@test_serpent_ecb_SOURCES = test_serpent_ecb.cpp
+@HAVE_LIBGCRYPT_TRUE@test_serpent_cbc_SOURCES = test_serpent_cbc.cpp
 all: all-am
 
 .SUFFIXES:
@@ -220,6 +237,12 @@ clean-noinstPROGRAMS:
 test_crc32$(EXEEXT): $(test_crc32_OBJECTS) $(test_crc32_DEPENDENCIES) 
 	@rm -f test_crc32$(EXEEXT)
 	$(CXXLINK) $(test_crc32_OBJECTS) $(test_crc32_LDADD) $(LIBS)
+test_serpent_cbc$(EXEEXT): $(test_serpent_cbc_OBJECTS) $(test_serpent_cbc_DEPENDENCIES) 
+	@rm -f test_serpent_cbc$(EXEEXT)
+	$(CXXLINK) $(test_serpent_cbc_OBJECTS) $(test_serpent_cbc_LDADD) $(LIBS)
+test_serpent_ecb$(EXEEXT): $(test_serpent_ecb_OBJECTS) $(test_serpent_ecb_DEPENDENCIES) 
+	@rm -f test_serpent_ecb$(EXEEXT)
+	$(CXXLINK) $(test_serpent_ecb_OBJECTS) $(test_serpent_ecb_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -228,6 +251,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_crc32.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent_cbc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent_ecb.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

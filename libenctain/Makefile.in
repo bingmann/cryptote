@@ -47,7 +47,7 @@ AR = ar
 ARFLAGS = cru
 libenctain_a_AR = $(AR) $(ARFLAGS)
 libenctain_a_LIBADD =
-am_libenctain_a_OBJECTS = crc32.$(OBJEXT)
+am_libenctain_a_OBJECTS = crc32.$(OBJEXT) serpent.$(OBJEXT)
 libenctain_a_OBJECTS = $(am_libenctain_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
@@ -190,7 +190,8 @@ top_srcdir = @top_srcdir@
 SUBDIRS = . testsuite
 noinst_LIBRARIES = libenctain.a
 libenctain_a_SOURCES = \
-	crc32.cpp crc32.h
+	crc32.cpp crc32.h \
+	serpent.cpp serpent.h
 
 AM_CXXFLAGS = -W -Wall $(WX_CXXFLAGS)
 all: all-recursive
@@ -241,6 +242,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/serpent.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
