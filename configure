@@ -5590,7 +5590,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile src/Makefile src/art/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile libenctain/speedtest/Makefile src/Makefile src/art/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6210,6 +6210,7 @@ do
     "libstc/Makefile") CONFIG_FILES="$CONFIG_FILES libstc/Makefile" ;;
     "libenctain/Makefile") CONFIG_FILES="$CONFIG_FILES libenctain/Makefile" ;;
     "libenctain/testsuite/Makefile") CONFIG_FILES="$CONFIG_FILES libenctain/testsuite/Makefile" ;;
+    "libenctain/speedtest/Makefile") CONFIG_FILES="$CONFIG_FILES libenctain/speedtest/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/art/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/Makefile" ;;
     "src/pwgen/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwgen/Makefile" ;;

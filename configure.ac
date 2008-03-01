@@ -88,6 +88,7 @@ AC_CONFIG_FILES([Makefile
 		 libstc/Makefile
 		 libenctain/Makefile
 		 libenctain/testsuite/Makefile
+		 libenctain/speedtest/Makefile
 		 src/Makefile
 		 src/art/Makefile
 		 src/pwgen/Makefile
