@@ -50,7 +50,7 @@ AM_OPTIONS_WXCONFIG
 AM_PATH_WXCONFIG(2.8.0, wxWin=1)
 
 if test "$wxWin" != 1; then
-    AC_MSG_WARN([
+    AC_MSG_ERROR([
 	wxWidgets does not seem to be installed on your system.
 
         If you think wxWidgets >= 2.8.0 is installed,
@@ -59,6 +59,18 @@ if test "$wxWin" != 1; then
 	'wx-config --libs' command) is in LD_LIBRARY_PATH or
 	equivalent variable.
     ])
+fi
+
+# Check for libgcrypt which is only used in test cases
+
+AM_PATH_LIBGCRYPT([1.2.2])
+
+AM_CONDITIONAL(HAVE_LIBGCRYPT, test "$LIBGCRYPT_LIBS" != "")
+
+if test "$LIBGCRYPT_LIBS" == ""; then
+    AC_MSG_WARN([libgcrypt is not installed.
+The main programs can still be built, the library is only
+used in test cases.])
 fi
 
 # Win32 tools to add icons to the programs
@@ -74,6 +86,8 @@ AM_CONDITIONAL(GOT_RESCOMP, test x$RESCOMP != x)
 
 AC_CONFIG_FILES([Makefile
 		 libstc/Makefile
+		 libenctain/Makefile
+		 libenctain/testsuite/Makefile
 		 src/Makefile
 		 src/art/Makefile
 		 src/pwgen/Makefile

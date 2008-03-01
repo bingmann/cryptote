@@ -1,3 +1,3 @@
 # $Id$
 
-SUBDIRS = libstc src
+SUBDIRS = libstc libenctain src
