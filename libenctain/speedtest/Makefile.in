@@ -175,7 +175,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @HAVE_LIBGCRYPT_TRUE@speedtest_serpent_SOURCES = speedtest_serpent.cpp
-@HAVE_LIBGCRYPT_TRUE@AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(LIBGCRYPT_CFLAGS)
+@HAVE_LIBGCRYPT_TRUE@AM_CXXFLAGS = -W -Wall -O3 -I$(top_srcdir)/libenctain $(LIBGCRYPT_CFLAGS)
 all: all-am
 
 .SUFFIXES:
