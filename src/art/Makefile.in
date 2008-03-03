@@ -195,6 +195,9 @@ noinst_HEADERS = \
 	document_saveas.h \
 	document_revert.h \
 	document_close.h \
+	document_import.h \
+	document_export.h \
+	document_delete.h \
 	application_exit.h \
 	application_info.h \
 	edit_undo.h \
@@ -215,7 +218,17 @@ noinst_HEADERS = \
 	messagebox_error.h \
 	messagebox_warning.h \
 	messagebox_info.h \
-	web-16.h
+	web-16.h \
+	file_binary-16.h \
+	file_binary-32.h \
+	file_text-16.h \
+	file_text-32.h \
+	file_image-16.h \
+	file_image-32.h \
+	view_icon.h \
+	view_detailed.h \
+	view_choose.h \
+	view_multicolumn.h
 
 EXTRA_DIST = \
 	pwgen-16.png \
@@ -241,6 +254,9 @@ EXTRA_DIST = \
 	document_saveas.png \
 	document_revert.png \
 	document_close.png \
+	document_import.png \
+	document_export.png \
+	document_delete.png \
 	application_exit.png \
 	application_info.png \
 	edit_undo.png \
@@ -261,7 +277,17 @@ EXTRA_DIST = \
 	messagebox_error.png \
 	messagebox_warning.png \
 	messagebox_info.png \
-	web-16.png
+	web-16.png \
+	file_binary-16.png \
+	file_binary-32.png \
+	file_text-16.png \
+	file_text-32.png \
+	file_image-16.png \
+	file_image-32.png \
+	view_icon.png \
+	view_detailed.png \
+	view_choose.png \
+	view_multicolumn.png
 
 all: all-am
 

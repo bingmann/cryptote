@@ -32,6 +32,8 @@ public:
 
 	// Menu Items
 
+	myID_MENU_CONTAINER_SHOWLIST,
+
 	myID_MENU_SUBFILE_NEW,
 	myID_MENU_SUBFILE_IMPORT,
 
@@ -95,6 +97,8 @@ public:
     void	OnMenuContainerRevert(wxCommandEvent& event);
     void	OnMenuContainerClose(wxCommandEvent& event);
 
+    void	OnMenuContainerShowList(wxCommandEvent& event);
+
     void	OnMenuContainerQuit(wxCommandEvent& event);
 
     void	OnMenuSubFileNew(wxCommandEvent& event);
@@ -118,6 +122,10 @@ public:
     // Accelerator Events
 
     void	OnAccelEscape(wxCommandEvent& event);
+
+    // wxAuiManager Callbacks
+    
+    void	OnAuiManagerPaneClose(wxAuiManagerEvent& event);
 
     // wxAuiNotebook Callbacks
 
@@ -182,6 +190,9 @@ public:
 
     /// (Slow) Find & Replace Dialog activated with Ctrl+Shift+F
     class WFindReplace*	findreplacedlg;
+
+    /// Container File List Pane
+    class WFileList*	filelistpane;
 
 private:
     DECLARE_EVENT_TABLE()

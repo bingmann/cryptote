@@ -3,6 +3,7 @@
 #include "wcryptote.h"
 #include "wtextpage.h"
 #include "wfind.h"
+#include "wfilelist.h"
 
 #include <wx/wfstream.h>
 #include "common/tools.h"
@@ -59,10 +60,9 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     quickgotobar = new WQuickGotoBar(this);
 
-    auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"));
-    auinotebook->AddPage(new WTextPage(this), wxT("Test2 wxAUI"));
-
     findreplacedlg = NULL;
+
+    filelistpane = new WFileList(this);
 
     // *** wxAUI Layout ***
 
@@ -92,12 +92,13 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 		   Bottom().DockFixed().Gripper().
 		   LeftDockable(false).RightDockable(false));
 
+    auimgr.AddPane(filelistpane, wxAuiPaneInfo().
+		   Name(wxT("filelist")).Caption(_("Container")));
+
     // "commit" all changes made to wxAuiManager
     auimgr.Update();
 
     Centre();
-
-    if (cpage) cpage->SetFocus();
 
     ContainerNew();
 }
@@ -156,8 +157,17 @@ void WCryptoTE::ContainerNew()
     container = new Enctain::Container();
     container_filename.Clear();
 
-    UpdateStatusBar(_("New container initialized."));
+    // Set up one empty text file in the container
+    unsigned int sf1 = container->AppendSubFile();
 
+    container->SetSubFileEncryption(sf1, Enctain::ENCRYPTION_SERPENT256);
+    container->SetSubFileCompression(sf1, Enctain::COMPRESSION_ZLIB);
+
+    container->SetSubFileProperty(sf1, "Name", "Untitled.txt");
+
+    filelistpane->ResetItems();
+
+    UpdateStatusBar(_("New container initialized."));
     UpdateTitle();
 }
 
@@ -191,9 +201,19 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 	w->Destroy();
     }
 
+    filelistpane->ResetItems();
+
+    if (container->CountSubFile() == 1)
+    {
+    }
+    else
+    {
+	auimgr.GetPane(filelistpane).Show();
+	auimgr.Update();
+    }
+
     UpdateStatusBar(wxString::Format(_("Loaded container with %u subfiles from %s"),
 				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
-
     UpdateTitle();
 
     return true;
@@ -212,7 +232,6 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 
     UpdateStatusBar(wxString::Format(_("Saved container with %u subfiles to %s"),
 				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
-
     UpdateTitle();
 
     return true;
@@ -242,6 +261,7 @@ void WCryptoTE::CreateMenuBar()
     #include "art/document_saveas.h"
     #include "art/document_revert.h"
     #include "art/document_close.h"
+    #include "art/view_choose.h"
     #include "art/application_exit.h"
 
     menuContainer->Append(
@@ -298,27 +318,18 @@ void WCryptoTE::CreateMenuBar()
     toolbar->AddSeparator();
 
     menuContainer->Append(
+	createMenuItem(menuContainer, myID_MENU_CONTAINER_SHOWLIST,
+		       _("Show &SubFile List"),
+		       _("Show list of subfiles contained in current encrypted container."),
+		       wxBitmapFromMemory(view_choose_png))
+	);
+    menuContainer->AppendSeparator();
+
+    menuContainer->Append(
 	createMenuItem(menuContainer, wxID_EXIT,
 		       _("&Quit\tCtrl+Q"),
 		       _("Exit CryptoTE"),
 		       wxBitmapFromMemory(application_exit_png))
-	);
-
-    // *** SubFile
-
-    wxMenu *menuSubFile = new wxMenu;
-
-    menuSubFile->Append(
-	createMenuItem(menuSubFile, myID_MENU_SUBFILE_NEW,
-		       _("&New ...\tCtrl+Shift+N"),
-		       _("Create new encrypted subfile in the current container."),
-		       wxBitmapFromMemory(document_open_png))
-	);
-    menuSubFile->Append(
-	createMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
-		       _("&Import ...\tCtrl+Shift+I"),
-		       _("Import external text or data file into the current container."),
-		       wxNullBitmap)
 	);
 
     // *** Edit
@@ -502,7 +513,6 @@ void WCryptoTE::CreateMenuBar()
     menubar = new wxMenuBar;
 
     menubar->Append(menuContainer, _("&Container"));
-    menubar->Append(menuSubFile, _("&SubFile"));
     menubar->Append(menuEdit, _("&Edit"));
     menubar->Append(menuView, _("&View"));
     menubar->Append(menuHelp, _("&Help"));
@@ -583,6 +593,12 @@ void WCryptoTE::OnMenuContainerClose(wxCommandEvent& WXUNUSED(event))
     ContainerNew();
 }
 
+void WCryptoTE::OnMenuContainerShowList(wxCommandEvent& WXUNUSED(event))
+{
+    auimgr.GetPane(filelistpane).Show();
+    auimgr.Update();
+}
+
 void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
 {
     Close();
@@ -590,7 +606,7 @@ void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
 {
-    auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"), true);
+    // auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"), true);
 }
 
 void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
@@ -743,6 +759,12 @@ void WCryptoTE::OnAccelEscape(wxCommandEvent& WXUNUSED(event))
     }
 
     if (cpage) cpage->SetFocus();
+}
+
+// *** wxAuiManager Callbacks ***
+
+void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& WXUNUSED(event))
+{
 }
 
 // *** wxAuiNotebook Callbacks ***
@@ -903,6 +925,8 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_REVERT,		WCryptoTE::OnMenuContainerRevert)
     EVT_MENU	(wxID_CLOSE,		WCryptoTE::OnMenuContainerClose)
 
+    EVT_MENU	(myID_MENU_CONTAINER_SHOWLIST, WCryptoTE::OnMenuContainerShowList)
+
     EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
 
     // SubFile
@@ -941,6 +965,10 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     // *** Accelerators
 
     EVT_MENU	(myID_ACCEL_ESCAPE,	WCryptoTE::OnAccelEscape)
+
+    // *** wxAuiManager Callbacks
+
+    EVT_AUI_PANE_CLOSE(WCryptoTE::OnAuiManagerPaneClose)
 
     // *** wxAuiNotebook Callbacks
 

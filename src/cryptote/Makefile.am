@@ -5,7 +5,8 @@ bin_PROGRAMS = cryptote
 cryptote_SOURCES = main.cpp \
 	wcryptote.cpp wcryptote.h \
 	wtextpage.cpp wtextpage.h \
-	wfind.cpp wfind.h
+	wfind.cpp wfind.h \
+	wfilelist.cpp wfilelist.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 

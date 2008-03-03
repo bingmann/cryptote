@@ -28,6 +28,22 @@ static inline wxIcon _wxIconFromMemory(const char *data, int len) {
     return icon;
 }
 
+// *** Somewhat safe conversions between wxString and std::string ***
+
+static inline wxString strSTL2WX(const std::string& str) {
+    return wxString(str.data(), wxConvUTF8, str.size());
+}
+
+static inline std::string strWX2STL(const wxString& str) {
+#if wxUSE_UNICODE
+    size_t outlen;
+    const wxCharBuffer cbuf = wxConvUTF8.cWC2MB(str.GetData(), str.Length(), &outlen);
+    return std::string(cbuf.data(), outlen);
+#else
+    return std::string(str.GetData(), str.Length());
+#endif
+}
+
 // *** Interpolate a color from the gradient given by support points.
 
 struct GradientPoint
