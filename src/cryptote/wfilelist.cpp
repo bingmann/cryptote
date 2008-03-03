@@ -89,6 +89,7 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
     #include "art/document_import.h"
     #include "art/document_export.h"
     #include "art/document_delete.h"
+    #include "art/document_properties.h"
 
     wxMenu* menu = new wxMenu;
 
@@ -153,7 +154,12 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
 
     menu->AppendSeparator();
 
-    menu->Append(myID_FILE_PROPERTIES, _("&Properties"));
+    menu->Append(
+	createMenuItem(menu, myID_FILE_PROPERTIES,
+		       _("&Properties"),
+		       _("Show metadata properties of selected subfile."),
+		       wxBitmapFromMemory(document_properties_png))
+	);
 
     // disable items not applicable
     int si = GetSelectedItemCount();

@@ -31,6 +31,7 @@ noinst_HEADERS = \
 	document_import.h \
 	document_export.h \
 	document_delete.h \
+	document_properties.h \
 	application_exit.h \
 	application_info.h \
 	edit_undo.h \
@@ -90,6 +91,7 @@ EXTRA_DIST = \
 	document_import.png \
 	document_export.png \
 	document_delete.png \
+	document_properties.png \
 	application_exit.png \
 	application_info.png \
 	edit_undo.png \
