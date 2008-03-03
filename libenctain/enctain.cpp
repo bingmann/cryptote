@@ -106,16 +106,21 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
 
     instream.Read(&header1, sizeof(header1));
 
-    if (instream.LastRead() != sizeof(header1))
+    if (instream.LastRead() != sizeof(header1)) {
+	wxLogError(_("Error loading container: could not read header."));
 	return false;
+    }
 
-    if (memcmp(header1.signature, fsignature, 8) != 0)
+    if (memcmp(header1.signature, fsignature, 8) != 0) {
+	wxLogError(_("Error loading container: invalid signature."));
 	return false;
+    }
 
     if (header1.version == 0x00010000) {
 	return Loadv00010000(instream, filekey, header1.options);
     }
     else {
+	wxLogError(_("Error loading container: invalid file version."));
 	return false;
     }
 }
@@ -127,11 +132,15 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 
     instream.Read(&header2, sizeof(header2));
 
-    if (instream.LastRead() != sizeof(header2))
+    if (instream.LastRead() != sizeof(header2)) {
+	wxLogError(_("Error loading container: could not read secondary header."));
 	return false;
+    }
 
-    if (header2.test123 != 0x12345678)
+    if (header2.test123 != 0x12345678) {
+	wxLogError(_("Error loading container: could not decrypt header."));
 	return false;
+    }
 
     // Read variable length metadata
 
@@ -139,8 +148,10 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
     metadata.alloc(header2.metalen);
     
     instream.Read(metadata.data(), header2.metalen);
-    if (instream.LastRead() != header2.metalen)
+    if (instream.LastRead() != header2.metalen) {
+	wxLogError(_("Error loading container: could not decrypt metadata."));
 	return false;
+    }
 
     metadata.set_size(header2.metalen);
 
@@ -194,6 +205,7 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	subfile.data.SetDataLen(instream.LastRead());
 
 	if (instream.LastRead() != subfile.storagesize) {
+	    wxLogError(_("Error loading container: could not read encrypted subfile data."));
 	    return false;
 	}
     }

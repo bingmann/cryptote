@@ -4,6 +4,7 @@
 #define WCRYPTOTE_H
 
 #include <wx/wx.h>
+#include <wx/filename.h>
 #include <wx/aui/aui.h>
 
 #if wxCHECK_VERSION(2,8,0)
@@ -11,6 +12,8 @@
 #else
 #include "common/hyperlink.h"
 #endif
+
+#include "enctain.h"
 
 class WCryptoTE : public wxFrame
 {
@@ -20,7 +23,7 @@ public:
 
     // *** Identifiers ***
 
-    enum ids {
+    enum {
 	myID_FIRST = wxID_HIGHEST + 1,
 
 	// Main Window Controls
@@ -68,6 +71,19 @@ public:
 
     /// Callback from any subdialog to hide it's pane 
     void	HidePane(wxWindow* child);
+
+    /// Update the window title when a container is loaded.
+    void	UpdateTitle();
+
+    /// Discard any current container and set up a default new one with one
+    /// activated text file.
+    void	ContainerNew();
+
+    /// Load a container file into the editor, discard any current container.
+    bool	ContainerOpen(const wxString& filename);
+
+    /// Save the current container to a file.
+    bool	ContainerSaveAs(const wxString& filename);
 
     // *** Event Handlers ***
 
@@ -143,6 +159,16 @@ protected:
 
 public:
 
+    // *** Container Loaded ***
+
+    /// Container object used.
+    Enctain::Container*	container;
+
+    /// Associated file name
+    wxFileName		container_filename;
+
+public:
+
     /// Currently selected notebook page (or NULL).
     class WNotePage*	cpage;
 
@@ -156,49 +182,6 @@ public:
 
     /// (Slow) Find & Replace Dialog activated with Ctrl+Shift+F
     class WFindReplace*	findreplacedlg;
-
-#if 0
-/*****************************************************************************/
-
-    /// Update the title bar with the currently loaded text file name
-    void	UpdateTitle();
-
-     /// Load a file into the editor, discard any current buffer.
-    bool	FileOpen(const wxString& filename);
-
-    /// Save the buffer into the associated file, query for a file name if none
-    /// is associated.
-    bool	FileSave();
-
-    /// Query for a file name and save the buffer into the associated file.
-    bool	FileSaveAs();
-
-    /// Enable or Disable Save and SaveAs depending on if the buffer is modified.
-    void	UpdateOnSavePoint();
-
-    /// Ture if the user is allowed to close the window.
-    bool	AllowCloseModified();
-
-    // *** Event Handlers ***
-
-    // Generic Events
-
-    void	OnChar(wxKeyEvent& event);
-
-    void	OnClose(wxCloseEvent& event);
-
-    // Menu Events
-
-    void	OnMenuFileOpen(wxCommandEvent& event);
-    void	OnMenuFileSave(wxCommandEvent& event);
-    void	OnMenuFileSaveAs(wxCommandEvent& event);
-    void	OnMenuFileRevert(wxCommandEvent& event);
-    void	OnMenuFileClose(wxCommandEvent& event);
-
-
-
-/*****************************************************************************/
-#endif
 
 private:
     DECLARE_EVENT_TABLE()

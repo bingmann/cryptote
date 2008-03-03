@@ -4,6 +4,7 @@
 #include "wtextpage.h"
 #include "wfind.h"
 
+#include <wx/wfstream.h>
 #include "common/tools.h"
 
 WCryptoTE::WCryptoTE(wxWindow* parent)
@@ -11,6 +12,9 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
 {
     cpage = NULL;
+    container = NULL;
+
+    Enctain::Container::SetSignature("CryptoTE");
 
     {	// Program Icon
     
@@ -47,7 +51,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     // Create Controls
 
     auinotebook = new wxAuiNotebook(this, myID_AUINOTEBOOK, wxDefaultPosition, wxDefaultSize,
-				    wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
+				    wxAUI_NB_DEFAULT_STYLE | wxNO_BORDER);
 
     auinotebook->SetArtProvider(new wxAuiSimpleTabArt);
 
@@ -94,11 +98,18 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     Centre();
 
     if (cpage) cpage->SetFocus();
+
+    ContainerNew();
 }
 
 WCryptoTE::~WCryptoTE()
 {
     auimgr.UnInit();
+
+    if (container) {
+	delete container;
+	container = NULL;
+    }
 }
 
 void WCryptoTE::UpdateStatusBar(const wxString& str)
@@ -110,6 +121,101 @@ void WCryptoTE::HidePane(wxWindow* child)
 {
     auimgr.GetPane(child).Hide();
     auimgr.Update();
+}
+
+void WCryptoTE::UpdateTitle()
+{
+    wxString title;
+
+    if (container_filename.IsOk())
+    {
+	title += container_filename.GetFullName();
+	title += _(" - ");
+    }
+
+    title += _("CryptoTE v0.1");
+
+    SetTitle(title);
+}
+
+void WCryptoTE::ContainerNew()
+{
+    if (container) {
+	delete container;
+	container = NULL;
+    }
+
+    // close all notebook pages
+    while( auinotebook->GetPageCount() > 0 )
+    {
+	wxWindow* w = auinotebook->GetPage(0);
+	auinotebook->RemovePage(0);
+	w->Destroy();
+    }
+
+    container = new Enctain::Container();
+    container_filename.Clear();
+
+    UpdateStatusBar(_("New container initialized."));
+
+    UpdateTitle();
+}
+
+bool WCryptoTE::ContainerOpen(const wxString& filename)
+{
+    wxFileInputStream stream(filename);
+    if (!stream.IsOk()) return false;
+
+    Enctain::Container* nc = new Enctain::Container();
+
+    bool b = nc->Load(stream, "");
+    if (!b) {
+	delete nc;
+	return false;
+    }
+
+    // Loading was successful
+
+    if (container) {
+	delete container;
+    }
+    container = nc;
+
+    container_filename.Assign(filename);
+
+    // close all notebook pages
+    while( auinotebook->GetPageCount() > 0 )
+    {
+	wxWindow* w = auinotebook->GetPage(0);
+	auinotebook->RemovePage(0);
+	w->Destroy();
+    }
+
+    UpdateStatusBar(wxString::Format(_("Loaded container with %u subfiles from %s"),
+				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
+
+    UpdateTitle();
+
+    return true;
+}
+
+bool WCryptoTE::ContainerSaveAs(const wxString& filename)
+{
+    if (!container) return false;
+
+    wxFileOutputStream stream(filename);
+    if (!stream.IsOk()) return false;
+
+    container->Save(stream);
+
+    container_filename.Assign(filename);
+
+    UpdateStatusBar(wxString::Format(_("Saved container with %u subfiles to %s"),
+				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
+
+    UpdateTitle();
+
+    return true;
 }
 
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
@@ -409,22 +515,72 @@ void WCryptoTE::CreateMenuBar()
 
 void WCryptoTE::OnMenuContainerOpen(wxCommandEvent& WXUNUSED(event))
 {
+    // if (!AllowCloseModified()) return;
+
+    wxFileDialog dlg(this,
+		     _("Open Container File"), wxEmptyString, wxEmptyString,
+		     _("Encrypted Container (*.ect)|*.ect"),
+#if wxCHECK_VERSION(2,8,0)
+                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
+#else
+                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR
+#endif
+	);
+
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    ContainerOpen( dlg.GetPath() );
 }
 
-void WCryptoTE::OnMenuContainerSave(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuContainerSave(wxCommandEvent& event)
 {
+    if (!container_filename.IsOk()) {
+	return OnMenuContainerSaveAs(event);
+    }
+
+    ContainerSaveAs( container_filename.GetFullPath() );
 }
 
 void WCryptoTE::OnMenuContainerSaveAs(wxCommandEvent& WXUNUSED(event))
 {
+    if (!container) return;
+
+    wxFileDialog dlg(this,
+		     _("Save Container File"), wxEmptyString, container_filename.GetFullName(),
+		     _("Encrypted Container (*.ect)|*.ect"),
+#if wxCHECK_VERSION(2,8,0)
+		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+#else
+		     wxSAVE | wxOVERWRITE_PROMPT
+#endif
+	);
+
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    wxFileName fname(dlg.GetPath());
+
+    // set extension .ect if none was entered and the file dialog filter is set.
+    if (fname.GetExt().IsEmpty() && dlg.GetFilterIndex() == 0) {
+	fname.SetExt(wxT("ect"));
+    }
+
+    ContainerSaveAs( fname.GetFullPath() );
 }
 
 void WCryptoTE::OnMenuContainerRevert(wxCommandEvent& WXUNUSED(event))
 {
+    // if (!AllowCloseModified()) return;
+
+    if (!container_filename.IsOk()) return;
+
+    ContainerOpen( container_filename.GetFullPath() );
 }
 
 void WCryptoTE::OnMenuContainerClose(wxCommandEvent& WXUNUSED(event))
 {
+    // if (!AllowCloseModified()) return;
+
+    ContainerNew();
 }
 
 void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
@@ -810,68 +966,6 @@ END_EVENT_TABLE()
 #if 0
 /*****************************************************************************/
 
-
-    SetBackgroundColour( wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE) );
-
-    // Default Settings
-
-    editctrl->FileNew();
-
-    UpdateTitle();
-}
-
-void WCryptoTE::UpdateTitle()
-{
-    wxString title = editctrl->GetFileBasename();
-
-    if (editctrl->ModifiedFlag()) {
-	title += _(" (Modified)");
-    }
-
-    title += _(" - ");
-    title += _("CryptoTE");
-
-    SetTitle(title);
-}
-
-bool WCryptoTE::FileOpen(const wxString& filename)
-{
-    bool b = editctrl->FileOpen(filename);
-
-    UpdateTitle();
-    return b;
-}
-
-bool WCryptoTE::FileSave()
-{
-    if (!editctrl->HasFilename()) {
-	return FileSaveAs();
-    }
-
-    return editctrl->FileSave();
-}
-
-bool WCryptoTE::FileSaveAs()
-{
-    wxFileDialog dlg(this,
-		     _("Save file"), wxEmptyString, editctrl->GetFileBasename(), _("Any file (*)|*"),
-#if wxCHECK_VERSION(2,8,0)
-		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-#else
-		     wxSAVE | wxOVERWRITE_PROMPT);
-#endif
-
-    if (dlg.ShowModal() != wxID_OK) return false;
-
-    editctrl->FileSaveAs( dlg.GetPath() );
-
-    return true;
-}
-
-void WCryptoTE::CreateMenuBar()
-{
-}
-
 void WCryptoTE::OnClose(wxCloseEvent& event)
 {
     if (!event.CanVeto()) {
@@ -917,47 +1011,6 @@ bool WCryptoTE::AllowCloseModified()
     }
 
     return true;
-}
-
-void WCryptoTE::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
-{
-    if (!AllowCloseModified()) return;
-
-    wxFileDialog dlg(this,
-		     _("Open file"), wxEmptyString, wxEmptyString, _("Any file (*)|*"),
-#if wxCHECK_VERSION(2,8,0)
-                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR);
-#else
-                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR);
-#endif
-
-    if (dlg.ShowModal() != wxID_OK) return;
-
-    editctrl->FileOpen( dlg.GetPath() );
-
-    UpdateTitle();
-}
-
-void WCryptoTE::OnMenuFileSave(wxCommandEvent& WXUNUSED(event))
-{
-    FileSave();
-}
-
-void WCryptoTE::OnMenuFileSaveAs(wxCommandEvent& WXUNUSED(event))
-{
-    FileSaveAs();
-}
-
-void WCryptoTE::OnMenuFileRevert(wxCommandEvent& WXUNUSED(event))
-{
-    editctrl->FileRevert();
-}
-
-void WCryptoTE::OnMenuFileClose(wxCommandEvent& WXUNUSED(event))
-{
-    if (!AllowCloseModified()) return;
-
-    editctrl->FileNew();
 }
 
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
