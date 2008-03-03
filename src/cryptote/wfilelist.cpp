@@ -114,7 +114,7 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
     menu->Append(
 	createMenuItem(menu, myID_FILE_EXPORT,
 		       _("&Export SubFiles"),
-		       _("Export subfiles from encrypted container to dosk."),
+		       _("Export subfiles from encrypted container to disk."),
 		       wxBitmapFromMemory(document_export_png))
 	);
     menu->Append(

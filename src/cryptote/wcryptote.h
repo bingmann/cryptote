@@ -36,6 +36,8 @@ public:
 
 	myID_MENU_SUBFILE_NEW,
 	myID_MENU_SUBFILE_IMPORT,
+	myID_MENU_SUBFILE_EXPORT,
+	myID_MENU_SUBFILE_PROPERTIES,
 
 	myID_MENU_EDIT_QUICKFIND,
 	myID_MENU_EDIT_GOTO,
@@ -136,6 +138,8 @@ public:
 
     void	OnMenuSubFileNew(wxCommandEvent& event);
     void	OnMenuSubFileImport(wxCommandEvent& event);
+    void	OnMenuSubFileExport(wxCommandEvent& event);
+    void	OnMenuSubFileProperties(wxCommandEvent& event);
 
     void	OnMenuEditGeneric(wxCommandEvent& event);
     void	OnMenuEditQuickFind(wxCommandEvent& event);
@@ -164,6 +168,7 @@ public:
 
     void	OnNotebookPageChanged(wxAuiNotebookEvent& event);
     void	OnNotebookPageClose(wxAuiNotebookEvent& event);
+    void	OnNotebookPageRightDown(wxAuiNotebookEvent& event);
 
     // Quick-Find Bar
 

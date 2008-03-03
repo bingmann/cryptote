@@ -64,13 +64,13 @@ wxString WTextPage::GetCaption()
 }
 
 /** Appends the incoming text file into the Scintilla edit control. */
-class WTextPageAcceptor : public Enctain::DataAcceptor
+class TextPageAcceptor : public Enctain::DataAcceptor
 {
 public:
     class WTextPage&	tpage;
 
     /// Constructor is given all information
-    WTextPageAcceptor(WTextPage& _tpage)
+    TextPageAcceptor(WTextPage& _tpage)
 	: tpage(_tpage)
     {
     }
@@ -86,7 +86,7 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 {
     editctrl->ClearAll();
        
-    WTextPageAcceptor acceptor(*this);
+    TextPageAcceptor acceptor(*this);
 
     wmain->container->GetSubFileData(sfid, acceptor);
 
@@ -99,6 +99,30 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 				 // otherwise scrolled halfway thru 1st char
 
     return true;
+}
+
+size_t WTextPage::ImportFile(wxFile& file)
+{
+    editctrl->ClearAll();
+    
+    wxFileOffset filesize = file.Length();
+    size_t buffersize = wxMin(65536, (size_t)filesize);
+    wxCharBuffer buffer(buffersize);
+
+    for (int i = 0; !file.Eof(); i++)
+    {
+	size_t rb = file.Read(buffer.data(), buffersize);
+	if (rb == 0) break;
+
+	editctrl->AddTextRaw(buffer.data(), rb);
+    }
+
+    editctrl->EmptyUndoBuffer();
+    editctrl->GotoPos(0);
+    editctrl->ScrollToColumn(0); // extra help to ensure scrolled to 0
+				 // otherwise scrolled halfway thru 1st char
+
+    return editctrl->GetTextLength();
 }
 
 // *** Event Handlers ***
@@ -546,15 +570,6 @@ END_EVENT_TABLE()
 #if 0
 /*****************************************************************************/
 
-void CEWEditCtrl::FileNew()
-{
-    ClearAll();
-    EmptyUndoBuffer();
-    SetSavePoint();
-
-    currentfilename.Clear();
-}
-
 bool CEWEditCtrl::FileOpen(const wxString& filename)
 {
     wxFileInputStream stream(filename);
@@ -573,16 +588,6 @@ bool CEWEditCtrl::FileOpen(const wxString& filename)
 			 currentfilename.GetFullPath().c_str()));
 
     return true;
-}
-
-bool CEWEditCtrl::FileSave()
-{
-    if (!HasFilename()) {
-	wxLogError(_("Current buffer has no file name assigned."));
-	return false;
-    }
-
-    return FileSaveAs( currentfilename.GetFullPath() );
 }
 
 bool CEWEditCtrl::FileSaveAs(const wxString& filename)
@@ -610,34 +615,6 @@ bool CEWEditCtrl::FileSaveAs(const wxString& filename)
     }
 
     return false;
-}
-
-bool CEWEditCtrl::FileRevert()
-{
-    if (!HasFilename()) {
-	wxLogError(_("Current buffer has no file name assigned."));
-	return false;
-    }
-
-    return FileOpen( currentfilename.GetFullPath() );
-}
-
-bool CEWEditCtrl::HasFilename() const
-{
-    return currentfilename.IsOk();
-}
-
-wxString CEWEditCtrl::GetFileFullpath() const
-{
-    return currentfilename.GetFullPath();
-}
-
-wxString CEWEditCtrl::GetFileBasename() const
-{
-    if (!currentfilename.IsOk()) {
-	return _("Untitled.txt");
-    }
-    return currentfilename.GetFullName();
 }
 
 bool CEWEditCtrl::LoadInputStream(wxInputStream& stream)

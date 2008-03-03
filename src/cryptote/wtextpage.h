@@ -34,6 +34,9 @@ public:
     /// Load a SubFile from the current container.
     bool	LoadSubFile(unsigned int sfid);
 
+    /// Clear buffer and load all data from a file
+    size_t	ImportFile(wxFile& file);
+
     // *** Event Handlers ***
 
     // Edit Menu

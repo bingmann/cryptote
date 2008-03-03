@@ -4,6 +4,7 @@
 #include "wtextpage.h"
 #include "wfind.h"
 #include "wfilelist.h"
+#include "wfileprop.h"
 #include "wmsgdlg.h"
 
 #include <wx/wfstream.h>
@@ -471,6 +472,43 @@ void WCryptoTE::CreateMenuBar()
 		       wxBitmapFromMemory(application_exit_png))
 	);
 
+    // *** SubFile
+
+    wxMenu *menuSubFile = new wxMenu;
+
+    #include "art/document_new.h"
+    #include "art/document_import.h"
+    #include "art/document_export.h"
+    #include "art/document_properties.h"
+
+    menuSubFile->Append(
+	createMenuItem(menuSubFile, myID_MENU_SUBFILE_NEW,
+		       _("&New Text SubFile\tCtrl+Shift+N"),
+		       _("Create a new empty text subfile in encrypted container."),
+		       wxBitmapFromMemory(document_new_png))
+	);
+
+    menuSubFile->Append(
+	createMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
+		       _("&Import SubFile\tCtrl+Shift+I"),
+		       _("Import any file from disk into encrypted container."),
+		       wxBitmapFromMemory(document_import_png))
+	);
+
+    menuSubFile->Append(
+	createMenuItem(menuSubFile, myID_MENU_SUBFILE_EXPORT,
+		       _("&Export SubFile\tCtrl+Shift+E"),
+		       _("Export current subfile to disk."),
+		       wxBitmapFromMemory(document_export_png))
+	);
+ 
+    menuSubFile->Append(
+	createMenuItem(menuSubFile, myID_MENU_SUBFILE_PROPERTIES,
+		       _("&Properties\tAlt+Shift+Enter"),
+		       _("Show metadata properties of current subfile."),
+		       wxBitmapFromMemory(document_properties_png))
+	);
+
     // *** Edit
 
     wxMenu *menuEdit = new wxMenu;
@@ -652,6 +690,7 @@ void WCryptoTE::CreateMenuBar()
     menubar = new wxMenuBar;
 
     menubar->Append(menuContainer, _("&Container"));
+    menubar->Append(menuSubFile, _("&SubFile"));
     menubar->Append(menuEdit, _("&Edit"));
     menubar->Append(menuView, _("&View"));
     menubar->Append(menuHelp, _("&Help"));
@@ -807,21 +846,142 @@ void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
 {
-    // auinotebook->AddPage(new WTextPage(this), wxT("Test wxAUI"), true);
+    if (!container) return;
+
+    // Set up an empty text file in the container
+    unsigned int sfnew = container->AppendSubFile();
+    
+    // TODO: use defaults from global properties.
+    container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
+    container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
+
+    container->SetSubFileProperty(sfnew, "Name", "Untitled.txt");
+
+    filelistpane->ResetItems();
+
+    OpenSubFile(sfnew);
+
+    UpdateStatusBar(_("Created new empty text subfile in container."));
+    SetModified();
+
+    if (cpage) cpage->SetFocus();
 }
 
 void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
 {
     wxFileDialog dlg(this,
-		     _("Import file"), wxEmptyString, wxEmptyString, _("Any file (*)|*"),
+		     _("Import File"), wxEmptyString, wxEmptyString,
+		     _("Text File (*.txt)|*.txt|Any Binary File (*)|*"),
 #if wxCHECK_VERSION(2,8,0)
-                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR);
+                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
 #else
-                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR);
+                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR
 #endif
+	);
 
     if (dlg.ShowModal() != wxID_OK) return;
 
+    wxFile importfile(dlg.GetPath(), wxFile::read);
+    if (!importfile.IsOpened()) return;
+
+    // Create new text file in the container
+    unsigned int sfnew = container->AppendSubFile();
+    
+    // TODO: use defaults from global properties.
+    container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
+    container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
+
+    wxFileName fname (dlg.GetPath());
+    container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
+    container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
+
+    // open file in text editor
+    OpenSubFile(sfnew);
+    WNotePage* _page = FindSubFilePage(sfnew);
+
+    if (!_page->IsKindOf(CLASSINFO(WTextPage))) {
+	wxLogError(_T("Invalid notebook page created."));
+	return;
+    }
+
+    WTextPage* page = (WTextPage*)_page;
+    size_t importsize = page->ImportFile(importfile);
+
+    // update window
+    filelistpane->ResetItems();
+
+    UpdateStatusBar(wxString::Format(_("Imported %u bytes into new subfile in container."),
+				     importsize));
+    SetModified();
+
+    if (cpage) cpage->SetFocus();
+}
+
+/** Write the incoming file data into the export file. */
+class ExportAcceptor : public Enctain::DataAcceptor
+{
+public:
+    class wxFile	exportfile;
+
+    /// Constructor get the file name to open
+    ExportAcceptor(const wxString& filename)
+	: exportfile(filename.c_str(), wxFile::write)
+    {
+    }
+
+    /// Virtual callback function to save data.
+    virtual void Append(const void* data, size_t datalen)
+    {
+	exportfile.Write(data, datalen);
+    }
+};
+
+void WCryptoTE::OnMenuSubFileExport(wxCommandEvent& WXUNUSED(event))
+{
+    if (!container) return;
+    if (!cpage || cpage->subfileid < 0) return;
+
+    wxString suggestname = strSTL2WX(container->GetSubFileProperty(cpage->subfileid, "Name"));
+
+    wxFileDialog dlg(this,
+		     _("Save SubFile"), wxEmptyString, suggestname,
+		     _("Any file (*)|*"),
+#if wxCHECK_VERSION(2,8,0)
+		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+#else
+		     wxSAVE | wxOVERWRITE_PROMPT
+#endif
+	);
+
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    cpage->PageSaveData();	// commit data from page to container
+
+    // read encrypted subfile
+
+    ExportAcceptor acceptor( dlg.GetPath() );
+    if (!acceptor.exportfile.IsOpened()) return;
+
+    container->GetSubFileData(cpage->subfileid, acceptor);
+
+    UpdateStatusBar(wxString::Format(_("Wrote %u bytes from subfile \"%s\" to %s"),
+				     (unsigned int)(acceptor.exportfile.Tell()),
+				     suggestname.c_str(),
+				     dlg.GetPath().c_str()));
+}
+
+void WCryptoTE::OnMenuSubFileProperties(wxCommandEvent& WXUNUSED(event))
+{
+    if (!cpage || cpage->subfileid < 0) return;
+
+    WFileProperties dlg(this, cpage->subfileid);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	UpdateSubFileCaption(cpage->subfileid);
+	SetModified();
+
+	filelistpane->UpdateItem(cpage->subfileid);
+    }
 }
 
 void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
@@ -1003,6 +1163,30 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
     }
 }
 
+void WCryptoTE::OnNotebookPageRightDown(wxAuiNotebookEvent& event)
+{
+    wxMenu* menu = new wxMenu;
+
+    #include "art/document_export.h"
+    #include "art/document_properties.h"
+ 
+    menu->Append(
+	createMenuItem(menu, myID_MENU_SUBFILE_EXPORT,
+		       _("&Export SubFile"),
+		       _("Export current subfile to disk."),
+		       wxBitmapFromMemory(document_export_png))
+	);
+ 
+    menu->Append(
+	createMenuItem(menu, myID_MENU_SUBFILE_PROPERTIES,
+		       _("&Properties"),
+		       _("Show metadata properties of current subfile."),
+		       wxBitmapFromMemory(document_properties_png))
+	);
+  
+    PopupMenu(menu);
+}
+
 // *** WQuickFindBar Callbacks ***
 
 void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
@@ -1142,6 +1326,8 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     // SubFile
     EVT_MENU	(myID_MENU_SUBFILE_NEW, WCryptoTE::OnMenuSubFileNew)
     EVT_MENU	(myID_MENU_SUBFILE_IMPORT, WCryptoTE::OnMenuSubFileImport)
+    EVT_MENU	(myID_MENU_SUBFILE_EXPORT, WCryptoTE::OnMenuSubFileExport)
+    EVT_MENU	(myID_MENU_SUBFILE_PROPERTIES, WCryptoTE::OnMenuSubFileProperties)
 
     // Edit
     EVT_MENU	(wxID_UNDO,		WCryptoTE::OnMenuEditGeneric)
@@ -1184,6 +1370,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     EVT_AUINOTEBOOK_PAGE_CHANGED(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageChanged)
     EVT_AUINOTEBOOK_PAGE_CLOSE(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageClose)
+    EVT_AUINOTEBOOK_TAB_RIGHT_DOWN(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageRightDown)
 
     // *** Quick-Find Bar
 
