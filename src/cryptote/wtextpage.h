@@ -17,11 +17,6 @@ public:
     /// Return the text to display in the notebook
     virtual wxString	GetCaption();
 
-    // *** Variables ***
-
-    /// True if buffer modified in editor
-    bool		modified;
-
     // *** Identifiers ***
 
     enum {
@@ -39,6 +34,9 @@ public:
     /// Enable or Disable Save and SaveAs depending on if the buffer is
     /// modified.
     void	UpdateOnSavePoint();
+
+    /// Load a SubFile from the current container.
+    bool	LoadSubFile(unsigned int sfid);
 
     // *** Event Handlers ***
 
@@ -61,6 +59,12 @@ public:
 
     /// Called when the notebook page is deactivated.
     virtual void	PageBlurred();
+
+    /// Called when the notebook page should save it's data.
+    virtual void	PageSaveData();
+
+    /// Called when the notebook page is closed.
+    virtual void	PageClosed();
 
     virtual void	PrepareQuickFind(bool backwards, bool reset);
     virtual void	DoQuickFind(bool backwards, const wxString& findtext);

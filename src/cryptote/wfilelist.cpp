@@ -61,7 +61,7 @@ void WFileList::UpdateItem(unsigned int sfid)
 
     SetItemText(sfid, strSTL2WX(cnt.GetSubFileProperty(sfid, "Name")));
 
-    // wmain->UpdateSubFileCaption(sfid);
+    wmain->UpdateSubFileCaption(sfid);
 }
 
 void WFileList::OnItemSelected(wxListEvent& WXUNUSED(event))
@@ -70,7 +70,7 @@ void WFileList::OnItemSelected(wxListEvent& WXUNUSED(event))
 
 void WFileList::OnItemActivated(wxListEvent& event)
 {
-    // wmain->OpenSubFile( event.GetIndex() );
+    wmain->OpenSubFile( event.GetIndex() );
 }
 
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
@@ -180,7 +180,7 @@ void WFileList::OnEndLabelEdit(wxListEvent& event)
 {
     wmain->container->SetSubFileProperty( event.GetIndex(), "Name", strWX2STL(event.GetLabel()) );
     
-    // wmain->UpdateSubFileCaption( event.GetIndex() );
+    wmain->UpdateSubFileCaption( event.GetIndex() );
 }
 
 void WFileList::OnBeginDrag(wxListEvent& WXUNUSED(event))
@@ -196,7 +196,7 @@ void WFileList::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
         item = GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
         if (item == -1) break;
 
-	// wmain->OpenSubFile(item);
+	wmain->OpenSubFile(item);
     }
 }
 

@@ -58,7 +58,47 @@ WTextPage::WTextPage(class WCryptoTE* parent)
 
 wxString WTextPage::GetCaption()
 {
-    return _T("Test Caption");
+    if (!wmain->container) return _T("Unknown");
+
+    return strSTL2WX( wmain->container->GetSubFileProperty(subfileid, "Name") );
+}
+
+/** Appends the incoming text file into the Scintilla edit control. */
+class WTextPageAcceptor : public Enctain::DataAcceptor
+{
+public:
+    class WTextPage&	tpage;
+
+    /// Constructor is given all information
+    WTextPageAcceptor(WTextPage& _tpage)
+	: tpage(_tpage)
+    {
+    }
+
+    /// Virtual callback function to save data.
+    virtual void Append(const void* data, size_t datalen)
+    {
+	tpage.editctrl->AddTextRaw((const char*)data, datalen);
+    }
+};
+
+bool WTextPage::LoadSubFile(unsigned int sfid)
+{
+    editctrl->ClearAll();
+       
+    WTextPageAcceptor acceptor(*this);
+
+    wmain->container->GetSubFileData(sfid, acceptor);
+
+    subfileid = sfid;
+
+    editctrl->EmptyUndoBuffer();
+    editctrl->SetSavePoint();
+    editctrl->GotoPos(0);
+    editctrl->ScrollToColumn(0); // extra help to ensure scrolled to 0
+				 // otherwise scrolled halfway thru 1st char
+
+    return true;
 }
 
 // *** Event Handlers ***
@@ -198,6 +238,38 @@ void WTextPage::PageFocused()
 
 void WTextPage::PageBlurred()
 {
+}
+
+void WTextPage::PageSaveData()
+{
+    size_t buflen = editctrl->GetTextLength();
+    wxCharBuffer buf = editctrl->GetTextRaw();
+
+    wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
+
+    editctrl->SetSavePoint();
+
+    size_t savelen = wmain->container->GetSubFileStorageSize(subfileid);
+
+    if (savelen != buflen)
+    {
+	UpdateStatusBar(
+	    wxString::Format(_("Compressed %u characters from buffer into %u for encrypted storage."),
+			     buflen, savelen)
+	    );
+    }
+    else
+    {
+	UpdateStatusBar(
+	    wxString::Format(_("Saving %u characters from buffer for encrypted storage."),
+			     buflen)
+	    );
+    }
+}
+
+void WTextPage::PageClosed()
+{
+    PageSaveData();
 }
 
 void WTextPage::PrepareQuickFind(bool backwards, bool reset)

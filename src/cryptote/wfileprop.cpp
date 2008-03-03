@@ -13,6 +13,8 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME),
       wmain(parent), subfileid(_subfileid)
 {
+    SetMinSize(wxSize(350, 0));
+
     // begin wxGlade: WFileProperties::WFileProperties
     textIdentifier = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     textFilename = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
@@ -47,8 +49,6 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     set_properties();
     do_layout();
     // end wxGlade
-
-    SetMinSize(wxSize(350, 0));
 
     if (!wmain->container) return;
     Enctain::Container &cnt = *wmain->container;

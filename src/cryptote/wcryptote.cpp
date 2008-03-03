@@ -124,6 +124,59 @@ void WCryptoTE::HidePane(wxWindow* child)
     auimgr.Update();
 }
 
+WNotePage* WCryptoTE::FindSubFilePage(unsigned int sfid)
+{
+    for(unsigned int pi = 0; pi < auinotebook->GetPageCount(); ++pi)
+    {
+	wxWindow* _page = auinotebook->GetPage(pi);
+	if (!_page->IsKindOf(CLASSINFO(WNotePage))) {
+	    wxLogError(_T("Invalid notebook page found."));
+	    continue;
+	}
+
+	WNotePage* page = (WNotePage*)_page;
+
+	if (page->subfileid == (int)sfid)
+	    return page;
+    }
+
+    return NULL;
+}
+
+void WCryptoTE::OpenSubFile(unsigned int sfid)
+{
+    if (FindSubFilePage(sfid) != NULL)
+    {
+	// subfile with specified id is already open.
+	return;
+    }
+
+    // TODO: Select which page handler to use for this file.
+
+    WTextPage* textpage = new WTextPage(this);
+
+    if (!textpage->LoadSubFile(sfid))
+    {
+	wxLogError(_T("Error loading subfile into text page."));
+	delete textpage;
+    }
+    else
+    {
+	auinotebook->AddPage(textpage, textpage->GetCaption(), true);
+    }
+}
+
+void WCryptoTE::UpdateSubFileCaption(int sfid)
+{
+    WNotePage* page = FindSubFilePage(sfid);
+    if (!page) return;
+
+    int pi = auinotebook->GetPageIndex(page);
+    if (pi == wxNOT_FOUND) return;
+  
+    auinotebook->SetPageText(pi, page->GetCaption());
+}
+
 void WCryptoTE::UpdateTitle()
 {
     wxString title;
@@ -153,6 +206,7 @@ void WCryptoTE::ContainerNew()
 	auinotebook->RemovePage(0);
 	w->Destroy();
     }
+    cpage = NULL;
 
     container = new Enctain::Container();
     container_filename.Clear();
@@ -200,6 +254,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 	auinotebook->RemovePage(0);
 	w->Destroy();
     }
+    cpage = NULL;
 
     filelistpane->ResetItems();
 
@@ -777,9 +832,7 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
     {
 	if (cpage) cpage->PageBlurred();
 
-	printf("page changed: %d\n", event.GetSelection());
 	cpage = (WNotePage*)sel;
-
 	cpage->PageFocused();
     }
     else {
@@ -789,9 +842,16 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 
 void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 {
-    printf("page close: %d - %d\n", event.GetSelection(), auinotebook->GetPageCount());
+    wxWindow* sel = auinotebook->GetPage( event.GetSelection() );
 
-    if (auinotebook->GetPageCount() == 1) {
+    if (sel && sel->IsKindOf(CLASSINFO(WNotePage)))
+    {
+	WNotePage* cpage = (WNotePage*)sel;
+	cpage->PageClosed();
+    }
+
+    if (auinotebook->GetPageCount() == 1)
+    {
 	// will be empty after the last page is closed
 	cpage = NULL;
     }
@@ -1170,7 +1230,8 @@ void WAbout::do_layout()
 
 WNotePage::WNotePage(class WCryptoTE* _wmain)
     : wxPanel(_wmain),
-      wmain(_wmain)
+      wmain(_wmain),
+      subfileid(-1), modified(false)
 {
 }
 

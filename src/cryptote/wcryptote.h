@@ -74,6 +74,15 @@ public:
     /// Callback from any subdialog to hide it's pane 
     void	HidePane(wxWindow* child);
 
+    /// Attempt to find a notebook page showing the given subfileid.
+    class WNotePage* FindSubFilePage(unsigned int sfid);
+
+    /// Open one of the SubFiles in the Container
+    void	OpenSubFile(unsigned int sfid);
+
+    /// Update the modified page caption on the notebook
+    void	UpdateSubFileCaption(int sfid);
+
     /// Update the window title when a container is loaded.
     void	UpdateTitle();
 
@@ -248,6 +257,13 @@ protected:
     void	UpdateStatusBar(const wxString& str);
 
 public:
+    /// associated container subfile identifier of page data
+    int		subfileid;
+
+    /// modified flag
+    bool	modified;
+
+public:
 
     /// Return the text to display in the notebook
     virtual wxString	GetCaption() = 0;
@@ -257,6 +273,12 @@ public:
 
     /// Called when the notebook page is deactivated.
     virtual void	PageBlurred() = 0;
+
+    /// Called when the notebook page should save it's data.
+    virtual void	PageSaveData() = 0;
+
+    /// Called when the notebook page is closed.
+    virtual void	PageClosed() = 0;
 
     /// Prepare for a Quick-Find by setting the search anchor point, backwards
     /// for searching backwards and reset for terminating incremental search
