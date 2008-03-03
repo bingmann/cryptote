@@ -181,6 +181,7 @@ void WFileList::OnEndLabelEdit(wxListEvent& event)
     wmain->container->SetSubFileProperty( event.GetIndex(), "Name", strWX2STL(event.GetLabel()) );
     
     wmain->UpdateSubFileCaption( event.GetIndex() );
+    wmain->SetModified();
 }
 
 void WFileList::OnBeginDrag(wxListEvent& WXUNUSED(event))
@@ -213,6 +214,7 @@ void WFileList::OnMenuFileProperties(wxCommandEvent& WXUNUSED(event))
     if (dlg.ShowModal() == wxID_OK)
     {
 	UpdateItem(item);
+	wmain->SetModified();
     }
 }
 

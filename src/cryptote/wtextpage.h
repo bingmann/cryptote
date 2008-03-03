@@ -31,10 +31,6 @@ public:
 
     // *** Operations ***
 
-    /// Enable or Disable Save and SaveAs depending on if the buffer is
-    /// modified.
-    void	UpdateOnSavePoint();
-
     /// Load a SubFile from the current container.
     bool	LoadSubFile(unsigned int sfid);
 

@@ -4,6 +4,7 @@
 #define WFILELIST_H
 
 #include <wx/wx.h>
+#include <wx/listctrl.h>
 
 class WFileList : public wxListCtrl
 {

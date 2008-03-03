@@ -232,8 +232,6 @@ void WTextPage::PageFocused()
     // Synthesize UpdateUI event
     wxStyledTextEvent event;
     OnScintillaUpdateUI(event);
-
-    UpdateOnSavePoint();
 }
 
 void WTextPage::PageBlurred()
@@ -265,6 +263,9 @@ void WTextPage::PageSaveData()
 			     buflen)
 	    );
     }
+
+    // Page Modified Flag is automatically cleared though SavePoint callbacks
+    wmain->SetModified();
 }
 
 void WTextPage::PageClosed()
@@ -433,37 +434,18 @@ void WTextPage::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
     }
 }
 
-void WTextPage::UpdateOnSavePoint()
-{
-    wxMenuBar* menubar = wmain->menubar;
-    wxToolBar* toolbar = wmain->toolbar;
-
-    menubar->Enable(wxID_SAVE, modified);
-    menubar->Enable(wxID_REVERT, modified);
-
-    toolbar->EnableTool(wxID_SAVE, modified);
-
-    // statusbar->SetLock( editctrl->IsEncrypted() );
-
-    // UpdateTitle();
-}
-
 void WTextPage::OnScintillaSavePointReached(wxStyledTextEvent& WXUNUSED(event))
 {
     // Document is un-modified (via Undo or Save)
     
-    modified = false;
-
-    UpdateOnSavePoint();
+    SetModified(false);
 }
 
 void WTextPage::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
 {
     // Document is modified
 
-    modified = true;
-
-    UpdateOnSavePoint();
+    SetModified(true);
 }
 
 // *** Set/Get View Options ***

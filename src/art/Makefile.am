@@ -62,7 +62,8 @@ noinst_HEADERS = \
 	view_icon.h \
 	view_detailed.h \
 	view_choose.h \
-	view_multicolumn.h
+	view_multicolumn.h \
+	modified-12.h
 
 EXTRA_DIST = \
 	pwgen-16.png \
@@ -122,4 +123,5 @@ EXTRA_DIST = \
 	view_icon.png \
 	view_detailed.png \
 	view_choose.png \
-	view_multicolumn.png
+	view_multicolumn.png \
+	modified-12.png

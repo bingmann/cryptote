@@ -4,6 +4,7 @@
 #include "wtextpage.h"
 #include "wfind.h"
 #include "wfilelist.h"
+#include "wmsgdlg.h"
 
 #include <wx/wfstream.h>
 #include "common/tools.h"
@@ -14,6 +15,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 {
     cpage = NULL;
     container = NULL;
+    main_modified = false;
 
     Enctain::Container::SetSignature("CryptoTE");
 
@@ -53,8 +55,6 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     auinotebook = new wxAuiNotebook(this, myID_AUINOTEBOOK, wxDefaultPosition, wxDefaultSize,
 				    wxAUI_NB_DEFAULT_STYLE | wxNO_BORDER);
-
-    auinotebook->SetArtProvider(new wxAuiSimpleTabArt);
 
     quickfindbar = new WQuickFindBar(this);
 
@@ -124,6 +124,43 @@ void WCryptoTE::HidePane(wxWindow* child)
     auimgr.Update();
 }
 
+bool WCryptoTE::IsModified()
+{
+    // check metadata
+    if (main_modified) return true;
+
+    for(unsigned int pi = 0; pi < auinotebook->GetPageCount(); ++pi)
+    {	
+	wxWindow* _page = auinotebook->GetPage(pi);
+	if (!_page->IsKindOf(CLASSINFO(WNotePage))) {
+	    wxLogError(_T("Invalid notebook page found."));
+	    continue;
+	}
+
+	WNotePage* page = (WNotePage*)_page;
+
+	if (page->page_modified) return true;
+    }
+
+    return false;
+}
+
+void WCryptoTE::UpdateModified()
+{
+    bool modified = IsModified();
+
+    menubar->Enable(wxID_SAVE, modified);
+    menubar->Enable(wxID_REVERT, modified);
+
+    toolbar->EnableTool(wxID_SAVE, modified);
+}
+
+void WCryptoTE::SetModified()
+{
+    main_modified = true;
+    UpdateModified();
+}
+
 WNotePage* WCryptoTE::FindSubFilePage(unsigned int sfid)
 {
     for(unsigned int pi = 0; pi < auinotebook->GetPageCount(); ++pi)
@@ -177,6 +214,18 @@ void WCryptoTE::UpdateSubFileCaption(int sfid)
     auinotebook->SetPageText(pi, page->GetCaption());
 }
 
+void WCryptoTE::UpdateSubFileModified(WNotePage* page, bool modified)
+{
+    #include "art/modified-12.h"
+
+    int pi = auinotebook->GetPageIndex(page);
+    if (pi == wxNOT_FOUND) return;
+
+    auinotebook->SetPageBitmap(pi, modified ? wxBitmapFromMemory(modified_12_png) : wxNullBitmap);
+
+    UpdateModified();
+}
+
 void WCryptoTE::UpdateTitle()
 {
     wxString title;
@@ -210,6 +259,7 @@ void WCryptoTE::ContainerNew()
 
     container = new Enctain::Container();
     container_filename.Clear();
+    main_modified = false;
 
     // Set up one empty text file in the container
     unsigned int sf1 = container->AppendSubFile();
@@ -221,8 +271,15 @@ void WCryptoTE::ContainerNew()
 
     filelistpane->ResetItems();
 
+    OpenSubFile(0);
+    auimgr.GetPane(filelistpane).Hide();
+    auimgr.Update();
+
     UpdateStatusBar(_("New container initialized."));
     UpdateTitle();
+    UpdateModified();
+
+    if (cpage) cpage->SetFocus();
 }
 
 bool WCryptoTE::ContainerOpen(const wxString& filename)
@@ -246,6 +303,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     container = nc;
 
     container_filename.Assign(filename);
+    main_modified = false;
 
     // close all notebook pages
     while( auinotebook->GetPageCount() > 0 )
@@ -260,6 +318,9 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 
     if (container->CountSubFile() == 1)
     {
+	OpenSubFile(0);
+	auimgr.GetPane(filelistpane).Hide();
+	auimgr.Update();
     }
     else
     {
@@ -270,6 +331,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     UpdateStatusBar(wxString::Format(_("Loaded container with %u subfiles from %s"),
 				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
     UpdateTitle();
+    UpdateModified();
 
     return true;
 }
@@ -278,16 +340,32 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 {
     if (!container) return false;
 
+    // save all notebook pages
+    for(unsigned int pi = 0; pi < auinotebook->GetPageCount(); ++pi)
+    {
+	wxWindow* _page = auinotebook->GetPage(pi);
+	if (!_page->IsKindOf(CLASSINFO(WNotePage))) {
+	    wxLogError(_T("Invalid notebook page found."));
+	    continue;
+	}
+
+	WNotePage* page = (WNotePage*)_page;
+
+	page->PageSaveData();
+    }
+
     wxFileOutputStream stream(filename);
     if (!stream.IsOk()) return false;
 
     container->Save(stream);
 
     container_filename.Assign(filename);
+    main_modified = false;
 
     UpdateStatusBar(wxString::Format(_("Saved container with %u subfiles to %s"),
 				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
     UpdateTitle();
+    UpdateModified();
 
     return true;
 }
@@ -369,6 +447,12 @@ void WCryptoTE::CreateMenuBar()
 		     wxBitmapFromMemory(document_saveas_png), wxNullBitmap, wxITEM_NORMAL,
 		     _("Save Container as..."),
 		     _("Choose a file name and save the current encrypted container to disk."));
+
+    toolbar->AddTool(myID_MENU_CONTAINER_SHOWLIST,
+		     _("Show SubFile List"),
+		     wxBitmapFromMemory(view_choose_png), wxNullBitmap, wxITEM_NORMAL,
+		     _("Show SubFile List"),
+		     _("Show list of subfiles contained in current encrypted container."));
 
     toolbar->AddSeparator();
 
@@ -576,11 +660,63 @@ void WCryptoTE::CreateMenuBar()
     toolbar->Realize();
 }
 
+// *** Generic Events ***
+
+bool WCryptoTE::AllowCloseModified()
+{
+    if (!IsModified()) return true;
+    if (!container) return true;
+
+    while(1)
+    {
+	WMessageDialog dlg(this,
+			   wxString::Format(_("Save modified container \"%s\"?"), container_filename.GetFullName().c_str()),
+			   _("Close CryptoTE"),
+			   wxICON_WARNING,
+			   wxID_SAVE, wxID_NO, wxID_CANCEL);
+
+	int id = dlg.ShowModal();
+
+	if (id == wxID_SAVE)
+	{
+	    if (UserContainerSave()) return true;
+	}
+	if (id == wxID_NO)
+	{
+	    return true;
+	}
+	if (id == wxID_CANCEL)
+	{
+	    return false;
+	}
+    }
+}
+
+void WCryptoTE::OnClose(wxCloseEvent& event)
+{
+    if (!event.CanVeto()) {
+	Destroy();
+	return;
+    }
+
+    if (AllowCloseModified()) {
+	Destroy();
+    }
+    else {
+	event.Veto();
+    }
+}
+
 // *** Menu Events ***
 
 void WCryptoTE::OnMenuContainerOpen(wxCommandEvent& WXUNUSED(event))
 {
-    // if (!AllowCloseModified()) return;
+    UserContainerOpen();
+}
+
+bool WCryptoTE::UserContainerOpen()
+{
+    if (!AllowCloseModified()) return false;
 
     wxFileDialog dlg(this,
 		     _("Open Container File"), wxEmptyString, wxEmptyString,
@@ -592,23 +728,33 @@ void WCryptoTE::OnMenuContainerOpen(wxCommandEvent& WXUNUSED(event))
 #endif
 	);
 
-    if (dlg.ShowModal() != wxID_OK) return;
+    if (dlg.ShowModal() != wxID_OK) return false;
 
-    ContainerOpen( dlg.GetPath() );
+    return ContainerOpen( dlg.GetPath() );
 }
 
-void WCryptoTE::OnMenuContainerSave(wxCommandEvent& event)
+void WCryptoTE::OnMenuContainerSave(wxCommandEvent& WXUNUSED(event))
+{
+    UserContainerSave();
+}
+
+bool WCryptoTE::UserContainerSave()
 {
     if (!container_filename.IsOk()) {
-	return OnMenuContainerSaveAs(event);
+	return UserContainerSaveAs();
     }
 
-    ContainerSaveAs( container_filename.GetFullPath() );
+    return ContainerSaveAs( container_filename.GetFullPath() );
 }
 
 void WCryptoTE::OnMenuContainerSaveAs(wxCommandEvent& WXUNUSED(event))
 {
-    if (!container) return;
+    UserContainerSaveAs();
+}
+
+bool WCryptoTE::UserContainerSaveAs()
+{
+    if (!container) return false;
 
     wxFileDialog dlg(this,
 		     _("Save Container File"), wxEmptyString, container_filename.GetFullName(),
@@ -620,7 +766,7 @@ void WCryptoTE::OnMenuContainerSaveAs(wxCommandEvent& WXUNUSED(event))
 #endif
 	);
 
-    if (dlg.ShowModal() != wxID_OK) return;
+    if (dlg.ShowModal() != wxID_OK) return false;
 
     wxFileName fname(dlg.GetPath());
 
@@ -629,12 +775,12 @@ void WCryptoTE::OnMenuContainerSaveAs(wxCommandEvent& WXUNUSED(event))
 	fname.SetExt(wxT("ect"));
     }
 
-    ContainerSaveAs( fname.GetFullPath() );
+    return ContainerSaveAs( fname.GetFullPath() );
 }
 
 void WCryptoTE::OnMenuContainerRevert(wxCommandEvent& WXUNUSED(event))
 {
-    // if (!AllowCloseModified()) return;
+    if (!AllowCloseModified()) return;
 
     if (!container_filename.IsOk()) return;
 
@@ -643,7 +789,7 @@ void WCryptoTE::OnMenuContainerRevert(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuContainerClose(wxCommandEvent& WXUNUSED(event))
 {
-    // if (!AllowCloseModified()) return;
+    if (!AllowCloseModified()) return;
 
     ContainerNew();
 }
@@ -976,6 +1122,10 @@ void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
 
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
+    // *** Generic Events
+
+    EVT_CLOSE	(WCryptoTE::OnClose)
+
     // *** Menu Items
 
     // Container
@@ -1050,67 +1200,6 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_BUTTON	(myID_QUICKGOTO_CLOSE,	WCryptoTE::OnButtonGotoClose)
 
 END_EVENT_TABLE()
-
-#if 0
-/*****************************************************************************/
-
-void WCryptoTE::OnClose(wxCloseEvent& event)
-{
-    if (!event.CanVeto()) {
-	Destroy();
-	return;
-    }
-
-    if (AllowCloseModified()) {
-	Destroy();
-    }
-    else {
-	event.Veto();
-    }
-}
-
-bool WCryptoTE::AllowCloseModified()
-{
-    if (editctrl->ModifiedFlag())
-    {
-	while(1)
-	{
-	    WMessageDialog dlg(this,
-			       wxString::Format(_("Save modified text file \"%s\"?"), editctrl->GetFileBasename().c_str()),
-			       _("Close Application"),
-			       wxICON_WARNING,
-			       wxID_SAVE, wxID_NO, wxID_CANCEL);
-
-	    int id = dlg.ShowModal();
-
-	    if (id == wxID_SAVE)
-	    {
-		if (FileSave()) return true;
-	    }
-	    if (id == wxID_NO)
-	    {
-		return true;
-	    }
-	    if (id == wxID_CANCEL)
-	    {
-		return false;
-	    }
-	}
-    }
-
-    return true;
-}
-
-BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
-
-    // *** Generic Events
-
-    EVT_CLOSE	(WCryptoTE::OnClose)
-
-END_EVENT_TABLE()
-
-/*****************************************************************************/
-#endif
 
 // *** WStatusBar ***
 
@@ -1231,13 +1320,20 @@ void WAbout::do_layout()
 WNotePage::WNotePage(class WCryptoTE* _wmain)
     : wxPanel(_wmain),
       wmain(_wmain),
-      subfileid(-1), modified(false)
+      subfileid(-1), page_modified(false)
 {
 }
 
 void WNotePage::UpdateStatusBar(const wxString& str)
 {
     wmain->UpdateStatusBar(str);
+}
+
+void WNotePage::SetModified(bool modified)
+{
+    page_modified = modified;
+
+    wmain->UpdateSubFileModified(this, page_modified);
 }
 
 IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);

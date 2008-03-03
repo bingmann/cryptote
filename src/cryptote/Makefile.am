@@ -7,7 +7,8 @@ cryptote_SOURCES = main.cpp \
 	wtextpage.cpp wtextpage.h \
 	wfind.cpp wfind.h \
 	wfilelist.cpp wfilelist.h \
-	wfileprop.cpp wfileprop.h
+	wfileprop.cpp wfileprop.h \
+	wmsgdlg.cpp wmsgdlg.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 

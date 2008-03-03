@@ -74,6 +74,15 @@ public:
     /// Callback from any subdialog to hide it's pane 
     void	HidePane(wxWindow* child);
 
+    /// Checks if any subfile was modified or the main container modified.
+    bool	IsModified();
+
+    /// Set menu items and toolbar accordingly if the file was modified.
+    void	UpdateModified();
+
+    /// Helper to set the main modified flag and update the main window.
+    void	SetModified();
+
     /// Attempt to find a notebook page showing the given subfileid.
     class WNotePage* FindSubFilePage(unsigned int sfid);
 
@@ -82,6 +91,9 @@ public:
 
     /// Update the modified page caption on the notebook
     void	UpdateSubFileCaption(int sfid);
+
+    /// Set the modified page image on notebook pages
+    void	UpdateSubFileModified(WNotePage* page, bool modified);
 
     /// Update the window title when a container is loaded.
     void	UpdateTitle();
@@ -98,6 +110,14 @@ public:
 
     // *** Event Handlers ***
 
+    // Generic Events
+
+    void	OnClose(wxCloseEvent& event);
+
+    /// Helper Function for OnClose() show "Save container" dialog if it is
+    /// modified.
+    bool	AllowCloseModified();
+
     // Menu Events
 
     void	OnMenuContainerOpen(wxCommandEvent& event);
@@ -105,6 +125,10 @@ public:
     void	OnMenuContainerSaveAs(wxCommandEvent& event);
     void	OnMenuContainerRevert(wxCommandEvent& event);
     void	OnMenuContainerClose(wxCommandEvent& event);
+
+    bool	UserContainerOpen();
+    bool	UserContainerSave();
+    bool	UserContainerSaveAs();
 
     void	OnMenuContainerShowList(wxCommandEvent& event);
 
@@ -184,6 +208,9 @@ public:
     /// Associated file name
     wxFileName		container_filename;
 
+    /// Whether the container's or a subfile's metadata was modified
+    bool		main_modified;
+
 public:
 
     /// Currently selected notebook page (or NULL).
@@ -256,12 +283,16 @@ protected:
     /// Temporarily set status bar to show given text. Just forwards via wmain.
     void	UpdateStatusBar(const wxString& str);
 
+    /// Helper to set the modified flag of this page and also update the main
+    /// window.
+    void	SetModified(bool modified);
+
 public:
     /// associated container subfile identifier of page data
     int		subfileid;
 
     /// modified flag
-    bool	modified;
+    bool	page_modified;
 
 public:
 
