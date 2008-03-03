@@ -2,6 +2,7 @@
 
 #include "wfilelist.h"
 #include "wcryptote.h"
+#include "wfileprop.h"
 
 #include <wx/imaglist.h>
 
@@ -152,7 +153,7 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
 
     menu->AppendSeparator();
 
-    menu->Append(myID_FILE_PROPERTIES, _("&Properties of SubFile"));
+    menu->Append(myID_FILE_PROPERTIES, _("&Properties"));
 
     // disable items not applicable
     int si = GetSelectedItemCount();
@@ -202,13 +203,11 @@ void WFileList::OnMenuFileProperties(wxCommandEvent& WXUNUSED(event))
     long item = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
     if (item == -1) return;
 
-/*
     WFileProperties dlg(wmain, item);
     if (dlg.ShowModal() == wxID_OK)
     {
 	UpdateItem(item);
     }
-*/
 }
 
 void WFileList::OnMenuView(wxCommandEvent& event)
