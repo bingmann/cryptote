@@ -4,6 +4,8 @@
 #define __TOOLS_H__
 
 #include <wx/mstream.h>
+#include <wx/string.h>
+#include <string>
 
 // *** Missing in 2.8, but always added by wxGlade ***
 #ifndef wxTHICK_FRAME

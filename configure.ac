@@ -39,10 +39,10 @@ AC_PROG_RANLIB
 AC_LANG([C++])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDC
-AC_HEADER_STDBOOL
-AC_C_CONST
-AC_C_INLINE
+
+# Check for zlib
+
+CHECK_ZLIB
 
 # Check for wxWidgets 2.8.0 or later
 AM_OPTIONS_WXCONFIG
