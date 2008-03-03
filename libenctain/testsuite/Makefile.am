@@ -1,8 +1,10 @@
 # $Id$
 
-TESTS =
+TESTS = test_ect1
 
-noinst_PROGRAMS =
+noinst_PROGRAMS = test_ect1
+
+test_ect1_SOURCES = test_ect1.cpp
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(WX_CXXFLAGS)
 

@@ -34,8 +34,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = $(am__EXEEXT_1)
-noinst_PROGRAMS = $(am__EXEEXT_1)
+TESTS = test_ect1$(EXEEXT) $(am__EXEEXT_1)
+noinst_PROGRAMS = test_ect1$(EXEEXT) $(am__EXEEXT_1)
 @HAVE_LIBGCRYPT_TRUE@am__append_1 = test_crc32 test_sha256 test_serpent_ecb test_serpent_cbc
 @HAVE_LIBGCRYPT_TRUE@am__append_2 = test_crc32 test_sha256 test_serpent_ecb test_serpent_cbc
 @HAVE_LIBGCRYPT_TRUE@am__append_3 = $(LIBGCRYPT_CFLAGS)
@@ -57,6 +57,9 @@ am__test_crc32_SOURCES_DIST = test_crc32.cpp
 @HAVE_LIBGCRYPT_TRUE@am_test_crc32_OBJECTS = test_crc32.$(OBJEXT)
 test_crc32_OBJECTS = $(am_test_crc32_OBJECTS)
 test_crc32_LDADD = $(LDADD)
+am_test_ect1_OBJECTS = test_ect1.$(OBJEXT)
+test_ect1_OBJECTS = $(am_test_ect1_OBJECTS)
+test_ect1_LDADD = $(LDADD)
 am__test_serpent_cbc_SOURCES_DIST = test_serpent_cbc.cpp
 @HAVE_LIBGCRYPT_TRUE@am_test_serpent_cbc_OBJECTS =  \
 @HAVE_LIBGCRYPT_TRUE@	test_serpent_cbc.$(OBJEXT)
@@ -79,9 +82,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(test_crc32_SOURCES) $(test_serpent_cbc_SOURCES) \
-	$(test_serpent_ecb_SOURCES) $(test_sha256_SOURCES)
-DIST_SOURCES = $(am__test_crc32_SOURCES_DIST) \
+SOURCES = $(test_crc32_SOURCES) $(test_ect1_SOURCES) \
+	$(test_serpent_cbc_SOURCES) $(test_serpent_ecb_SOURCES) \
+	$(test_sha256_SOURCES)
+DIST_SOURCES = $(am__test_crc32_SOURCES_DIST) $(test_ect1_SOURCES) \
 	$(am__test_serpent_cbc_SOURCES_DIST) \
 	$(am__test_serpent_ecb_SOURCES_DIST) \
 	$(am__test_sha256_SOURCES_DIST)
@@ -199,6 +203,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+test_ect1_SOURCES = test_ect1.cpp
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) \
 	$(am__append_3)
 @HAVE_LIBGCRYPT_TRUE@test_crc32_SOURCES = test_crc32.cpp
@@ -244,6 +249,9 @@ clean-noinstPROGRAMS:
 test_crc32$(EXEEXT): $(test_crc32_OBJECTS) $(test_crc32_DEPENDENCIES) 
 	@rm -f test_crc32$(EXEEXT)
 	$(CXXLINK) $(test_crc32_OBJECTS) $(test_crc32_LDADD) $(LIBS)
+test_ect1$(EXEEXT): $(test_ect1_OBJECTS) $(test_ect1_DEPENDENCIES) 
+	@rm -f test_ect1$(EXEEXT)
+	$(CXXLINK) $(test_ect1_OBJECTS) $(test_ect1_LDADD) $(LIBS)
 test_serpent_cbc$(EXEEXT): $(test_serpent_cbc_OBJECTS) $(test_serpent_cbc_DEPENDENCIES) 
 	@rm -f test_serpent_cbc$(EXEEXT)
 	$(CXXLINK) $(test_serpent_cbc_OBJECTS) $(test_serpent_cbc_LDADD) $(LIBS)
@@ -261,6 +269,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_crc32.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ect1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent_cbc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent_ecb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_sha256.Po@am__quote@
