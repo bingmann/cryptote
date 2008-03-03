@@ -124,7 +124,7 @@ static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
 void WCryptoTE::CreateMenuBar()
 {
     toolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-			    wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT);
+			    wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT | wxTB_NODIVIDER);
     toolbar->SetToolBitmapSize(wxSize(16, 16));
 
     // *** Container
