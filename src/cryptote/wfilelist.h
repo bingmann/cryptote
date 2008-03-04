@@ -59,6 +59,7 @@ public:
     // Menu Items
 
     void	OnMenuFileOpen(wxCommandEvent& event);
+    void	OnMenuFileExport(wxCommandEvent& event);
     void	OnMenuFileDelete(wxCommandEvent& event);
     void	OnMenuFileProperties(wxCommandEvent& event);
 

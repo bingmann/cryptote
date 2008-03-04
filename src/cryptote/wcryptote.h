@@ -98,6 +98,10 @@ public:
     /// Set the modified page image on notebook pages
     void	UpdateSubFileModified(WNotePage* page, bool modified);
 
+    /// Export one of the SubFiles of the container, either the currently
+    /// opened buffer or directly from the container.
+    void	ExportSubFile(unsigned int sfid, wxOutputStream& os);
+
     /// Update the window title when a container is loaded.
     void	UpdateTitle();
 
@@ -170,7 +174,7 @@ public:
     // wxAuiNotebook Callbacks
 
     void	OnNotebookPageChanged(wxAuiNotebookEvent& event);
-    void	OnNotebookPageClosed(wxAuiNotebookEvent& event);
+    void	OnNotebookPageClose(wxAuiNotebookEvent& event);
     void	OnNotebookPageRightDown(wxAuiNotebookEvent& event);
 
     // Quick-Find Bar
@@ -318,6 +322,9 @@ public:
 
     /// Called when the notebook page is closed.
     virtual void	PageClosed() = 0;
+
+    /// Write current data buffer to the output stream. Used by SubFile->Export.
+    virtual void	ExportBuffer(wxOutputStream& outstream) = 0;
 
     /// Prepare for a Quick-Find by setting the search anchor point, backwards
     /// for searching backwards and reset for terminating incremental search

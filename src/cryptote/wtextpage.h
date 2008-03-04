@@ -37,6 +37,9 @@ public:
     /// Clear buffer and load all data from a file
     size_t	ImportFile(wxFile& file);
 
+    /// Write buffer to the output stream
+    virtual void ExportBuffer(wxOutputStream& outstream);
+
     // *** Event Handlers ***
 
     // Edit Menu

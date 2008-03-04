@@ -5,6 +5,8 @@
 #include "wfileprop.h"
 
 #include <wx/imaglist.h>
+#include <wx/wfstream.h>
+#include <wx/dirdlg.h>
 
 #include "common/tools.h"
 
@@ -165,6 +167,7 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
     int si = GetSelectedItemCount();
 
     menu->Enable(myID_FILE_OPEN, (si > 0));
+    menu->Enable(myID_FILE_EXPORT, (si > 0));
     menu->Enable(myID_FILE_DELETE, (si > 0));
     menu->Enable(myID_FILE_PROPERTIES, (si == 1));
 
@@ -198,6 +201,88 @@ void WFileList::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
         if (item == -1) break;
 
 	wmain->OpenSubFile(item);
+    }
+}
+
+void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
+{
+    if (GetSelectedItemCount() == 0)
+    {
+	return;
+    }
+    else if (GetSelectedItemCount() == 1)
+    {
+	long sfid = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+
+	wxString suggestname = strSTL2WX(wmain->container->GetSubFileProperty(sfid, "Name"));
+
+	wxFileDialog dlg(this,
+			 _("Save SubFile"), wxEmptyString, suggestname,
+			 _("Any file (*)|*"),
+#if wxCHECK_VERSION(2,8,0)
+			 wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+#else
+			 wxSAVE | wxOVERWRITE_PROMPT
+#endif
+	    );
+
+	if (dlg.ShowModal() != wxID_OK) return;
+
+	wxFile outfile(dlg.GetPath(), wxFile::write);
+	if (!outfile.IsOpened()) return;
+
+	{
+	    wxFileOutputStream outstream(outfile);
+	    wmain->ExportSubFile(sfid, outstream);
+	}
+
+	wmain->UpdateStatusBar(wxString::Format(_("Wrote %u bytes from subfile \"%s\" to %s"),
+						(unsigned int)(outfile.Tell()),
+						suggestname.c_str(),
+						dlg.GetPath().c_str()));
+    }
+    else
+    {
+	wxString dlgtitle = wxString::Format(_("Select directory to export %u files to."), GetSelectedItemCount());
+	wxDirDialog dlg(this, dlgtitle, wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+
+	if (dlg.ShowModal() != wxID_OK) return;
+
+	int filesok = 0;
+
+	long sfid = -1;
+	while(1)
+	{
+	    sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+	    if (sfid == -1) break;
+
+	    wxString name = strSTL2WX(wmain->container->GetSubFileProperty(sfid, "Name"));
+
+	    wxFileName filename(dlg.GetPath(), name);
+
+	    if (filename.FileExists())
+	    {
+		wxString overstr = wxString::Format(_("The export filename \"%s\" already exists.\nDo you wish to overwrite the existing file?"), filename.GetFullPath().c_str());
+
+		wxMessageDialog overdlg(this, overstr, _("Overwrite existing file?"),
+					wxYES_NO | wxNO_DEFAULT);
+		
+		if (overdlg.ShowModal() == wxID_NO) continue;
+	    }
+	
+	    wxFile outfile(filename.GetFullPath(), wxFile::write);
+	    if (!outfile.IsOpened()) continue;
+
+	    {
+		wxFileOutputStream outstream(outfile);
+		wmain->ExportSubFile(sfid, outstream);
+	    }
+
+	    filesok++;
+	}
+
+	wmain->UpdateStatusBar(wxString::Format(_("Exported %u subfile(s) to %s"),
+						filesok, dlg.GetPath().c_str()));
     }
 }
 
@@ -254,6 +339,7 @@ BEGIN_EVENT_TABLE(WFileList, wxListCtrl)
     // Popup Menu Items
 
     EVT_MENU(myID_FILE_OPEN,		WFileList::OnMenuFileOpen)
+    EVT_MENU(myID_FILE_EXPORT,		WFileList::OnMenuFileExport)
     EVT_MENU(myID_FILE_DELETE,		WFileList::OnMenuFileDelete)
     EVT_MENU(myID_FILE_PROPERTIES,	WFileList::OnMenuFileProperties)
 

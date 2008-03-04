@@ -125,6 +125,14 @@ size_t WTextPage::ImportFile(wxFile& file)
     return editctrl->GetTextLength();
 }
 
+void WTextPage::ExportBuffer(wxOutputStream& outstream)
+{
+    size_t buflen = editctrl->GetTextLength();
+    wxCharBuffer buf = editctrl->GetTextRaw();
+
+    outstream.Write(buf.data(), buflen);
+}
+
 // *** Event Handlers ***
 
 void WTextPage::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))

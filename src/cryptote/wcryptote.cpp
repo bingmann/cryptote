@@ -95,7 +95,8 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 		   LeftDockable(false).RightDockable(false));
 
     auimgr.AddPane(filelistpane, wxAuiPaneInfo().
-		   Name(wxT("filelist")).Caption(_("Container")));
+		   Name(wxT("filelist")).Caption(_("Container")).
+		   Bottom());
 
     // "commit" all changes made to wxAuiManager
     auimgr.Update();
@@ -226,6 +227,44 @@ void WCryptoTE::UpdateSubFileModified(WNotePage* page, bool modified)
     auinotebook->SetPageBitmap(pi, modified ? wxBitmapFromMemory(modified_12_png) : wxNullBitmap);
 
     UpdateModified();
+}
+
+/** Write the incoming file data into the export file. */
+class ExportAcceptor : public Enctain::DataAcceptor
+{
+public:
+    class wxOutputStream&	outstream;
+
+    /// Constructor get the file name to open
+    ExportAcceptor(wxOutputStream& os)
+	: outstream(os)
+    {
+    }
+
+    /// Virtual callback function to save data.
+    virtual void Append(const void* data, size_t datalen)
+    {
+	outstream.Write(data, datalen);
+    }
+};
+
+void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
+{
+    WNotePage* page = FindSubFilePage(sfid);
+
+    if (page)
+    {
+	// write currently opened buffer to output stream
+
+	page->ExportBuffer(outstream);
+    }
+    else
+    {
+	// export directly from the container storage
+
+	ExportAcceptor acceptor(outstream);
+	container->GetSubFileData(sfid, acceptor);
+    }
 }
 
 void WCryptoTE::UpdateTitle()
@@ -942,25 +981,6 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
     if (cpage) cpage->SetFocus();
 }
 
-/** Write the incoming file data into the export file. */
-class ExportAcceptor : public Enctain::DataAcceptor
-{
-public:
-    class wxFile	exportfile;
-
-    /// Constructor get the file name to open
-    ExportAcceptor(const wxString& filename)
-	: exportfile(filename.c_str(), wxFile::write)
-    {
-    }
-
-    /// Virtual callback function to save data.
-    virtual void Append(const void* data, size_t datalen)
-    {
-	exportfile.Write(data, datalen);
-    }
-};
-
 void WCryptoTE::OnMenuSubFileExport(wxCommandEvent& WXUNUSED(event))
 {
     if (!container) return;
@@ -980,17 +1000,16 @@ void WCryptoTE::OnMenuSubFileExport(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() != wxID_OK) return;
 
-    cpage->PageSaveData();	// commit data from page to container
+    wxFile outfile(dlg.GetPath(), wxFile::write);
+    if (!outfile.IsOpened()) return;
 
-    // read encrypted subfile
-
-    ExportAcceptor acceptor( dlg.GetPath() );
-    if (!acceptor.exportfile.IsOpened()) return;
-
-    container->GetSubFileData(cpage->subfileid, acceptor);
+    {
+	wxFileOutputStream outstream(outfile);
+	ExportSubFile(cpage->subfileid, outstream);
+    }
 
     UpdateStatusBar(wxString::Format(_("Wrote %u bytes from subfile \"%s\" to %s"),
-				     (unsigned int)(acceptor.exportfile.Tell()),
+				     (unsigned int)(outfile.Tell()),
 				     suggestname.c_str(),
 				     dlg.GetPath().c_str()));
 }
@@ -1026,6 +1045,14 @@ void WCryptoTE::OnMenuSubFileClose(wxCommandEvent& WXUNUSED(event))
     {
 	// will be empty after the last page is closed
 	cpage = NULL;
+
+	// always show the file list pane if no file is open
+	auimgr.GetPane(filelistpane).Show();
+	auimgr.Update();
+
+	menubar->Enable(myID_MENU_SUBFILE_EXPORT, false);
+	menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
+	menubar->Enable(myID_MENU_SUBFILE_CLOSE, false);
     }
 }
 
@@ -1187,15 +1214,19 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 
 	cpage = (WNotePage*)sel;
 	cpage->PageFocused();
+
+	menubar->Enable(myID_MENU_SUBFILE_EXPORT, true);
+	menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, true);
+	menubar->Enable(myID_MENU_SUBFILE_CLOSE, true);
     }
     else {
 	wxLogError(_T("Invalid notebook page activated."));
     }
 }
 
-void WCryptoTE::OnNotebookPageClosed(wxAuiNotebookEvent& event)
+void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 {
-    printf("Debug: OnNotebookPageClosed() event\n");
+    printf("Debug: OnNotebookPageClose() event\n");
     
     wxWindow* sel = auinotebook->GetPage( event.GetSelection() );
 
@@ -1205,10 +1236,14 @@ void WCryptoTE::OnNotebookPageClosed(wxAuiNotebookEvent& event)
 	cpage->PageClosed();
     }
 
-    if (auinotebook->GetPageCount() == 0)
+    if (auinotebook->GetPageCount() == 1)
     {
 	// will be empty after the last page is closed
 	cpage = NULL;
+
+	// always show the file list pane if no file is open
+	auimgr.GetPane(filelistpane).Show();
+	auimgr.Update();
     }
 }
 
@@ -1428,7 +1463,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     // *** wxAuiNotebook Callbacks
 
     EVT_AUINOTEBOOK_PAGE_CHANGED(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageChanged)
-    EVT_AUINOTEBOOK_PAGE_CLOSED(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageClosed)
+    EVT_AUINOTEBOOK_PAGE_CLOSE(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageClose)
     EVT_AUINOTEBOOK_TAB_RIGHT_DOWN(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageRightDown)
 
     // *** Quick-Find Bar
