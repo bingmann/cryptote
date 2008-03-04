@@ -95,9 +95,9 @@ protected:
     /// Structure of the disk file's header
     struct Header1
     {
-	char    	signature[8];	// "Enctain\0"
+	char    	signature[8];	// "CryptoTE"
 	uint32_t	version;	// Currently 0x00010000 = v1.0
-	uint32_t	options;	// Currently 0x00000000 = SHA256 + Serpent256 encryption
+	uint32_t	unc_metalen;	// Unencrypted Metadata Length
 
     } __attribute__((packed));
 
@@ -130,13 +130,22 @@ protected:
     /// 256-bit raw encryption key.
     std::string		enckey;
 
-    /// Global properties, completely user-defined.
-    propertymap_type	properties;
+    /// Unencrypted global properties, completely user-defined.
+    propertymap_type	unc_properties;
+
+    /// Encrypted global properties, completely user-defined.
+    propertymap_type	enc_properties;
 
     /// Vector of subfiles
     std::vector<SubFile> subfiles;
 
+    /// Bytes written to file during last Save() operation
+    size_t		written;
+
 public:
+    // *** Constructor ***
+
+     Container();
 
     // *** Settings ***
 
@@ -155,7 +164,7 @@ public:
     bool		Load(wxInputStream& instream, const std::string& filekey);
 
     /// Load a container version v1.0
-    bool		Loadv00010000(wxInputStream& instream, const std::string& filekey, uint32_t fileoptions);
+    bool		Loadv00010000(wxInputStream& instream, const std::string& filekey, const Header1& header1);
 
 
     // *** Container Info Operations ***
@@ -166,22 +175,42 @@ public:
     /// Set a new password string. The string  will be hashed.
     bool		SetKey(const std::string& keystr);
 
+    /// Return number of bytes written to output stream during last Save()
+    /// operation.
+    size_t		GetLastWritten() const;
 
-    // *** Container Global Properties ***
+    // *** Container Unencrypted Global Properties ***
 
-    /// Set (overwrite) a global property.
-    void		SetGlobalProperty(const std::string& key, const std::string& value);
+    /// Set (overwrite) an unencrypted global property.
+    void		SetGlobalUnencryptedProperty(const std::string& key, const std::string& value);
     
-    /// Get a global property by key.
-    const std::string&	GetGlobalProperty(const std::string& key) const;
+    /// Get an unencrypted  global property by key.
+    const std::string&	GetGlobalUnencryptedProperty(const std::string& key) const;
 
-    /// Erase a global property key.
-    bool		EraseGlobalProperty(const std::string& key);
+    /// Erase an unencrypted  global property key.
+    bool		EraseGlobalUnencryptedProperty(const std::string& key);
     
-    /// Get a global property (key and value) by index. Returns false if the
-    /// index is beyond the last property
-    bool		GetGlobalPropertyIndex(unsigned int propindex,
-					       std::string& key, std::string& value) const;
+    /// Get an unencrypted global property (key and value) by index. Returns
+    /// false if the index is beyond the last property
+    bool		GetGlobalUnencryptedPropertyIndex(unsigned int propindex,
+							  std::string& key, std::string& value) const;
+
+
+    // *** Container Encrypted Global Properties ***
+
+    /// Set (overwrite) an encrypted global property.
+    void		SetGlobalEncryptedProperty(const std::string& key, const std::string& value);
+    
+    /// Get an encrypted global property by key.
+    const std::string&	GetGlobalEncryptedProperty(const std::string& key) const;
+
+    /// Erase an encrypted global property key.
+    bool		EraseGlobalEncryptedProperty(const std::string& key);
+    
+    /// Get an encrypted global property (key and value) by index. Returns
+    /// false if the index is beyond the last property
+    bool		GetGlobalEncryptedPropertyIndex(unsigned int propindex,
+							std::string& key, std::string& value) const;
 
 
     // *** Container SubFiles ***

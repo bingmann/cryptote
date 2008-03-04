@@ -196,9 +196,11 @@ int main()
     {
 	Enctain::Container container;
 
-	container.SetGlobalProperty("prop1", "test abc");
-	container.SetGlobalProperty("prop2", std::string(255, 'a'));
-	container.SetGlobalProperty("prop3", std::string(256, 'b'));
+	container.SetGlobalUnencryptedProperty("prop1", "test abc");
+	container.SetGlobalUnencryptedProperty("prop2", std::string(255, 'a'));
+	container.SetGlobalUnencryptedProperty("prop3", std::string(256, 'b'));
+
+	container.SetGlobalEncryptedProperty("secret1", "blah");
 
 	unsigned int sf1 = container.AppendSubFile();
 
@@ -229,13 +231,17 @@ int main()
 	container.Load(instream, "abc");
 	
 	std::string key, val;
-	assert( container.GetGlobalPropertyIndex(0, key, val) );
+	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );
 	assert( key == "prop1" && val == "test abc" );
-	assert( container.GetGlobalPropertyIndex(1, key, val) );
+	assert( container.GetGlobalUnencryptedPropertyIndex(1, key, val) );
 	assert( key == "prop2" && val == std::string(255, 'a') );
-	assert( container.GetGlobalPropertyIndex(2, key, val) );
+	assert( container.GetGlobalUnencryptedPropertyIndex(2, key, val) );
 	assert( key == "prop3" && val == std::string(256, 'b') );
-	assert( !container.GetGlobalPropertyIndex(3, key, val) );
+	assert( !container.GetGlobalUnencryptedPropertyIndex(3, key, val) );
+
+	assert( container.GetGlobalEncryptedPropertyIndex(0, key, val) );
+	assert( key == "secret1" && val == "blah" );
+	assert( !container.GetGlobalEncryptedPropertyIndex(1, key, val) );
 
 	assert(container.CountSubFile() == 2);
 

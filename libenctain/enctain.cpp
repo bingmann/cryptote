@@ -12,9 +12,17 @@
 
 namespace Enctain {
 
+// *** Constructor ***
+
+Container::Container()
+    : written(0)
+{
+}
+
 // *** Settings ***
 
-char Container::fsignature[8] = "Enctain";
+char Container::fsignature[8] =
+{ 'C', 'r', 'y', 'p', 't', 'o', 'T', 'E' };
 
 void Container::SetSignature(const char* sign)
 {
@@ -33,14 +41,31 @@ void Container::SetSignature(const char* sign)
 
 bool Container::Save(wxOutputStream& outstream)
 {
-    // Write out unencrypted fixed Header1
+    written = 0;
+    off_t streamoff = outstream.TellO();
+
+    // Write out unencrypted fixed Header1 and unencrypted metadata
     {
+	// Prepare variable metadata header containing unencrypted global
+	// properties.
+	ByteBuffer unc_metadata;
+
+	unc_metadata.put<unsigned int>(unc_properties.size());
+
+	for (propertymap_type::const_iterator pi = unc_properties.begin();
+	     pi != unc_properties.end(); ++pi)
+	{
+	    unc_metadata.put<std::string>(pi->first);
+	    unc_metadata.put<std::string>(pi->second);
+	}
+    
 	struct Header1 header1;
 	memcpy(header1.signature, fsignature, 8);
 	header1.version = 0x00010000;
-	header1.options = 0x0000000;
+	header1.unc_metalen = unc_metadata.size();
 
 	outstream.Write(&header1, sizeof(header1));
+	outstream.Write(unc_metadata.data(), unc_metadata.size());
     }
 
     // Prepare variable metadata header containing global properties and all
@@ -48,15 +73,15 @@ bool Container::Save(wxOutputStream& outstream)
     ByteBuffer metadata;
     
     // append global properties
-    metadata.put<unsigned int>(properties.size());
+    metadata.put<unsigned int>(enc_properties.size());
 
-    for (propertymap_type::const_iterator pi = properties.begin();
-	 pi != properties.end(); ++pi)
+    for (propertymap_type::const_iterator pi = enc_properties.begin();
+	 pi != enc_properties.end(); ++pi)
     {
 	metadata.put<std::string>(pi->first);
 	metadata.put<std::string>(pi->second);
     }
-    
+
     // append subfile metadata
     for (unsigned int si = 0; si < subfiles.size(); ++si)
     {
@@ -96,6 +121,7 @@ bool Container::Save(wxOutputStream& outstream)
 	outstream.Write(subfiles[si].data.GetData(), subfiles[si].storagesize);
     }
 
+    written = outstream.TellO() - streamoff;
     return true;
 }
 
@@ -117,7 +143,7 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
     }
 
     if (header1.version == 0x00010000) {
-	return Loadv00010000(instream, filekey, header1.options);
+	return Loadv00010000(instream, filekey, header1);
     }
     else {
 	wxLogError(_("Error loading container: invalid file version."));
@@ -125,8 +151,34 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
     }
 }
 
-bool Container::Loadv00010000(wxInputStream& instream, const std::string& filekey, uint32_t fileoptions)
+bool Container::Loadv00010000(wxInputStream& instream, const std::string& filekey, const Header1& header1)
 {
+    // Read unencrypted metadata length
+    {
+	ByteBuffer unc_metadata;
+	unc_metadata.alloc(header1.unc_metalen);
+    
+	instream.Read(unc_metadata.data(), header1.unc_metalen);
+	if (instream.LastRead() != header1.unc_metalen) {
+	    wxLogError(_("Error loading container: could not unencrypted metadata."));
+	    return false;
+	}
+
+	unc_metadata.set_size(header1.unc_metalen);
+
+	// parse global unencrypted properties
+	unsigned int gpropsize = unc_metadata.get<unsigned int>();
+	unc_properties.clear();
+    
+	for (unsigned int pi = 0; pi < gpropsize; ++pi)
+	{
+	    std::string key = unc_metadata.get<std::string>();
+	    std::string val = unc_metadata.get<std::string>();
+
+	    unc_properties.insert( propertymap_type::value_type(key, val) );
+	}
+    }
+
     // Read encrypted fixed Header2
     struct Header2 header2;
 
@@ -155,16 +207,16 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 
     metadata.set_size(header2.metalen);
 
-    // parse global properties
+    // parse global encrypted properties
     unsigned int gpropsize = metadata.get<unsigned int>();
-    properties.clear();
+    enc_properties.clear();
     
     for (unsigned int pi = 0; pi < gpropsize; ++pi)
     {
 	std::string key = metadata.get<std::string>();
 	std::string val = metadata.get<std::string>();
 
-	properties.insert( propertymap_type::value_type(key, val) );
+	enc_properties.insert( propertymap_type::value_type(key, val) );
     }
     
     // parse subfile metadata
@@ -213,18 +265,25 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
     return true;
 }
 
-// *** Container Global Properties ***
+// *** Container Info Operations ***
 
-void Container::SetGlobalProperty(const std::string& key, const std::string& value)
+size_t Container::GetLastWritten() const
 {
-    properties[key] = value;
+    return written;
 }
 
-const std::string& Container::GetGlobalProperty(const std::string& key) const
+// *** Container Global Unencrypted Properties ***
+
+void Container::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
 {
-    propertymap_type::const_iterator pi = properties.find(key);
+    unc_properties[key] = value;
+}
+
+const std::string& Container::GetGlobalUnencryptedProperty(const std::string& key) const
+{
+    propertymap_type::const_iterator pi = unc_properties.find(key);
     
-    if (pi != properties.end()) {
+    if (pi != unc_properties.end()) {
 	return pi->second;
     }
     else {
@@ -233,16 +292,55 @@ const std::string& Container::GetGlobalProperty(const std::string& key) const
     }
 }
 
-bool Container::EraseGlobalProperty(const std::string& key)
+bool Container::EraseGlobalUnencryptedProperty(const std::string& key)
 {
-    return (properties.erase(key) > 0);
+    return (unc_properties.erase(key) > 0);
 }
 
-bool Container::GetGlobalPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
+bool Container::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
-    if (propindex >= properties.size()) return false;
+    if (propindex >= unc_properties.size()) return false;
 
-    propertymap_type::const_iterator pi = properties.begin();
+    propertymap_type::const_iterator pi = unc_properties.begin();
+
+    for(unsigned int i = 0; i < propindex; ++i)	++pi;
+
+    key = pi->first;
+    value = pi->second;
+
+    return true;
+}
+
+// *** Container Global Encrypted Properties ***
+
+void Container::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
+{
+    enc_properties[key] = value;
+}
+
+const std::string& Container::GetGlobalEncryptedProperty(const std::string& key) const
+{
+    propertymap_type::const_iterator pi = enc_properties.find(key);
+    
+    if (pi != enc_properties.end()) {
+	return pi->second;
+    }
+    else {
+	static const std::string zerostring;
+	return zerostring;
+    }
+}
+
+bool Container::EraseGlobalEncryptedProperty(const std::string& key)
+{
+    return (enc_properties.erase(key) > 0);
+}
+
+bool Container::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
+{
+    if (propindex >= enc_properties.size()) return false;
+
+    propertymap_type::const_iterator pi = enc_properties.begin();
 
     for(unsigned int i = 0; i < propindex; ++i)	++pi;
 
