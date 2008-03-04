@@ -5,6 +5,7 @@
 #include "wfind.h"
 #include "wfilelist.h"
 #include "wfileprop.h"
+#include "wcntprop.h"
 #include "wmsgdlg.h"
 
 #include <wx/wfstream.h>
@@ -396,6 +397,7 @@ void WCryptoTE::CreateMenuBar()
     #include "art/document_revert.h"
     #include "art/document_close.h"
     #include "art/view_choose.h"
+    #include "art/document_properties.h"
     #include "art/application_exit.h"
 
     menuContainer->Append(
@@ -463,6 +465,12 @@ void WCryptoTE::CreateMenuBar()
 		       _("Show list of subfiles contained in current encrypted container."),
 		       wxBitmapFromMemory(view_choose_png))
 	);
+    menuContainer->Append(
+	createMenuItem(menuContainer, wxID_PROPERTIES,
+		       _("&Properties\tAlt+Enter"),
+		       _("Show metadata properties of the encrypted container."),
+		       wxBitmapFromMemory(document_properties_png))
+	);
     menuContainer->AppendSeparator();
 
     menuContainer->Append(
@@ -479,7 +487,6 @@ void WCryptoTE::CreateMenuBar()
     #include "art/document_new.h"
     #include "art/document_import.h"
     #include "art/document_export.h"
-    #include "art/document_properties.h"
 
     menuSubFile->Append(
 	createMenuItem(menuSubFile, myID_MENU_SUBFILE_NEW,
@@ -837,6 +844,17 @@ void WCryptoTE::OnMenuContainerShowList(wxCommandEvent& WXUNUSED(event))
 {
     auimgr.GetPane(filelistpane).Show();
     auimgr.Update();
+}
+
+void WCryptoTE::OnMenuContainerProperties(wxCommandEvent& WXUNUSED(event))
+{
+    if (!container) return;
+
+    WContainerProperties dlg(this);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	SetModified();
+    }
 }
 
 void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
@@ -1320,6 +1338,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_CLOSE,		WCryptoTE::OnMenuContainerClose)
 
     EVT_MENU	(myID_MENU_CONTAINER_SHOWLIST, WCryptoTE::OnMenuContainerShowList)
+    EVT_MENU	(wxID_PROPERTIES,	WCryptoTE::OnMenuContainerProperties)
 
     EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
 

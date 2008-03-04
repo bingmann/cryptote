@@ -24,25 +24,24 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     textCTime = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     textMTime = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     const wxString choiceType_choices[] = {
-        wxT("Text File"),
-        wxT("Binary Data"),
-        wxT("Image File")
+        _("Text File"),
+        _("Binary Data"),
+        _("Image File")
     };
     choiceType = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, choiceType_choices, 0);
     const wxString choiceCompression_choices[] = {
-        wxT("None"),
-        wxT("ZLib"),
-        wxT("BZ2")
+        _("None"),
+        _("ZLib"),
+        _("BZ2")
     };
     choiceCompression = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, choiceCompression_choices, 0);
     const wxString choiceEncryption_choices[] = {
-        wxT("None (Don't Use)"),
-        wxT("Serpent 256 keybits")
+        _("None (Don't Use)"),
+        _("Serpent 256 keybits")
     };
     choiceEncryption = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choiceEncryption_choices, 0);
     textSubject = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
     textDescription = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    staticline1 = new wxStaticLine(this, wxID_ANY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
 
@@ -79,7 +78,7 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
 void WFileProperties::set_properties()
 {
     // begin wxGlade: WFileProperties::set_properties
-    SetTitle(wxT("Properties of"));
+    SetTitle(_("Properties of"));
     textIdentifier->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
     textSize->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
     textCompressed->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
@@ -97,45 +96,46 @@ void WFileProperties::do_layout()
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxGridSizer* sizer3 = new wxGridSizer(1, 2, 0, 0);
     wxFlexGridSizer* sizer2 = new wxFlexGridSizer(12, 2, 0, 0);
-    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, wxT("Identifier:"));
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Identifier:"));
     sizer2->Add(label1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textIdentifier, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, wxT("Filename:"));
+    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("Filename:"));
     sizer2->Add(label2, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textFilename, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label3 = new wxStaticText(this, wxID_ANY, wxT("Author:"));
+    wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("Author:"));
     sizer2->Add(label3, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textAuthor, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, wxT("Size:"));
+    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Size:"));
     sizer2->Add(label4, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textSize, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label5 = new wxStaticText(this, wxID_ANY, wxT("Compressed:"));
+    wxStaticText* label5 = new wxStaticText(this, wxID_ANY, _("Compressed:"));
     sizer2->Add(label5, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textCompressed, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label6 = new wxStaticText(this, wxID_ANY, wxT("Created:"));
+    wxStaticText* label6 = new wxStaticText(this, wxID_ANY, _("Created:"));
     sizer2->Add(label6, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textCTime, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label7 = new wxStaticText(this, wxID_ANY, wxT("Last Modified:"));
+    wxStaticText* label7 = new wxStaticText(this, wxID_ANY, _("Last Modified:"));
     sizer2->Add(label7, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textMTime, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label8 = new wxStaticText(this, wxID_ANY, wxT("Type:"));
+    wxStaticText* label8 = new wxStaticText(this, wxID_ANY, _("Type:"));
     sizer2->Add(label8, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(choiceType, 0, wxALL, 2);
-    wxStaticText* label9 = new wxStaticText(this, wxID_ANY, wxT("Compression:"));
+    wxStaticText* label9 = new wxStaticText(this, wxID_ANY, _("Compression:"));
     sizer2->Add(label9, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(choiceCompression, 0, wxALL, 2);
-    wxStaticText* label10 = new wxStaticText(this, wxID_ANY, wxT("Encryption:"));
+    wxStaticText* label10 = new wxStaticText(this, wxID_ANY, _("Encryption:"));
     sizer2->Add(label10, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(choiceEncryption, 0, wxALL, 2);
-    wxStaticText* label11 = new wxStaticText(this, wxID_ANY, wxT("Subject:"));
+    wxStaticText* label11 = new wxStaticText(this, wxID_ANY, _("Subject:"));
     sizer2->Add(label11, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textSubject, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label12 = new wxStaticText(this, wxID_ANY, wxT("Description:"));
+    wxStaticText* label12 = new wxStaticText(this, wxID_ANY, _("Description:"));
     sizer2->Add(label12, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textDescription, 0, wxALL|wxEXPAND, 2);
     sizer2->AddGrowableRow(11);
     sizer2->AddGrowableCol(1);
     sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 8);
+    wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
     sizer3->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 4);
     sizer3->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 4);
@@ -175,4 +175,3 @@ void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 }
 
 // wxGlade: add WFileProperties event handlers
-

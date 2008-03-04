@@ -48,7 +48,7 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_cryptote_OBJECTS = main.$(OBJEXT) wcryptote.$(OBJEXT) \
 	wtextpage.$(OBJEXT) wfind.$(OBJEXT) wfilelist.$(OBJEXT) \
-	wfileprop.$(OBJEXT) wmsgdlg.$(OBJEXT)
+	wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) wmsgdlg.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -187,6 +187,7 @@ cryptote_SOURCES = main.cpp \
 	wfind.cpp wfind.h \
 	wfilelist.cpp wfilelist.h \
 	wfileprop.cpp wfileprop.h \
+	wcntprop.cpp wcntprop.h \
 	wmsgdlg.cpp wmsgdlg.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
@@ -261,6 +262,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wcntprop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wcryptote.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfilelist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfileprop.Po@am__quote@

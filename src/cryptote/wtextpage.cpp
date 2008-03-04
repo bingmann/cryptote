@@ -276,7 +276,7 @@ void WTextPage::PageSaveData()
     if (savelen != buflen)
     {
 	UpdateStatusBar(
-	    wxString::Format(_("Compressed %u characters from buffer into %u for encrypted storage."),
+	    wxString::Format(_("Compressed %u characters from buffer into %u bytes for encrypted storage."),
 			     buflen, savelen)
 	    );
     }

@@ -133,6 +133,7 @@ public:
     bool	UserContainerSaveAs();
 
     void	OnMenuContainerShowList(wxCommandEvent& event);
+    void	OnMenuContainerProperties(wxCommandEvent& event);
 
     void	OnMenuContainerQuit(wxCommandEvent& event);
 
