@@ -882,12 +882,7 @@ bool WCryptoTE::UserContainerOpen()
     wxFileDialog dlg(this,
 		     _("Open Container File"), wxEmptyString, wxEmptyString,
 		     _("Encrypted Container (*.ect)|*.ect"),
-#if wxCHECK_VERSION(2,8,0)
-                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
-#else
-                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR
-#endif
-	);
+                     wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
     if (dlg.ShowModal() != wxID_OK) return false;
 
@@ -920,12 +915,7 @@ bool WCryptoTE::UserContainerSaveAs()
     wxFileDialog dlg(this,
 		     _("Save Container File"), wxEmptyString, container_filename.GetFullName(),
 		     _("Encrypted Container (*.ect)|*.ect"),
-#if wxCHECK_VERSION(2,8,0)
-		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-#else
-		     wxSAVE | wxOVERWRITE_PROMPT
-#endif
-	);
+		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
     if (dlg.ShowModal() != wxID_OK) return false;
 
@@ -1002,48 +992,53 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
 void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
 {
     wxFileDialog dlg(this,
-		     _("Import File"), wxEmptyString, wxEmptyString,
+		     _("Import File(s)"), wxEmptyString, wxEmptyString,
 		     _("Text File (*.txt)|*.txt|Any Binary File (*)|*"),
-#if wxCHECK_VERSION(2,8,0)
-                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
-#else
-                     wxOPEN | wxFILE_MUST_EXIST | wxCHANGE_DIR
-#endif
-	);
+                     wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
 
     if (dlg.ShowModal() != wxID_OK) return;
 
-    wxFile importfile(dlg.GetPath(), wxFile::read);
-    if (!importfile.IsOpened()) return;
+    wxArrayString importlist;
+    dlg.GetPaths(importlist);
 
-    // Create new text file in the container
-    unsigned int sfnew = container->AppendSubFile();
+    size_t importsize = 0;
+    size_t importnum = 0;
+
+    for (unsigned int fi = 0; fi < importlist.GetCount(); ++fi)
+    {
+	wxFile importfile(importlist[fi], wxFile::read);
+	if (!importfile.IsOpened()) continue;
+
+	// Create new text file in the container
+	unsigned int sfnew = container->AppendSubFile();
     
-    // TODO: use defaults from global properties.
-    container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
-    container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
+	// TODO: use defaults from global properties.
+	container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
+	container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
 
-    wxFileName fname (dlg.GetPath());
-    container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
-    container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
+	wxFileName fname (importlist[fi]);
+	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
+	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
 
-    // open file in text editor
-    OpenSubFile(sfnew);
-    WNotePage* _page = FindSubFilePage(sfnew);
+	// open file in text editor
+	OpenSubFile(sfnew);
+	WNotePage* _page = FindSubFilePage(sfnew);
 
-    if (!_page->IsKindOf(CLASSINFO(WTextPage))) {
-	wxLogError(_T("Invalid notebook page created."));
-	return;
+	if (!_page->IsKindOf(CLASSINFO(WTextPage))) {
+	    wxLogError(_T("Invalid notebook page created."));
+	    return;
+	}
+
+	WTextPage* page = (WTextPage*)_page;
+	importnum++;
+	importsize += page->ImportFile(importfile);
     }
-
-    WTextPage* page = (WTextPage*)_page;
-    size_t importsize = page->ImportFile(importfile);
 
     // update window
     filelistpane->ResetItems();
 
-    UpdateStatusBar(wxString::Format(_("Imported %u bytes into new subfile in container."),
-				     importsize));
+    UpdateStatusBar(wxString::Format(_("Imported %u bytes into %u new subfiles in container."),
+				     importsize, importnum));
     SetModified();
 
     if (cpage) cpage->SetFocus();
@@ -1059,12 +1054,7 @@ void WCryptoTE::OnMenuSubFileExport(wxCommandEvent& WXUNUSED(event))
     wxFileDialog dlg(this,
 		     _("Save SubFile"), wxEmptyString, suggestname,
 		     _("Any file (*)|*"),
-#if wxCHECK_VERSION(2,8,0)
-		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-#else
-		     wxSAVE | wxOVERWRITE_PROMPT
-#endif
-	);
+		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
     if (dlg.ShowModal() != wxID_OK) return;
 

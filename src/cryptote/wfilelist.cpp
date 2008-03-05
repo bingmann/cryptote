@@ -227,12 +227,7 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
 	wxFileDialog dlg(this,
 			 _("Save SubFile"), wxEmptyString, suggestname,
 			 _("Any file (*)|*"),
-#if wxCHECK_VERSION(2,8,0)
-			 wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-#else
-			 wxSAVE | wxOVERWRITE_PROMPT
-#endif
-	    );
+			 wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (dlg.ShowModal() != wxID_OK) return;
 

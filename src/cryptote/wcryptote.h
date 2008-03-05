@@ -5,13 +5,8 @@
 
 #include <wx/wx.h>
 #include <wx/filename.h>
-#include <wx/aui/aui.h>
-
-#if wxCHECK_VERSION(2,8,0)
 #include <wx/hyperlink.h>
-#else
-#include "common/hyperlink.h"
-#endif
+#include <wx/aui/aui.h>
 
 #include "enctain.h"
 
