@@ -267,6 +267,24 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
     }
 }
 
+void WCryptoTE::ShowFilelistPane(bool on)
+{
+    if (on)
+    {
+	auimgr.GetPane(filelistpane).Show();
+	auimgr.Update();
+
+	toolbar->ToggleTool(myID_MENU_CONTAINER_SHOWLIST, true);
+    }
+    else
+    {
+	auimgr.GetPane(filelistpane).Hide();
+	auimgr.Update();
+
+	toolbar->ToggleTool(myID_MENU_CONTAINER_SHOWLIST, false);
+    }
+}
+
 void WCryptoTE::UpdateTitle()
 {
     wxString title;
@@ -313,8 +331,7 @@ void WCryptoTE::ContainerNew()
     filelistpane->ResetItems();
 
     OpenSubFile(0);
-    auimgr.GetPane(filelistpane).Hide();
-    auimgr.Update();
+    ShowFilelistPane(false);
 
     UpdateStatusBar(_("New container initialized."));
     UpdateTitle();
@@ -360,13 +377,11 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     if (container->CountSubFile() == 1)
     {
 	OpenSubFile(0);
-	auimgr.GetPane(filelistpane).Hide();
-	auimgr.Update();
+	ShowFilelistPane(false);
     }
     else
     {
-	auimgr.GetPane(filelistpane).Show();
-	auimgr.Update();
+	ShowFilelistPane(true);
     }
 
     UpdateStatusBar(wxString::Format(_("Loaded container with %u subfiles from %s"),
@@ -492,7 +507,7 @@ void WCryptoTE::CreateMenuBar()
 
     toolbar->AddTool(myID_MENU_CONTAINER_SHOWLIST,
 		     _("Show SubFile List"),
-		     wxBitmapFromMemory(view_choose_png), wxNullBitmap, wxITEM_NORMAL,
+		     wxBitmapFromMemory(view_choose_png), wxNullBitmap, wxITEM_CHECK,
 		     _("Show SubFile List"),
 		     _("Show list of subfiles contained in current encrypted container."));
 
@@ -888,8 +903,7 @@ void WCryptoTE::OnMenuContainerClose(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuContainerShowList(wxCommandEvent& WXUNUSED(event))
 {
-    auimgr.GetPane(filelistpane).Show();
-    auimgr.Update();
+    ShowFilelistPane( !auimgr.GetPane(filelistpane).IsShown() );
 }
 
 void WCryptoTE::OnMenuContainerProperties(wxCommandEvent& WXUNUSED(event))
@@ -1047,8 +1061,7 @@ void WCryptoTE::OnMenuSubFileClose(wxCommandEvent& WXUNUSED(event))
 	cpage = NULL;
 
 	// always show the file list pane if no file is open
-	auimgr.GetPane(filelistpane).Show();
-	auimgr.Update();
+	ShowFilelistPane(true);
 
 	menubar->Enable(myID_MENU_SUBFILE_EXPORT, false);
 	menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
@@ -1196,8 +1209,12 @@ void WCryptoTE::OnAccelEscape(wxCommandEvent& WXUNUSED(event))
 
 // *** wxAuiManager Callbacks ***
 
-void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& WXUNUSED(event))
+void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& event)
 {
+    if (event.GetPane() && event.GetPane()->window == filelistpane)
+    {
+        toolbar->ToggleTool(myID_MENU_CONTAINER_SHOWLIST, false);
+    }
 }
 
 // *** wxAuiNotebook Callbacks ***
@@ -1242,8 +1259,7 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 	cpage = NULL;
 
 	// always show the file list pane if no file is open
-	auimgr.GetPane(filelistpane).Show();
-	auimgr.Update();
+	ShowFilelistPane(true);
     }
 }
 
