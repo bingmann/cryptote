@@ -296,6 +296,42 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
 
 void WFileList::OnMenuFileDelete(wxCommandEvent& event)
 {
+    std::vector<int> subfilelist;
+
+    long sfid = -1;
+    while(1)
+    {
+	sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+	if (sfid == -1) break;
+
+	subfilelist.push_back(sfid);
+    }
+
+    wxString surestr;
+
+    if (subfilelist.empty()) return;
+    else if (subfilelist.size() == 1)
+    {
+	wxString filelist = strSTL2WX( wmain->container->GetSubFileProperty(subfilelist[0], "Name") );
+	surestr = wxString::Format(_("Going to permanently delete \"%s\". This cannot be undone, are you sure?"), filelist.c_str());
+    }
+    else {
+	surestr = wxString::Format(_("Going to permanently delete %u files. This cannot be undone, are you sure?"), subfilelist.size());
+    }
+
+    wxMessageDialog suredlg(this, surestr, _("Delete files?"),
+			    wxYES_NO | wxNO_DEFAULT);
+
+    if (suredlg.ShowModal() != wxID_YES) return;
+
+    for(std::vector<int>::const_reverse_iterator sfi = subfilelist.rbegin();
+	sfi != subfilelist.rend(); ++sfi)
+    {
+	printf("sfid: %d\n", *sfi);
+	wmain->DeleteSubFile(*sfi, false);
+    }
+    
+    ResetItems();
 }
 
 void WFileList::OnMenuFileRename(wxCommandEvent& WXUNUSED(event))

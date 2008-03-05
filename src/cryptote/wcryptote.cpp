@@ -267,6 +267,56 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
     }
 }
 
+void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
+{
+    if (!container) return;
+
+    WNotePage* page = FindSubFilePage(sfid);
+    if (page)
+    {
+	int pi = auinotebook->GetPageIndex(page);
+	if (pi == wxNOT_FOUND) return;
+
+	auinotebook->DeletePage(pi);
+
+	if (auinotebook->GetPageCount() == 0)
+	{
+	    // will be empty after the last page is closed
+	    cpage = NULL;
+
+	    // always show the file list pane if no file is open
+	    ShowFilelistPane(true);
+
+	    menubar->Enable(myID_MENU_SUBFILE_EXPORT, false);
+	    menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
+	    menubar->Enable(myID_MENU_SUBFILE_CLOSE, false);
+	}
+    }
+
+    container->DeleteSubFile(sfid);
+
+    // fix-up subfileid's of all notepages
+
+    for(unsigned int pi = 0; pi < auinotebook->GetPageCount(); ++pi)
+    {
+	wxWindow* _page = auinotebook->GetPage(pi);
+	if (!_page->IsKindOf(CLASSINFO(WNotePage))) {
+	    wxLogError(_T("Invalid notebook page found."));
+	    continue;
+	}
+
+	WNotePage* page = (WNotePage*)_page;
+
+	if (page->subfileid >= (int)sfid)
+	{
+	    page->subfileid--;
+	}
+    }
+    
+    if (resetfilelist)
+	filelistpane->ResetItems();
+}
+
 void WCryptoTE::ShowFilelistPane(bool on)
 {
     if (on)
@@ -776,9 +826,13 @@ bool WCryptoTE::AllowCloseModified()
 
     while(1)
     {
-	WMessageDialog dlg(this,
-			   wxString::Format(_("Save modified container \"%s\"?"), container_filename.GetFullName().c_str()),
-			   _("Close CryptoTE"),
+	wxString closestr;
+	if (container_filename.IsOk())
+	    closestr = wxString::Format(_("Save modified container \"%s\"?"), container_filename.GetFullName().c_str());
+	else
+	    closestr = _("Save untitled modified container?");
+
+	WMessageDialog dlg(this, closestr, _("Close CryptoTE"),
 			   wxICON_WARNING,
 			   wxID_SAVE, wxID_NO, wxID_CANCEL);
 

@@ -102,6 +102,9 @@ public:
     /// opened buffer or directly from the container.
     void	ExportSubFile(unsigned int sfid, wxOutputStream& os);
 
+    /// Delete one of the existing subfiles, fixes up all current references.
+    void	DeleteSubFile(unsigned int sfid, bool resetfilelist);
+
     /// Update the window title when a container is loaded.
     void	UpdateTitle();
 
