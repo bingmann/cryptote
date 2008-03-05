@@ -157,6 +157,13 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
     menu->AppendSeparator();
 
     menu->Append(
+	createMenuItem(menu, myID_FILE_RENAME,
+		       _("&Rename"),
+		       _("Rename selected subfile."),
+		       wxNullBitmap)
+	);
+
+    menu->Append(
 	createMenuItem(menu, myID_FILE_PROPERTIES,
 		       _("&Properties"),
 		       _("Show metadata properties of selected subfile."),
@@ -169,6 +176,7 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
     menu->Enable(myID_FILE_OPEN, (si > 0));
     menu->Enable(myID_FILE_EXPORT, (si > 0));
     menu->Enable(myID_FILE_DELETE, (si > 0));
+    menu->Enable(myID_FILE_RENAME, (si == 1));
     menu->Enable(myID_FILE_PROPERTIES, (si == 1));
 
     PopupMenu(menu);
@@ -290,6 +298,14 @@ void WFileList::OnMenuFileDelete(wxCommandEvent& event)
 {
 }
 
+void WFileList::OnMenuFileRename(wxCommandEvent& WXUNUSED(event))
+{
+    long item = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (item == -1) return;
+
+    EditLabel(item);
+}
+
 void WFileList::OnMenuFileProperties(wxCommandEvent& WXUNUSED(event))
 {
     long item = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
@@ -341,6 +357,7 @@ BEGIN_EVENT_TABLE(WFileList, wxListCtrl)
     EVT_MENU(myID_FILE_OPEN,		WFileList::OnMenuFileOpen)
     EVT_MENU(myID_FILE_EXPORT,		WFileList::OnMenuFileExport)
     EVT_MENU(myID_FILE_DELETE,		WFileList::OnMenuFileDelete)
+    EVT_MENU(myID_FILE_RENAME,		WFileList::OnMenuFileRename)
     EVT_MENU(myID_FILE_PROPERTIES,	WFileList::OnMenuFileProperties)
 
     EVT_MENU(myID_VIEW_BIGICONS,	WFileList::OnMenuView)

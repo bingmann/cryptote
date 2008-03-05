@@ -23,6 +23,7 @@ public:
 	myID_FILE_OPEN,
 	myID_FILE_EXPORT,
 	myID_FILE_DELETE,
+	myID_FILE_RENAME,
 	myID_FILE_PROPERTIES,
 
 	myID_VIEW_BIGICONS,
@@ -61,6 +62,7 @@ public:
     void	OnMenuFileOpen(wxCommandEvent& event);
     void	OnMenuFileExport(wxCommandEvent& event);
     void	OnMenuFileDelete(wxCommandEvent& event);
+    void	OnMenuFileRename(wxCommandEvent& event);
     void	OnMenuFileProperties(wxCommandEvent& event);
 
     void	OnMenuView(wxCommandEvent& event);
