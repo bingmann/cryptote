@@ -92,6 +92,8 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 
     subfileid = sfid;
 
+    LoadSubFileMetaSettings(subfileid);
+
     editctrl->EmptyUndoBuffer();
     editctrl->SetSavePoint();
     editctrl->GotoPos(0);
@@ -99,6 +101,49 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 				 // otherwise scrolled halfway thru 1st char
 
     return true;
+}
+
+bool WTextPage::LoadSubFileMetaSettings(unsigned int sfid)
+{
+    std::string ms_str = wmain->container->GetSubFileProperty(sfid, "WTextPageSettings");
+    if (ms_str.size() < 4) return false;
+
+    uint32_t version = *(uint32_t*)(ms_str.data());
+    
+    if (version == 0x00000001 && ms_str.size() == sizeof(struct MetaSettingsv00000001))
+    {
+	const MetaSettingsv00000001 &ms = *(MetaSettingsv00000001*)(ms_str.data());
+
+	SetViewLineWrap(ms.view_linewrap);
+	SetViewLineNumber(ms.view_linenumber);
+	SetViewWhitespace(ms.view_whitespace);
+	SetViewEndOfLine(ms.view_endofline);
+	SetViewIndentGuide(ms.view_indentguide);
+	SetViewLonglineGuide(ms.view_longlineguide);
+
+	PageFocused(); // update menubar view checkmarks
+
+	return true;
+    }
+    else {
+	wxLogError(_("Could not restore settings of the text editor, maybe you need to upgrade CryptoTE to a newer version?"));
+	return false;
+    }
+}
+
+void WTextPage::SaveSubFileMetaSettings(unsigned int sfid)
+{
+    MetaSettingsv00000001 ms;
+
+    ms.version = 0x00000001;
+    ms.view_linewrap = view_linewrap;
+    ms.view_linenumber = view_linenumber;
+    ms.view_whitespace = view_whitespace;
+    ms.view_endofline = view_endofline;
+    ms.view_indentguide = view_indentguide;
+    ms.view_longlineguide = view_longlineguide;
+
+    wmain->container->SetSubFileProperty(sfid, "WTextPageSettings", std::string((char*)&ms, sizeof(ms)));
 }
 
 size_t WTextPage::ImportFile(wxFile& file)
@@ -276,6 +321,8 @@ void WTextPage::PageSaveData()
     wxCharBuffer buf = editctrl->GetTextRaw();
 
     wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
+
+    SaveSubFileMetaSettings(subfileid);
 
     editctrl->SetSavePoint();
 

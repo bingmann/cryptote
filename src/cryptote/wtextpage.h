@@ -34,6 +34,12 @@ public:
     /// Load a SubFile from the current container.
     bool	LoadSubFile(unsigned int sfid);
 
+    /// Load View Settings from Metadata
+    bool	LoadSubFileMetaSettings(unsigned int sfid);
+
+    /// Load View Settings from Metadata
+    void	SaveSubFileMetaSettings(unsigned int sfid);
+
     /// Clear buffer and load all data from a file
     size_t	ImportFile(wxFile& file);
 
@@ -116,6 +122,21 @@ protected:
     bool	view_endofline;
     bool	view_indentguide;
     bool	view_longlineguide;
+
+    // *** Structures used to Save View Options ***
+
+    struct MetaSettingsv00000001
+    {
+	uint32_t version;
+
+	unsigned char	view_linewrap;
+	unsigned char	view_linenumber;
+	unsigned char	view_whitespace;
+	unsigned char	view_endofline;
+	unsigned char 	view_indentguide;
+	unsigned char	view_longlineguide;
+    }
+	__attribute__((packed));
 
 private:
     DECLARE_EVENT_TABLE()
