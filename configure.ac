@@ -36,8 +36,6 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 
-AC_LANG([C++])
-
 # Check whether to enable gcov coverage flags and macros
 
 AC_ARG_ENABLE(gcov,
@@ -77,6 +75,9 @@ AC_CHECK_HEADER([bzlib.h],
 Install bzip2 development package using your distribution's package manager.])])
 
 # Check for wxWidgets 2.8.0 or later
+
+AC_LANG([C++])
+
 AM_OPTIONS_WXCONFIG
 
 AM_PATH_WXCONFIG(2.8.0, wxWin=1)
