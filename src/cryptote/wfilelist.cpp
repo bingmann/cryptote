@@ -319,7 +319,7 @@ void WFileList::OnMenuFileDelete(wxCommandEvent& WXUNUSED(event))
 
     if (suredlg.ShowModal() != wxID_YES) return;
 
-    for(std::vector<int>::const_reverse_iterator sfi = subfilelist.rbegin();
+    for(std::vector<int>::reverse_iterator sfi = subfilelist.rbegin();
 	sfi != subfilelist.rend(); ++sfi)
     {
 	printf("sfid: %d\n", *sfi);
