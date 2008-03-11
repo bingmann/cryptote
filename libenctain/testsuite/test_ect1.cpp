@@ -220,6 +220,15 @@ int main()
 	container.SetSubFileProperty(sf2, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf2, testtext, sizeof(testtext));
 
+	unsigned int sf3 = container.AppendSubFile();
+
+	container.SetSubFileEncryption(sf3, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileCompression(sf3, Enctain::COMPRESSION_BZIP2);
+
+	container.SetSubFileProperty(sf3, "Name", "test3.txt");
+	container.SetSubFileProperty(sf3, "MIME-Type", "text/plain");
+	container.SetSubFileData(sf3, testtext, sizeof(testtext));
+
 	wxFileOutputStream outstream(_T("out.ect"));
 	container.Save(outstream);
     }
@@ -243,7 +252,7 @@ int main()
 	assert( key == "secret1" && val == "blah" );
 	assert( !container.GetGlobalEncryptedPropertyIndex(1, key, val) );
 
-	assert(container.CountSubFile() == 2);
+	assert(container.CountSubFile() == 3);
 
 	// subfile 0
 	assert( container.GetSubFilePropertyIndex(0, 0, key, val) );
@@ -266,6 +275,18 @@ int main()
 	assert( !container.GetSubFilePropertyIndex(1, 2, key, val) );
 
 	container.GetSubFileData(1, mb);
+	
+	assert( mb.GetDataLen() == sizeof(testtext) );
+	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+
+	// subfile 2
+	assert( container.GetSubFilePropertyIndex(2, 0, key, val) );
+	assert( key == "MIME-Type" && val == "text/plain" );
+	assert( container.GetSubFilePropertyIndex(2, 1, key, val) );
+	assert( key == "Name" && val == "test3.txt" );
+	assert( !container.GetSubFilePropertyIndex(2, 2, key, val) );
+
+	container.GetSubFileData(2, mb);
 	
 	assert( mb.GetDataLen() == sizeof(testtext) );
 	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );

@@ -278,16 +278,21 @@ public:
     /// operation as the memory buffer may need to be decompressed/compressed.
     void		SetSubFileCompression(unsigned int subfileindex, compression_t c);
 
+    /// Set both data compression and encryption flags of a subfile. This can
+    /// be an expensive operation as the memory buffer may need to be
+    /// decompressed/compressed and reencrypted.
+    void		SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc);
+
 
     // * Subfile data operations *
 
     /// Return the data of a subfile: decrypt and uncompress it. The data is
     /// sent block-wise to the DataAcceptor object.
-    void		GetSubFileData(unsigned int subfileindex, class DataAcceptor& da) const;
+    bool		GetSubFileData(unsigned int subfileindex, class DataAcceptor& da) const;
 
     /// Return the data of a subfile: decrypt and uncompress it. Return
     /// complete data in a memory buffer.
-    void		GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& data) const;
+    bool		GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& data) const;
 
     /// Set/change the data of a subfile, it will be compressed and encrypted
     /// but not written to disk, yet.

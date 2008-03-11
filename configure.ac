@@ -63,6 +63,19 @@ fi
 
 CHECK_ZLIB
 
+# check if bzip2 is available
+
+AC_CHECK_LIB([bz2], [BZ2_bzCompressInit],
+	     [],
+	     [AC_MSG_ERROR([*** bzip2 library not found!
+Install bzip2 development package using your distribution's package manager.])]
+            )
+
+AC_CHECK_HEADER([bzlib.h],
+		[],
+		[AC_MSG_ERROR([*** bzlib.h include file not found!
+Install bzip2 development package using your distribution's package manager.])])
+
 # Check for wxWidgets 2.8.0 or later
 AM_OPTIONS_WXCONFIG
 

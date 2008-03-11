@@ -165,8 +165,24 @@ void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
     cnt.SetSubFileProperty(subfileid, "Name", strWX2STL( textFilename->GetValue() ));
     cnt.SetSubFileProperty(subfileid, "Author", strWX2STL( textAuthor->GetValue() ));
 
-    cnt.SetSubFileCompression(subfileid, (Enctain::compression_t)choiceCompression->GetSelection());
-    cnt.SetSubFileEncryption(subfileid, (Enctain::encryption_t)choiceEncryption->GetSelection());
+    Enctain::compression_t newcomp = (Enctain::compression_t)choiceCompression->GetSelection();
+    Enctain::encryption_t newencr = (Enctain::encryption_t)choiceEncryption->GetSelection();
+
+    if (newcomp != cnt.GetSubFileCompression(subfileid) ||
+	newencr != cnt.GetSubFileEncryption(subfileid))
+    {
+	size_t oldsize = cnt.GetSubFileStorageSize(subfileid);
+	size_t realsize = cnt.GetSubFileSize(subfileid);
+
+	cnt.SetSubFileCompressionEncryption(subfileid, newcomp, newencr);
+
+	size_t newsize = cnt.GetSubFileStorageSize(subfileid);
+
+	wmain->UpdateStatusBar(
+	    wxString::Format(_("Recompressed and reencrypted %u subfile bytes into %u bytes (old size %u)."),
+			     realsize, newsize, oldsize)
+	    );
+    }
 
     cnt.SetSubFileProperty(subfileid, "Subject", strWX2STL( textSubject->GetValue() ));
     cnt.SetSubFileProperty(subfileid, "Description", strWX2STL( textDescription->GetValue() ));

@@ -10,7 +10,7 @@ test_ect1_DEPENDENCIES = ../libenctain.a
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(WX_CXXFLAGS)
 
-LIBS = ../libenctain.a $(WX_LIBS)
+LIBS += ../libenctain.a $(WX_LIBS)
 
 if HAVE_LIBGCRYPT
 

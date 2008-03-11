@@ -9,6 +9,7 @@
 #include "bytebuff.h"
 
 #include <zlib.h>
+#include <bzlib.h>
 
 namespace Enctain {
 
@@ -595,8 +596,17 @@ void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
     if (c < 0 || c > ENCRYPTION_SERPENT256)
 	throw(std::runtime_error("Invalid encryption cipher index"));
 
-    // TODO: reencrypt if necessary
-    subfiles[subfileindex].encryption = c;
+    // reencrypt if necessary
+    if (subfiles[subfileindex].encryption != c)
+    {
+	wxMemoryBuffer data;
+
+	GetSubFileData(subfileindex, data);
+
+	subfiles[subfileindex].encryption = c;
+
+	SetSubFileData(subfileindex, data.GetData(), data.GetDataLen());
+    }
 }
 
 void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c)
@@ -607,8 +617,42 @@ void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c
     if (c < 0 || c > COMPRESSION_BZIP2)
 	throw(std::runtime_error("Invalid compression algorithm index"));
 
-    // TODO: recompress if necessary
-    subfiles[subfileindex].compression = c;
+    // recompress if necessary
+    if (subfiles[subfileindex].compression != c)
+    {
+	wxMemoryBuffer data;
+
+	GetSubFileData(subfileindex, data);
+
+	subfiles[subfileindex].compression = c;
+
+	SetSubFileData(subfileindex, data.GetData(), data.GetDataLen());
+    }
+}
+
+void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc)
+{
+    if (subfileindex >= subfiles.size())
+	throw(std::runtime_error("Invalid subfile index"));
+
+    if (comp < 0 || comp > COMPRESSION_BZIP2)
+	throw(std::runtime_error("Invalid compression algorithm index"));
+
+    if (enc < 0 || enc > ENCRYPTION_SERPENT256)
+	throw(std::runtime_error("Invalid encryption cipher index"));
+
+    // reencrypt and recompress if necessary
+    if (subfiles[subfileindex].encryption != enc || subfiles[subfileindex].compression != comp)
+    {
+	wxMemoryBuffer data;
+
+	GetSubFileData(subfileindex, data);
+
+	subfiles[subfileindex].encryption = enc;
+	subfiles[subfileindex].compression = comp;
+
+	SetSubFileData(subfileindex, data.GetData(), data.GetDataLen());
+    }
 }
 
 // *** Container SubFiles - Subfile data operations ***
@@ -663,7 +707,7 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	while (ret == Z_OK);
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during compression: (%d) %s"),
+	    wxLogError( wxString::Format(_("Exception during zlib compression: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    return false;
 	}
@@ -674,7 +718,47 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
     }
     else if (subfile.compression == COMPRESSION_BZIP2)
     {
-	assert(0);
+	bz_stream bz;
+	memset(&bz, 0, sizeof(bz));
+
+	int ret = BZ2_bzCompressInit(&bz, 9, 0, 0);
+	if (ret != BZ_OK) {
+	    wxLogError( _("Exception during bzip2 initialization.") );
+	    return false;
+	}
+
+	bz.next_in = (char*)data;
+	bz.avail_in = datalen;
+
+	const size_t batch = 65536;
+	size_t offset = 0;
+
+	do
+	{
+	    subfile.data.SetBufSize(offset + batch);
+
+	    bz.next_out = (char*)(subfile.data.GetData()) + offset;
+	    bz.avail_out = subfile.data.GetBufSize() - offset;
+
+	    ret = BZ2_bzCompress(&bz, BZ_FINISH);
+
+	    offset = bz.total_out_lo32;
+	}
+	while (ret == BZ_OK);
+
+	if (ret != BZ_STREAM_END) {
+	    wxLogError( wxString::Format(_("Exception during bzip2 compression: %d"), ret) );
+	    return false;
+	}
+
+	BZ2_bzCompressEnd(&bz);
+
+	subfile.data.SetDataLen(offset);
+    }
+    else
+    {
+	wxLogError( _("Exception during compression: unknown compression algorithm.") );
+	return false;
     }
 
     subfile.storagesize = subfile.data.GetDataLen();
@@ -701,7 +785,7 @@ struct GetSubFileDataAcceptor : public DataAcceptor
     }
 };
 
-void Container::GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& outdata) const
+bool Container::GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& outdata) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -713,22 +797,24 @@ void Container::GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& outdat
 
     GetSubFileDataAcceptor da(outdata);
 
-    GetSubFileData(subfileindex, da);
+    return GetSubFileData(subfileindex, da);
 }
 
-void Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da) const
+bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
 
     const SubFile& subfile = subfiles[subfileindex];
 
-    if (subfile.data.GetDataLen() == 0) return;
+    if (subfile.data.GetDataLen() == 0) return true;
 
     // Copy or decompress data into the wxMemoryBuffer
     if (subfile.compression == COMPRESSION_NONE)
     {
 	da.Append( subfile.data.GetData(), subfile.data.GetDataLen() );
+
+	return true;
     }
     else if (subfile.compression == COMPRESSION_ZLIB)
     {
@@ -740,7 +826,7 @@ void Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 	if (ret != Z_OK) {
 	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
-	    return;
+	    return false;
 	}
 
 	zs.next_in = (Bytef*)(subfile.data.GetData());
@@ -767,14 +853,58 @@ void Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
 	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
-	    return;
+	    return false;
 	}
 
 	inflateEnd(&zs);
+
+	return true;
     }
     else if (subfile.compression == COMPRESSION_BZIP2)
     {
-	assert(0);
+	bz_stream bz;
+	memset(&bz, 0, sizeof(bz));
+
+	int ret = BZ2_bzDecompressInit(&bz, 0, 0);
+	if (ret != BZ_OK) {
+	    wxLogError( _("Exception during bzip2 initialization.") );
+	    return false;
+	}
+
+	bz.next_in = (char*)(subfile.data.GetData());
+	bz.avail_in = subfile.data.GetDataLen();
+
+	size_t output = 0;
+	char buffer[65536];
+
+	do
+	{
+	    bz.next_out = (char*)buffer;
+	    bz.avail_out = sizeof(buffer);
+
+	    ret = BZ2_bzDecompress(&bz);
+
+	    if (output < bz.total_out_lo32)
+	    {
+		da.Append(buffer, bz.total_out_lo32 - output);
+		output = bz.total_out_lo32;
+	    }
+	}
+	while (ret == BZ_OK);
+
+	BZ2_bzDecompressEnd(&bz);
+
+	if (ret != BZ_STREAM_END) { // an error occurred that was not EOF
+	    wxLogError( wxString::Format(_("Exception during bzip2 decompression: %d"), ret) );
+	    return false;
+	}
+
+	return true;
+    }
+    else
+    {
+	wxLogError( _("Exception during decompression: unknown decompression algorithm.") );
+	return false;
     }
 }
 
