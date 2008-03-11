@@ -703,6 +703,8 @@ CXXDEPMODE
 am__fastdepCXX_TRUE
 am__fastdepCXX_FALSE
 RANLIB
+GCOV_TRUE
+GCOV_FALSE
 CPP
 GREP
 EGREP
@@ -1321,6 +1323,7 @@ Optional Features:
   --enable-optimize       Build with full optimization [default=no]
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
+  --enable-gcov           enable test coverage with gcov [default=no]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -4040,6 +4043,36 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
+# Check whether to enable gcov coverage flags and macros
+
+# Check whether --enable-gcov was given.
+if test "${enable_gcov+set}" = set; then
+  enableval=$enable_gcov; case "${enableval}" in
+         yes) gcov=true ;;
+         no)  gcov=false ;;
+         *)   { { echo "$as_me:$LINENO: error: bad value ${enableval} for --enable-gcov" >&5
+echo "$as_me: error: bad value ${enableval} for --enable-gcov" >&2;}
+   { (exit 1); exit 1; }; } ;;
+         esac
+else
+  gcov=false
+fi
+
+
+ if test x"$gcov" = "xtrue"; then
+  GCOV_TRUE=
+  GCOV_FALSE='#'
+else
+  GCOV_TRUE='#'
+  GCOV_FALSE=
+fi
+
+
+if test x"$gcov" = "xtrue"; then
+    CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+    CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Check for zlib
@@ -5738,6 +5771,13 @@ echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${GCOV_TRUE}" && test -z "${GCOV_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GCOV\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GCOV\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${HAVE_LIBGCRYPT_TRUE}" && test -z "${HAVE_LIBGCRYPT_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"HAVE_LIBGCRYPT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -6366,13 +6406,13 @@ CXXDEPMODE!$CXXDEPMODE$ac_delim
 am__fastdepCXX_TRUE!$am__fastdepCXX_TRUE$ac_delim
 am__fastdepCXX_FALSE!$am__fastdepCXX_FALSE$ac_delim
 RANLIB!$RANLIB$ac_delim
+GCOV_TRUE!$GCOV_TRUE$ac_delim
+GCOV_FALSE!$GCOV_FALSE$ac_delim
 CPP!$CPP$ac_delim
 GREP!$GREP$ac_delim
 EGREP!$EGREP$ac_delim
 WX_CONFIG_PATH!$WX_CONFIG_PATH$ac_delim
 WX_CPPFLAGS!$WX_CPPFLAGS$ac_delim
-WX_CFLAGS!$WX_CFLAGS$ac_delim
-WX_CXXFLAGS!$WX_CXXFLAGS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -6414,6 +6454,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+WX_CFLAGS!$WX_CFLAGS$ac_delim
+WX_CXXFLAGS!$WX_CXXFLAGS$ac_delim
 WX_CFLAGS_ONLY!$WX_CFLAGS_ONLY$ac_delim
 WX_CXXFLAGS_ONLY!$WX_CXXFLAGS_ONLY$ac_delim
 WX_LIBS!$WX_LIBS$ac_delim
@@ -6432,7 +6474,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 16; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 18; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
