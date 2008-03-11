@@ -30,6 +30,10 @@ public:
     /// Encrypt a length of n*16 bytes. Len must be a multiple of 16 or this
     /// function will assert().
     void encrypt(const void* src, void* dst, size_t len) const;
+
+    /// Encrypt a length of n*16 bytes. Len must be a multiple of 16 or this
+    /// function will assert().
+    void encrypt(void* srcdst, size_t len) const;
 };
 
 /**
@@ -54,6 +58,10 @@ public:
     /// Decrypt a length of n*16 bytes. Len must be a multiple of 16 or this
     /// function will assert().
     void decrypt(const void* src, void* dst, size_t len) const;
+
+    /// Decrypt a length of n*16 bytes. Len must be a multiple of 16 or this
+    /// function will assert().
+    void decrypt(void* srcdst, size_t len) const;
 };
 
 /**
@@ -83,6 +91,10 @@ public:
     /// Encrypt a length of n*16 bytes. Len must be a multiple of 16 or this
     /// function will assert().
     void encrypt(const void* src, void* dst, size_t len);
+
+    /// Encrypt a length of n*16 bytes. Len must be a multiple of 16 or this
+    /// function will assert().
+    void encrypt(void* srcdst, size_t len);
 };
 
 /**
@@ -112,6 +124,10 @@ public:
     /// Decrypt a length of n*16 bytes. Len must be a multiple of 16 or this
     /// function will assert().
     void decrypt(const void* src, void* dst, size_t len);
+
+    /// Decrypt a length of n*16 bytes. Len must be a multiple of 16 or this
+    /// function will assert().
+    void decrypt(void* srcdst, size_t len);
 };
 
 } // namespace Enctain

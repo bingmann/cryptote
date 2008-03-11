@@ -393,6 +393,16 @@ void SerpentEncryptECB::encrypt(const void* src, void* dst, size_t len) const
     }
 }
 
+void SerpentEncryptECB::encrypt(void* srcdst, size_t len) const
+{
+    assert(len % 16 == 0);
+
+    for (unsigned int i = 0; i < len; i += 16)
+    {
+	encrypt_block((uint8_t*)srcdst + i, (uint8_t*)srcdst + i);
+    }
+}
+
 void SerpentEncryptCBC::encrypt_block(const uint8_t src[16], uint8_t dst[16])
 {
     u32bit B0 = load_le<u32bit>(src, 0) ^ l_cbciv[0];
@@ -451,6 +461,16 @@ void SerpentEncryptCBC::encrypt(const void* src, void* dst, size_t len)
     }
 }
 
+void SerpentEncryptCBC::encrypt(void* srcdst, size_t len)
+{
+    assert(len % 16 == 0);
+
+    for (unsigned int i = 0; i < len; i += 16)
+    {
+	encrypt_block((uint8_t*)srcdst + i, (uint8_t*)srcdst + i);
+    }
+}
+
 /*************************************************
 * Serpent Decryption                             *
 *************************************************/
@@ -505,6 +525,16 @@ void SerpentDecryptECB::decrypt(const void* src, void* dst, size_t len) const
     for (unsigned int i = 0; i < len; i += 16)
     {
 	decrypt_block((uint8_t*)src + i, (uint8_t*)dst + i);
+    }
+}
+
+void SerpentDecryptECB::decrypt(void* srcdst, size_t len) const
+{
+    assert(len % 16 == 0);
+
+    for (unsigned int i = 0; i < len; i += 16)
+    {
+	decrypt_block((uint8_t*)srcdst + i, (uint8_t*)srcdst + i);
     }
 }
 
@@ -569,6 +599,16 @@ void SerpentDecryptCBC::decrypt(const void* src, void* dst, size_t len)
     for (unsigned int i = 0; i < len; i += 16)
     {
 	decrypt_block((uint8_t*)src + i, (uint8_t*)dst + i);
+    }
+}
+
+void SerpentDecryptCBC::decrypt(void* srcdst, size_t len)
+{
+    assert(len % 16 == 0);
+
+    for (unsigned int i = 0; i < len; i += 16)
+    {
+	decrypt_block((uint8_t*)srcdst + i, (uint8_t*)srcdst + i);
     }
 }
 
