@@ -204,6 +204,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 test_ect1_SOURCES = test_ect1.cpp
+test_ect1_DEPENDENCIES = ../libenctain.a
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) \
 	$(am__append_3)
 @HAVE_LIBGCRYPT_TRUE@test_crc32_SOURCES = test_crc32.cpp

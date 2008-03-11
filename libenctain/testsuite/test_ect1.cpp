@@ -228,7 +228,7 @@ int main()
 	Enctain::Container container;
 
 	wxFileInputStream instream(_T("out.ect"));
-	container.Load(instream, "abc");
+	assert( container.Load(instream, "abc") );
 	
 	std::string key, val;
 	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );

@@ -58,7 +58,7 @@ bool Container::Save(wxOutputStream& outstream)
 	    unc_metadata.put<std::string>(pi->first);
 	    unc_metadata.put<std::string>(pi->second);
 	}
-    
+
 	struct Header1 header1;
 	memcpy(header1.signature, fsignature, 8);
 	header1.version = 0x00010000;
@@ -71,7 +71,7 @@ bool Container::Save(wxOutputStream& outstream)
     // Prepare variable metadata header containing global properties and all
     // subfile properties.
     ByteBuffer metadata;
-    
+
     // append global properties
     metadata.put<unsigned int>(enc_properties.size());
 
@@ -102,22 +102,62 @@ bool Container::Save(wxOutputStream& outstream)
 	}
     }
 
+    // Compress encrypted global properties using zlib
+    std::string metadata_compressed;
+    {
+	z_stream zs;
+	memset(&zs, 0, sizeof(zs));
+
+	int ret = deflateInit(&zs, 9);
+	if (ret != Z_OK) {
+	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    return false;
+	}
+
+	zs.next_in = (Bytef*)metadata.data();
+	zs.avail_in = metadata.size();
+
+	char buffer[65536];
+	do {
+	    zs.next_out = (Bytef*)buffer;
+	    zs.avail_out = sizeof(buffer);
+
+	    ret = deflate(&zs, Z_FINISH);
+
+	    if (metadata_compressed.size() < zs.total_out)
+	    {
+		metadata_compressed.append(buffer,
+					   zs.total_out - metadata_compressed.size());
+	    }
+	} while (ret == Z_OK);
+
+	deflateEnd(&zs);
+
+	if (ret != Z_STREAM_END) {
+	    wxLogError( wxString::Format(_("Exception during compression: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    return false;
+	}
+    }
+
     // Prepare encrypted Header2 by writing all subfile metadata into a buffer
     struct Header2 header2;
     header2.test123 = 0x12345678;
-    header2.metalen = metadata.size();
+    header2.metacomplen = metadata_compressed.size();
     header2.metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
     header2.subfilenum = subfiles.size();
 
     outstream.Write(&header2, sizeof(header2));
 
-    outstream.Write(metadata.data(), metadata.size());
+    outstream.Write(metadata_compressed.data(), metadata_compressed.size());
 
     // Output data of all subfiles simply concatenated
 
     for (unsigned int si = 0; si < subfiles.size(); ++si)
     {
 	assert(subfiles[si].storagesize == subfiles[si].data.GetDataLen());
+
 	outstream.Write(subfiles[si].data.GetData(), subfiles[si].storagesize);
     }
 
@@ -157,7 +197,7 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
     {
 	ByteBuffer unc_metadata;
 	unc_metadata.alloc(header1.unc_metalen);
-    
+
 	instream.Read(unc_metadata.data(), header1.unc_metalen);
 	if (instream.LastRead() != header1.unc_metalen) {
 	    wxLogError(_("Error loading container: could not unencrypted metadata."));
@@ -166,16 +206,24 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 
 	unc_metadata.set_size(header1.unc_metalen);
 
-	// parse global unencrypted properties
-	unsigned int gpropsize = unc_metadata.get<unsigned int>();
-	unc_properties.clear();
-    
-	for (unsigned int pi = 0; pi < gpropsize; ++pi)
+	try
 	{
-	    std::string key = unc_metadata.get<std::string>();
-	    std::string val = unc_metadata.get<std::string>();
+	    // parse global unencrypted properties
+	    unsigned int gpropsize = unc_metadata.get<unsigned int>();
+	    unc_properties.clear();
 
-	    unc_properties.insert( propertymap_type::value_type(key, val) );
+	    for (unsigned int pi = 0; pi < gpropsize; ++pi)
+	    {
+		std::string key = unc_metadata.get<std::string>();
+		std::string val = unc_metadata.get<std::string>();
+
+		unc_properties.insert( propertymap_type::value_type(key, val) );
+	    }
+	}
+	catch (std::underflow_error& e)
+	{
+	    wxLogError(_("Error loading container: could not parse unencrypted metadata buffer."));
+	    return false;
 	}
     }
 
@@ -194,55 +242,112 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	return false;
     }
 
-    // Read variable length metadata
+    // Read compressed variable length metadata
 
-    ByteBuffer metadata;
-    metadata.alloc(header2.metalen);
-    
-    instream.Read(metadata.data(), header2.metalen);
-    if (instream.LastRead() != header2.metalen) {
+    ByteBuffer metadata_compressed;
+    metadata_compressed.alloc(header2.metacomplen);
+
+    instream.Read(metadata_compressed.data(), header2.metacomplen);
+    if (instream.LastRead() != header2.metacomplen) {
 	wxLogError(_("Error loading container: could not decrypt metadata."));
 	return false;
     }
 
-    metadata.set_size(header2.metalen);
+    metadata_compressed.set_size(header2.metacomplen);
 
-    // parse global encrypted properties
-    unsigned int gpropsize = metadata.get<unsigned int>();
-    enc_properties.clear();
-    
-    for (unsigned int pi = 0; pi < gpropsize; ++pi)
+    // Decompress variable encrypted metadata
+
+    ByteBuffer metadata;
+
     {
-	std::string key = metadata.get<std::string>();
-	std::string val = metadata.get<std::string>();
+	z_stream zs;
+	memset(&zs, 0, sizeof(zs));
 
-	enc_properties.insert( propertymap_type::value_type(key, val) );
+	int ret = inflateInit(&zs);
+	if (ret != Z_OK) {
+	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    return false;
+	}
+
+	zs.next_in = (Bytef*)(metadata_compressed.data());
+	zs.avail_in = metadata_compressed.size();
+
+	char buffer[65536];
+
+	do
+	{
+	    zs.next_out = (Bytef*)buffer;
+	    zs.avail_out = sizeof(buffer);
+
+	    ret = inflate(&zs, 0);
+
+	    if (metadata.size() < zs.total_out) {
+		metadata.append(buffer, zs.total_out - metadata.size());
+	    }
+	}
+	while (ret == Z_OK);
+
+	if (ret != Z_STREAM_END) {
+	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    return false;
+	}
+
+	inflateEnd(&zs);
+
+	uint32_t metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
+
+	if (metacrc32 != header2.metacrc32) {
+	    wxLogError( _("Error loading container: metadata crc32 does not match.") );
+	    return false;
+	}
     }
-    
-    // parse subfile metadata
-    subfiles.clear();
 
-    for (unsigned int si = 0; si < header2.subfilenum; ++si)
+    try
     {
-	subfiles.push_back(SubFile());
-	SubFile& subfile = subfiles.back();
+	// parse global encrypted properties
+	unsigned int gpropsize = metadata.get<unsigned int>();
+	enc_properties.clear();
 
-	// fixed structure
-	subfile.storagesize = metadata.get<unsigned int>();
-	subfile.realsize = metadata.get<unsigned int>();
-	subfile.flags = metadata.get<unsigned int>();
-	subfile.crc32 = metadata.get<unsigned int>();
-
-	// variable properties structure
-	unsigned int fpropsize = metadata.get<unsigned int>();
-
-	for (unsigned int pi = 0; pi < fpropsize; ++pi)
+	for (unsigned int pi = 0; pi < gpropsize; ++pi)
 	{
 	    std::string key = metadata.get<std::string>();
 	    std::string val = metadata.get<std::string>();
 
-	    subfile.properties.insert( propertymap_type::value_type(key, val) );
+	    enc_properties.insert( propertymap_type::value_type(key, val) );
 	}
+
+	// parse subfile metadata
+	subfiles.clear();
+
+	for (unsigned int si = 0; si < header2.subfilenum; ++si)
+	{
+	    subfiles.push_back(SubFile());
+	    SubFile& subfile = subfiles.back();
+
+	    // fixed structure
+	    subfile.storagesize = metadata.get<unsigned int>();
+	    subfile.realsize = metadata.get<unsigned int>();
+	    subfile.flags = metadata.get<unsigned int>();
+	    subfile.crc32 = metadata.get<unsigned int>();
+
+	    // variable properties structure
+	    unsigned int fpropsize = metadata.get<unsigned int>();
+
+	    for (unsigned int pi = 0; pi < fpropsize; ++pi)
+	    {
+		std::string key = metadata.get<std::string>();
+		std::string val = metadata.get<std::string>();
+
+		subfile.properties.insert( propertymap_type::value_type(key, val) );
+	    }
+	}
+    }
+    catch (std::underflow_error& e)
+    {
+	wxLogError(_("Error loading container: could not parse metadata buffer."));
+	return false;
     }
 
     // load data of all subfiles which are simply concatenated
@@ -282,7 +387,7 @@ void Container::SetGlobalUnencryptedProperty(const std::string& key, const std::
 const std::string& Container::GetGlobalUnencryptedProperty(const std::string& key) const
 {
     propertymap_type::const_iterator pi = unc_properties.find(key);
-    
+
     if (pi != unc_properties.end()) {
 	return pi->second;
     }
@@ -321,7 +426,7 @@ void Container::SetGlobalEncryptedProperty(const std::string& key, const std::st
 const std::string& Container::GetGlobalEncryptedProperty(const std::string& key) const
 {
     propertymap_type::const_iterator pi = enc_properties.find(key);
-    
+
     if (pi != enc_properties.end()) {
 	return pi->second;
     }
@@ -408,7 +513,7 @@ const std::string& Container::GetSubFileProperty(unsigned int subfileindex, cons
 
     const SubFile& subfile = subfiles[subfileindex];
     propertymap_type::const_iterator pi = subfile.properties.find(key);
-    
+
     if (pi != subfile.properties.end()) {
 	return pi->second;
     }
@@ -533,7 +638,8 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	int ret = deflateInit(&zs, Z_BEST_COMPRESSION);
 	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"), ret, zs.msg) );
+	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    return false;
 	}
 
@@ -557,10 +663,11 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	while (ret == Z_OK);
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during compression: (%d) %s"), ret, zs.msg) );
+	    wxLogError( wxString::Format(_("Exception during compression: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    return false;
 	}
- 
+
 	deflateEnd(&zs);
 
 	subfile.data.SetDataLen(offset);
@@ -631,7 +738,8 @@ void Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 
 	int ret = inflateInit(&zs);
 	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"), ret, zs.msg) );
+	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    return;
 	}
 
@@ -657,10 +765,11 @@ void Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 	while (ret == Z_OK);
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"), ret, zs.msg) );
+	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    return;
 	}
- 
+
 	inflateEnd(&zs);
     }
     else if (subfile.compression == COMPRESSION_BZIP2)

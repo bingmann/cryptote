@@ -105,8 +105,9 @@ protected:
     struct Header2
     {
 	uint32_t	test123;	// = 0x12345678 to quick-test if decryption worked.
-	uint32_t	metalen;	// Length of following variable header
-					// holding all subfile metadata.
+	uint32_t	metacomplen;	// Length of following compressed
+					// variable header holding all subfile
+					// metadata.
 	uint32_t	metacrc32;	// CRC32 of the following variable
 					// subfile metadata header
 	uint32_t	subfilenum;	// Number of subfiles in the container

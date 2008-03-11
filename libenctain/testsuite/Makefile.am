@@ -6,6 +6,8 @@ noinst_PROGRAMS = test_ect1
 
 test_ect1_SOURCES = test_ect1.cpp
 
+test_ect1_DEPENDENCIES = ../libenctain.a
+
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(WX_CXXFLAGS)
 
 LIBS = ../libenctain.a $(WX_LIBS)
