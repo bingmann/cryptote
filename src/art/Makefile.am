@@ -22,6 +22,9 @@ noinst_HEADERS = \
 	cryptote-16.h \
 	cryptote-32.h \
 	cryptote-48.h \
+	ectfile-16.h \
+	ectfile-32.h \
+	ectfile-48.h \
 	document_new.h \
 	document_open.h \
 	document_save.h \
@@ -83,6 +86,11 @@ EXTRA_DIST = \
 	cryptote-48.png \
 	cryptote.ico \
 	cryptote.svg \
+	ectfile-16.png \
+	ectfile-32.png \
+	ectfile-48.png \
+	ectfile.ico \
+	ectfile.svg \
 	document_new.png \
 	document_open.png \
 	document_save.png \

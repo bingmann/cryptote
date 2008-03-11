@@ -5,6 +5,7 @@
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 1   ICON                    "../art/cryptote.ico"
+2   ICON                    "../art/ectfile.ico"
 
 1   RT_MANIFEST             "cryptote.xml"
 
