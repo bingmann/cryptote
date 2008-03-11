@@ -104,7 +104,8 @@ protected:
     /// Structure of the encrypted part of the header
     struct Header2
     {
-	uint32_t	test123;	// = 0x12345678 to quick-test if decryption worked.
+	uint32_t	test123;	// = 0x12345678 to quick-test if
+					// decryption worked.
 	uint32_t	metacomplen;	// Length of following compressed
 					// variable header holding all subfile
 					// metadata.

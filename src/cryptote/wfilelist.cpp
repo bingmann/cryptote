@@ -289,7 +289,7 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
     }
 }
 
-void WFileList::OnMenuFileDelete(wxCommandEvent& event)
+void WFileList::OnMenuFileDelete(wxCommandEvent& WXUNUSED(event))
 {
     std::vector<int> subfilelist;
 
