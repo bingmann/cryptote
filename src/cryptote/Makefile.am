@@ -13,8 +13,8 @@ cryptote_SOURCES = main.cpp \
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(WX_CXXFLAGS)
-LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(WX_LIBS) $(LIBS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) $(WX_CXXFLAGS)
+LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(BZLIB_LIBS) $(ZLIB_LIBS) $(WX_LIBS)
 
 if GOT_RESCOMP
 

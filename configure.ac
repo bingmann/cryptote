@@ -57,23 +57,6 @@ fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 
-# Check for zlib
-
-CHECK_ZLIB
-
-# check if bzip2 is available
-
-AC_CHECK_LIB([bz2], [BZ2_bzCompressInit],
-	     [],
-	     [AC_MSG_ERROR([*** bzip2 library not found!
-Install bzip2 development package using your distribution's package manager.])]
-            )
-
-AC_CHECK_HEADER([bzlib.h],
-		[],
-		[AC_MSG_ERROR([*** bzlib.h include file not found!
-Install bzip2 development package using your distribution's package manager.])])
-
 # Check for wxWidgets 2.8.0 or later
 
 AC_LANG([C++])
@@ -92,6 +75,106 @@ if test "$wxWin" != 1; then
 	'wx-config --libs' command) is in LD_LIBRARY_PATH or
 	equivalent variable.
     ])
+fi
+
+# Check for zlib - based on CHECK_ZLIB()
+
+AC_ARG_WITH(zlib,
+[  --with-zlib=DIR root directory path of zlib installation [defaults to
+                    /usr/local or /usr if not found in /usr/local]],
+[if test -d "$withval"
+  then
+    ZLIB_HOME="$withval"
+  else
+    AC_MSG_WARN([Sorry, $withval does not exist, checking usual places])
+fi])
+
+ZLIB_HOME=/usr/local
+if test ! -f "${ZLIB_HOME}/include/zlib.h"
+then
+  ZLIB_HOME=/usr
+fi
+
+AC_MSG_CHECKING(zlib in ${ZLIB_HOME})
+
+ZLIB_OLD_LDFLAGS=$LDFLAGS
+ZLIB_OLD_CPPFLAGS=$CPPFLAGS
+LDFLAGS="$LDFLAGS -L${ZLIB_HOME}/lib"
+CPPFLAGS="$CPPFLAGS -I${ZLIB_HOME}/include"
+AC_LANG_SAVE
+AC_LANG_C
+AC_CHECK_LIB(z, inflateEnd, [zlib_cv_libz=yes], [zlib_cv_libz=no])
+AC_CHECK_HEADER(zlib.h, [zlib_cv_zlib_h=yes], [zlib_cv_zlib_h=no])
+AC_LANG_RESTORE
+LDFLAGS="$ZLIB_OLD_LDFLAGS"
+CPPFLAGS="$ZLIB_OLD_CPPFLAGS"
+
+if test "$zlib_cv_libz" = "yes" -a "$zlib_cv_zlib_h" = "yes"
+then
+  #
+  # If both library and header were found, use them
+  #
+  ZLIB_CFLAGS="-I${ZLIB_HOME}/include"
+  ZLIB_LIBS="-L${ZLIB_HOME}/lib -lz"
+  AC_SUBST(ZLIB_CFLAGS)
+  AC_SUBST(ZLIB_LIBS)
+else
+  #
+  # If either header or library was not found, revert and bomb
+  #
+  AC_MSG_ERROR(specify a valid zlib installation with --with-zlib=DIR)
+  AC_MSG_ERROR([*** zlib library not found!
+Install the zlib / libz development package using your distribution's package manager.])
+fi
+
+# Check if bzip2 is available - also based on CHECK_ZLIB()
+
+AC_ARG_WITH(bzlib,
+[  --with-bzlib=DIR root directory path of bzip2 installation [defaults to
+                    /usr/local or /usr if not found in /usr/local]],
+[if test -d "$withval"
+  then
+    BZLIB_HOME="$withval"
+  else
+    AC_MSG_WARN([Sorry, $withval does not exist, checking usual places])
+fi])
+
+BZLIB_HOME=/usr/local
+if test ! -f "${BZLIB_HOME}/include/bzlib.h"
+then
+  BZLIB_HOME=/usr
+fi
+
+AC_MSG_CHECKING(bzlib in ${BZLIB_HOME})
+
+BZLIB_OLD_LDFLAGS=$LDFLAGS
+BZLIB_OLD_CPPFLAGS=$CPPFLAGS
+LDFLAGS="$LDFLAGS -L${BZLIB_HOME}/lib"
+CPPFLAGS="$CPPFLAGS -I${BZLIB_HOME}/include"
+AC_LANG_SAVE
+AC_LANG_C
+AC_CHECK_LIB(bz2, BZ2_bzCompressInit, [bzlib_cv_libbz2=yes], [bzlib_cv_libbz2=no])
+AC_CHECK_HEADER(bzlib.h, [bzlib_cv_bzlib_h=yes], [bzlib_cv_bzlib_h=no])
+AC_LANG_RESTORE
+LDFLAGS="$BZLIB_OLD_LDFLAGS"
+CPPFLAGS="$BZLIB_OLD_CPPFLAGS"
+
+if test "$bzlib_cv_libbz2" = "yes" -a "$bzlib_cv_bzlib_h" = "yes"
+then
+  #
+  # If both library and header were found, use them
+  #
+  BZLIB_CFLAGS="-I${BZLIB_HOME}/include"
+  BZLIB_LIBS="-L${BZLIB_HOME}/lib -lbz2"
+  AC_SUBST(BZLIB_CFLAGS)
+  AC_SUBST(BZLIB_LIBS)
+else
+  #
+  # If either header or library was not found, revert and bomb
+  #
+  AC_MSG_ERROR(specify a valid bzip2 (bzlib) installation with --with-bzlib=DIR)
+  AC_MSG_ERROR([*** bzip2 library not found!
+Install the bzip2 development package using your distribution's package manager.])
 fi
 
 # Check for libgcrypt which is only used in test cases
