@@ -19,12 +19,12 @@ int main()
 
     // Create contexts
 
-    Enctain::SerpentEncryptCBC encctx1;
+    Enctain::SerpentCBC encctx1;
 
     encctx1.set_key((uint8_t*)key, 256);
     encctx1.set_cbciv((uint8_t*)iv);
 
-    Enctain::SerpentDecryptCBC decctx1;
+    Enctain::SerpentCBC decctx1;
 
     decctx1.set_key((uint8_t*)key, 256);
     decctx1.set_cbciv((uint8_t*)iv);
