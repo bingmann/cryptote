@@ -150,9 +150,11 @@ protected:
     size_t		written;
 
 public:
-    // *** Constructor ***
+    // *** Constructor and Destructor ***
 
-     Container();
+    Container();
+
+    ~Container();
 
     // *** Settings ***
 

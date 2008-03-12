@@ -17,12 +17,17 @@
 
 namespace Enctain {
 
-// *** Constructor ***
+// *** Constructor and Destructor ***
 
 Container::Container()
     : opened(false), modified(false),
       iskeyset(false), written(0)
 {
+}
+
+Container::~Container()
+{
+    serpentctx.wipe();
 }
 
 // *** Settings ***

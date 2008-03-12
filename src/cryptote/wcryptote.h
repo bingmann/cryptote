@@ -28,6 +28,7 @@ public:
 	// Menu Items
 
 	myID_MENU_CONTAINER_SHOWLIST,
+	myID_MENU_CONTAINER_SETPASS,
 
 	myID_MENU_SUBFILE_NEW,
 	myID_MENU_SUBFILE_IMPORT,
@@ -140,6 +141,7 @@ public:
 
     void	OnMenuContainerShowList(wxCommandEvent& event);
     void	OnMenuContainerProperties(wxCommandEvent& event);
+    void	OnMenuContainerSetPassword(wxCommandEvent& event);
 
     void	OnMenuContainerQuit(wxCommandEvent& event);
 

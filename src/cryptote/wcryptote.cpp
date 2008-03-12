@@ -7,6 +7,7 @@
 #include "wfileprop.h"
 #include "wcntprop.h"
 #include "wmsgdlg.h"
+#include "wpass.h"
 
 #include <wx/wfstream.h>
 #include "common/tools.h"
@@ -380,7 +381,7 @@ void WCryptoTE::ContainerNew()
 
     filelistpane->ResetItems();
 
-    OpenSubFile(0);
+    OpenSubFile(sf1);
     ShowFilelistPane(false);
 
     UpdateStatusBar(_("New container initialized."));
@@ -395,9 +396,12 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     wxFileInputStream stream(filename);
     if (!stream.IsOk()) return false;
 
+    WGetPassword passdlg(this, filename);
+    if (passdlg.ShowModal() != wxID_OK) return false;
+
     Enctain::Container* nc = new Enctain::Container();
 
-    bool b = nc->Load(stream, "");
+    bool b = nc->Load(stream, strWX2STL(passdlg.GetPass()));
     if (!b) {
 	delete nc;
 	return false;
@@ -460,6 +464,15 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	page->PageSaveData();
     }
 
+    // check that an encryption key is set
+    if (!container->IsKeySet())
+    {
+	WSetPassword passdlg(this, filename);
+	if (passdlg.ShowModal() != wxID_OK) return false;
+
+	container->SetKey( strWX2STL(passdlg.GetPass()) );
+    }
+
     wxFileOutputStream stream(filename);
     if (!stream.IsOk()) return false;
 
@@ -502,6 +515,7 @@ void WCryptoTE::CreateMenuBar()
     #include "art/document_close.h"
     #include "art/view_choose.h"
     #include "art/document_properties.h"
+    #include "art/setpassword.h"
     #include "art/application_exit.h"
 
     menuContainer->Append(
@@ -574,6 +588,12 @@ void WCryptoTE::CreateMenuBar()
 		       _("&Properties\tAlt+Enter"),
 		       _("Show metadata properties of the encrypted container."),
 		       wxBitmapFromMemory(document_properties_png))
+	);
+    menuContainer->Append(
+	createMenuItem(menuContainer, myID_MENU_CONTAINER_SETPASS,
+		       _("&Change Password"),
+		       _("Change the encryption password of the current container."),
+		       wxBitmapFromMemory(setpassword_png))
 	);
     menuContainer->AppendSeparator();
 
@@ -959,6 +979,18 @@ void WCryptoTE::OnMenuContainerProperties(wxCommandEvent& WXUNUSED(event))
     {
 	SetModified();
     }
+}
+
+void WCryptoTE::OnMenuContainerSetPassword(wxCommandEvent& WXUNUSED(event))
+{
+    wxString filename = container_filename.IsOk() ? container_filename.GetFullName() : wxString(_("Untitled.ect"));
+
+    WSetPassword passdlg(this, filename);
+    if (passdlg.ShowModal() != wxID_OK) return;
+
+    container->SetKey( strWX2STL(passdlg.GetPass()) );
+
+    SetModified();
 }
 
 void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
@@ -1473,6 +1505,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     EVT_MENU	(myID_MENU_CONTAINER_SHOWLIST, WCryptoTE::OnMenuContainerShowList)
     EVT_MENU	(wxID_PROPERTIES,	WCryptoTE::OnMenuContainerProperties)
+    EVT_MENU	(myID_MENU_CONTAINER_SETPASS, WCryptoTE::OnMenuContainerSetPassword)
 
     EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
 
