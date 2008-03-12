@@ -9,8 +9,7 @@ pwtutor_SOURCES = main.cpp \
 	wstats.cpp wstats.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
 	../pwgen/prng.cpp ../pwgen/prng.h \
-	../pwgen/fips181.cpp ../pwgen/fips181.h \
-	../common/hyperlink.cpp ../common/hyperlink.h
+	../pwgen/fips181.cpp ../pwgen/fips181.h
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS)
 LIBS = $(WX_LIBS)

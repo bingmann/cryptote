@@ -3,12 +3,7 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
-
-#if wxCHECK_VERSION(2,8,0)
 #include <wx/hyperlink.h>
-#else
-#include "common/hyperlink.h"
-#endif
 
 // begin wxGlade: ::dependencies
 #include <wx/spinctrl.h>
