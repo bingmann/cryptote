@@ -227,6 +227,14 @@ public:
 
 	return ret;
     }
+
+    /// Fetch a number of unstructured bytes from the buffer, advancing the cursor
+    inline void get(void* outdata, unsigned int datalen)
+    {
+	check_available(datalen);
+	memcpy(outdata, data_ + curr_, datalen);
+	curr_ += datalen;
+    }
 };
 
 /// A template specialization which appends a std::string by first putting it's

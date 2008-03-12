@@ -10,6 +10,8 @@
 #include <map>
 #include <string>
 
+#include "serpent.h"
+
 namespace Enctain {
 
 /// Enumeration of different supported encryption algorithms which can be
@@ -77,7 +79,7 @@ protected:
 	};
 
 	/// Encryption CBC initialization vector, if needed.
-	char		cbciv[16];
+	unsigned char	cbciv[16];
     
 	/// User-defined properties of the subfile.
 	propertymap_type properties;
@@ -130,7 +132,10 @@ protected:
     bool		modified;
 
     /// 256-bit raw encryption key.
-    std::string		enckey;
+    bool		iskeyset;
+
+    /// Serpent256 keybit encryption context
+    mutable SerpentCBC	serpentctx;
 
     /// Unencrypted global properties, completely user-defined.
     propertymap_type	unc_properties;
@@ -169,13 +174,18 @@ public:
     bool		Loadv00010000(wxInputStream& instream, const std::string& filekey, const Header1& header1);
 
 
-    // *** Container Info Operations ***
+    // *** Container Info and Key Operations ***
 
     /// Returns true if the object contains a correctly opened container.
     bool		IsOpen() const;
     
-    /// Set a new password string. The string  will be hashed.
-    bool		SetKey(const std::string& keystr);
+    /// Set a new password string. The string will be hashed and transformed
+    /// into an encryption context. This is a very expensive operation as all
+    /// subfiles need to be reencrypted.
+    void		SetKey(const std::string& keystr);
+
+    /// Checks whether a password key was set.
+    bool		IsKeySet() const;
 
     /// Return number of bytes written to output stream during last Save()
     /// operation.

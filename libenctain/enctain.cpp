@@ -7,7 +7,11 @@
 
 #include "crc32.h"
 #include "bytebuff.h"
+#include "sha256.h"
+#include "serpent.h"
 
+#include <stdlib.h>
+#include <time.h>
 #include <zlib.h>
 #include <bzlib.h>
 
@@ -16,7 +20,8 @@ namespace Enctain {
 // *** Constructor ***
 
 Container::Container()
-    : written(0)
+    : opened(false), modified(false),
+      iskeyset(false), written(0)
 {
 }
 
@@ -44,6 +49,13 @@ bool Container::Save(wxOutputStream& outstream)
 {
     written = 0;
     off_t streamoff = outstream.TellO();
+
+    if (!iskeyset) {
+	wxLogError( _("Error loading container: no encryption password set!") );
+	return false;
+    }
+
+    srand(time(NULL));
 
     // Write out unencrypted fixed Header1 and unencrypted metadata
     {
@@ -91,6 +103,7 @@ bool Container::Save(wxOutputStream& outstream)
 	metadata.put<unsigned int>(subfiles[si].realsize);
 	metadata.put<unsigned int>(subfiles[si].flags);
 	metadata.put<unsigned int>(subfiles[si].crc32);
+	metadata.append(subfiles[si].cbciv, 16);
 
 	// variable properties structure
 	metadata.put<unsigned int>(subfiles[si].properties.size());
@@ -104,7 +117,7 @@ bool Container::Save(wxOutputStream& outstream)
     }
 
     // Compress encrypted global properties using zlib
-    std::string metadata_compressed;
+    ByteBuffer metadata_compressed;
     {
 	z_stream zs;
 	memset(&zs, 0, sizeof(zs));
@@ -140,17 +153,29 @@ bool Container::Save(wxOutputStream& outstream)
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    return false;
 	}
+
+	// append zeros to make output length a multiple of 16
+	metadata_compressed.align(16);
     }
 
-    // Prepare encrypted Header2 by writing all subfile metadata into a buffer
     struct Header2 header2;
     header2.test123 = 0x12345678;
     header2.metacomplen = metadata_compressed.size();
     header2.metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
     header2.subfilenum = subfiles.size();
 
-    outstream.Write(&header2, sizeof(header2));
+    // Encrypt fixed header2 and variable metadata
 
+    static const uint8_t header2cbciv[16] =
+	{ 0x14, 0x8B, 0x13, 0x5A, 0xEF, 0xF3, 0x01, 0x2B,
+	  0x8F, 0x61, 0x0A, 0xC9, 0x43, 0x22, 0x82, 0x87 };
+
+    serpentctx.set_cbciv(header2cbciv);
+
+    serpentctx.encrypt(&header2, sizeof(header2));
+    serpentctx.encrypt(metadata_compressed.data(), metadata_compressed.size());
+
+    outstream.Write(&header2, sizeof(header2));
     outstream.Write(metadata_compressed.data(), metadata_compressed.size());
 
     // Output data of all subfiles simply concatenated
@@ -163,11 +188,15 @@ bool Container::Save(wxOutputStream& outstream)
     }
 
     written = outstream.TellO() - streamoff;
+    opened = true;
+
     return true;
 }
 
 bool Container::Load(wxInputStream& instream, const std::string& filekey)
 {
+    opened = false;
+
     // Read unencrypted fixed Header1
     struct Header1 header1;
 
@@ -238,8 +267,23 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	return false;
     }
 
+    // decrypt header2
+
+    std::string deckey = SHA256::digest( std::string(fsignature, 8) + filekey );
+    assert( deckey.size() == 32 );
+
+    static const uint8_t header2cbciv[16] =
+	{ 0x14, 0x8B, 0x13, 0x5A, 0xEF, 0xF3, 0x01, 0x2B,
+	  0x8F, 0x61, 0x0A, 0xC9, 0x43, 0x22, 0x82, 0x87 };
+
+    SerpentCBC decctx;
+    decctx.set_key((const uint8_t*)deckey.data(), deckey.size());
+    decctx.set_cbciv(header2cbciv);
+
+    decctx.decrypt(&header2, sizeof(header2));
+
     if (header2.test123 != 0x12345678) {
-	wxLogError(_("Error loading container: could not decrypt header."));
+	wxLogError(_("Error loading container: could not decrypt header. Check the encryption key."));
 	return false;
     }
 
@@ -250,11 +294,13 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 
     instream.Read(metadata_compressed.data(), header2.metacomplen);
     if (instream.LastRead() != header2.metacomplen) {
-	wxLogError(_("Error loading container: could not decrypt metadata."));
+	wxLogError(_("Error loading container: could not decrypt metadata. Check the encryption key."));
 	return false;
     }
 
     metadata_compressed.set_size(header2.metacomplen);
+
+    decctx.decrypt(metadata_compressed.data(), metadata_compressed.size());
 
     // Decompress variable encrypted metadata
 
@@ -332,6 +378,7 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	    subfile.realsize = metadata.get<unsigned int>();
 	    subfile.flags = metadata.get<unsigned int>();
 	    subfile.crc32 = metadata.get<unsigned int>();
+	    metadata.get(subfile.cbciv, 16);
 
 	    // variable properties structure
 	    unsigned int fpropsize = metadata.get<unsigned int>();
@@ -368,10 +415,62 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	}
     }
 
+    opened = true;
+    iskeyset = true;
+    serpentctx = decctx;
+
+    decctx.wipe();
+
     return true;
 }
 
 // *** Container Info Operations ***
+
+bool Container::IsOpen() const
+{
+    return opened;
+}
+
+void Container::SetKey(const std::string& keystr)
+{
+    std::string enckey = SHA256::digest( std::string(fsignature, 8) + keystr );
+
+    SerpentCBC newctx;
+    newctx.set_key((const uint8_t*)enckey.data(), enckey.size());
+
+    // reencrypt all subfile data
+    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    {
+	SubFile& subfile = subfiles[si];
+
+	assert(subfile.storagesize == subfile.data.GetDataLen());
+
+	if (subfile.encryption == ENCRYPTION_NONE)
+	{
+	}
+	else if (subfile.encryption == ENCRYPTION_SERPENT256)
+	{
+	    if (iskeyset)
+	    {
+		serpentctx.set_cbciv(subfile.cbciv);
+		serpentctx.decrypt(subfile.data.GetData(), subfile.data.GetDataLen());
+	    }
+	
+	    newctx.set_cbciv(subfile.cbciv);
+	    newctx.encrypt(subfile.data.GetData(), subfile.data.GetDataLen());
+	}
+    }
+
+    serpentctx = newctx;
+    iskeyset = true;
+
+    newctx.wipe();
+}
+
+bool Container::IsKeySet() const
+{
+    return iskeyset;
+}
 
 size_t Container::GetLastWritten() const
 {
@@ -668,6 +767,7 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
     subfile.crc32 = crc32((const unsigned char*)data, datalen);
 
     // Copy or compress data into the wxMemoryBuffer
+
     if (subfile.compression == COMPRESSION_NONE)
     {
 	subfile.data.SetBufSize(datalen);
@@ -761,6 +861,36 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	return false;
     }
 
+    // Encrypt data blob if requested
+
+    if (subfile.encryption == ENCRYPTION_NONE)
+    {
+    }
+    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+    {
+	// Generate a new CBC IV and save it in the metadata
+
+	for (unsigned int i = 0; i < 16; ++i)
+	    subfile.cbciv[i] = (unsigned char)rand();
+
+	// Ensure that the data buffer has a length multiple of 16
+	while(subfile.data.GetDataLen() % 16 != 0)
+	    subfile.data.AppendByte(0);
+
+	if (iskeyset)
+	{
+	    // Encrypt data blob
+
+	    serpentctx.set_cbciv(subfile.cbciv);
+	    serpentctx.encrypt(subfile.data.GetData(), subfile.data.GetDataLen());
+	}
+    }
+    else
+    {
+	wxLogError( _("Exception during encryption: unknown encryption cipher.") );
+	return false;
+    }
+
     subfile.storagesize = subfile.data.GetDataLen();
 
     return true;
@@ -800,7 +930,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& outdat
     return GetSubFileData(subfileindex, da);
 }
 
-bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da) const
+bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& acceptor) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -809,10 +939,74 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 
     if (subfile.data.GetDataLen() == 0) return true;
 
-    // Copy or decompress data into the wxMemoryBuffer
+    assert(subfile.data.GetDataLen() == subfile.storagesize);
+
+    // Setup decryption context if requested
+
+    if (subfile.encryption == ENCRYPTION_NONE)
+    {
+    }
+    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+    {
+	// Ensure that the data buffer has a length multiple of 16
+	if (subfile.data.GetDataLen() % 16 != 0) {
+	    wxLogError( _("Exception during subfile decryption: invalid data length.") );
+	    return false;
+	}
+
+	// Prepare data block decryption
+	if (iskeyset)
+	{
+	    serpentctx.set_cbciv(subfile.cbciv);
+	}
+    }
+    else
+    {
+	wxLogError( _("Exception during decryption: unknown encryption cipher.") );
+	return false;
+    }
+
+    // Copy or decompress subfile data and send output to DataAcceptor
+
     if (subfile.compression == COMPRESSION_NONE)
     {
-	da.Append( subfile.data.GetData(), subfile.data.GetDataLen() );
+	size_t offset = 0;
+	char buffer[65536];
+	uint32_t crc32run = 0;
+
+	assert(subfile.data.GetDataLen() >= subfile.realsize);
+
+	while(offset < subfile.data.GetDataLen())
+	{
+	    size_t currlen = sizeof(buffer);
+	    if (offset + currlen > subfile.data.GetDataLen()) currlen = subfile.data.GetDataLen() - offset;
+
+	    memcpy(buffer, (char*)subfile.data.GetData() + offset, currlen);
+
+	    if (subfile.encryption == ENCRYPTION_NONE)
+	    {
+	    }
+	    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+	    {
+		if (iskeyset)
+		    serpentctx.decrypt(buffer, currlen);
+	    }
+
+	    // because encrypted blocks are always padded, the real data length
+	    // might be shorter than the buffer len.
+	    size_t reallen = currlen;
+	    if (offset + reallen > subfile.realsize) reallen = subfile.realsize - offset;
+
+	    acceptor.Append(buffer, reallen);
+	    crc32run = update_crc32(crc32run, (uint8_t*)buffer, reallen);
+
+	    offset += currlen;
+	}
+
+	if (crc32run != subfile.crc32)
+	{
+	    wxLogError( _("Exception during subfile loading: crc32 mismatch - data corrupt.") );
+	}
 
 	return true;
     }
@@ -829,26 +1023,49 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 	    return false;
 	}
 
-	zs.next_in = (Bytef*)(subfile.data.GetData());
-	zs.avail_in = subfile.data.GetDataLen();
+	uint32_t crc32run = 0;
 
-	size_t output = 0;
-	char buffer[65536];
+	size_t inoffset = 0;
+	char inbuffer[16];
 
-	do
+	size_t outoffset = 0;
+	char outbuffer[65536];
+
+	while(inoffset < subfile.data.GetDataLen() && ret == Z_OK)
 	{
-	    zs.next_out = (Bytef*)buffer;
-	    zs.avail_out = sizeof(buffer);
+	    size_t currlen = sizeof(inbuffer);
+	    if (inoffset + currlen > subfile.data.GetDataLen()) currlen = subfile.data.GetDataLen() - inoffset;
+
+	    memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
+
+	    if (subfile.encryption == ENCRYPTION_NONE)
+	    {
+	    }
+	    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+	    {
+		if (iskeyset)
+		    serpentctx.decrypt(inbuffer, currlen);
+	    }
+
+	    zs.next_in = (Bytef*)(inbuffer);
+	    zs.avail_in = currlen;
+
+	    zs.next_out = (Bytef*)outbuffer;
+	    zs.avail_out = sizeof(outbuffer);
 
 	    ret = inflate(&zs, 0);
 
-	    if (output < zs.total_out)
+	    if (outoffset < zs.total_out)
 	    {
-		da.Append(buffer, zs.total_out - output);
-		output = zs.total_out;
+		acceptor.Append(outbuffer, zs.total_out - outoffset);
+		crc32run = update_crc32(crc32run, (uint8_t*)outbuffer, zs.total_out - outoffset);
+
+		outoffset = zs.total_out;
 	    }
+
+	    inoffset += currlen;
+	    assert(zs.avail_in == 0 || ret != Z_OK);
 	}
-	while (ret == Z_OK);
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
 	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
@@ -858,7 +1075,10 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 
 	inflateEnd(&zs);
 
-	return true;
+	if (crc32run != subfile.crc32)
+	{
+	    wxLogError( _("Exception during subfile loading: crc32 mismatch - data corrupt.") );
+	}
     }
     else if (subfile.compression == COMPRESSION_BZIP2)
     {
@@ -871,26 +1091,49 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 	    return false;
 	}
 
-	bz.next_in = (char*)(subfile.data.GetData());
-	bz.avail_in = subfile.data.GetDataLen();
+	uint32_t crc32run = 0;
 
-	size_t output = 0;
-	char buffer[65536];
+	size_t inoffset = 0;
+	char inbuffer[16];
 
-	do
+	size_t outoffset = 0;
+	char outbuffer[65536];
+
+	while(inoffset < subfile.data.GetDataLen() && ret == BZ_OK)
 	{
-	    bz.next_out = (char*)buffer;
-	    bz.avail_out = sizeof(buffer);
+	    size_t currlen = sizeof(inbuffer);
+	    if (inoffset + currlen > subfile.data.GetDataLen()) currlen = subfile.data.GetDataLen() - inoffset;
+
+	    memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
+
+	    if (subfile.encryption == ENCRYPTION_NONE)
+	    {
+	    }
+	    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+	    {
+		if (iskeyset)
+		    serpentctx.decrypt(inbuffer, currlen);
+	    }
+
+	    bz.next_in = inbuffer;
+	    bz.avail_in = currlen;
+
+	    bz.next_out = outbuffer;
+	    bz.avail_out = sizeof(outbuffer);
 
 	    ret = BZ2_bzDecompress(&bz);
 
-	    if (output < bz.total_out_lo32)
+	    if (outoffset < bz.total_out_lo32)
 	    {
-		da.Append(buffer, bz.total_out_lo32 - output);
-		output = bz.total_out_lo32;
+		acceptor.Append(outbuffer, bz.total_out_lo32 - outoffset);
+		crc32run = update_crc32(crc32run, (uint8_t*)outbuffer, bz.total_out_lo32 - outoffset);
+
+		outoffset = bz.total_out_lo32;
 	    }
+
+	    inoffset += currlen;
+	    assert(bz.avail_in == 0 || ret != BZ_OK);
 	}
-	while (ret == BZ_OK);
 
 	BZ2_bzDecompressEnd(&bz);
 
@@ -899,13 +1142,18 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& da
 	    return false;
 	}
 
-	return true;
+	if (crc32run != subfile.crc32)
+	{
+	    wxLogError( _("Exception during subfile loading: crc32 mismatch - data corrupt.") );
+	}
     }
     else
     {
 	wxLogError( _("Exception during decompression: unknown decompression algorithm.") );
 	return false;
     }
+
+    return true;
 }
 
 DataAcceptor::~DataAcceptor()

@@ -197,14 +197,14 @@ int main()
 	Enctain::Container container;
 
 	container.SetGlobalUnencryptedProperty("prop1", "test abc");
-	container.SetGlobalUnencryptedProperty("prop2", std::string(255, 'a'));
-	container.SetGlobalUnencryptedProperty("prop3", std::string(256, 'b'));
 
 	container.SetGlobalEncryptedProperty("secret1", "blah");
+	container.SetGlobalEncryptedProperty("prop2", std::string(255, 'a'));
+	container.SetGlobalEncryptedProperty("prop3", std::string(256, 'b'));
 
 	unsigned int sf1 = container.AppendSubFile();
 
-	container.SetSubFileEncryption(sf1, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileEncryption(sf1, Enctain::ENCRYPTION_NONE);
 	container.SetSubFileCompression(sf1, Enctain::COMPRESSION_NONE);
 
 	container.SetSubFileProperty(sf1, "Name", "test1.txt");
@@ -213,21 +213,52 @@ int main()
 
 	unsigned int sf2 = container.AppendSubFile();
 
-	container.SetSubFileEncryption(sf2, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileEncryption(sf2, Enctain::ENCRYPTION_NONE);
 	container.SetSubFileCompression(sf2, Enctain::COMPRESSION_ZLIB);
 
 	container.SetSubFileProperty(sf2, "Name", "test2.txt");
 	container.SetSubFileProperty(sf2, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf2, testtext, sizeof(testtext));
 
+	container.SetKey("oYLiP4Td");
+
 	unsigned int sf3 = container.AppendSubFile();
 
-	container.SetSubFileEncryption(sf3, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileEncryption(sf3, Enctain::ENCRYPTION_NONE);
 	container.SetSubFileCompression(sf3, Enctain::COMPRESSION_BZIP2);
 
 	container.SetSubFileProperty(sf3, "Name", "test3.txt");
 	container.SetSubFileProperty(sf3, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf3, testtext, sizeof(testtext));
+
+	unsigned int sf4 = container.AppendSubFile();
+
+	container.SetSubFileEncryption(sf4, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileCompression(sf4, Enctain::COMPRESSION_NONE);
+
+	container.SetSubFileProperty(sf4, "Name", "test4.txt");
+	container.SetSubFileProperty(sf4, "MIME-Type", "text/plain");
+	container.SetSubFileData(sf4, testtext, sizeof(testtext));
+
+	unsigned int sf5 = container.AppendSubFile();
+
+	container.SetSubFileEncryption(sf5, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileCompression(sf5, Enctain::COMPRESSION_ZLIB);
+
+	container.SetSubFileProperty(sf5, "Name", "test5.txt");
+	container.SetSubFileProperty(sf5, "MIME-Type", "text/plain");
+	container.SetSubFileData(sf5, testtext, sizeof(testtext));
+
+	container.SetKey("ELO0Eia9");
+
+	unsigned int sf6 = container.AppendSubFile();
+
+	container.SetSubFileEncryption(sf6, Enctain::ENCRYPTION_SERPENT256);
+	container.SetSubFileCompression(sf6, Enctain::COMPRESSION_BZIP2);
+
+	container.SetSubFileProperty(sf6, "Name", "test6.txt");
+	container.SetSubFileProperty(sf6, "MIME-Type", "text/plain");
+	container.SetSubFileData(sf6, testtext, sizeof(testtext));
 
 	wxFileOutputStream outstream(_T("out.ect"));
 	container.Save(outstream);
@@ -237,22 +268,22 @@ int main()
 	Enctain::Container container;
 
 	wxFileInputStream instream(_T("out.ect"));
-	assert( container.Load(instream, "abc") );
+	assert( container.Load(instream, "ELO0Eia9") );
 	
 	std::string key, val;
 	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );
 	assert( key == "prop1" && val == "test abc" );
-	assert( container.GetGlobalUnencryptedPropertyIndex(1, key, val) );
-	assert( key == "prop2" && val == std::string(255, 'a') );
-	assert( container.GetGlobalUnencryptedPropertyIndex(2, key, val) );
-	assert( key == "prop3" && val == std::string(256, 'b') );
-	assert( !container.GetGlobalUnencryptedPropertyIndex(3, key, val) );
+	assert( !container.GetGlobalUnencryptedPropertyIndex(1, key, val) );
 
 	assert( container.GetGlobalEncryptedPropertyIndex(0, key, val) );
+	assert( key == "prop2" && val == std::string(255, 'a') );
+	assert( container.GetGlobalEncryptedPropertyIndex(1, key, val) );
+	assert( key == "prop3" && val == std::string(256, 'b') );
+	assert( container.GetGlobalEncryptedPropertyIndex(2, key, val) );
 	assert( key == "secret1" && val == "blah" );
-	assert( !container.GetGlobalEncryptedPropertyIndex(1, key, val) );
+	assert( !container.GetGlobalEncryptedPropertyIndex(3, key, val) );
 
-	assert(container.CountSubFile() == 3);
+	assert(container.CountSubFile() == 6);
 
 	// subfile 0
 	assert( container.GetSubFilePropertyIndex(0, 0, key, val) );
@@ -287,6 +318,54 @@ int main()
 	assert( !container.GetSubFilePropertyIndex(2, 2, key, val) );
 
 	container.GetSubFileData(2, mb);
+	
+	assert( mb.GetDataLen() == sizeof(testtext) );
+	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+
+	// subfile 3
+	assert( container.GetSubFilePropertyIndex(3, 0, key, val) );
+	assert( key == "MIME-Type" && val == "text/plain" );
+	assert( container.GetSubFilePropertyIndex(3, 1, key, val) );
+	assert( key == "Name" && val == "test4.txt" );
+	assert( !container.GetSubFilePropertyIndex(3, 2, key, val) );
+
+	container.GetSubFileData(3, mb);
+	
+	assert( mb.GetDataLen() == sizeof(testtext) );
+	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+
+	// subfile 4
+	assert( container.GetSubFilePropertyIndex(4, 0, key, val) );
+	assert( key == "MIME-Type" && val == "text/plain" );
+	assert( container.GetSubFilePropertyIndex(4, 1, key, val) );
+	assert( key == "Name" && val == "test5.txt" );
+	assert( !container.GetSubFilePropertyIndex(4, 2, key, val) );
+
+	container.GetSubFileData(4, mb);
+	
+	assert( mb.GetDataLen() == sizeof(testtext) );
+	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+
+	// subfile 5
+	assert( container.GetSubFilePropertyIndex(5, 0, key, val) );
+	assert( key == "MIME-Type" && val == "text/plain" );
+	assert( container.GetSubFilePropertyIndex(5, 1, key, val) );
+	assert( key == "Name" && val == "test6.txt" );
+	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
+
+	container.GetSubFileData(5, mb);
+	
+	assert( mb.GetDataLen() == sizeof(testtext) );
+	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+
+	// subfile 5 (again)
+	assert( container.GetSubFilePropertyIndex(5, 0, key, val) );
+	assert( key == "MIME-Type" && val == "text/plain" );
+	assert( container.GetSubFilePropertyIndex(5, 1, key, val) );
+	assert( key == "Name" && val == "test6.txt" );
+	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
+
+	container.GetSubFileData(5, mb);
 	
 	assert( mb.GetDataLen() == sizeof(testtext) );
 	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
