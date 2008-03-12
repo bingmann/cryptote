@@ -27,6 +27,7 @@ WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int
     wxFileName fn(filename);
     labelQuery->SetLabel( wxString::Format(_("Set Password for \"%s\":"), fn.GetFullName().c_str()) );
 
+    buttonOK->Disable();
     textctrlPass->SetFocus();
 }
 
@@ -71,16 +72,154 @@ BEGIN_EVENT_TABLE(WSetPassword, wxDialog)
     // end wxGlade
 END_EVENT_TABLE();
 
-void WSetPassword::OnTextPassEnter(wxCommandEvent &event)
+// *** Password Strength Estimation ***
+// Idea based on some Internet web page to which I don't have the URL
+// anymore. Implemented in code by myself.
+
+static inline std::string checkRepetition(unsigned int plen, const std::string& str)
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WSetPassword::OnTextPassEnter) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    std::string out = "";
+
+    for (unsigned int i = 0; i < str.size(); ++i)
+    {
+	bool repeated = true;
+	unsigned int j;
+	
+	for (j = 0; j < plen && (i+j+plen) < str.size(); ++j)
+	{
+	    repeated = (repeated && (str[i+j] == str[i+j+plen]));
+	}
+	 
+	if (j < plen) repeated = false;
+
+	if (repeated) {
+	    i += plen - 1;
+	    repeated = false;
+	}
+	else {
+	    out += str[i];
+	}
+    }
+    return out;
 }
 
-void WSetPassword::OnTextPass(wxCommandEvent &event)
+static inline bool isspecial(char c)
 {
-    event.Skip();
-    wxLogDebug(wxT("Event handler (WSetPassword::OnTextPass) not implemented yet")); //notify the user that he hasn't implemented the event handler yet
+    switch(c)
+    {
+    case '!': case '@': case '#': case '$': case '%':
+    case '^': case '&': case '*': case '(': case ')':
+    case '~': case '-': case '_': case '=': case '+':
+
+    case '[': case ']': case '{': case '}':
+    case ';': case ':': case '\'': case '"':
+    case '|': case '\\':
+    case ',': case '.': case '<': case '>':
+    case '?': case '/':
+
+	return true;
+
+    default:
+	return false;
+    }
+}
+
+static int calcPasswordStrength(const std::string& str)
+{
+    // if password has less than 4 characters it is way too short.
+    if (str.size() < 4) return 0;
+
+    // base size: 4 bits per character
+    unsigned int score = str.size() * 4;
+
+    // for each repeated character reduce score
+    
+    score += ( checkRepetition(1, str).size() - str.size() ) * 1;
+    score += ( checkRepetition(2, str).size() - str.size() ) * 1;
+    score += ( checkRepetition(3, str).size() - str.size() ) * 1;
+    score += ( checkRepetition(4, str).size() - str.size() ) * 1;
+
+    // classify characters in password
+
+    unsigned int numbers = 0;
+    unsigned int specialchars = 0;
+    unsigned int upperchars = 0;
+    unsigned int lowerchars = 0;
+
+    for (std::string::const_iterator si = str.begin();
+	 si != str.end(); ++si)
+    {
+	if (isdigit(*si)) numbers++;
+	if (islower(*si)) lowerchars++;
+	if (isupper(*si)) upperchars++;
+	if (isspecial(*si)) specialchars++;
+    }
+
+    // +5 for passwords with >= 3 numbers
+    if (numbers >= 3) score += 5;
+
+    // +5 for passwords with >= 2 special characters
+    if (specialchars >= 2) score += 5;
+
+    // +10 for passwords with both lower and upper chars.
+    if (upperchars > 0 && lowerchars > 0) score += 10;
+    
+    // +10 for passwords with both chars and numbers
+    if (numbers > 0 && (upperchars+lowerchars) > 0) score += 10;
+
+    // +15 for passwords with both chars and specials
+    if (specialchars > 0 && (upperchars+lowerchars) > 0) score += 15;
+
+    // +15 for passwords with both numbers and specials
+    if (numbers > 0 && (upperchars+lowerchars) > 0) score += 15;
+
+    // -10 for password with only characters
+    if (upperchars + lowerchars == str.size()) score -= 10;
+
+    // -15 for password with only numbers
+    if (numbers == str.size()) score -= 15;
+    
+    return score;
+}
+
+void WSetPassword::OnTextPass(wxCommandEvent& WXUNUSED(event))
+{
+    std::string str = strWX2STL( textctrlPass->GetValue() );
+
+    unsigned int score = calcPasswordStrength(str);
+
+    gaugeStrength->SetValue(score > 100 ? 100 : score);
+
+    wxColour gaugecolor;
+
+    if (score < 34) {
+	gaugecolor = wxColour(230,0,0);
+	if (score < 10) 
+	    buttonOK->Disable();
+	else
+	    buttonOK->Enable();
+    }
+    else if (score < 67) {
+	gaugecolor = wxColour(230,230,0);
+	buttonOK->Enable();
+    }
+    else {
+	gaugecolor = wxColour(0,230,0);
+	buttonOK->Enable();
+    }
+
+    // Different looks on Windows and GTK
+#ifdef __WXGTK__
+    gaugeStrength->SetBackgroundColour(gaugecolor);
+#else
+    gaugeStrength->SetForegroundColour(gaugecolor);
+#endif
+}
+
+void WSetPassword::OnTextPassEnter(wxCommandEvent& WXUNUSED(event))
+{
+    if (buttonOK->IsEnabled())
+	EndModal(wxID_OK);
 }
 
 wxString WSetPassword::GetPass() const
@@ -96,7 +235,6 @@ WGetPassword::WGetPassword(wxWindow* parent, const wxString& filename, int id, c
     // begin wxGlade: WGetPassword::WGetPassword
     labelQuery = new wxStaticText(this, wxID_ANY, _("Enter Password for abc.ect:"));
     textctrlPass = new wxTextCtrl(this, myID_TEXTPASS, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PASSWORD);
-    staticline1 = new wxStaticLine(this, wxID_ANY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
 
@@ -126,13 +264,14 @@ void WGetPassword::do_layout()
     sizer2->Add(labelQuery, 0, wxALL, 8);
     sizer2->Add(textctrlPass, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 8);
+    wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
     sizer3->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
     sizer1->Add(sizer3, 0, wxEXPAND, 0);
     SetSizer(sizer1);
     sizer1->Fit(this);
-    Layout();	
+    Layout();
     Centre();
     // end wxGlade
 }

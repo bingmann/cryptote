@@ -72,7 +72,6 @@ protected:
     // begin wxGlade: WGetPassword::attributes
     wxStaticText* labelQuery;
     wxTextCtrl* textctrlPass;
-    wxStaticLine* staticline1;
     wxButton* buttonOK;
     wxButton* buttonCancel;
     // end wxGlade
