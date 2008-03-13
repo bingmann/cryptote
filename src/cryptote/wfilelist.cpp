@@ -52,7 +52,12 @@ void WFileList::ResetItems()
 
     for(unsigned int fi = 0; fi < cnt.CountSubFile(); ++fi)
     {
-	InsertItem(fi, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")), 1);
+	unsigned long filetype;
+	if ( !strSTL2WX(wmain->container->GetSubFileProperty(fi, "Filetype")).ToULong(&filetype) ) {
+	    filetype = 0;
+	}
+
+	InsertItem(fi, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")), filetype);
     }
 }
 
@@ -62,6 +67,13 @@ void WFileList::UpdateItem(unsigned int sfid)
     Enctain::Container &cnt = *wmain->container;
 
     SetItemText(sfid, strSTL2WX(cnt.GetSubFileProperty(sfid, "Name")));
+
+    unsigned long filetype;
+    if ( !strSTL2WX(wmain->container->GetSubFileProperty(sfid, "Filetype")).ToULong(&filetype) ) {
+	filetype = 0;
+    }
+
+    SetItemImage(sfid, filetype);
 
     wmain->UpdateSubFileCaption(sfid);
 }

@@ -31,19 +31,19 @@ public:
     virtual wxString	GetCaption();
 
     /// Load a SubFile from the current container.
-    bool	LoadSubFile(unsigned int sfid);
+    bool		LoadSubFile(unsigned int sfid);
 
     /// Load View Settings from Metadata
-    bool	LoadSubFileMetaSettings(unsigned int sfid);
+    bool		LoadSubFileMetaSettings(unsigned int sfid);
 
     /// Load View Settings from Metadata
-    void	SaveSubFileMetaSettings(unsigned int sfid);
+    void		SaveSubFileMetaSettings(unsigned int sfid);
 
     /// Clear buffer and load all data from a file
-    size_t	ImportFile(wxFile& file);
+    virtual size_t	ImportFile(wxFile& file);
 
     /// Write buffer to the output stream
-    virtual void ExportBuffer(wxOutputStream& outstream);
+    virtual void	ExportBuffer(wxOutputStream& outstream);
 
     // *** Event Handlers ***
 

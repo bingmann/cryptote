@@ -4,6 +4,7 @@
 #define WBINARYPAGE_H
 
 #include <wx/wx.h>
+#include <wx/listctrl.h>
 
 #include "wcryptote.h"
 
@@ -31,6 +32,9 @@ public:
 
     /// Load a SubFile from the current container.
     bool		LoadSubFile(unsigned int sfid);
+
+    /// Clear buffer and load all data from a file
+    virtual size_t	ImportFile(wxFile& file);
 
     /// Write buffer to the output stream
     virtual void	ExportBuffer(wxOutputStream& outstream);

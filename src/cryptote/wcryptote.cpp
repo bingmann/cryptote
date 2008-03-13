@@ -198,7 +198,7 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	filetype = 0;
     }
 
-    if (filetype == 0)
+    if (filetype == 1)
     {
 	WTextPage* textpage = new WTextPage(this);
 
@@ -400,6 +400,7 @@ void WCryptoTE::ContainerNew()
     container->SetSubFileCompression(sf1, Enctain::COMPRESSION_ZLIB);
 
     container->SetSubFileProperty(sf1, "Name", "Untitled.txt");
+    container->SetSubFileProperty(sf1, "Filetype", "1");
 
     filelistpane->ResetItems();
 
@@ -644,14 +645,14 @@ void WCryptoTE::CreateMenuBar()
 
     menuSubFile->Append(
 	createMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
-		       _("&Import SubFile\tCtrl+Shift+I"),
+		       _("&Import SubFile\tCtrl+I"),
 		       _("Import any file from disk into encrypted container."),
 		       wxBitmapFromMemory(document_import_png))
 	);
 
     menuSubFile->Append(
 	createMenuItem(menuSubFile, myID_MENU_SUBFILE_EXPORT,
-		       _("&Export SubFile\tCtrl+Shift+E"),
+		       _("&Export SubFile\tCtrl+E"),
 		       _("Export current subfile to disk."),
 		       wxBitmapFromMemory(document_export_png))
 	);
@@ -1048,7 +1049,7 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
 {
     wxFileDialog dlg(this,
 		     _("Import File(s)"), wxEmptyString, wxEmptyString,
-		     _("Text File (*.txt)|*.txt|Any Binary File (*)|*"),
+		     _("Text File (*.txt)|*.txt|Any Text File (*.txt;*)|*.txt;*|Any Binary File (*)|*"),
                      wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
 
     if (dlg.ShowModal() != wxID_OK) return;
@@ -1075,16 +1076,22 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
 	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
 	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
 
-	// open file in text editor
-	OpenSubFile(sfnew);
-	WNotePage* _page = FindSubFilePage(sfnew);
-
-	if (!_page->IsKindOf(CLASSINFO(WTextPage))) {
-	    wxLogError(_T("Invalid notebook page created."));
-	    return;
+	unsigned int filetype = 0;
+	if (dlg.GetFilterIndex() == 0 || dlg.GetFilterIndex() == 1)
+	{
+	    filetype = 1;
 	}
+	else
+	{
+	    filetype = 0;
+	}
+	container->SetSubFileProperty(sfnew, "Filetype", strWX2STL(wxString::Format(_T("%u"), filetype)));
 
-	WTextPage* page = (WTextPage*)_page;
+	// open file in text editor or binary viewer
+	OpenSubFile(sfnew);
+
+	WNotePage* page = FindSubFilePage(sfnew);
+
 	importnum++;
 	importsize += page->ImportFile(importfile);
     }

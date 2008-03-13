@@ -41,6 +41,32 @@ bool WBinaryPage::LoadSubFile(unsigned int sfid)
     return true;
 }
 
+size_t WBinaryPage::ImportFile(wxFile& file)
+{
+    wxFileOffset filesize = file.Length();
+
+    wmain->statusbar->ProgressStart("Importing", 0, filesize);
+
+    bindata.SetBufSize(filesize);
+
+    char buffer[65536];
+
+    for (int i = 0; !file.Eof(); i++)
+    {
+	size_t rb = file.Read(buffer, sizeof(buffer));
+	if (rb == 0) break;
+
+	bindata.AppendData(buffer, rb);
+
+	wmain->statusbar->ProgressUpdate(bindata.GetDataLen());
+    }
+
+    listctrl->UpdateData();
+    wmain->statusbar->ProgressStop();
+
+    return bindata.GetDataLen();
+}
+
 void WBinaryPage::ExportBuffer(wxOutputStream& outstream)
 {
     outstream.Write(bindata.GetData(), bindata.GetDataLen());

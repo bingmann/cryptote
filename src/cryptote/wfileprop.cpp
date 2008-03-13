@@ -24,8 +24,8 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     textCTime = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     textMTime = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     const wxString choiceType_choices[] = {
-        _("Text File"),
         _("Binary Data"),
+        _("Text File"),
         _("Image File")
     };
     choiceType = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, choiceType_choices, 0);
@@ -161,6 +161,8 @@ BEGIN_EVENT_TABLE(WFileProperties, wxDialog)
     // end wxGlade
 END_EVENT_TABLE();
 
+// wxGlade: add WFileProperties event handlers
+
 void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
     if (!wmain->container) { 
@@ -200,5 +202,3 @@ void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
     EndModal(wxID_OK);
 }
-
-// wxGlade: add WFileProperties event handlers

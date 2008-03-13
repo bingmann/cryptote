@@ -345,6 +345,9 @@ public:
     /// Called when the notebook page is closed.
     virtual void	PageClosed() = 0;
 
+    /// Clear buffer and load all data from a file
+    virtual size_t	ImportFile(wxFile& file) = 0;
+
     /// Write current data buffer to the output stream. Used by SubFile->Export.
     virtual void	ExportBuffer(wxOutputStream& outstream) = 0;
 

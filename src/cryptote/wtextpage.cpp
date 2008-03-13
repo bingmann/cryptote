@@ -164,15 +164,14 @@ size_t WTextPage::ImportFile(wxFile& file)
     editctrl->Allocate(filesize);
     editctrl->SetUndoCollection(false);
 
-    size_t buffersize = wxMin(65536, (size_t)filesize);
-    wxCharBuffer buffer(buffersize);
+    char buffer[65536];
 
     for (int i = 0; !file.Eof(); i++)
     {
-	size_t rb = file.Read(buffer.data(), buffersize);
+	size_t rb = file.Read(buffer, sizeof(buffer));
 	if (rb == 0) break;
 
-	editctrl->AddTextRaw(buffer.data(), rb);
+	editctrl->AddTextRaw(buffer, rb);
 
 	wmain->statusbar->ProgressUpdate(editctrl->GetTextLength());
     }
