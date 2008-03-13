@@ -186,19 +186,15 @@ static char testtext[2843] = {
     0x65,0x74,0x75,0x72,0x6e,0x20,0x30,0x3b,0x0a,0x7d,0x0a
 };
 
-int main()
+void test_enctain(const std::string& filedata, wxString filename)
 {
-    std::cout << "Testing Encrypted Container implementation...";
-    std::cout.flush();
-
-    Enctain::Container::SetSignature("CryptoTE");
-
     {
 	Enctain::Container container;
 
 	container.SetGlobalUnencryptedProperty("prop1", "test abc");
 
 	container.SetGlobalEncryptedProperty("secret1", "blah");
+
 	container.SetGlobalEncryptedProperty("prop2", std::string(255, 'a'));
 	container.SetGlobalEncryptedProperty("prop3", std::string(256, 'b'));
 
@@ -209,7 +205,7 @@ int main()
 
 	container.SetSubFileProperty(sf1, "Name", "test1.txt");
 	container.SetSubFileProperty(sf1, "MIME-Type", "text/plain");
-	container.SetSubFileData(sf1, testtext, sizeof(testtext));
+	container.SetSubFileData(sf1, filedata.data(), filedata.size());
 
 	unsigned int sf2 = container.AppendSubFile();
 
@@ -218,7 +214,7 @@ int main()
 
 	container.SetSubFileProperty(sf2, "Name", "test2.txt");
 	container.SetSubFileProperty(sf2, "MIME-Type", "text/plain");
-	container.SetSubFileData(sf2, testtext, sizeof(testtext));
+	container.SetSubFileData(sf2, filedata.data(), filedata.size());
 
 	container.SetKey("oYLiP4Td");
 
@@ -229,7 +225,7 @@ int main()
 
 	container.SetSubFileProperty(sf3, "Name", "test3.txt");
 	container.SetSubFileProperty(sf3, "MIME-Type", "text/plain");
-	container.SetSubFileData(sf3, testtext, sizeof(testtext));
+	container.SetSubFileData(sf3, filedata.data(), filedata.size());
 
 	unsigned int sf4 = container.AppendSubFile();
 
@@ -238,7 +234,7 @@ int main()
 
 	container.SetSubFileProperty(sf4, "Name", "test4.txt");
 	container.SetSubFileProperty(sf4, "MIME-Type", "text/plain");
-	container.SetSubFileData(sf4, testtext, sizeof(testtext));
+	container.SetSubFileData(sf4, filedata.data(), filedata.size());
 
 	unsigned int sf5 = container.AppendSubFile();
 
@@ -247,7 +243,7 @@ int main()
 
 	container.SetSubFileProperty(sf5, "Name", "test5.txt");
 	container.SetSubFileProperty(sf5, "MIME-Type", "text/plain");
-	container.SetSubFileData(sf5, testtext, sizeof(testtext));
+	container.SetSubFileData(sf5, filedata.data(), filedata.size());
 
 	container.SetKey("ELO0Eia9");
 
@@ -258,16 +254,16 @@ int main()
 
 	container.SetSubFileProperty(sf6, "Name", "test6.txt");
 	container.SetSubFileProperty(sf6, "MIME-Type", "text/plain");
-	container.SetSubFileData(sf6, testtext, sizeof(testtext));
+	container.SetSubFileData(sf6, filedata.data(), filedata.size());
 
-	wxFileOutputStream outstream(_T("out.ect"));
+	wxFileOutputStream outstream(filename);
 	container.Save(outstream);
     }
 
     {
 	Enctain::Container container;
 
-	wxFileInputStream instream(_T("out.ect"));
+	wxFileInputStream instream(filename);
 	assert( container.Load(instream, "ELO0Eia9") );
 	
 	std::string key, val;
@@ -295,8 +291,8 @@ int main()
 	wxMemoryBuffer mb;
 	container.GetSubFileData(0, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
 
 	// subfile 1
 	assert( container.GetSubFilePropertyIndex(1, 0, key, val) );
@@ -307,8 +303,8 @@ int main()
 
 	container.GetSubFileData(1, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
 
 	// subfile 2
 	assert( container.GetSubFilePropertyIndex(2, 0, key, val) );
@@ -319,8 +315,8 @@ int main()
 
 	container.GetSubFileData(2, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
 
 	// subfile 3
 	assert( container.GetSubFilePropertyIndex(3, 0, key, val) );
@@ -331,8 +327,8 @@ int main()
 
 	container.GetSubFileData(3, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
 
 	// subfile 4
 	assert( container.GetSubFilePropertyIndex(4, 0, key, val) );
@@ -343,8 +339,8 @@ int main()
 
 	container.GetSubFileData(4, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
 
 	// subfile 5
 	assert( container.GetSubFilePropertyIndex(5, 0, key, val) );
@@ -355,8 +351,8 @@ int main()
 
 	container.GetSubFileData(5, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
 
 	// subfile 5 (again)
 	assert( container.GetSubFilePropertyIndex(5, 0, key, val) );
@@ -367,9 +363,40 @@ int main()
 
 	container.GetSubFileData(5, mb);
 	
-	assert( mb.GetDataLen() == sizeof(testtext) );
-	assert( memcmp(mb.GetData(), testtext, sizeof(testtext)) == 0 );
+	assert( mb.GetDataLen() == filedata.size() );
+	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
     }
+}
+
+int main()
+{
+    srand(time(NULL));
+
+    std::cout << "Testing Encrypted Container implementation...";
+    std::cout.flush();
+
+    Enctain::Container::SetSignature("CryptoTE");
+
+    // First test is with some real text (source code)
+    test_enctain( std::string(testtext, sizeof(testtext)), _T("test1.ect") );
+
+    // Second is a 1MB sized generated text
+    std::string gen1000;
+    for(unsigned int i = 0; i < 1024*1024; ++i)
+    {
+	gen1000 += (unsigned char)(i*i);
+    }
+
+    test_enctain( gen1000, _T("test2.ect") );
+
+    // Second is a 1MB sized random text
+    std::string rand1000;
+    for(unsigned int i = 0; i < 1024*1024; ++i)
+    {
+	rand1000 += (unsigned char)rand();
+    }
+
+    test_enctain( rand1000, _T("test3.ect") );
 
     std::cout << "OK\n";
 
