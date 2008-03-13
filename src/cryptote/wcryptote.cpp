@@ -1643,18 +1643,16 @@ void WStatusBar::SetLock(bool on)
 
 void WStatusBar::ProgressStart(const char* text, size_t value, size_t limit)
 {
+    panelProgress->Show();
     parent->Disable();
 
-    panelProgress->Show();
-
     labelProgress->SetLabel( wxString(text, wxConvUTF8) );
-    labelProgress->Enable();
     panelProgress->Layout();
 
     gaugeProgress->SetRange(limit);
     gaugeProgress->SetValue(value);
 
-    wxYieldIfNeeded();
+    wxTheApp->Yield(true);
 }
 
 void WStatusBar::ProgressUpdate(size_t value)
@@ -1665,10 +1663,10 @@ void WStatusBar::ProgressUpdate(size_t value)
 
 void WStatusBar::ProgressStop()
 {
+    parent->Enable();
     panelProgress->Hide();
 
-    parent->Enable();
-    wxYieldIfNeeded();
+    wxTheApp->Yield(true);
 }
 
 BEGIN_EVENT_TABLE(WStatusBar, wxStatusBar)

@@ -252,6 +252,8 @@ bool Container::Save(wxOutputStream& outstream)
 
 bool Container::Load(wxInputStream& instream, const std::string& filekey)
 {
+    ProgressStart("Loading Container", 0, 1000);
+
     opened = false;
 
     // Read unencrypted fixed Header1
@@ -261,25 +263,32 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
 
     if (instream.LastRead() != sizeof(header1)) {
 	wxLogError(_("Error loading container: could not read header."));
+	ProgressStop();
 	return false;
     }
 
     if (memcmp(header1.signature, fsignature, 8) != 0) {
 	wxLogError(_("Error loading container: invalid signature."));
+	ProgressStop();
 	return false;
     }
 
     if (header1.version == 0x00010000) {
-	return Loadv00010000(instream, filekey, header1);
+	bool b = Loadv00010000(instream, filekey, header1);
+	ProgressStop();
+	return b;
     }
     else {
 	wxLogError(_("Error loading container: invalid file version."));
+	ProgressStop();
 	return false;
     }
 }
 
 bool Container::Loadv00010000(wxInputStream& instream, const std::string& filekey, const Header1& header1)
 {
+    size_t streamoff = instream.TellI() - sizeof(Header1);
+
     // Read unencrypted metadata length
     {
 	ByteBuffer unc_metadata;
@@ -454,6 +463,19 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	return false;
     }
 
+    // Now we can say how large the file actually is.
+
+    size_t subfiletotal = 0;
+
+    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    {
+	subfiletotal += subfiles[si].storagesize;
+    }
+
+    ProgressStart("Loading Container",
+		  (instream.TellI() - streamoff),
+		  (instream.TellI() - streamoff) + subfiletotal);
+
     // load data of all subfiles which are simply concatenated
 
     for (unsigned int si = 0; si < subfiles.size(); ++si)
@@ -469,6 +491,8 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	    wxLogError(_("Error loading container: could not read encrypted subfile data."));
 	    return false;
 	}
+
+	ProgressUpdate(instream.TellI() - streamoff);
     }
 
     opened = true;
