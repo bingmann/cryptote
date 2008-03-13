@@ -66,15 +66,6 @@ void WFileList::UpdateItem(unsigned int sfid)
     wmain->UpdateSubFileCaption(sfid);
 }
 
-void WFileList::OnItemSelected(wxListEvent& WXUNUSED(event))
-{
-}
-
-void WFileList::OnItemActivated(wxListEvent& event)
-{
-    wmain->OpenSubFile( event.GetIndex() );
-}
-
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
 					 const wxString& text, const wxString& helpString,
 					 const wxBitmap& bmp)
@@ -84,7 +75,7 @@ static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
     return mi;
 }
 
-void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
+void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 {
     #include "art/document_open.h"
     #include "art/document_new.h"
@@ -180,6 +171,15 @@ void WFileList::OnItemRightClick(wxListEvent& WXUNUSED(event))
     menu->Enable(myID_FILE_PROPERTIES, (si == 1));
 
     PopupMenu(menu);
+}
+
+void WFileList::OnItemSelected(wxListEvent& WXUNUSED(event))
+{
+}
+
+void WFileList::OnItemActivated(wxListEvent& event)
+{
+    wmain->OpenSubFile( event.GetIndex() );
 }
 
 void WFileList::OnBeginLabelEdit(wxListEvent& WXUNUSED(event))
@@ -373,10 +373,10 @@ void WFileList::OnMenuView(wxCommandEvent& event)
 
 BEGIN_EVENT_TABLE(WFileList, wxListCtrl)
 
+    EVT_CONTEXT_MENU(WFileList::OnContextMenu)
+
     EVT_LIST_ITEM_SELECTED(wxID_ANY, WFileList::OnItemSelected)
     EVT_LIST_ITEM_ACTIVATED(wxID_ANY, WFileList::OnItemActivated)
-
-    EVT_LIST_ITEM_RIGHT_CLICK(wxID_ANY, WFileList::OnItemRightClick)
 
     EVT_LIST_BEGIN_LABEL_EDIT(wxID_ANY, WFileList::OnBeginLabelEdit)
     EVT_LIST_END_LABEL_EDIT(wxID_ANY, WFileList::OnEndLabelEdit)

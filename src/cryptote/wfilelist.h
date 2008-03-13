@@ -47,10 +47,10 @@ public:
 
     // *** Event Handlers ***
 
+    void	OnContextMenu(wxContextMenuEvent& event);
+
     void	OnItemSelected(wxListEvent& event);
     void	OnItemActivated(wxListEvent& event);
-
-    void	OnItemRightClick(wxListEvent& event);
 
     void	OnBeginLabelEdit(wxListEvent& event);
     void	OnEndLabelEdit(wxListEvent& event);
