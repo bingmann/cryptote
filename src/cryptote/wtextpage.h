@@ -4,7 +4,6 @@
 #define WTEXTPAGE_H
 
 #include <wx/wx.h>
-#include <wx/filename.h>
 
 #include "wcryptote.h"
 
@@ -13,9 +12,6 @@ class WTextPage : public WNotePage
 public:
 
     WTextPage(class WCryptoTE* parent);
-
-    /// Return the text to display in the notebook
-    virtual wxString	GetCaption();
 
     // *** Identifiers ***
 
@@ -30,6 +26,9 @@ public:
     };
 
     // *** Operations ***
+
+    /// Return the text to display in the notebook
+    virtual wxString	GetCaption();
 
     /// Load a SubFile from the current container.
     bool	LoadSubFile(unsigned int sfid);

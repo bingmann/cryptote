@@ -7,6 +7,7 @@
 #include "wfileprop.h"
 #include "wcntprop.h"
 #include "wmsgdlg.h"
+#include "wbinpage.h"
 #include "wpass.h"
 
 #include <wx/wfstream.h>
@@ -192,18 +193,38 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	return;
     }
 
-    // TODO: Select which page handler to use for this file.
+    unsigned long filetype;
+    if ( !strSTL2WX(container->GetSubFileProperty(sfid, "Filetype")).ToULong(&filetype) ) {
+	filetype = 0;
+    }
 
-    WTextPage* textpage = new WTextPage(this);
-
-    if (!textpage->LoadSubFile(sfid))
+    if (filetype == 0)
     {
-	wxLogError(_T("Error loading subfile into text page."));
-	delete textpage;
+	WTextPage* textpage = new WTextPage(this);
+
+	if (!textpage->LoadSubFile(sfid))
+	{
+	    wxLogError(_T("Error loading subfile into text page."));
+	    delete textpage;
+	}
+	else
+	{
+	    auinotebook->AddPage(textpage, textpage->GetCaption(), true);
+	}
     }
     else
     {
-	auinotebook->AddPage(textpage, textpage->GetCaption(), true);
+	WBinaryPage* binarypage = new WBinaryPage(this);
+
+	if (!binarypage->LoadSubFile(sfid))
+	{
+	    wxLogError(_T("Error loading subfile into binary page."));
+	    delete binarypage;
+	}
+	else
+	{
+	    auinotebook->AddPage(binarypage, binarypage->GetCaption(), true);
+	}
     }
 }
 

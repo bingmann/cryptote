@@ -66,6 +66,14 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     textCTime->SetValue( strSTL2WX(cnt.GetSubFileProperty(subfileid, "CTime")) );
     textMTime->SetValue( strSTL2WX(cnt.GetSubFileProperty(subfileid, "MTime")) );
 
+    unsigned long filetype;
+    if ( strSTL2WX(wmain->container->GetSubFileProperty(subfileid, "Filetype")).ToULong(&filetype) ) {
+	choiceType->SetSelection(filetype);
+    }
+    else {
+	choiceType->SetSelection(0);
+    }
+
     choiceCompression->SetSelection( cnt.GetSubFileCompression(subfileid) );
     choiceEncryption->SetSelection( cnt.GetSubFileEncryption(subfileid) );
 
@@ -164,6 +172,9 @@ void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
     cnt.SetSubFileProperty(subfileid, "Name", strWX2STL( textFilename->GetValue() ));
     cnt.SetSubFileProperty(subfileid, "Author", strWX2STL( textAuthor->GetValue() ));
+
+    wxString sfiletype = wxString::Format(_T("%u"), choiceType->GetSelection());
+    wmain->container->SetSubFileProperty(subfileid, "Filetype", strWX2STL(sfiletype));
 
     Enctain::compression_t newcomp = (Enctain::compression_t)choiceCompression->GetSelection();
     Enctain::encryption_t newencr = (Enctain::encryption_t)choiceEncryption->GetSelection();
