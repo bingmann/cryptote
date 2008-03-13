@@ -85,7 +85,9 @@ public:
 bool WTextPage::LoadSubFile(unsigned int sfid)
 {
     editctrl->ClearAll();
-       
+    editctrl->Allocate(wmain->container->GetSubFileSize(sfid));
+    editctrl->SetUndoCollection(false);
+
     TextPageAcceptor acceptor(*this);
 
     wmain->container->GetSubFileData(sfid, acceptor);
@@ -94,6 +96,7 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 
     LoadSubFileMetaSettings(subfileid);
 
+    editctrl->SetUndoCollection(true);
     editctrl->EmptyUndoBuffer();
     editctrl->SetSavePoint();
     editctrl->GotoPos(0);
@@ -148,9 +151,19 @@ void WTextPage::SaveSubFileMetaSettings(unsigned int sfid)
 
 size_t WTextPage::ImportFile(wxFile& file)
 {
-    editctrl->ClearAll();
-    
+    SetViewLineWrap(false); // line wrapping seems to take so much processing
+			    // time. we'll just disable it for imported
+			    // files. let the user enable it if he really wants
+			    // it.
+
     wxFileOffset filesize = file.Length();
+
+    wmain->statusbar->ProgressStart("Importing", 0, filesize);
+
+    editctrl->ClearAll();
+    editctrl->Allocate(filesize);
+    editctrl->SetUndoCollection(false);
+
     size_t buffersize = wxMin(65536, (size_t)filesize);
     wxCharBuffer buffer(buffersize);
 
@@ -160,12 +173,17 @@ size_t WTextPage::ImportFile(wxFile& file)
 	if (rb == 0) break;
 
 	editctrl->AddTextRaw(buffer.data(), rb);
+
+	wmain->statusbar->ProgressUpdate(editctrl->GetTextLength());
     }
 
+    editctrl->SetUndoCollection(true);
     editctrl->EmptyUndoBuffer();
     editctrl->GotoPos(0);
     editctrl->ScrollToColumn(0); // extra help to ensure scrolled to 0
 				 // otherwise scrolled halfway thru 1st char
+
+    wmain->statusbar->ProgressStop();
 
     return editctrl->GetTextLength();
 }
@@ -474,6 +492,8 @@ bool WTextPage::DoQuickGoto(const wxString& gototext)
 
 void WTextPage::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
 {
+    if (!editctrl->GetUndoCollection()) return;
+
     wxMenuBar* menubar = wmain->menubar;
     wxToolBar* toolbar = wmain->toolbar;
 

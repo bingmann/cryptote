@@ -4,6 +4,7 @@
 
 #include <wx/log.h>
 #include <wx/intl.h>
+#include <wx/utils.h>
 
 #include "crc32.h"
 #include "bytebuff.h"
@@ -21,13 +22,34 @@ namespace Enctain {
 
 Container::Container()
     : opened(false), modified(false),
-      iskeyset(false), written(0)
+      iskeyset(false), written(0),
+      progressindicator(NULL)
 {
 }
 
 Container::~Container()
 {
     serpentctx.wipe();
+}
+
+// *** Progress Indicator Wrappers ***
+
+void Container::ProgressStart(const char* text, size_t value, size_t limit) const
+{
+    if (progressindicator)
+	progressindicator->ProgressStart(text, value, limit);
+}
+
+void Container::ProgressUpdate(size_t value) const
+{
+    if (progressindicator)
+	progressindicator->ProgressUpdate(value);
+}
+
+void Container::ProgressStop() const
+{
+    if (progressindicator)
+	progressindicator->ProgressStop();
 }
 
 // *** Settings ***
@@ -62,6 +84,23 @@ bool Container::Save(wxOutputStream& outstream)
 
     srand(time(NULL));
 
+    // Estimate amount of data written to file
+
+    size_t subfiletotal = 0;
+
+    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    {
+	subfiletotal += subfiles[si].storagesize;
+    }
+
+    size_t esttotal = sizeof(Header1)
+	+ 100 // estimate for unencrypted metadata
+	+ sizeof(Header2)
+	+ subfiles.size() * 50 // estimate for encrypted metadata
+	+ subfiletotal;
+
+    ProgressStart("Saving Container", 0, esttotal);
+
     // Write out unencrypted fixed Header1 and unencrypted metadata
     {
 	// Prepare variable metadata header containing unencrypted global
@@ -84,6 +123,8 @@ bool Container::Save(wxOutputStream& outstream)
 
 	outstream.Write(&header1, sizeof(header1));
 	outstream.Write(unc_metadata.data(), unc_metadata.size());
+
+	ProgressUpdate(outstream.TellO() - streamoff);
     }
 
     // Prepare variable metadata header containing global properties and all
@@ -131,6 +172,7 @@ bool Container::Save(wxOutputStream& outstream)
 	if (ret != Z_OK) {
 	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    ProgressStop();
 	    return false;
 	}
 
@@ -138,7 +180,9 @@ bool Container::Save(wxOutputStream& outstream)
 	zs.avail_in = metadata.size();
 
 	char buffer[65536];
-	do {
+
+	while (ret == Z_OK)
+	{
 	    zs.next_out = (Bytef*)buffer;
 	    zs.avail_out = sizeof(buffer);
 
@@ -149,13 +193,14 @@ bool Container::Save(wxOutputStream& outstream)
 		metadata_compressed.append(buffer,
 					   zs.total_out - metadata_compressed.size());
 	    }
-	} while (ret == Z_OK);
+	}
 
 	deflateEnd(&zs);
 
 	if (ret != Z_STREAM_END) {
 	    wxLogError( wxString::Format(_("Exception during compression: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    ProgressStop();
 	    return false;
 	}
 
@@ -183,6 +228,10 @@ bool Container::Save(wxOutputStream& outstream)
     outstream.Write(&header2, sizeof(header2));
     outstream.Write(metadata_compressed.data(), metadata_compressed.size());
 
+    // Refine file target size because it is now exactly known.
+    esttotal = (outstream.TellO() - streamoff) + subfiletotal;
+    ProgressStart("Saving Container", (outstream.TellO() - streamoff), esttotal);
+
     // Output data of all subfiles simply concatenated
 
     for (unsigned int si = 0; si < subfiles.size(); ++si)
@@ -190,11 +239,14 @@ bool Container::Save(wxOutputStream& outstream)
 	assert(subfiles[si].storagesize == subfiles[si].data.GetDataLen());
 
 	outstream.Write(subfiles[si].data.GetData(), subfiles[si].storagesize);
+
+	ProgressUpdate(outstream.TellO() - streamoff);
     }
 
-    written = outstream.TellO() - streamoff;
+    written = (outstream.TellO() - streamoff);
     opened = true;
 
+    ProgressStop();
     return true;
 }
 
@@ -327,7 +379,7 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 
 	char buffer[65536];
 
-	do
+	while (ret == Z_OK)
 	{
 	    zs.next_out = (Bytef*)buffer;
 	    zs.avail_out = sizeof(buffer);
@@ -338,7 +390,6 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 		metadata.append(buffer, zs.total_out - metadata.size());
 	    }
 	}
-	while (ret == Z_OK);
 
 	if (ret != Z_STREAM_END) {
 	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
@@ -443,7 +494,19 @@ void Container::SetKey(const std::string& keystr)
     SerpentCBC newctx;
     newctx.set_key((const uint8_t*)enckey.data(), enckey.size());
 
+    size_t totalsize = 0;
+
+    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    {
+	SubFile& subfile = subfiles[si];
+	totalsize += subfile.storagesize;
+    }
+
+    ProgressStart("Reencrypting", 0, totalsize);
+
     // reencrypt all subfile data
+
+    totalsize = 0;
     for (unsigned int si = 0; si < subfiles.size(); ++si)
     {
 	SubFile& subfile = subfiles[si];
@@ -452,19 +515,34 @@ void Container::SetKey(const std::string& keystr)
 
 	if (subfile.encryption == ENCRYPTION_NONE)
 	{
+	    totalsize += subfile.storagesize;
+	    ProgressUpdate(totalsize);
 	}
 	else if (subfile.encryption == ENCRYPTION_SERPENT256)
 	{
 	    if (iskeyset)
-	    {
 		serpentctx.set_cbciv(subfile.cbciv);
-		serpentctx.decrypt(subfile.data.GetData(), subfile.data.GetDataLen());
-	    }
-	
+
 	    newctx.set_cbciv(subfile.cbciv);
-	    newctx.encrypt(subfile.data.GetData(), subfile.data.GetDataLen());
+
+	    const size_t batch = 65536;
+
+	    for (size_t offset = 0; offset < subfile.data.GetDataLen(); offset += batch)
+	    {
+		size_t len = wxMin(batch, subfile.data.GetDataLen() - offset);
+
+		if (iskeyset)
+		    serpentctx.decrypt((char*)subfile.data.GetData() + offset, len);
+	
+		newctx.encrypt((char*)subfile.data.GetData() + offset, len);
+
+		totalsize += len;
+		ProgressUpdate(totalsize);
+	    }
 	}
     }
+
+    ProgressStop();
 
     serpentctx = newctx;
     iskeyset = true;
@@ -480,6 +558,11 @@ bool Container::IsKeySet() const
 size_t Container::GetLastWritten() const
 {
     return written;
+}
+
+void Container::SetProgressIndicator(ProgressIndicator* pi)
+{
+    progressindicator = pi;
 }
 
 // *** Container Global Unencrypted Properties ***
@@ -769,104 +852,10 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
     SubFile& subfile = subfiles[subfileindex];
 
     subfile.realsize = datalen;
-    subfile.crc32 = crc32((const unsigned char*)data, datalen);
 
-    // Copy or compress data into the wxMemoryBuffer
+    ProgressStart("Saving SubFile", 0, datalen);
 
-    if (subfile.compression == COMPRESSION_NONE)
-    {
-	subfile.data.SetBufSize(datalen);
-	subfile.data.SetDataLen(0);
-	subfile.data.AppendData(data, datalen);
-    }
-    else if (subfile.compression == COMPRESSION_ZLIB)
-    {
-	// z_stream is zlib's control structure
-	z_stream zs;
-	memset(&zs, 0, sizeof(zs));
-
-	int ret = deflateInit(&zs, Z_BEST_COMPRESSION);
-	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
-	    return false;
-	}
-
-	zs.next_in = (Bytef*)(data);
-	zs.avail_in = datalen;
-
-	const size_t batch = 65536;
-	size_t offset = 0;
-
-	do
-	{
-	    subfile.data.SetBufSize(offset + batch);
-
-	    zs.next_out = (Bytef*)(subfile.data.GetData()) + offset;
-	    zs.avail_out = subfile.data.GetBufSize() - offset;
-
-	    ret = deflate(&zs, Z_FINISH);
-
-	    offset = zs.total_out;
-	}
-	while (ret == Z_OK);
-
-	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during zlib compression: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
-	    return false;
-	}
-
-	deflateEnd(&zs);
-
-	subfile.data.SetDataLen(offset);
-    }
-    else if (subfile.compression == COMPRESSION_BZIP2)
-    {
-	bz_stream bz;
-	memset(&bz, 0, sizeof(bz));
-
-	int ret = BZ2_bzCompressInit(&bz, 9, 0, 0);
-	if (ret != BZ_OK) {
-	    wxLogError( _("Exception during bzip2 initialization.") );
-	    return false;
-	}
-
-	bz.next_in = (char*)data;
-	bz.avail_in = datalen;
-
-	const size_t batch = 65536;
-	size_t offset = 0;
-
-	do
-	{
-	    subfile.data.SetBufSize(offset + batch);
-
-	    bz.next_out = (char*)(subfile.data.GetData()) + offset;
-	    bz.avail_out = subfile.data.GetBufSize() - offset;
-
-	    ret = BZ2_bzCompress(&bz, BZ_FINISH);
-
-	    offset = bz.total_out_lo32;
-	}
-	while (ret == BZ_OK);
-
-	if (ret != BZ_STREAM_END) {
-	    wxLogError( wxString::Format(_("Exception during bzip2 compression: %d"), ret) );
-	    return false;
-	}
-
-	BZ2_bzCompressEnd(&bz);
-
-	subfile.data.SetDataLen(offset);
-    }
-    else
-    {
-	wxLogError( _("Exception during compression: unknown compression algorithm.") );
-	return false;
-    }
-
-    // Encrypt data blob if requested
+    // Setup encryption context if requested
 
     if (subfile.encryption == ENCRYPTION_NONE)
     {
@@ -878,26 +867,231 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	for (unsigned int i = 0; i < 16; ++i)
 	    subfile.cbciv[i] = (unsigned char)rand();
 
-	// Ensure that the data buffer has a length multiple of 16
-	while(subfile.data.GetDataLen() % 16 != 0)
-	    subfile.data.AppendByte(0);
-
+	// Prepare data block encryption
 	if (iskeyset)
 	{
-	    // Encrypt data blob
-
 	    serpentctx.set_cbciv(subfile.cbciv);
-	    serpentctx.encrypt(subfile.data.GetData(), subfile.data.GetDataLen());
 	}
     }
     else
     {
 	wxLogError( _("Exception during encryption: unknown encryption cipher.") );
+	ProgressStop();
 	return false;
     }
 
+    // Copy or compress data into the wxMemoryBuffer
+
+    uint32_t crc32run = 0;
+
+    if (subfile.compression == COMPRESSION_NONE)
+    {
+	subfile.data.SetBufSize(datalen);
+	subfile.data.SetDataLen(0);
+
+	const size_t batch = 65536;
+	size_t offset = 0;
+
+	while(offset < datalen)
+	{
+	    size_t currlen = wxMin(batch, datalen - offset);
+
+	    subfile.data.AppendData((char*)data + offset, currlen);
+
+	    crc32run = update_crc32(crc32run, (uint8_t*)data + offset, currlen);
+
+	    if (subfile.encryption == ENCRYPTION_NONE)
+	    {
+	    }
+	    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+	    {
+		size_t enclen = currlen;
+
+		// pad until length is multiple of 16, this must only
+		// happen at the end of the data
+		if (enclen % 16 != 0)
+		{
+		    while(enclen % 16 != 0) {
+			subfile.data.AppendByte(0);
+			++enclen;
+		    }
+		}
+
+		if (iskeyset)
+		{
+		    serpentctx.encrypt((char*)subfile.data.GetData() + offset, enclen);
+		}
+	    }
+
+	    offset += currlen;
+	    ProgressUpdate(offset);
+	}
+    }
+    else if (subfile.compression == COMPRESSION_ZLIB)
+    {
+	z_stream zs;
+	memset(&zs, 0, sizeof(zs));
+
+	int ret = deflateInit(&zs, Z_BEST_COMPRESSION);
+	if (ret != Z_OK) {
+	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    ProgressStop();
+	    return false;
+	}
+
+	zs.next_in = (Bytef*)(data);
+	zs.avail_in = datalen;
+
+	crc32run = update_crc32(crc32run, zs.next_in, zs.avail_in);
+
+	const size_t batch = 65536;
+	size_t offset = 0;
+	size_t encoffset = 0;
+
+	while (ret == Z_OK)
+	{
+	    subfile.data.SetBufSize(offset + batch); // extend output buffer
+
+	    zs.next_out = (Bytef*)(subfile.data.GetData()) + offset;
+	    zs.avail_out = subfile.data.GetBufSize() - offset;
+
+	    ret = deflate(&zs, Z_FINISH);
+
+	    if (offset < zs.total_out)
+	    {
+		if (subfile.encryption == ENCRYPTION_NONE)
+		{
+		}
+		else if (subfile.encryption == ENCRYPTION_SERPENT256 && iskeyset)
+		{
+		    size_t encsize = zs.total_out - encoffset;
+		    encsize -= (encsize % 16);
+
+		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+
+		    encoffset += encsize;
+		}
+
+		offset = zs.total_out;
+		ProgressUpdate(datalen - zs.avail_in);
+	    }
+	}
+
+	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
+	    wxLogError( wxString::Format(_("Exception during zlib compression: (%d) %s"),
+					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    ProgressStop();
+	    return false;
+	}
+
+	deflateEnd(&zs);
+
+	subfile.data.SetDataLen(offset);
+
+	if (subfile.encryption == ENCRYPTION_SERPENT256)
+	{
+	    if (encoffset < subfile.data.GetDataLen())
+	    {
+		while(subfile.data.GetDataLen() % 16 != 0) {
+		    subfile.data.AppendByte(0);
+		}
+
+		if (iskeyset)
+		{
+		    size_t encsize = subfile.data.GetDataLen() - encoffset;
+		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+		}
+	    }
+	}
+    }
+    else if (subfile.compression == COMPRESSION_BZIP2)
+    {
+	bz_stream bz;
+	memset(&bz, 0, sizeof(bz));
+
+	int ret = BZ2_bzCompressInit(&bz, 9, 0, 0);
+	if (ret != BZ_OK) {
+	    wxLogError( _("Exception during bzip2 initialization.") );
+	    ProgressStop();
+	    return false;
+	}
+
+	bz.next_in = (char*)data;
+	bz.avail_in = datalen;
+
+	crc32run = update_crc32(crc32run, (uint8_t*)bz.next_in, bz.avail_in);
+
+	const size_t batch = 65536;
+	size_t offset = 0;
+	size_t encoffset = 0;
+
+	while (ret == BZ_OK || ret == BZ_FINISH_OK)
+	{
+	    subfile.data.SetBufSize(offset + batch); // extend output buffer
+
+	    bz.next_out = (char*)(subfile.data.GetData()) + offset;
+	    bz.avail_out = subfile.data.GetBufSize() - offset;
+
+	    ret = BZ2_bzCompress(&bz, BZ_FINISH);
+
+	    if (offset < bz.total_out_lo32)
+	    {
+		if (subfile.encryption == ENCRYPTION_NONE)
+		{
+		}
+		else if (subfile.encryption == ENCRYPTION_SERPENT256 && iskeyset)
+		{
+		    size_t encsize = bz.total_out_lo32 - encoffset;
+		    encsize -= (encsize % 16);
+
+		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+
+		    encoffset += encsize;
+		}
+
+		offset = bz.total_out_lo32;
+		ProgressUpdate(datalen - bz.avail_in);
+	    }
+	}
+
+	if (ret != BZ_STREAM_END) {
+	    wxLogError( wxString::Format(_("Exception during bzip2 compression: %d"), ret) );
+	    ProgressStop();
+	    return false;
+	}
+
+	BZ2_bzCompressEnd(&bz);
+
+	subfile.data.SetDataLen(offset);
+
+	if (subfile.encryption == ENCRYPTION_SERPENT256)
+	{
+	    if (encoffset < subfile.data.GetDataLen())
+	    {
+		while(subfile.data.GetDataLen() % 16 != 0) {
+		    subfile.data.AppendByte(0);
+		}
+
+		if (iskeyset)
+		{
+		    size_t encsize = subfile.data.GetDataLen() - encoffset;
+		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+		}
+	    }
+	}
+    }
+    else
+    {
+	wxLogError( _("Exception during compression: unknown compression algorithm.") );
+	ProgressStop();
+	return false;
+    }
+
+    subfile.crc32 = crc32run;
     subfile.storagesize = subfile.data.GetDataLen();
 
+    ProgressStop();
     return true;
 }
 
@@ -946,6 +1140,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 
     assert(subfile.data.GetDataLen() == subfile.storagesize);
 
+    ProgressStart("Loading SubFile", 0, subfile.storagesize);
+
     // Setup decryption context if requested
 
     if (subfile.encryption == ENCRYPTION_NONE)
@@ -953,38 +1149,40 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
     }
     else if (subfile.encryption == ENCRYPTION_SERPENT256)
     {
-	// Ensure that the data buffer has a length multiple of 16
-	if (subfile.data.GetDataLen() % 16 != 0) {
-	    wxLogError( _("Exception during subfile decryption: invalid data length.") );
-	    return false;
-	}
-
-	// Prepare data block decryption
 	if (iskeyset)
 	{
+	    // Ensure that the data buffer has a length multiple of 16
+	    if (subfile.data.GetDataLen() % 16 != 0) {
+		wxLogError( _("Exception during subfile decryption: invalid data length.") );
+		ProgressStop();
+		return false;
+	    }
+
+	    // Prepare data block decryption
 	    serpentctx.set_cbciv(subfile.cbciv);
 	}
     }
     else
     {
 	wxLogError( _("Exception during decryption: unknown encryption cipher.") );
+	ProgressStop();
 	return false;
     }
 
     // Copy or decompress subfile data and send output to DataAcceptor
 
+    uint32_t crc32run = 0;
+
     if (subfile.compression == COMPRESSION_NONE)
     {
 	size_t offset = 0;
 	char buffer[65536];
-	uint32_t crc32run = 0;
 
 	assert(subfile.data.GetDataLen() >= subfile.realsize);
 
 	while(offset < subfile.data.GetDataLen())
 	{
-	    size_t currlen = sizeof(buffer);
-	    if (offset + currlen > subfile.data.GetDataLen()) currlen = subfile.data.GetDataLen() - offset;
+	    size_t currlen = wxMin(sizeof(buffer), subfile.data.GetDataLen() - offset);
 
 	    memcpy(buffer, (char*)subfile.data.GetData() + offset, currlen);
 
@@ -997,7 +1195,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 		    serpentctx.decrypt(buffer, currlen);
 	    }
 
-	    // because encrypted blocks are always padded, the real data length
+	    // because encrypted blocks can be padded, the real data length
 	    // might be shorter than the buffer len.
 	    size_t reallen = currlen;
 	    if (offset + reallen > subfile.realsize) reallen = subfile.realsize - offset;
@@ -1006,14 +1204,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	    crc32run = update_crc32(crc32run, (uint8_t*)buffer, reallen);
 
 	    offset += currlen;
+	    ProgressUpdate(offset);
 	}
-
-	if (crc32run != subfile.crc32)
-	{
-	    wxLogError( _("Exception during subfile loading: crc32 mismatch - data corrupt.") );
-	}
-
-	return true;
     }
     else if (subfile.compression == COMPRESSION_ZLIB)
     {
@@ -1025,35 +1217,48 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	if (ret != Z_OK) {
 	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    ProgressStop();
 	    return false;
 	}
 
-	uint32_t crc32run = 0;
-
 	size_t inoffset = 0;
-	char inbuffer[16];
+	char inbuffer[65536];
 
 	size_t outoffset = 0;
 	char outbuffer[65536];
 
-	while(inoffset < subfile.data.GetDataLen() && ret == Z_OK)
+	while(ret == Z_OK)
 	{
-	    size_t currlen = sizeof(inbuffer);
-	    if (inoffset + currlen > subfile.data.GetDataLen()) currlen = subfile.data.GetDataLen() - inoffset;
-
-	    memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
-
-	    if (subfile.encryption == ENCRYPTION_NONE)
+	    if (zs.avail_in == 0)
 	    {
-	    }
-	    else if (subfile.encryption == ENCRYPTION_SERPENT256)
-	    {
-		if (iskeyset)
-		    serpentctx.decrypt(inbuffer, currlen);
-	    }
+		if (inoffset >= subfile.data.GetDataLen())
+		{
+		    wxLogError( _("Exception during decompression: reading beyond end of stream") );
+		    inflateEnd(&zs);
+		    ProgressStop();
+		    return false;
+		}
 
-	    zs.next_in = (Bytef*)(inbuffer);
-	    zs.avail_in = currlen;
+		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.GetDataLen() - inoffset);
+
+		memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
+
+		if (subfile.encryption == ENCRYPTION_NONE)
+		{
+		}
+		else if (subfile.encryption == ENCRYPTION_SERPENT256)
+		{
+		    if (iskeyset)
+		    {
+			serpentctx.decrypt(inbuffer, currlen);
+		    }
+		}
+
+		zs.next_in = (Bytef*)(inbuffer);
+		zs.avail_in = currlen;
+
+		inoffset += currlen;
+	    }
 
 	    zs.next_out = (Bytef*)outbuffer;
 	    zs.avail_out = sizeof(outbuffer);
@@ -1068,23 +1273,18 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 		outoffset = zs.total_out;
 	    }
 
-	    inoffset += currlen;
-	    assert(zs.avail_in == 0 || ret != Z_OK);
+	    ProgressUpdate(inoffset);
 	}
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
 	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
 					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
+	    ProgressStop();
 	    return false;
 	}
 
 	inflateEnd(&zs);
-
-	if (crc32run != subfile.crc32)
-	{
-	    wxLogError( _("Exception during subfile loading: crc32 mismatch - data corrupt.") );
-	}
-    }
+   }
     else if (subfile.compression == COMPRESSION_BZIP2)
     {
 	bz_stream bz;
@@ -1093,35 +1293,48 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	int ret = BZ2_bzDecompressInit(&bz, 0, 0);
 	if (ret != BZ_OK) {
 	    wxLogError( _("Exception during bzip2 initialization.") );
+	    ProgressStop();
 	    return false;
 	}
 
-	uint32_t crc32run = 0;
-
 	size_t inoffset = 0;
-	char inbuffer[16];
+	char inbuffer[65536];
 
 	size_t outoffset = 0;
 	char outbuffer[65536];
 
-	while(inoffset < subfile.data.GetDataLen() && ret == BZ_OK)
+	while(ret == BZ_OK)
 	{
-	    size_t currlen = sizeof(inbuffer);
-	    if (inoffset + currlen > subfile.data.GetDataLen()) currlen = subfile.data.GetDataLen() - inoffset;
-
-	    memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
-
-	    if (subfile.encryption == ENCRYPTION_NONE)
+	    if (bz.avail_in == 0)
 	    {
-	    }
-	    else if (subfile.encryption == ENCRYPTION_SERPENT256)
-	    {
-		if (iskeyset)
-		    serpentctx.decrypt(inbuffer, currlen);
-	    }
+		if (inoffset >= subfile.data.GetDataLen())
+		{
+		    wxLogError( _("Exception during decompression: reading beyond end of stream") );
+		    BZ2_bzDecompressEnd(&bz);
+		    ProgressStop();
+		    return false;
+		}
 
-	    bz.next_in = inbuffer;
-	    bz.avail_in = currlen;
+		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.GetDataLen() - inoffset);
+
+		memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
+
+		if (subfile.encryption == ENCRYPTION_NONE)
+		{
+		}
+		else if (subfile.encryption == ENCRYPTION_SERPENT256)
+		{
+		    if (iskeyset)
+		    {
+			serpentctx.decrypt(inbuffer, currlen);
+		    }
+		}
+
+		bz.next_in = inbuffer;
+		bz.avail_in = currlen;
+
+		inoffset += currlen;
+	    }
 
 	    bz.next_out = outbuffer;
 	    bz.avail_out = sizeof(outbuffer);
@@ -1136,32 +1349,38 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 		outoffset = bz.total_out_lo32;
 	    }
 
-	    inoffset += currlen;
-	    assert(bz.avail_in == 0 || ret != BZ_OK);
+	    ProgressUpdate(inoffset);
 	}
 
 	BZ2_bzDecompressEnd(&bz);
 
 	if (ret != BZ_STREAM_END) { // an error occurred that was not EOF
 	    wxLogError( wxString::Format(_("Exception during bzip2 decompression: %d"), ret) );
+	    ProgressStop();
 	    return false;
-	}
-
-	if (crc32run != subfile.crc32)
-	{
-	    wxLogError( _("Exception during subfile loading: crc32 mismatch - data corrupt.") );
 	}
     }
     else
     {
 	wxLogError( _("Exception during decompression: unknown decompression algorithm.") );
+	ProgressStop();
 	return false;
     }
 
+    if (crc32run != subfile.crc32)
+    {
+	wxLogError( _("Exception during subfile loading: crc32 mismatch - data possibly corrupt.") );
+    }
+
+    ProgressStop();
     return true;
 }
 
 DataAcceptor::~DataAcceptor()
+{
+}
+
+ProgressIndicator::~ProgressIndicator()
 {
 }
 

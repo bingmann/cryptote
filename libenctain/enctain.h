@@ -44,6 +44,32 @@ public:
 };
 
 /**
+ * Abstract interface class which can be used to accept progress information
+ * during longer operations.
+ */
+
+class ProgressIndicator
+{
+public:
+
+    /// Required.
+    virtual ~ProgressIndicator();
+
+    /// Pure virtual function called when the progress indicator should
+    /// start. The current value and range is given in this call. This call may
+    /// be repeated to adjust the text or range during a running process.
+    virtual void	ProgressStart(const char* text, size_t value, size_t limit) = 0;
+
+    /// Pure virtual function called when the progress indicator should be
+    /// updated.
+    virtual void	ProgressUpdate(size_t value) = 0;
+
+    /// Pure virtual function called when the progress indicator should be
+    /// hidden.
+    virtual void	ProgressStop() = 0;
+};
+
+/**
  * Class holding all data loaded from an encrypted container.
  */
 class Container
@@ -149,6 +175,20 @@ protected:
     /// Bytes written to file during last Save() operation
     size_t		written;
 
+    /// Progress indicator object receiving notifications.
+    ProgressIndicator*	progressindicator;
+
+    // *** Progress Indicator Wrappers ***
+
+    /// Indicate start of longer process.
+    void	ProgressStart(const char* text, size_t value, size_t limit) const;
+
+    /// Update status of progress indicator.
+    void	ProgressUpdate(size_t value) const;
+
+    /// Indicate end of longer process.
+    void	ProgressStop() const;
+
 public:
     // *** Constructor and Destructor ***
 
@@ -192,6 +232,10 @@ public:
     /// Return number of bytes written to output stream during last Save()
     /// operation.
     size_t		GetLastWritten() const;
+
+    /// Set the Progress Indicator object which receives progress notifications
+    void		SetProgressIndicator(ProgressIndicator* pi);
+
 
     // *** Container Unencrypted Global Properties ***
 

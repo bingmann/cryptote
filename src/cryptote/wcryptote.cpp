@@ -368,6 +368,7 @@ void WCryptoTE::ContainerNew()
     cpage = NULL;
 
     container = new Enctain::Container();
+    container->SetProgressIndicator(statusbar);
     container_filename.Clear();
     main_modified = false;
 
@@ -400,6 +401,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     if (passdlg.ShowModal() != wxID_OK) return false;
 
     Enctain::Container* nc = new Enctain::Container();
+    nc->SetProgressIndicator(statusbar);
 
     bool b = nc->Load(stream, strWX2STL(passdlg.GetPass()));
     if (!b) {
@@ -520,7 +522,7 @@ void WCryptoTE::CreateMenuBar()
 
     menuContainer->Append(
 	createMenuItem(menuContainer, wxID_OPEN,
-		       _("&Open ..\tCtrl+O"),
+		       _("&Open...\tCtrl+O"),
 		       _("Open an existing encrypted container in the editor."),
 		       wxBitmapFromMemory(document_open_png))
 	);
@@ -532,7 +534,7 @@ void WCryptoTE::CreateMenuBar()
 	);
     menuContainer->Append(
 	createMenuItem(menuContainer, wxID_SAVEAS,
-		       _("Save &as ..\tCtrl+Shift+S"),
+		       _("Save &as...\tCtrl+Shift+S"),
 		       _("Choose a file name and save the current encrypted container to disk."),
 		       wxBitmapFromMemory(document_saveas_png))
 	);
@@ -1297,7 +1299,7 @@ void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& event)
 
 void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 {
-    printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
+    // printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
 
     wxWindow* sel = auinotebook->GetPage( event.GetSelection() );
 
@@ -1319,7 +1321,7 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 
 void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 {
-    printf("Debug: OnNotebookPageClose() event\n");
+    // printf("Debug: OnNotebookPageClose() event\n");
     
     wxWindow* sel = auinotebook->GetPage( event.GetSelection() );
 
@@ -1577,10 +1579,10 @@ END_EVENT_TABLE()
 
 // *** WStatusBar ***
 
-WStatusBar::WStatusBar(wxWindow *parent)
-    : wxStatusBar(parent, wxID_ANY, 0)
+WStatusBar::WStatusBar(wxWindow *_parent)
+    : wxStatusBar(_parent, wxID_ANY, 0),
+      parent(_parent)
 {
-
     static const int statusbar_widths[3] = { -1, 150, 28 };
 
     SetFieldsCount(3);
@@ -1589,17 +1591,37 @@ WStatusBar::WStatusBar(wxWindow *parent)
     #include "art/stock_lock.h"
 
     lockbitmap = new wxStaticBitmap(this, wxID_ANY, wxIconFromMemory(stock_lock_png));
+
+    panelProgress = new wxWindow(this, wxID_ANY);
+    labelProgress = new wxStaticText(panelProgress, wxID_ANY, _("Reencrypting:"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+    gaugeProgress = new wxGauge(panelProgress, wxID_ANY, 20, wxDefaultPosition, wxDefaultSize, wxGA_HORIZONTAL|wxGA_SMOOTH);
+
+    sizerProgress = new wxBoxSizer(wxHORIZONTAL);
+    sizerProgress->Add(labelProgress, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
+    sizerProgress->Add(gaugeProgress, 1, wxALL|wxEXPAND, 2);
+    panelProgress->SetSizer(sizerProgress);
 }
 
 void WStatusBar::OnSize(wxSizeEvent& event)
 {
-    // move bitmap to position
-    wxRect rect;
-    GetFieldRect(2, rect);
-    wxSize size = lockbitmap->GetSize();
+    // move progress panel
+    {
+	wxRect rect;
+	GetFieldRect(0, rect);
 
-    lockbitmap->Move(rect.x + (rect.width - size.x) / 2,
-		     rect.y + (rect.height - size.y) / 2);
+	panelProgress->SetSize(rect);
+	panelProgress->Layout();
+    }
+
+    // move bitmap to position
+    {
+	wxRect rect;
+	GetFieldRect(2, rect);
+	wxSize size = lockbitmap->GetSize();
+
+	lockbitmap->Move(rect.x + (rect.width - size.x) / 2,
+			 rect.y + (rect.height - size.y) / 2);
+    }
 
     event.Skip();
 }
@@ -1617,6 +1639,36 @@ void WStatusBar::SetLock(bool on)
 	lockbitmap->SetBitmap(wxIconFromMemory(stock_unlock_png));
 	lockbitmap->SetToolTip(_("Text file is NOT encrypted."));
     }
+}
+
+void WStatusBar::ProgressStart(const char* text, size_t value, size_t limit)
+{
+    parent->Disable();
+
+    panelProgress->Show();
+
+    labelProgress->SetLabel( wxString(text, wxConvUTF8) );
+    labelProgress->Enable();
+    panelProgress->Layout();
+
+    gaugeProgress->SetRange(limit);
+    gaugeProgress->SetValue(value);
+
+    wxYieldIfNeeded();
+}
+
+void WStatusBar::ProgressUpdate(size_t value)
+{
+    gaugeProgress->SetValue(value);
+    Update();
+}
+
+void WStatusBar::ProgressStop()
+{
+    panelProgress->Hide();
+
+    parent->Enable();
+    wxYieldIfNeeded();
 }
 
 BEGIN_EVENT_TABLE(WStatusBar, wxStatusBar)

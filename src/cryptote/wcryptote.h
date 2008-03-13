@@ -249,7 +249,7 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-class WStatusBar : public wxStatusBar
+class WStatusBar : public wxStatusBar, public Enctain::ProgressIndicator
 {
 public:
     WStatusBar(wxWindow *parent);
@@ -257,7 +257,26 @@ public:
     void		OnSize(wxSizeEvent& event);
     void		SetLock(bool on);
 
+    wxWindow *parent;
+
     wxStaticBitmap*	lockbitmap;
+
+    wxWindow*		panelProgress;
+    wxBoxSizer* 	sizerProgress;
+    wxStaticText*	labelProgress;
+    wxGauge*		gaugeProgress;
+
+    /// Pure virtual function called when the progress indicator should
+    /// start. The range is given in this call.
+    virtual void	ProgressStart(const char* text, size_t value, size_t limit);
+
+    /// Pure virtual function called when the progress indicator should be
+    /// updated.
+    virtual void	ProgressUpdate(size_t value);
+
+    /// Pure virtual function called when the progress indicator should be
+    /// hidden.
+    virtual void	ProgressStop();
 
 private:
     DECLARE_EVENT_TABLE()
