@@ -39,7 +39,13 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     SetTitle(_("CryptoTE v0.1"));
 
-    CreateMenuBar();
+    menubar_plain = CreateMenuBar(NULL);
+    menubar_textpage = CreateMenuBar(CLASSINFO(WTextPage));
+    menubar_binarypage = CreateMenuBar(CLASSINFO(WBinaryPage));
+    menubar_active = menubar_plain;
+
+    SetMenuBar(menubar_active);
+    CreateToolBar();
 
     statusbar = new WStatusBar(this);
     SetStatusBar(statusbar);
@@ -154,8 +160,8 @@ void WCryptoTE::UpdateModified()
 {
     bool modified = IsModified();
 
-    menubar->Enable(wxID_SAVE, modified);
-    menubar->Enable(wxID_REVERT, modified);
+    menubar_active->Enable(wxID_SAVE, modified);
+    menubar_active->Enable(wxID_REVERT, modified);
 
     toolbar->EnableTool(wxID_SAVE, modified);
 }
@@ -309,9 +315,9 @@ void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
 	    // always show the file list pane if no file is open
 	    ShowFilelistPane(true);
 
-	    menubar->Enable(myID_MENU_SUBFILE_EXPORT, false);
-	    menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
-	    menubar->Enable(myID_MENU_SUBFILE_CLOSE, false);
+	    menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, false);
+	    menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
+	    menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, false);
 	}
     }
 
@@ -527,20 +533,15 @@ static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
     return mi;
 }
 
-void WCryptoTE::CreateMenuBar()
+wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 {
-    toolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-			    wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT | wxTB_NODIVIDER);
-    toolbar->SetToolBitmapSize(wxSize(16, 16));
+    // Construct MenuBar
+
+    wxMenuBar* menubar = new wxMenuBar;
 
     // *** Container
 
     wxMenu *menuContainer = new wxMenu;
-
-    #include "art/document_open.h"
-    #include "art/document_save.h"
-    #include "art/document_saveas.h"
-    #include "art/view_choose.h"
 
     appendMenuItem(menuContainer, wxID_OPEN,
 		   _("&Open...\tCtrl+O"),
@@ -563,6 +564,174 @@ void WCryptoTE::CreateMenuBar()
 		   _("Close the current encrypted container."));
 
     menuContainer->AppendSeparator();
+
+    appendMenuItem(menuContainer, myID_MENU_CONTAINER_SHOWLIST,
+		   _("Show &SubFile List"),
+		   _("Show list of subfiles contained in current encrypted container."));
+
+    appendMenuItem(menuContainer, wxID_PROPERTIES,
+		   _("&Properties\tAlt+Enter"),
+		   _("Show metadata properties of the encrypted container."));
+
+    appendMenuItem(menuContainer, myID_MENU_CONTAINER_SETPASS,
+		   _("&Change Password"),
+		   _("Change the encryption password of the current container."));
+
+    menuContainer->AppendSeparator();
+
+    appendMenuItem(menuContainer, wxID_EXIT,
+		   _("&Quit\tCtrl+Q"),
+		   _("Exit CryptoTE"));
+
+    menubar->Append(menuContainer, _("&Container"));
+
+    // *** SubFile
+
+    wxMenu *menuSubFile = new wxMenu;
+
+    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_NEW,
+		   _("&New Text SubFile\tCtrl+N"),
+		   _("Create a new empty text subfile in encrypted container."));
+
+    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
+		   _("&Import SubFile\tCtrl+I"),
+		   _("Import any file from disk into encrypted container."));
+
+    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_EXPORT,
+		   _("&Export SubFile\tCtrl+E"),
+		   _("Export current subfile to disk."));
+ 
+    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_PROPERTIES,
+		   _("&Properties\tAlt+Shift+Enter"),
+		   _("Show metadata properties of current subfile."));
+
+    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_CLOSE,
+		   _("&Close SubFile\tCtrl+W"),
+		   _("Close the currently view subfile."));
+
+    menubar->Append(menuSubFile, _("&SubFile"));
+
+    if (page == CLASSINFO(WTextPage))
+    {
+	// *** Edit
+
+	wxMenu *menuEdit = new wxMenu;
+
+	appendMenuItem(menuEdit, wxID_UNDO,
+		       _("&Undo\tCtrl+Z"),
+		       _("Undo the last change."));
+
+	appendMenuItem(menuEdit, wxID_REDO,
+		       _("&Redo\tCtrl+Shift+Z"),
+		       _("Redo the previously undone change."));
+
+	menuEdit->AppendSeparator();
+
+	appendMenuItem(menuEdit, wxID_CUT,
+		       _("Cu&t\tCtrl+X"),
+		       _("Cut selected text into clipboard."));
+
+	appendMenuItem(menuEdit, wxID_COPY,
+		       _("&Copy\tCtrl+C"),
+		       _("Copy selected text into clipboard."));
+
+	appendMenuItem(menuEdit, wxID_PASTE,
+		       _("&Paste\tCtrl+V"),
+		       _("Paste clipboard contents at the current text position."));
+
+	appendMenuItem(menuEdit, wxID_CLEAR,
+		       _("&Delete\tDel"),
+		       _("Delete selected text."));
+
+	menuEdit->AppendSeparator();
+
+	appendMenuItem(menuEdit, myID_MENU_EDIT_QUICKFIND,
+		       _("&Quick-Find\tCtrl+F"),
+		       _("Find a string in the buffer."));
+
+	appendMenuItem(menuEdit, wxID_FIND,
+		       _("&Find...\tCtrl+Shift+F"),
+		       _("Open find dialog to search for a string in the buffer."));
+
+	appendMenuItem(menuEdit, wxID_REPLACE,
+		       _("&Replace\tCtrl+H"),
+		       _("Open find and replace dialog to search for and replace a string in the buffer."));
+
+	menuEdit->AppendSeparator();
+
+	appendMenuItem(menuEdit, myID_MENU_EDIT_GOTO,
+		       _("&Go to Line...\tCtrl+G"),
+		       _("Jump to the entered line number."));
+
+	menuEdit->AppendSeparator();
+
+
+	appendMenuItem(menuEdit, wxID_SELECTALL,
+		       _("&Select all\tCtrl+A"),
+		       _("Select all text in the current buffer."));
+
+	appendMenuItem(menuEdit, myID_MENU_EDIT_SELECTLINE,
+		       _("Select &line\tCtrl+L"),
+		       _("Select whole line at the current cursor position."));
+
+	menubar->Append(menuEdit, _("&Edit"));
+
+	// *** View
+
+	wxMenu *menuView = new wxMenu;
+
+	menuView->AppendCheckItem(myID_MENU_VIEW_LINEWRAP,
+				  _("&Wrap long lines"),
+				  _("Wrap long lines in editor."));
+
+	menuView->AppendCheckItem(myID_MENU_VIEW_LINENUMBER,
+				  _("Show line &numbers"),
+				  _("Show line numbers on left margin."));
+
+	menuView->AppendCheckItem(myID_MENU_VIEW_WHITESPACE,
+				  _("Show white&space"),
+				  _("Show white space (space and tab) in buffer."));
+
+	menuView->AppendCheckItem(myID_MENU_VIEW_ENDOFLINE,
+				  _("Show &end of line symbols"),
+				  _("Show end of line symbols (new-line and carriage-return) in buffer."));
+
+	menuView->AppendCheckItem(myID_MENU_VIEW_INDENTGUIDE,
+				  _("Show &indent guide lines"),
+				  _("Show guide lines following the indention depth."));
+
+	menuView->AppendCheckItem(myID_MENU_VIEW_LONGLINEGUIDE,
+				  _("Show guide line at &column 80"),
+				  _("Show guide line at column 80 to display over-long lines."));
+
+	menubar->Append(menuView, _("&View"));
+    }
+
+    // *** Help
+
+    wxMenu *menuHelp = new wxMenu;
+
+    appendMenuItem(menuHelp, wxID_ABOUT,
+		   _("&About\tShift+F1"),
+		   _("Show some information about CryptoTE."));
+
+    menubar->Append(menuHelp, _("&Help"));
+
+    return menubar;
+}
+
+void WCryptoTE::CreateToolBar()
+{
+    toolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+			    wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT | wxTB_NODIVIDER);
+    toolbar->SetToolBitmapSize(wxSize(16, 16));
+
+    // *** Container
+
+    #include "art/document_open.h"
+    #include "art/document_save.h"
+    #include "art/document_saveas.h"
+    #include "art/view_choose.h"
 
     toolbar->AddTool(wxID_OPEN,
 		     _("Open Container"),
@@ -590,51 +759,9 @@ void WCryptoTE::CreateMenuBar()
 
     toolbar->AddSeparator();
 
-    appendMenuItem(menuContainer, myID_MENU_CONTAINER_SHOWLIST,
-		   _("Show &SubFile List"),
-		   _("Show list of subfiles contained in current encrypted container."));
-
-    appendMenuItem(menuContainer, wxID_PROPERTIES,
-		   _("&Properties\tAlt+Enter"),
-		   _("Show metadata properties of the encrypted container."));
-
-    appendMenuItem(menuContainer, myID_MENU_CONTAINER_SETPASS,
-		   _("&Change Password"),
-		   _("Change the encryption password of the current container."));
-
-    menuContainer->AppendSeparator();
-
-    appendMenuItem(menuContainer, wxID_EXIT,
-		   _("&Quit\tCtrl+Q"),
-		   _("Exit CryptoTE"));
-
     // *** SubFile
 
-    wxMenu *menuSubFile = new wxMenu;
-
-    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_NEW,
-		   _("&New Text SubFile\tCtrl+N"),
-		   _("Create a new empty text subfile in encrypted container."));
-
-    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
-		   _("&Import SubFile\tCtrl+I"),
-		   _("Import any file from disk into encrypted container."));
-
-    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_EXPORT,
-		   _("&Export SubFile\tCtrl+E"),
-		   _("Export current subfile to disk."));
- 
-    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_PROPERTIES,
-		   _("&Properties\tAlt+Shift+Enter"),
-		   _("Show metadata properties of current subfile."));
-
-    appendMenuItem(menuSubFile, myID_MENU_SUBFILE_CLOSE,
-		   _("&Close SubFile\tCtrl+W"),
-		   _("Close the currently view subfile."));
-
    // *** Edit
-
-    wxMenu *menuEdit = new wxMenu;
 
     #include "art/edit_undo.h"
     #include "art/edit_redo.h"
@@ -642,16 +769,6 @@ void WCryptoTE::CreateMenuBar()
     #include "art/edit_copy.h"
     #include "art/edit_paste.h"
     #include "art/edit_find.h"
-
-    appendMenuItem(menuEdit, wxID_UNDO,
-		   _("&Undo\tCtrl+Z"),
-		   _("Undo the last change."));
-
-    appendMenuItem(menuEdit, wxID_REDO,
-		   _("&Redo\tCtrl+Shift+Z"),
-		   _("Redo the previously undone change."));
-
-    menuEdit->AppendSeparator();
 
     toolbar->AddTool(wxID_UNDO,
 		     _("Undo Operation"),
@@ -666,24 +783,6 @@ void WCryptoTE::CreateMenuBar()
 		     _("Redo the previously undone change."));
 
     toolbar->AddSeparator();
-
-    appendMenuItem(menuEdit, wxID_CUT,
-		   _("Cu&t\tCtrl+X"),
-		   _("Cut selected text into clipboard."));
-
-    appendMenuItem(menuEdit, wxID_COPY,
-		   _("&Copy\tCtrl+C"),
-		   _("Copy selected text into clipboard."));
-
-    appendMenuItem(menuEdit, wxID_PASTE,
-		   _("&Paste\tCtrl+V"),
-		   _("Paste clipboard contents at the current text position."));
-
-    appendMenuItem(menuEdit, wxID_CLEAR,
-		   _("&Delete\tDel"),
-		   _("Delete selected text."));
-
-    menuEdit->AppendSeparator();
 
     toolbar->AddTool(wxID_CUT,
 		     _("Cut Selection"),
@@ -705,20 +804,6 @@ void WCryptoTE::CreateMenuBar()
 
     toolbar->AddSeparator();
 
-    appendMenuItem(menuEdit, myID_MENU_EDIT_QUICKFIND,
-		   _("&Quick-Find\tCtrl+F"),
-		   _("Find a string in the buffer."));
-
-    appendMenuItem(menuEdit, wxID_FIND,
-		   _("&Find...\tCtrl+Shift+F"),
-		   _("Open find dialog to search for a string in the buffer."));
-
-    appendMenuItem(menuEdit, wxID_REPLACE,
-		   _("&Replace\tCtrl+H"),
-		   _("Open find and replace dialog to search for and replace a string in the buffer."));
-
-    menuEdit->AppendSeparator();
-
     toolbar->AddTool(wxID_FIND,
 		     _("Find Text"),
 		     wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
@@ -731,67 +816,10 @@ void WCryptoTE::CreateMenuBar()
 		     _("Find and Replace Text"),
 		     _("Open find and replace dialog to search for and replace a string in the buffer."));
 
-    appendMenuItem(menuEdit, myID_MENU_EDIT_GOTO,
-		   _("&Go to Line...\tCtrl+G"),
-		   _("Jump to the entered line number."));
-
-    menuEdit->AppendSeparator();
-
-
-    appendMenuItem(menuEdit, wxID_SELECTALL,
-		   _("&Select all\tCtrl+A"),
-		   _("Select all text in the current buffer."));
-
-    appendMenuItem(menuEdit, myID_MENU_EDIT_SELECTLINE,
-		   _("Select &line\tCtrl+L"),
-		   _("Select whole line at the current cursor position."));
-
     // *** View
-
-    wxMenu *menuView = new wxMenu;
-
-    menuView->AppendCheckItem(myID_MENU_VIEW_LINEWRAP,
-			      _("&Wrap long lines"),
-			      _("Wrap long lines in editor."));
-
-    menuView->AppendCheckItem(myID_MENU_VIEW_LINENUMBER,
-			      _("Show line &numbers"),
-			      _("Show line numbers on left margin."));
-
-    menuView->AppendCheckItem(myID_MENU_VIEW_WHITESPACE,
-			      _("Show white&space"),
-			      _("Show white space (space and tab) in buffer."));
-
-    menuView->AppendCheckItem(myID_MENU_VIEW_ENDOFLINE,
-			      _("Show &end of line symbols"),
-			      _("Show end of line symbols (new-line and carriage-return) in buffer."));
-
-    menuView->AppendCheckItem(myID_MENU_VIEW_INDENTGUIDE,
-			      _("Show &indent guide lines"),
-			      _("Show guide lines following the indention depth."));
-
-    menuView->AppendCheckItem(myID_MENU_VIEW_LONGLINEGUIDE,
-			      _("Show guide line at &column 80"),
-			      _("Show guide line at column 80 to display over-long lines."));
 
     // *** Help
 
-    wxMenu *menuHelp = new wxMenu;
-
-    appendMenuItem(menuHelp, wxID_ABOUT,
-		   _("&About\tShift+F1"),
-		   _("Show some information about CryptoTE."));
-
-    // construct menubar and add it to the window
-    menubar = new wxMenuBar;
-
-    menubar->Append(menuContainer, _("&Container"));
-    menubar->Append(menuSubFile, _("&SubFile"));
-    menubar->Append(menuEdit, _("&Edit"));
-    menubar->Append(menuView, _("&View"));
-    menubar->Append(menuHelp, _("&Help"));
-
-    SetMenuBar(menubar);
     toolbar->Realize();
 }
 
@@ -1103,9 +1131,9 @@ void WCryptoTE::OnMenuSubFileClose(wxCommandEvent& WXUNUSED(event))
 	// always show the file list pane if no file is open
 	ShowFilelistPane(true);
 
-	menubar->Enable(myID_MENU_SUBFILE_EXPORT, false);
-	menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
-	menubar->Enable(myID_MENU_SUBFILE_CLOSE, false);
+	menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, false);
+	menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
+	menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, false);
     }
 }
 
@@ -1275,9 +1303,24 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 	cpage = sel;
 	cpage->PageFocused();
 
-	menubar->Enable(myID_MENU_SUBFILE_EXPORT, true);
-	menubar->Enable(myID_MENU_SUBFILE_PROPERTIES, true);
-	menubar->Enable(myID_MENU_SUBFILE_CLOSE, true);
+	if (sel->IsKindOf(CLASSINFO(WTextPage)))
+	{
+	    menubar_active = menubar_textpage;
+	}
+	else if (sel->IsKindOf(CLASSINFO(WTextPage)))
+	{
+	    menubar_active = menubar_binarypage;
+	}
+	else
+	{
+	    menubar_active = menubar_plain;
+	}
+
+	SetMenuBar(menubar_active);
+
+	menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, true);
+	menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, true);
+	menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, true);
     }
     else
     {
@@ -1301,6 +1344,13 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
     {
 	// will be empty after the last page is closed
 	cpage = NULL;
+
+	menubar_active = menubar_plain;
+	SetMenuBar(menubar_active);
+
+	menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, false);
+	menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
+	menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, false);
 
 	// always show the file list pane if no file is open
 	ShowFilelistPane(true);

@@ -198,11 +198,18 @@ protected:
     // *** Menu, Tool and Status Bars of the Main Window ***
 
 public:
-    class wxMenuBar*	menubar;
+    class wxMenuBar*	menubar_plain;
+    class wxMenuBar*	menubar_textpage;
+    class wxMenuBar*	menubar_binarypage;
+
+    class wxMenuBar*	menubar_active;
+
     class wxToolBar*	toolbar;
     class WStatusBar*	statusbar;
 
-    void 		CreateMenuBar();
+    wxMenuBar* 		CreateMenuBar(const wxClassInfo* page);
+
+    void 		CreateToolBar();
 
 protected:
     // *** wxAUI Window Manager ***

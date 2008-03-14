@@ -312,7 +312,7 @@ void WTextPage::OnMenuEditSelectLine(wxCommandEvent& WXUNUSED(event))
 
 void WTextPage::PageFocused()
 {
-    wxMenuBar* menubar = wmain->menubar;
+    wxMenuBar* menubar = wmain->menubar_textpage;
 
     // Update Menu -> View with current options
 
@@ -493,7 +493,7 @@ void WTextPage::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
 {
     if (!editctrl->GetUndoCollection()) return;
 
-    wxMenuBar* menubar = wmain->menubar;
+    wxMenuBar* menubar = wmain->menubar_textpage;
     wxToolBar* toolbar = wmain->toolbar;
 
     // Enable or Disable Menu Items and Tool Bar Items
