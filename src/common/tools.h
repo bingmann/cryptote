@@ -15,18 +15,18 @@
 // *** Some functions to load a compiled-in transparent PNG as wxBitmap or
 // *** wxIcon
 
-#define wxBitmapFromMemory(name) _wxBitmapFromMemory(name, sizeof(name))
+#define wxBitmapFromMemory(name) wxBitmapFromMemory2(name, sizeof(name))
 
-static inline wxBitmap _wxBitmapFromMemory(const char *data, int len) {
+static inline wxBitmap wxBitmapFromMemory2(const char *data, int len) {
     wxMemoryInputStream is(data, len);
     return wxBitmap(wxImage(is, wxBITMAP_TYPE_PNG, -1), -1);
 }
 
-#define wxIconFromMemory(name) _wxIconFromMemory(name, sizeof(name))
+#define wxIconFromMemory(name) wxIconFromMemory2(name, sizeof(name))
 
-static inline wxIcon _wxIconFromMemory(const char *data, int len) {
+static inline wxIcon wxIconFromMemory2(const char *data, int len) {
     wxIcon icon;
-    icon.CopyFromBitmap( _wxBitmapFromMemory(data, len) );
+    icon.CopyFromBitmap( wxBitmapFromMemory2(data, len) );
     return icon;
 }
 

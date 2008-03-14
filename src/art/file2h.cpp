@@ -26,8 +26,16 @@ int main(int argc, char* argv[])
     std::cout << "/* Automatically generated file dump */\n";
     std::cout << "\n";
 
+    std::string prefix;
+
     for(int ai = 1; ai < argc; ++ai)
     {
+	if (strcmp(argv[ai], "-p") == 0 && ai+1 < argc)
+	{
+	    prefix = argv[++ai];
+	    continue;
+	}
+
 	std::cerr << "Reading " << argv[ai] << "\n";
 
 	// open file path
@@ -48,7 +56,7 @@ int main(int argc, char* argv[])
 	// output data char array
 	std::cout << "/* data dump of " << argv[ai] << " */\n\n";
 
-	std::string filename = argv[ai];
+	std::string filename = prefix + argv[ai];
 	fixfilename(filename);
 	
 	std::cout << "static char " << filename

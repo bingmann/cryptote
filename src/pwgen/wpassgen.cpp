@@ -63,8 +63,8 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 	#include "art/crystal/edit-add-16.h"
 	#include "art/crystal/edit-remove-16.h"
 
-	buttonPresetAdd->SetBitmapLabel( wxBitmapFromMemory(edit_add_16_png) );
-	buttonPresetRemove->SetBitmapLabel( wxBitmapFromMemory(edit_remove_16_png) );
+	buttonPresetAdd->SetBitmapLabel( wxBitmapFromMemory(crystal_edit_add_16_png) );
+	buttonPresetRemove->SetBitmapLabel( wxBitmapFromMemory(crystal_edit_remove_16_png) );
     }
 
     // insert password type names
@@ -764,7 +764,7 @@ PGWAbout::PGWAbout(wxWindow* parent, int id, const wxString& title, const wxPoin
     #include "art/pwgen-48.h"
     bitmapIcon->SetBitmap( wxBitmapFromMemory(pwgen_48_png) );
 
-    #include "art/crystal/web-16.h"
+    #include "art/web-16.h"
     bitmapWeb->SetBitmap( wxBitmapFromMemory(web_16_png) );
 
     Layout();

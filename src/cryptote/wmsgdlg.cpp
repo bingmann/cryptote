@@ -2,6 +2,7 @@
 // Based on wxWidgets-2.8.7/src/generic/msgdlgg.cpp
 
 #include "wmsgdlg.h"
+#include "bmpcat.h"
 
 #include "common/tools.h"
 
@@ -20,10 +21,6 @@ WMessageDialog::WMessageDialog(wxWindow *parent, const wxString& message,
     // 1) icon
     if (style & wxICON_MASK)
     {
-	#include "art/crystal/messagebox-error-32.h"
-	#include "art/crystal/messagebox-warning-32.h"
-	#include "art/crystal/messagebox-info-32.h"
-
         wxBitmap bitmap;
         switch (style & wxICON_MASK)
         {
@@ -32,15 +29,15 @@ WMessageDialog::WMessageDialog(wxWindow *parent, const wxString& message,
 	    // fall through
 
 	case wxICON_ERROR:
-	    bitmap = wxBitmapFromMemory(messagebox_error_32_png);
+	    bitmap = BitmapCatalog::GetBitmap(wxICON_ERROR);
 	    break;
 
 	case wxICON_WARNING:
-	    bitmap = wxBitmapFromMemory(messagebox_warning_32_png);
+	    bitmap = BitmapCatalog::GetBitmap(wxICON_WARNING);
 	    break;
 
 	case wxICON_INFORMATION:
-	    bitmap = wxBitmapFromMemory(messagebox_info_32_png);
+	    bitmap = BitmapCatalog::GetBitmap(wxICON_INFORMATION);
 	    break;
         }
 

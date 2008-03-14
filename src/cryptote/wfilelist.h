@@ -17,18 +17,6 @@ public:
     enum ids {
 	myID_FIRST = wxID_HIGHEST + 1000,
 	myID_LISTCTRL,
-
-	// Popup Menu Items
-	
-	myID_FILE_OPEN,
-	myID_FILE_EXPORT,
-	myID_FILE_DELETE,
-	myID_FILE_RENAME,
-	myID_FILE_PROPERTIES,
-
-	myID_VIEW_BIGICONS,
-	myID_VIEW_LIST,
-	myID_VIEW_REPORT,
     };
 
 protected:

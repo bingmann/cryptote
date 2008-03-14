@@ -236,7 +236,6 @@ noinst_HEADERS = \
 	view-icon-22.h \
 	view-multicolumn-16.h \
 	view-multicolumn-22.h \
-	web-16.h \
 	window-close-16.h \
 	window-close-22.h
 
@@ -312,7 +311,6 @@ EXTRA_DIST = \
 	view-icon-22.png \
 	view-multicolumn-16.png \
 	view-multicolumn-22.png \
-	web-16.png \
 	window-close-16.png \
 	window-close-22.png
 
@@ -520,7 +518,7 @@ uninstall-am:
 
 
 %.h: %.png
-	../file2h $< > $@
+	../file2h -p "crystal-" $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -3,6 +3,7 @@
 #include "wfilelist.h"
 #include "wcryptote.h"
 #include "wfileprop.h"
+#include "bmpcat.h"
 
 #include <wx/imaglist.h>
 #include <wx/wfstream.h>
@@ -23,18 +24,18 @@ void WFileList::BuildImageList()
 {
     {
 	wxImageList* imagelist = new wxImageList(16, 16);
-	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(0, 16) );
-	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(1, 16) );
-	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(2, 16) );
+	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_BINARY) );
+	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_TEXT) );
+	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_IMAGE) );
 
 	AssignImageList(imagelist, wxIMAGE_LIST_SMALL);
     }
 
     {
 	wxImageList* imagelist = new wxImageList(32, 32);
-	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(0, 32) );
-	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(1, 32) );
-	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(2, 32) );
+	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_BINARY_LARGE) );
+	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_TEXT_LARGE) );
+	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_IMAGE_LARGE) );
 
 	AssignImageList(imagelist, wxIMAGE_LIST_NORMAL);
     }
@@ -79,7 +80,7 @@ static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
 					 const wxString& text, const wxString& helpString)
 {
     wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
-    mi->SetBitmap( bitmapcatalog.GetMenuBitmap(id) );
+    mi->SetBitmap( BitmapCatalog::GetMenuBitmap(id) );
     parentMenu->Append(mi);
     return mi;
 }
@@ -97,23 +98,23 @@ void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 {
     wxMenu* menu = new wxMenu;
 
-    appendMenuItem(menu, myID_FILE_OPEN,
+    appendMenuItem(menu, myID_MENU_SUBFILE_OPEN,
 		   _("&Open SubFile"),
 		   _("Open subfile in editor."));
 
-    appendMenuItem(menu, WCryptoTE::myID_MENU_SUBFILE_NEW,
+    appendMenuItem(menu, myID_MENU_SUBFILE_NEW,
 		   _("&Add New SubFile"),
 		   _("Add new text subfile to container and open it in the editor."));
 
-    appendMenuItem(menu, WCryptoTE::myID_MENU_SUBFILE_IMPORT,
+    appendMenuItem(menu, myID_MENU_SUBFILE_IMPORT,
 		   _("&Import New SubFile"),
 		   _("Import any file from the disk into the container."));
 
-    appendMenuItem(menu, myID_FILE_EXPORT,
+    appendMenuItem(menu, myID_MENU_SUBFILE_EXPORT,
 		   _("&Export SubFiles"),
 		   _("Export subfiles from encrypted container to disk."));
 
-    appendMenuItem(menu, myID_FILE_DELETE,
+    appendMenuItem(menu, myID_MENU_SUBFILE_DELETE,
 		   _("&Delete SubFiles"),
 		   _("Delete selected subfiles from encrypted container."));
 
@@ -121,15 +122,15 @@ void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 
     wxMenu* viewmenu = new wxMenu;
 
-    appendMenuItem(viewmenu, myID_VIEW_BIGICONS,
+    appendMenuItem(viewmenu, myID_MENU_VIEW_BIGICONS,
 		   _("Big &Icons"),
 		   wxEmptyString);
 
-    appendMenuItem(viewmenu, myID_VIEW_LIST,
+    appendMenuItem(viewmenu, myID_MENU_VIEW_LIST,
 		   _("&List"),
 		   wxEmptyString);
 
-    appendMenuItem(viewmenu, myID_VIEW_REPORT,
+    appendMenuItem(viewmenu, myID_MENU_VIEW_REPORT,
 		   _("&Report"),	
 		   wxEmptyString);
 
@@ -137,22 +138,22 @@ void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 
     menu->AppendSeparator();
 
-    appendMenuItem(menu, myID_FILE_RENAME,
+    appendMenuItem(menu, myID_MENU_SUBFILE_RENAME,
 		   _("&Rename"),
 		   _("Rename selected subfile."));
 
-    appendMenuItem(menu, myID_FILE_PROPERTIES,
+    appendMenuItem(menu, myID_MENU_SUBFILE_PROPERTIES,
 		   _("&Properties"),
 		   _("Show metadata properties of selected subfile."));
 
     // disable items not applicable
     int si = GetSelectedItemCount();
 
-    menu->Enable(myID_FILE_OPEN, (si > 0));
-    menu->Enable(myID_FILE_EXPORT, (si > 0));
-    menu->Enable(myID_FILE_DELETE, (si > 0));
-    menu->Enable(myID_FILE_RENAME, (si == 1));
-    menu->Enable(myID_FILE_PROPERTIES, (si == 1));
+    menu->Enable(myID_MENU_SUBFILE_OPEN, (si > 0));
+    menu->Enable(myID_MENU_SUBFILE_EXPORT, (si > 0));
+    menu->Enable(myID_MENU_SUBFILE_DELETE, (si > 0));
+    menu->Enable(myID_MENU_SUBFILE_RENAME, (si == 1));
+    menu->Enable(myID_MENU_SUBFILE_PROPERTIES, (si == 1));
 
     PopupMenu(menu);
 }
@@ -338,15 +339,15 @@ void WFileList::OnMenuView(wxCommandEvent& event)
 {
     switch(event.GetId())
     {
-    case myID_VIEW_BIGICONS:
+    case myID_MENU_VIEW_BIGICONS:
 	SetWindowStyleFlag(wxLC_ICON | wxLC_EDIT_LABELS);
 	break;
 
-    case myID_VIEW_LIST:
+    case myID_MENU_VIEW_LIST:
 	SetWindowStyleFlag(wxLC_LIST | wxLC_EDIT_LABELS);
 	break;
 
-    case myID_VIEW_REPORT:
+    case myID_MENU_VIEW_REPORT:
 	SetWindowStyleFlag(wxLC_REPORT | wxLC_EDIT_LABELS);
 	InsertColumn(0, _("Filename"));
 	break;
@@ -369,14 +370,14 @@ BEGIN_EVENT_TABLE(WFileList, wxListCtrl)
     
     // Popup Menu Items
 
-    EVT_MENU(myID_FILE_OPEN,		WFileList::OnMenuFileOpen)
-    EVT_MENU(myID_FILE_EXPORT,		WFileList::OnMenuFileExport)
-    EVT_MENU(myID_FILE_DELETE,		WFileList::OnMenuFileDelete)
-    EVT_MENU(myID_FILE_RENAME,		WFileList::OnMenuFileRename)
-    EVT_MENU(myID_FILE_PROPERTIES,	WFileList::OnMenuFileProperties)
+    EVT_MENU(myID_MENU_SUBFILE_OPEN,		WFileList::OnMenuFileOpen)
+    EVT_MENU(myID_MENU_SUBFILE_EXPORT,		WFileList::OnMenuFileExport)
+    EVT_MENU(myID_MENU_SUBFILE_DELETE,		WFileList::OnMenuFileDelete)
+    EVT_MENU(myID_MENU_SUBFILE_RENAME,		WFileList::OnMenuFileRename)
+    EVT_MENU(myID_MENU_SUBFILE_PROPERTIES,	WFileList::OnMenuFileProperties)
 
-    EVT_MENU(myID_VIEW_BIGICONS,	WFileList::OnMenuView)
-    EVT_MENU(myID_VIEW_LIST,		WFileList::OnMenuView)
-    EVT_MENU(myID_VIEW_REPORT,		WFileList::OnMenuView)
+    EVT_MENU(myID_MENU_VIEW_BIGICONS,	WFileList::OnMenuView)
+    EVT_MENU(myID_MENU_VIEW_LIST,	WFileList::OnMenuView)
+    EVT_MENU(myID_MENU_VIEW_REPORT,	WFileList::OnMenuView)
 
 END_EVENT_TABLE()

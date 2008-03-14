@@ -26,7 +26,8 @@ noinst_HEADERS = \
 	cryptote-48.h \
 	ectfile-16.h \
 	ectfile-32.h \
-	ectfile-48.h
+	ectfile-48.h \
+	web-16.h
 
 EXTRA_DIST = \
 	pwgen-16.png \
@@ -50,4 +51,5 @@ EXTRA_DIST = \
 	ectfile-32.png \
 	ectfile-48.png \
 	ectfile.ico \
-	ectfile.svg
+	ectfile.svg \
+	web-16.png

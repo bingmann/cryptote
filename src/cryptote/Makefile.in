@@ -47,9 +47,9 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_cryptote_OBJECTS = main.$(OBJEXT) wcryptote.$(OBJEXT) \
-	wtextpage.$(OBJEXT) wfind.$(OBJEXT) wfilelist.$(OBJEXT) \
-	wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) wmsgdlg.$(OBJEXT) \
-	wbinpage.$(OBJEXT) wpass.$(OBJEXT)
+	bmpcat.$(OBJEXT) wtextpage.$(OBJEXT) wfind.$(OBJEXT) \
+	wfilelist.$(OBJEXT) wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) \
+	wmsgdlg.$(OBJEXT) wbinpage.$(OBJEXT) wpass.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -188,6 +188,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 cryptote_SOURCES = main.cpp \
 	wcryptote.cpp wcryptote.h \
+	bmpcat.cpp bmpcat.h \
 	wtextpage.cpp wtextpage.h \
 	wfind.cpp wfind.h \
 	wfilelist.cpp wfilelist.h \
@@ -268,6 +269,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bmpcat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wbinpage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wcntprop.Po@am__quote@

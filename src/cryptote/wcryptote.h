@@ -10,60 +10,77 @@
 
 #include "enctain.h"
 
+// *** Global Identifiers used for Controls, Icons and Menu Items ***
+
+enum {
+    myID_FIRST = wxID_HIGHEST + 1,
+
+    // Main Window Controls
+
+    myID_AUINOTEBOOK,
+
+    // Main Window Menu Items
+
+    myID_MENU_CONTAINER_SHOWLIST,
+    myID_MENU_CONTAINER_SETPASS,
+
+    myID_MENU_SUBFILE_NEW,
+    myID_MENU_SUBFILE_OPEN,
+    myID_MENU_SUBFILE_IMPORT,
+    myID_MENU_SUBFILE_EXPORT,
+    myID_MENU_SUBFILE_PROPERTIES,
+    myID_MENU_SUBFILE_RENAME,
+    myID_MENU_SUBFILE_CLOSE,
+    myID_MENU_SUBFILE_DELETE,
+
+    myID_MENU_EDIT_QUICKFIND,
+    myID_MENU_EDIT_GOTO,
+    myID_MENU_EDIT_SELECTLINE,
+
+    myID_MENU_VIEW_LINEWRAP,
+    myID_MENU_VIEW_LINENUMBER,
+    myID_MENU_VIEW_WHITESPACE,	
+    myID_MENU_VIEW_ENDOFLINE,
+    myID_MENU_VIEW_INDENTGUIDE,
+    myID_MENU_VIEW_LONGLINEGUIDE,
+
+    myID_MENU_VIEW_BIGICONS,
+    myID_MENU_VIEW_LIST,
+    myID_MENU_VIEW_REPORT,
+
+    // (Other) Main Window Accelerators
+
+    myID_ACCEL_ESCAPE,
+
+    // Quick-Find Bar
+
+    myID_QUICKFIND_TEXT,
+    myID_QUICKFIND_CLOSE,
+    myID_QUICKFIND_NEXT,
+    myID_QUICKFIND_PREV,
+
+    // Quick-Goto Bar
+
+    myID_QUICKGOTO_TEXT,
+    myID_QUICKGOTO_GO,
+    myID_QUICKGOTO_CLOSE,
+
+    // FileType Icons
+
+    myID_FILETYPE_BINARY,
+    myID_FILETYPE_TEXT,
+    myID_FILETYPE_IMAGE,
+
+    myID_FILETYPE_BINARY_LARGE,
+    myID_FILETYPE_TEXT_LARGE,
+    myID_FILETYPE_IMAGE_LARGE,
+};
+
 class WCryptoTE : public wxFrame
 {
 public:
     WCryptoTE(wxWindow* parent);
     ~WCryptoTE();
-
-    // *** Identifiers ***
-
-    enum {
-	myID_FIRST = wxID_HIGHEST + 1,
-
-	// Main Window Controls
-
-	myID_AUINOTEBOOK,
-
-	// Menu Items
-
-	myID_MENU_CONTAINER_SHOWLIST,
-	myID_MENU_CONTAINER_SETPASS,
-
-	myID_MENU_SUBFILE_NEW,
-	myID_MENU_SUBFILE_IMPORT,
-	myID_MENU_SUBFILE_EXPORT,
-	myID_MENU_SUBFILE_PROPERTIES,
-	myID_MENU_SUBFILE_CLOSE,
-
-	myID_MENU_EDIT_QUICKFIND,
-	myID_MENU_EDIT_GOTO,
-	myID_MENU_EDIT_SELECTLINE,
-
-	myID_MENU_VIEW_LINEWRAP,
-	myID_MENU_VIEW_LINENUMBER,
-	myID_MENU_VIEW_WHITESPACE,	
-	myID_MENU_VIEW_ENDOFLINE,
-	myID_MENU_VIEW_INDENTGUIDE,
-	myID_MENU_VIEW_LONGLINEGUIDE,
-
-	// (Other) Accelerators
-
-	myID_ACCEL_ESCAPE,
-
-	// Quick-Find Bar
-
-	myID_QUICKFIND_TEXT,
-	myID_QUICKFIND_CLOSE,
-	myID_QUICKFIND_NEXT,
-	myID_QUICKFIND_PREV,
-
-	// Quick-Goto Bar
-
-	myID_QUICKGOTO_TEXT,
-	myID_QUICKGOTO_GO,
-	myID_QUICKGOTO_CLOSE,
-    };
 
     // *** Operations ***
 
@@ -372,30 +389,5 @@ public:
 
     DECLARE_ABSTRACT_CLASS(WNotePage);
 };
-
-class BitmapCatalog
-{
-public:
-
-    /// Theme id
-    int		themeid;
-
-    /// Construct and initialize the bitmap catalog
-    BitmapCatalog();
-
-    /// Set the current bitmap/icon theme
-    void	SetTheme(int themeid);
-
-    /// Return an associated bitmap for the menu identifier id.
-    wxBitmap	GetMenuBitmap(int id);
-
-    /// Return an associated bitmap for the toolbar identifier id.
-    wxBitmap	GetToolbarBitmap(int id);
-
-    /// Return an associated bitmap for the file list.
-    wxBitmap	GetFileTypeBitmap(int id, int size);
-};
-
-extern class BitmapCatalog bitmapcatalog;
 
 #endif // WCRYPTOTE_H

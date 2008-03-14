@@ -1,6 +1,7 @@
 // $Id$
 
 #include "wtextpage.h"
+#include "bmpcat.h"
 #include "common/tools.h"
 
 #include <wx/file.h>
@@ -316,12 +317,12 @@ void WTextPage::PageFocused()
 
     // Update Menu -> View with current options
 
-    menubar->Check(WCryptoTE::myID_MENU_VIEW_LINEWRAP, view_linewrap);
-    menubar->Check(WCryptoTE::myID_MENU_VIEW_LINENUMBER, view_linenumber);
-    menubar->Check(WCryptoTE::myID_MENU_VIEW_WHITESPACE, view_whitespace);
-    menubar->Check(WCryptoTE::myID_MENU_VIEW_ENDOFLINE, view_endofline);
-    menubar->Check(WCryptoTE::myID_MENU_VIEW_INDENTGUIDE, view_indentguide);
-    menubar->Check(WCryptoTE::myID_MENU_VIEW_LONGLINEGUIDE, view_longlineguide);
+    menubar->Check(myID_MENU_VIEW_LINEWRAP, view_linewrap);
+    menubar->Check(myID_MENU_VIEW_LINENUMBER, view_linenumber);
+    menubar->Check(myID_MENU_VIEW_WHITESPACE, view_whitespace);
+    menubar->Check(myID_MENU_VIEW_ENDOFLINE, view_endofline);
+    menubar->Check(myID_MENU_VIEW_INDENTGUIDE, view_indentguide);
+    menubar->Check(myID_MENU_VIEW_LONGLINEGUIDE, view_longlineguide);
 
     // Synthesize UpdateUI event
     wxStyledTextEvent event;
@@ -631,7 +632,7 @@ BEGIN_EVENT_TABLE(WTextPage, WNotePage)
     EVT_MENU	(wxID_CLEAR,		WTextPage::OnMenuEditDelete)
 
     EVT_MENU	(wxID_SELECTALL,	WTextPage::OnMenuEditSelectAll)
-    EVT_MENU	(WCryptoTE::myID_MENU_EDIT_SELECTLINE, WTextPage::OnMenuEditSelectLine)
+    EVT_MENU	(myID_MENU_EDIT_SELECTLINE, WTextPage::OnMenuEditSelectLine)
 
     // *** Scintilla Edit Callbacks
 
@@ -733,23 +734,23 @@ WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
     : wxPanel(parent)
 {
     buttonQuickFindClose
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_CLOSE, wxNullBitmap,
+	= new wxBitmapButton(this, myID_QUICKFIND_CLOSE, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonQuickFindClose->SetLabel(_("Close"));
     buttonQuickFindClose->SetToolTip(_("Close Quick-Find bar"));
 
     wxStaticText* labelQuickFind = new wxStaticText(this, wxID_ANY, _("Find: "));
 
-    textctrlQuickFind = new wxTextCtrl(this, WCryptoTE::myID_QUICKFIND_TEXT, wxEmptyString);
+    textctrlQuickFind = new wxTextCtrl(this, myID_QUICKFIND_TEXT, wxEmptyString);
 
     buttonQuickFindNext
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_NEXT, wxNullBitmap,
+	= new wxBitmapButton(this, myID_QUICKFIND_NEXT, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonQuickFindNext->SetLabel(_("Next"));
     buttonQuickFindNext->SetToolTip(_("Search for next occurance"));
 
     buttonQuickFindPrev
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_PREV, wxNullBitmap,
+	= new wxBitmapButton(this, myID_QUICKFIND_PREV, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonQuickFindPrev->SetLabel(_("Previous"));
     buttonQuickFindPrev->SetToolTip(_("Search for previous occurance"));
@@ -775,10 +776,10 @@ WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
 
 void WQuickFindBar::set_bitmaps()
 {
-    buttonQuickFindClose->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKFIND_CLOSE) );
+    buttonQuickFindClose->SetBitmapLabel( BitmapCatalog::GetBitmap(myID_QUICKFIND_CLOSE) );
 
-    buttonQuickFindNext->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKFIND_NEXT) );
-    buttonQuickFindPrev->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKFIND_PREV) );
+    buttonQuickFindNext->SetBitmapLabel( BitmapCatalog::GetBitmap(myID_QUICKFIND_NEXT) );
+    buttonQuickFindPrev->SetBitmapLabel( BitmapCatalog::GetBitmap(myID_QUICKFIND_PREV) );
 
     Layout();
 }
@@ -789,18 +790,18 @@ WQuickGotoBar::WQuickGotoBar(class WCryptoTE* parent)
     : wxPanel(parent)
 {
     buttonGotoCancel
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_CLOSE, wxNullBitmap,
+	= new wxBitmapButton(this, myID_QUICKGOTO_CLOSE, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonGotoCancel->SetLabel(_("Cancel"));
     buttonGotoCancel->SetToolTip(_("Cancel Go to Line"));
 
     wxStaticText* labelGoto = new wxStaticText(this, wxID_ANY, _("Goto: "));
 
-    textctrlGoto = new wxTextCtrl(this, WCryptoTE::myID_QUICKGOTO_TEXT, wxEmptyString,
+    textctrlGoto = new wxTextCtrl(this, myID_QUICKGOTO_TEXT, wxEmptyString,
 				   wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
 
     buttonGotoGo
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_GO, wxNullBitmap,
+	= new wxBitmapButton(this, myID_QUICKGOTO_GO, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonGotoGo->SetLabel(_("Go"));
     buttonGotoGo->SetToolTip(_("Go to Line"));
@@ -825,9 +826,9 @@ WQuickGotoBar::WQuickGotoBar(class WCryptoTE* parent)
 
 void WQuickGotoBar::set_bitmaps()
 {
-    buttonGotoCancel->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKGOTO_CLOSE) );
+    buttonGotoCancel->SetBitmapLabel( BitmapCatalog::GetBitmap(myID_QUICKGOTO_CLOSE) );
 
-    buttonGotoGo->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKGOTO_GO) );
+    buttonGotoGo->SetBitmapLabel( BitmapCatalog::GetBitmap(myID_QUICKGOTO_GO) );
 
     Layout();
 }

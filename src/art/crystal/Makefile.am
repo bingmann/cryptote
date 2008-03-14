@@ -1,7 +1,7 @@
 # $Id$
 
 %.h: %.png
-	../file2h $< > $@
+	../file2h -p "crystal-" $< > $@
 
 noinst_HEADERS = \
 	application-exit-16.h \
@@ -75,7 +75,6 @@ noinst_HEADERS = \
 	view-icon-22.h \
 	view-multicolumn-16.h \
 	view-multicolumn-22.h \
-	web-16.h \
 	window-close-16.h \
 	window-close-22.h
 
@@ -151,6 +150,5 @@ EXTRA_DIST = \
 	view-icon-22.png \
 	view-multicolumn-16.png \
 	view-multicolumn-22.png \
-	web-16.png \
 	window-close-16.png \
 	window-close-22.png
