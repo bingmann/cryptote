@@ -738,7 +738,7 @@ void WCryptoTE::CreateToolBar()
     {
 	toolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 				wxNO_BORDER | wxTB_HORIZONTAL | wxTB_FLAT | wxTB_NODIVIDER);
-	toolbar->SetToolBitmapSize(wxSize(16, 16));
+	toolbar->SetToolBitmapSize(wxSize(22, 22));
     }
     else {
 	toolbar->ClearTools();
@@ -1961,5 +1961,162 @@ wxBitmap BitmapCatalog::GetMenuBitmap(int id)
 
 wxBitmap BitmapCatalog::GetToolbarBitmap(int id)
 {
+    if (themeid == 0)
+    {
+	switch (id)
+	{
+	    // *** Container Menu ***
+
+	case wxID_OPEN:
+	{
+            #include "art/crystal/document-open-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_open_22_png);
+	    return bmp;
+	}
+	case wxID_SAVE: {
+            #include "art/crystal/document-save-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_22_png);
+	    return bmp;
+	}
+	case wxID_SAVEAS: {
+            #include "art/crystal/document-save-as-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_as_22_png);
+	    return bmp;
+	}
+	case wxID_REVERT: {
+            #include "art/crystal/document-revert-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_revert_22_png);
+	    return bmp;
+	}
+	case wxID_CLOSE: {
+            #include "art/crystal/document-close-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_22_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_CONTAINER_SHOWLIST: {
+            #include "art/crystal/view-choose-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_choose_22_png);
+	    return bmp;
+	}
+	case wxID_PROPERTIES: {
+            #include "art/crystal/document-properties-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_CONTAINER_SETPASS: {
+            #include "art/crystal/document-password-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_password_22_png);
+	    return bmp;
+	}
+
+	case wxID_EXIT: {
+            #include "art/crystal/application-exit-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_exit_22_png);
+	    return bmp;
+	}
+
+	    // *** SubFile Menu ***
+
+	case WCryptoTE::myID_MENU_SUBFILE_NEW: {
+            #include "art/crystal/document-new-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_new_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_IMPORT: {
+            #include "art/crystal/document-import-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_import_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_EXPORT:
+	{
+            #include "art/crystal/document-export-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_export_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_PROPERTIES: {
+            #include "art/crystal/document-properties-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_CLOSE: {
+            #include "art/crystal/document-close-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_22_png);
+	    return bmp;
+	}
+
+	    // *** Edit Menu ***
+
+	case wxID_UNDO: {
+            #include "art/crystal/edit-undo-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_undo_22_png);
+	    return bmp;
+	}
+	case wxID_REDO: {
+            #include "art/crystal/edit-redo-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_redo_22_png);
+	    return bmp;
+	}
+	case wxID_CUT: {
+            #include "art/crystal/edit-cut-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_cut_22_png);
+	    return bmp;
+	}
+	case wxID_COPY: {
+            #include "art/crystal/edit-copy-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_copy_22_png);
+	    return bmp;
+	}
+	case wxID_PASTE: {
+            #include "art/crystal/edit-paste-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_paste_22_png);
+	    return bmp;
+	}
+	case wxID_CLEAR: {
+            #include "art/crystal/edit-clear-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_clear_22_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_EDIT_QUICKFIND: {
+            #include "art/crystal/edit-find-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_22_png);
+	    return bmp;
+	}
+	case wxID_FIND: {
+            #include "art/crystal/edit-find-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_22_png);
+	    return bmp;
+	}
+	case wxID_REPLACE: {
+            #include "art/crystal/edit-find-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_22_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_EDIT_GOTO: {
+            #include "art/crystal/edit-goto-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_goto_22_png);
+	    return bmp;
+	}
+
+	case wxID_SELECTALL: {
+	    return wxNullBitmap;
+	}
+	case WCryptoTE::myID_MENU_EDIT_SELECTLINE: {
+	    return wxNullBitmap;
+	}
+
+	    // *** Help Menu ***
+
+	case wxID_ABOUT: {
+            #include "art/crystal/application-info-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_info_22_png);
+	    return bmp;
+	}
+
+	}
+    }
+
     return GetMenuBitmap(id);
 }
