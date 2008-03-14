@@ -8,6 +8,8 @@ noinst_HEADERS = \
 	application-exit-22.h \
 	application-info-16.h \
 	application-info-22.h \
+	application-options-16.h \
+	application-options-22.h \
 	document-close-16.h \
 	document-close-22.h \
 	document-delete-16.h \
@@ -67,6 +69,7 @@ noinst_HEADERS = \
 	messagebox-error-32.h \
 	messagebox-info-32.h \
 	messagebox-warning-32.h \
+	snapshot.h \
 	view-choose-16.h \
 	view-choose-22.h \
 	view-detailed-16.h \
@@ -83,6 +86,8 @@ EXTRA_DIST = \
 	application-exit-22.png \
 	application-info-16.png \
 	application-info-22.png \
+	application-options-16.png \
+	application-options-22.png \
 	document-close-16.png \
 	document-close-22.png \
 	document-delete-16.png \
@@ -142,6 +147,7 @@ EXTRA_DIST = \
 	messagebox-error-32.png \
 	messagebox-info-32.png \
 	messagebox-warning-32.png \
+	snapshot.png \
 	view-choose-16.png \
 	view-choose-22.png \
 	view-detailed-16.png \

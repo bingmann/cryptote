@@ -12,7 +12,8 @@ cryptote_SOURCES = main.cpp \
 	wcntprop.cpp wcntprop.h \
 	wmsgdlg.cpp wmsgdlg.h \
 	wbinpage.cpp wbinpage.h \
-	wpass.cpp wpass.h
+	wpass.cpp wpass.h \
+	woptions.cpp woptions.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 

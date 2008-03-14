@@ -21,6 +21,8 @@ private:
     struct Theme
     {
 	const wxString		name;
+	const char*		snapshot_data;
+	size_t			snapshot_datalen;
 	const ThemeEntry*	entries;
     };
 
@@ -67,6 +69,13 @@ public:
 
     /// Set the current bitmap/icon theme
     void	SetTheme(int themeid);
+
+    /// Return current theme id
+    int		GetCurrentTheme();
+
+    /// Return info about a built-in theme. returns true if the index was
+    /// valid.
+    bool	GetThemeInfo(int themeid, wxString& name, wxBitmap& snapshot);
 
     /// Return a bitmap for the given general identifier
     wxBitmap	_GetBitmap(int id);

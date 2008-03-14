@@ -10,6 +10,7 @@
 #include "wmsgdlg.h"
 #include "wbinpage.h"
 #include "wpass.h"
+#include "woptions.h"
 
 #include <wx/wfstream.h>
 #include "common/tools.h"
@@ -537,7 +538,7 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
     wxMenu *menuContainer = new wxMenu;
 
     appendMenuItem(menuContainer, wxID_OPEN,
-		   _("&Open...\tCtrl+O"),
+		   _("&Open ...\tCtrl+O"),
 		   _("Open an existing encrypted container in the editor."));
 
     appendMenuItem(menuContainer, wxID_SAVE,
@@ -545,7 +546,7 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		   _("Save the current encrypted container to disk."));
 
     appendMenuItem(menuContainer, wxID_SAVEAS,
-		   _("Save &as...\tCtrl+Shift+S"),
+		   _("Save &as ...\tCtrl+Shift+S"),
 		   _("Choose a file name and save the current encrypted container to disk."));
 
     appendMenuItem(menuContainer, wxID_REVERT,
@@ -563,12 +564,18 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		   _("Show list of subfiles contained in current encrypted container."));
 
     appendMenuItem(menuContainer, wxID_PROPERTIES,
-		   _("&Properties\tAlt+Enter"),
+		   _("&Properties ...\tAlt+Enter"),
 		   _("Show metadata properties of the encrypted container."));
 
     appendMenuItem(menuContainer, myID_MENU_CONTAINER_SETPASS,
-		   _("&Change Password"),
+		   _("&Change Password ..."),
 		   _("Change the encryption password of the current container."));
+
+    menuContainer->AppendSeparator();
+
+    appendMenuItem(menuContainer, wxID_PREFERENCES,
+		   _("Preferences ..."),
+		   _("Show CryptoTE preferences."));
 
     menuContainer->AppendSeparator();
 
@@ -587,15 +594,15 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		   _("Create a new empty text subfile in encrypted container."));
 
     appendMenuItem(menuSubFile, myID_MENU_SUBFILE_IMPORT,
-		   _("&Import SubFile\tCtrl+I"),
+		   _("&Import SubFile ...\tCtrl+I"),
 		   _("Import any file from disk into encrypted container."));
 
     appendMenuItem(menuSubFile, myID_MENU_SUBFILE_EXPORT,
-		   _("&Export SubFile\tCtrl+E"),
+		   _("&Export SubFile ...\tCtrl+E"),
 		   _("Export current subfile to disk."));
  
     appendMenuItem(menuSubFile, myID_MENU_SUBFILE_PROPERTIES,
-		   _("&Properties\tAlt+Shift+Enter"),
+		   _("&Properties ...\tAlt+Shift+Enter"),
 		   _("Show metadata properties of current subfile."));
 
     appendMenuItem(menuSubFile, myID_MENU_SUBFILE_CLOSE,
@@ -639,21 +646,21 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 	menuEdit->AppendSeparator();
 
 	appendMenuItem(menuEdit, myID_MENU_EDIT_QUICKFIND,
-		       _("&Quick-Find\tCtrl+F"),
+		       _("&Quick-Find ...\tCtrl+F"),
 		       _("Find a string in the buffer."));
 
 	appendMenuItem(menuEdit, wxID_FIND,
-		       _("&Find...\tCtrl+Shift+F"),
+		       _("&Find ...\tCtrl+Shift+F"),
 		       _("Open find dialog to search for a string in the buffer."));
 
 	appendMenuItem(menuEdit, wxID_REPLACE,
-		       _("&Replace\tCtrl+H"),
+		       _("&Replace ...\tCtrl+H"),
 		       _("Open find and replace dialog to search for and replace a string in the buffer."));
 
 	menuEdit->AppendSeparator();
 
 	appendMenuItem(menuEdit, myID_MENU_EDIT_GOTO,
-		       _("&Go to Line...\tCtrl+G"),
+		       _("&Go to Line ...\tCtrl+G"),
 		       _("Jump to the entered line number."));
 
 	menuEdit->AppendSeparator();
@@ -707,7 +714,7 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 	wxMenu *menuEdit = new wxMenu;
 
 	appendMenuItem(menuEdit, myID_MENU_EDIT_GOTO,
-		       _("&Go to Offset...\tCtrl+G"),
+		       _("&Go to Offset ...\tCtrl+G"),
 		       _("Jump to the entered offset."));
 
 	menubar->Append(menuEdit, _("&Edit"));
@@ -718,7 +725,7 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
     wxMenu *menuHelp = new wxMenu;
 
     appendMenuItem(menuHelp, wxID_ABOUT,
-		   _("&About\tShift+F1"),
+		   _("&About ...\tShift+F1"),
 		   _("Show some information about CryptoTE."));
 
     menubar->Append(menuHelp, _("&Help"));
@@ -753,7 +760,7 @@ void WCryptoTE::CreateToolBar()
     appendTool(toolbar, wxID_SAVE, _("Save Container"), wxITEM_NORMAL,
 	       _("Save the current encrypted container to disk."));
 
-    appendTool(toolbar, wxID_SAVEAS, _("Save Container as..."), wxITEM_NORMAL,
+    appendTool(toolbar, wxID_SAVEAS, _("Save Container as ..."), wxITEM_NORMAL,
 	       _("Choose a file name and save the current encrypted container to disk."));
 
     appendTool(toolbar, myID_MENU_CONTAINER_SHOWLIST, _("Show SubFile List"), wxITEM_CHECK,
@@ -786,13 +793,13 @@ void WCryptoTE::CreateToolBar()
 
 	toolbar->AddSeparator();
 
-	appendTool(toolbar, wxID_FIND, _("Find Text"), wxITEM_NORMAL,
+	appendTool(toolbar, wxID_FIND, _("Find Text ..."), wxITEM_NORMAL,
 		   _("Open find dialog to search for a string in the buffer."));
 
-	appendTool(toolbar, wxID_REPLACE, _("Find and Replace Text"), wxITEM_NORMAL,
+	appendTool(toolbar, wxID_REPLACE, _("Find and Replace Text ..."), wxITEM_NORMAL,
 		   _("Open find and replace dialog to search for and replace a string in the buffer."));
 
-	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Line"), wxITEM_NORMAL,
+	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Line ..."), wxITEM_NORMAL,
 		   _("Jump to the entered line number."));
     }
 
@@ -802,7 +809,7 @@ void WCryptoTE::CreateToolBar()
 
 	// *** Edit
 
-	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Offset"), wxITEM_NORMAL,
+	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Offset ..."), wxITEM_NORMAL,
 		   _("Jump to the entered offset."));
     }
 
@@ -972,6 +979,55 @@ void WCryptoTE::OnMenuContainerSetPassword(wxCommandEvent& WXUNUSED(event))
     container->SetKey( strWX2STL(passdlg.GetPass()) );
 
     SetModified();
+}
+
+void WCryptoTE::OnMenuContainerOptions(wxCommandEvent& WXUNUSED(event))
+{
+    int oldtheme = BitmapCatalog::GetSingleton()->GetCurrentTheme();
+
+    WOptions dlg(this);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	if (oldtheme != BitmapCatalog::GetSingleton()->GetCurrentTheme())
+	{
+	    // reload all images
+
+	    // Rebuild menus
+	    SetMenuBar(NULL);
+
+	    menubar_plain = CreateMenuBar(NULL);
+	    menubar_textpage = CreateMenuBar(CLASSINFO(WTextPage));
+	    menubar_binarypage = CreateMenuBar(CLASSINFO(WBinaryPage));
+
+	    if (cpage->IsKindOf(CLASSINFO(WTextPage)))
+	    {
+		menubar_active = menubar_textpage;
+	    }
+	    else if (cpage->IsKindOf(CLASSINFO(WBinaryPage)))
+	    {
+		menubar_active = menubar_binarypage;
+	    }
+	    else
+	    {
+		menubar_active = menubar_plain;
+	    }
+
+	    SetMenuBar(menubar_active);
+
+	    menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, true);
+	    menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, true);
+	    menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, true);
+
+	    CreateToolBar();
+
+	    // QuickFind and Goto Panes
+
+	    quickfindbar->set_bitmaps();
+	    quickgotobar->set_bitmaps();
+
+	    filelistpane->BuildImageList();
+	}
+    }
 }
 
 void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
@@ -1509,6 +1565,8 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_CONTAINER_SHOWLIST, WCryptoTE::OnMenuContainerShowList)
     EVT_MENU	(wxID_PROPERTIES,	WCryptoTE::OnMenuContainerProperties)
     EVT_MENU	(myID_MENU_CONTAINER_SETPASS, WCryptoTE::OnMenuContainerSetPassword)
+
+    EVT_MENU	(wxID_PREFERENCES,	WCryptoTE::OnMenuContainerOptions)
 
     EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
 

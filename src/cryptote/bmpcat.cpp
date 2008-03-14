@@ -56,6 +56,39 @@ void BitmapCatalog::SetTheme(int nt)
     }
 }
 
+int BitmapCatalog::GetCurrentTheme()
+{
+    return themeid;
+}
+
+bool BitmapCatalog::GetThemeInfo(int themeid, wxString& name, wxBitmap& snapshot)
+{
+    switch(themeid)
+    {
+    case 0:
+	name = theme_crystal_large.name;
+	snapshot = wxBitmapFromMemory2(theme_crystal_large.snapshot_data, theme_crystal_large.snapshot_datalen);
+	return true;
+
+    case 1:
+	name = theme_crystal_small.name;
+	snapshot = wxBitmapFromMemory2(theme_crystal_small.snapshot_data, theme_crystal_small.snapshot_datalen);
+	return true;
+
+    case 2:
+	name = theme_slick_large.name;
+	snapshot = wxBitmapFromMemory2(theme_slick_large.snapshot_data, theme_slick_large.snapshot_datalen);
+	return true;
+
+    case 3:
+	name = theme_slick_small.name;
+	snapshot = wxBitmapFromMemory2(theme_slick_small.snapshot_data, theme_slick_small.snapshot_datalen);
+	return true;
+    }
+
+    return false;
+}
+
 void BitmapCatalog::AddBuiltInTheme(const Theme* theme)
 {
     assert(theme);
@@ -109,6 +142,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, _T("container-showsubfilelist"), wxNullBitmap },
     { wxID_PROPERTIES,			BU_MENU, _T("container-properties"), wxNullBitmap },
     { myID_MENU_CONTAINER_SETPASS,	BU_MENU, _T("container-setpassword"), wxNullBitmap },
+    { wxID_PREFERENCES,			BU_MENU, _T("application-options"), wxNullBitmap },
     { wxID_EXIT,			BU_MENU, _T("application-exit"), wxNullBitmap },
 
     { myID_MENU_SUBFILE_NEW,		BU_MENU, _T("subfile-new"), wxNullBitmap },
@@ -152,6 +186,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, _T("container-showsubfilelist-tool"), wxNullBitmap },
     { wxID_PROPERTIES,			BU_TOOLBAR, _T("container-properties-tool"), wxNullBitmap },
     { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, _T("container-setpassword-tool"), wxNullBitmap },
+    { wxID_PREFERENCES,			BU_TOOLBAR, _T("application-options"), wxNullBitmap },
     { wxID_EXIT,			BU_TOOLBAR, _T("application-exit-tool"), wxNullBitmap },
 
     { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, _T("subfile-new-tool"), wxNullBitmap },
@@ -274,6 +309,8 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/application-exit-22.h"
 #include "art/crystal/application-info-16.h"
 #include "art/crystal/application-info-22.h"
+#include "art/crystal/application-options-16.h"
+#include "art/crystal/application-options-22.h"
 #include "art/crystal/document-close-16.h"
 #include "art/crystal/document-close-22.h"
 #include "art/crystal/document-delete-16.h"
@@ -328,6 +365,7 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/messagebox-error-32.h"
 #include "art/crystal/messagebox-info-32.h"
 #include "art/crystal/messagebox-warning-32.h"
+#include "art/crystal/snapshot.h"
 #include "art/crystal/view-choose-16.h"
 #include "art/crystal/view-choose-22.h"
 #include "art/crystal/view-detailed-16.h"
@@ -353,6 +391,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(crystal_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(crystal_document_properties_16_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
+    { wxID_PREFERENCES,			BU_MENU, BUILTIN(crystal_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(crystal_application_exit_16_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_MENU, BUILTIN(crystal_document_new_16_png) },
@@ -394,6 +433,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(crystal_view_choose_22_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(crystal_document_properties_22_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(crystal_document_password_22_png) },
+    { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(crystal_application_options_22_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(crystal_application_exit_22_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, BUILTIN(crystal_document_new_22_png) },
@@ -465,6 +505,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(crystal_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(crystal_document_properties_16_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
+    { wxID_PREFERENCES,			BU_MENU, BUILTIN(crystal_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(crystal_application_exit_16_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_MENU, BUILTIN(crystal_document_new_16_png) },
@@ -506,6 +547,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(crystal_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(crystal_document_properties_16_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(crystal_document_password_16_png) },
+    { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(crystal_application_options_16_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(crystal_application_exit_16_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, BUILTIN(crystal_document_new_16_png) },
@@ -567,12 +609,14 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 const BitmapCatalog::Theme BitmapCatalog::theme_crystal_large =
 {
     _("Crystal with large toolbar icons"),
+    BUILTIN(crystal_snapshot_png),
     bitmaplist_crystal_large
 };
 
 const BitmapCatalog::Theme BitmapCatalog::theme_crystal_small =
 {
     _("Crystal with small toolbar icons"),
+    BUILTIN(crystal_snapshot_png),
     bitmaplist_crystal_small
 };
 
@@ -582,6 +626,8 @@ const BitmapCatalog::Theme BitmapCatalog::theme_crystal_small =
 #include "art/slick/application-exit-22.h"
 #include "art/slick/application-info-16.h"
 #include "art/slick/application-info-22.h"
+#include "art/slick/application-options-16.h"
+#include "art/slick/application-options-22.h"
 #include "art/slick/document-close-16.h"
 #include "art/slick/document-close-22.h"
 #include "art/slick/document-delete-16.h"
@@ -629,6 +675,7 @@ const BitmapCatalog::Theme BitmapCatalog::theme_crystal_small =
 #include "art/slick/messagebox-error-48.h"
 #include "art/slick/messagebox-info-48.h"
 #include "art/slick/messagebox-warning-48.h"
+#include "art/slick/snapshot.h"
 #include "art/slick/view-choose-16.h"
 #include "art/slick/view-choose-22.h"
 #include "art/slick/view-detailed-16.h"
@@ -654,6 +701,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(slick_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(slick_document_properties_16_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(slick_document_password_16_png) },
+    { wxID_PREFERENCES,			BU_MENU, BUILTIN(slick_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(slick_application_exit_16_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_MENU, BUILTIN(slick_document_new_16_png) },
@@ -693,6 +741,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(slick_view_choose_22_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(slick_document_properties_22_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(slick_document_password_22_png) },
+    { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(slick_application_options_22_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(slick_application_exit_22_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, BUILTIN(slick_document_new_22_png) },
@@ -758,6 +807,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(slick_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(slick_document_properties_16_png) },
     { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(slick_document_password_16_png) },
+    { wxID_PREFERENCES,			BU_MENU, BUILTIN(slick_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(slick_application_exit_16_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_MENU, BUILTIN(slick_document_new_16_png) },
@@ -792,6 +842,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     { wxID_SAVE,			BU_TOOLBAR, BUILTIN(slick_document_save_16_png) },
     { wxID_SAVEAS,			BU_TOOLBAR, BUILTIN(slick_document_save_as_16_png) },
     { wxID_REVERT,			BU_TOOLBAR, BUILTIN(slick_document_revert_16_png) },
+    { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(slick_application_options_16_png) },
     { wxID_CLOSE,			BU_TOOLBAR, BUILTIN(slick_document_close_16_png) },
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(slick_view_choose_16_png) },
@@ -856,12 +907,14 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 const BitmapCatalog::Theme BitmapCatalog::theme_slick_large =
 {
     _("Slick with large toolbar icons"),
+    BUILTIN(slick_snapshot_png),
     bitmaplist_slick_large
 };
 
 const BitmapCatalog::Theme BitmapCatalog::theme_slick_small =
 {
     _("Slick with small toolbar icons"),
+    BUILTIN(slick_snapshot_png),
     bitmaplist_slick_small
 };
 

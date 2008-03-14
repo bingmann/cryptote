@@ -160,6 +160,8 @@ public:
     void	OnMenuContainerProperties(wxCommandEvent& event);
     void	OnMenuContainerSetPassword(wxCommandEvent& event);
 
+    void	OnMenuContainerOptions(wxCommandEvent& event);
+
     void	OnMenuContainerQuit(wxCommandEvent& event);
 
     void	OnMenuSubFileNew(wxCommandEvent& event);
