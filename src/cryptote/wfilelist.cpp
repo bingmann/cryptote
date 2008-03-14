@@ -307,7 +307,6 @@ void WFileList::OnMenuFileDelete(wxCommandEvent& WXUNUSED(event))
     for(std::vector<int>::reverse_iterator sfi = subfilelist.rbegin();
 	sfi != subfilelist.rend(); ++sfi)
     {
-	printf("sfid: %d\n", *sfi);
 	wmain->DeleteSubFile(*sfi, false);
     }
     

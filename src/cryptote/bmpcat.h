@@ -32,6 +32,14 @@ private:
     const static Theme		theme_crystal_small;
     const static ThemeEntry	bitmaplist_crystal_small[];
 
+    // *** Second Theme: KDE's Slick ***
+
+    const static Theme		theme_slick_large;
+    const static ThemeEntry	bitmaplist_slick_large[];
+
+    const static Theme		theme_slick_small;
+    const static ThemeEntry	bitmaplist_slick_small[];
+
     struct BitmapInfo
     {
 	const int     	identifier;

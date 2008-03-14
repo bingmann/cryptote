@@ -24,7 +24,7 @@ class BitmapCatalog* BitmapCatalog()
 
 BitmapCatalog::BitmapCatalog()
 {
-    SetTheme(0);
+    SetTheme(2);
 }
 
 void BitmapCatalog::SetTheme(int nt)
@@ -41,6 +41,18 @@ void BitmapCatalog::SetTheme(int nt)
     if (nt == 0)
     {
 	AddBuiltInTheme(&theme_crystal_large);
+    }
+    else if (nt == 1)
+    {
+	AddBuiltInTheme(&theme_crystal_small);
+    }
+    else if (nt == 2)
+    {
+	AddBuiltInTheme(&theme_slick_large);
+    }
+    else if (nt == 3)
+    {
+	AddBuiltInTheme(&theme_slick_small);
     }
 }
 
@@ -563,3 +575,293 @@ const BitmapCatalog::Theme BitmapCatalog::theme_crystal_small =
     _("Crystal with small toolbar icons"),
     bitmaplist_crystal_small
 };
+
+// *** Slick ***
+
+#include "art/slick/application-exit-16.h"
+#include "art/slick/application-exit-22.h"
+#include "art/slick/application-info-16.h"
+#include "art/slick/application-info-22.h"
+#include "art/slick/document-close-16.h"
+#include "art/slick/document-close-22.h"
+#include "art/slick/document-delete-16.h"
+#include "art/slick/document-delete-22.h"
+#include "art/slick/document-new-16.h"
+#include "art/slick/document-new-22.h"
+#include "art/slick/document-open-16.h"
+#include "art/slick/document-open-22.h"
+#include "art/slick/document-password-16.h"
+#include "art/slick/document-password-22.h"
+#include "art/slick/document-properties-16.h"
+#include "art/slick/document-properties-22.h"
+#include "art/slick/document-revert-16.h"
+#include "art/slick/document-revert-22.h"
+#include "art/slick/document-save-16.h"
+#include "art/slick/document-save-22.h"
+#include "art/slick/document-save-as-16.h"
+#include "art/slick/document-save-as-22.h"
+#include "art/slick/edit-add-16.h"
+#include "art/slick/edit-clear-16.h"
+#include "art/slick/edit-copy-16.h"
+#include "art/slick/edit-copy-22.h"
+#include "art/slick/edit-cut-16.h"
+#include "art/slick/edit-cut-22.h"
+#include "art/slick/edit-find-16.h"
+#include "art/slick/edit-find-22.h"
+#include "art/slick/edit-goto-16.h"
+#include "art/slick/edit-goto-22.h"
+#include "art/slick/edit-paste-16.h"
+#include "art/slick/edit-paste-22.h"
+#include "art/slick/edit-redo-16.h"
+#include "art/slick/edit-redo-22.h"
+#include "art/slick/edit-remove-16.h"
+#include "art/slick/edit-undo-16.h"
+#include "art/slick/edit-undo-22.h"
+#include "art/slick/file-binary-16.h"
+#include "art/slick/file-binary-32.h"
+#include "art/slick/file-image-16.h"
+#include "art/slick/file-image-32.h"
+#include "art/slick/file-text-16.h"
+#include "art/slick/file-text-32.h"
+#include "art/slick/go-down-16.h"
+#include "art/slick/go-next-16.h"
+#include "art/slick/go-up-16.h"
+#include "art/slick/messagebox-error-48.h"
+#include "art/slick/messagebox-info-48.h"
+#include "art/slick/messagebox-warning-48.h"
+#include "art/slick/view-choose-16.h"
+#include "art/slick/view-choose-22.h"
+#include "art/slick/view-detailed-16.h"
+#include "art/slick/view-detailed-22.h"
+#include "art/slick/view-icon-16.h"
+#include "art/slick/view-icon-22.h"
+#include "art/slick/view-multicolumn-16.h"
+#include "art/slick/view-multicolumn-22.h"
+#include "art/slick/window-close-16.h"
+
+#define BUILTIN(x)	x, sizeof(x)
+
+const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
+{
+    // Menu Items
+    
+    { wxID_OPEN,			BU_MENU, BUILTIN(slick_document_open_16_png) },
+    { wxID_SAVE,			BU_MENU, BUILTIN(slick_document_save_16_png) },
+    { wxID_SAVEAS,			BU_MENU, BUILTIN(slick_document_save_as_16_png) },
+    { wxID_REVERT,			BU_MENU, BUILTIN(slick_document_revert_16_png) },
+    { wxID_CLOSE,			BU_MENU, BUILTIN(slick_document_close_16_png) },
+
+    { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(slick_view_choose_16_png) },
+    { wxID_PROPERTIES,			BU_MENU, BUILTIN(slick_document_properties_16_png) },
+    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(slick_document_password_16_png) },
+    { wxID_EXIT,			BU_MENU, BUILTIN(slick_application_exit_16_png) },
+
+    { myID_MENU_SUBFILE_NEW,		BU_MENU, BUILTIN(slick_document_new_16_png) },
+    { myID_MENU_SUBFILE_OPEN,		BU_MENU, BUILTIN(slick_document_open_16_png) },
+    { myID_MENU_SUBFILE_PROPERTIES,	BU_MENU, BUILTIN(slick_document_properties_16_png) },
+    { myID_MENU_SUBFILE_CLOSE,		BU_MENU, BUILTIN(slick_document_close_16_png) },
+    { myID_MENU_SUBFILE_DELETE,		BU_MENU, BUILTIN(slick_document_delete_16_png) },
+
+    { wxID_UNDO,			BU_MENU, BUILTIN(slick_edit_undo_16_png) },
+    { wxID_REDO,			BU_MENU, BUILTIN(slick_edit_redo_16_png) },
+    { wxID_CUT,				BU_MENU, BUILTIN(slick_edit_cut_16_png) },
+    { wxID_COPY,			BU_MENU, BUILTIN(slick_edit_copy_16_png) },
+    { wxID_PASTE,			BU_MENU, BUILTIN(slick_edit_paste_16_png) },
+    { wxID_CLEAR,			BU_MENU, BUILTIN(slick_edit_clear_16_png) },
+    { myID_MENU_EDIT_QUICKFIND,		BU_MENU, BUILTIN(slick_edit_find_16_png) },
+    { wxID_FIND,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
+    { wxID_REPLACE,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
+    { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(slick_edit_goto_16_png) },
+
+    { wxID_ADD,				BU_MENU, BUILTIN(slick_edit_add_16_png) },
+    { wxID_REMOVE,			BU_MENU, BUILTIN(slick_edit_remove_16_png) },
+
+    { wxID_ABOUT,			BU_MENU, BUILTIN(slick_application_info_16_png) },
+
+    { myID_MENU_VIEW_BIGICONS,		BU_MENU, BUILTIN(slick_view_icon_16_png) },
+    { myID_MENU_VIEW_LIST,		BU_MENU, BUILTIN(slick_view_multicolumn_16_png) },
+    { myID_MENU_VIEW_REPORT,		BU_MENU, BUILTIN(slick_view_detailed_16_png) },
+
+    // Toolbar Icons
+
+    { wxID_OPEN,			BU_TOOLBAR, BUILTIN(slick_document_open_22_png) },
+    { wxID_SAVE,			BU_TOOLBAR, BUILTIN(slick_document_save_22_png) },
+    { wxID_SAVEAS,			BU_TOOLBAR, BUILTIN(slick_document_save_as_22_png) },
+    { wxID_REVERT,			BU_TOOLBAR, BUILTIN(slick_document_revert_22_png) },
+    { wxID_CLOSE,			BU_TOOLBAR, BUILTIN(slick_document_close_22_png) },
+
+    { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(slick_view_choose_22_png) },
+    { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(slick_document_properties_22_png) },
+    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(slick_document_password_22_png) },
+    { wxID_EXIT,			BU_TOOLBAR, BUILTIN(slick_application_exit_22_png) },
+
+    { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, BUILTIN(slick_document_new_22_png) },
+    { myID_MENU_SUBFILE_OPEN,		BU_TOOLBAR, BUILTIN(slick_document_open_22_png) },
+    { myID_MENU_SUBFILE_PROPERTIES,	BU_TOOLBAR, BUILTIN(slick_document_properties_22_png) },
+    { myID_MENU_SUBFILE_CLOSE,		BU_TOOLBAR, BUILTIN(slick_document_close_22_png) },
+    { myID_MENU_SUBFILE_DELETE,		BU_TOOLBAR, BUILTIN(slick_document_delete_22_png) },
+
+    { wxID_UNDO,			BU_TOOLBAR, BUILTIN(slick_edit_undo_22_png) },
+    { wxID_REDO,			BU_TOOLBAR, BUILTIN(slick_edit_redo_22_png) },
+    { wxID_CUT,				BU_TOOLBAR, BUILTIN(slick_edit_cut_22_png) },
+    { wxID_COPY,			BU_TOOLBAR, BUILTIN(slick_edit_copy_22_png) },
+    { wxID_PASTE,			BU_TOOLBAR, BUILTIN(slick_edit_paste_22_png) },
+    { myID_MENU_EDIT_QUICKFIND,		BU_TOOLBAR, BUILTIN(slick_edit_find_22_png) },
+    { wxID_FIND,			BU_TOOLBAR, BUILTIN(slick_edit_find_22_png) },
+    { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(slick_edit_find_22_png) },
+    { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(slick_edit_goto_22_png) },
+
+    { wxID_ABOUT,			BU_TOOLBAR, BUILTIN(slick_application_info_22_png) },
+
+    { myID_MENU_VIEW_BIGICONS,		BU_TOOLBAR, BUILTIN(slick_view_icon_22_png) },
+    { myID_MENU_VIEW_LIST,		BU_TOOLBAR, BUILTIN(slick_view_multicolumn_22_png) },
+    { myID_MENU_VIEW_REPORT,		BU_TOOLBAR, BUILTIN(slick_view_detailed_22_png) },
+
+    // Other Dialogs
+
+    { myID_QUICKFIND_CLOSE,		BU_GENERAL, BUILTIN(slick_window_close_16_png) },
+    { myID_QUICKFIND_NEXT,		BU_GENERAL, BUILTIN(slick_go_down_16_png) },
+    { myID_QUICKFIND_PREV,		BU_GENERAL, BUILTIN(slick_go_up_16_png) },
+
+    { myID_QUICKGOTO_CLOSE,		BU_GENERAL, BUILTIN(slick_window_close_16_png) },
+    { myID_QUICKGOTO_GO,		BU_GENERAL, BUILTIN(slick_go_next_16_png) },
+
+    // Message Dialogs
+
+    { wxICON_ERROR,			BU_GENERAL, BUILTIN(slick_messagebox_error_48_png) },
+    { wxICON_WARNING,			BU_GENERAL, BUILTIN(slick_messagebox_warning_48_png) },
+    { wxICON_INFORMATION,		BU_GENERAL, BUILTIN(slick_messagebox_info_48_png) },
+
+    // FileType Icons
+
+    { myID_FILETYPE_BINARY,		BU_FILETYPE, BUILTIN(slick_file_binary_16_png) },
+    { myID_FILETYPE_TEXT,		BU_FILETYPE, BUILTIN(slick_file_text_16_png) },
+    { myID_FILETYPE_IMAGE,		BU_FILETYPE, BUILTIN(slick_file_image_16_png) },
+
+    { myID_FILETYPE_BINARY_LARGE,	BU_FILETYPE, BUILTIN(slick_file_binary_32_png) },
+    { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(slick_file_text_32_png) },
+    { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(slick_file_image_32_png) },
+
+    { 0, BU_GENERAL, NULL, 0 }
+};
+
+const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
+{
+    // Menu Items
+    
+    { wxID_OPEN,			BU_MENU, BUILTIN(slick_document_open_16_png) },
+    { wxID_SAVE,			BU_MENU, BUILTIN(slick_document_save_16_png) },
+    { wxID_SAVEAS,			BU_MENU, BUILTIN(slick_document_save_as_16_png) },
+    { wxID_REVERT,			BU_MENU, BUILTIN(slick_document_revert_16_png) },
+    { wxID_CLOSE,			BU_MENU, BUILTIN(slick_document_close_16_png) },
+
+    { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(slick_view_choose_16_png) },
+    { wxID_PROPERTIES,			BU_MENU, BUILTIN(slick_document_properties_16_png) },
+    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(slick_document_password_16_png) },
+    { wxID_EXIT,			BU_MENU, BUILTIN(slick_application_exit_16_png) },
+
+    { myID_MENU_SUBFILE_NEW,		BU_MENU, BUILTIN(slick_document_new_16_png) },
+    { myID_MENU_SUBFILE_OPEN,		BU_MENU, BUILTIN(slick_document_open_16_png) },
+    { myID_MENU_SUBFILE_PROPERTIES,	BU_MENU, BUILTIN(slick_document_properties_16_png) },
+    { myID_MENU_SUBFILE_CLOSE,		BU_MENU, BUILTIN(slick_document_close_16_png) },
+    { myID_MENU_SUBFILE_DELETE,		BU_MENU, BUILTIN(slick_document_delete_16_png) },
+
+    { wxID_UNDO,			BU_MENU, BUILTIN(slick_edit_undo_16_png) },
+    { wxID_REDO,			BU_MENU, BUILTIN(slick_edit_redo_16_png) },
+    { wxID_CUT,				BU_MENU, BUILTIN(slick_edit_cut_16_png) },
+    { wxID_COPY,			BU_MENU, BUILTIN(slick_edit_copy_16_png) },
+    { wxID_PASTE,			BU_MENU, BUILTIN(slick_edit_paste_16_png) },
+    { wxID_CLEAR,			BU_MENU, BUILTIN(slick_edit_clear_16_png) },
+    { myID_MENU_EDIT_QUICKFIND,		BU_MENU, BUILTIN(slick_edit_find_16_png) },
+    { wxID_FIND,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
+    { wxID_REPLACE,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
+    { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(slick_edit_goto_16_png) },
+
+    { wxID_ADD,				BU_MENU, BUILTIN(slick_edit_add_16_png) },
+    { wxID_REMOVE,			BU_MENU, BUILTIN(slick_edit_remove_16_png) },
+
+    { wxID_ABOUT,			BU_MENU, BUILTIN(slick_application_info_16_png) },
+
+    { myID_MENU_VIEW_BIGICONS,		BU_MENU, BUILTIN(slick_view_icon_16_png) },
+    { myID_MENU_VIEW_LIST,		BU_MENU, BUILTIN(slick_view_multicolumn_16_png) },
+    { myID_MENU_VIEW_REPORT,		BU_MENU, BUILTIN(slick_view_detailed_16_png) },
+
+    // Toolbar Icons
+
+    { wxID_OPEN,			BU_TOOLBAR, BUILTIN(slick_document_open_16_png) },
+    { wxID_SAVE,			BU_TOOLBAR, BUILTIN(slick_document_save_16_png) },
+    { wxID_SAVEAS,			BU_TOOLBAR, BUILTIN(slick_document_save_as_16_png) },
+    { wxID_REVERT,			BU_TOOLBAR, BUILTIN(slick_document_revert_16_png) },
+    { wxID_CLOSE,			BU_TOOLBAR, BUILTIN(slick_document_close_16_png) },
+
+    { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(slick_view_choose_16_png) },
+    { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(slick_document_properties_16_png) },
+    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(slick_document_password_16_png) },
+    { wxID_EXIT,			BU_TOOLBAR, BUILTIN(slick_application_exit_16_png) },
+
+    { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, BUILTIN(slick_document_new_16_png) },
+    { myID_MENU_SUBFILE_OPEN,		BU_TOOLBAR, BUILTIN(slick_document_open_16_png) },
+    { myID_MENU_SUBFILE_PROPERTIES,	BU_TOOLBAR, BUILTIN(slick_document_properties_16_png) },
+    { myID_MENU_SUBFILE_CLOSE,		BU_TOOLBAR, BUILTIN(slick_document_close_16_png) },
+    { myID_MENU_SUBFILE_DELETE,		BU_TOOLBAR, BUILTIN(slick_document_delete_16_png) },
+
+    { wxID_UNDO,			BU_TOOLBAR, BUILTIN(slick_edit_undo_16_png) },
+    { wxID_REDO,			BU_TOOLBAR, BUILTIN(slick_edit_redo_16_png) },
+    { wxID_CUT,				BU_TOOLBAR, BUILTIN(slick_edit_cut_16_png) },
+    { wxID_COPY,			BU_TOOLBAR, BUILTIN(slick_edit_copy_16_png) },
+    { wxID_PASTE,			BU_TOOLBAR, BUILTIN(slick_edit_paste_16_png) },
+    { wxID_CLEAR,			BU_TOOLBAR, BUILTIN(slick_edit_clear_16_png) },
+    { myID_MENU_EDIT_QUICKFIND,		BU_TOOLBAR, BUILTIN(slick_edit_find_16_png) },
+    { wxID_FIND,			BU_TOOLBAR, BUILTIN(slick_edit_find_16_png) },
+    { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(slick_edit_find_16_png) },
+    { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(slick_edit_goto_16_png) },
+
+    { wxID_ADD,				BU_TOOLBAR, BUILTIN(slick_edit_add_16_png) },
+    { wxID_REMOVE,			BU_TOOLBAR, BUILTIN(slick_edit_remove_16_png) },
+
+    { wxID_ABOUT,			BU_TOOLBAR, BUILTIN(slick_application_info_16_png) },
+
+    { myID_MENU_VIEW_BIGICONS,		BU_TOOLBAR, BUILTIN(slick_view_icon_16_png) },
+    { myID_MENU_VIEW_LIST,		BU_TOOLBAR, BUILTIN(slick_view_multicolumn_16_png) },
+    { myID_MENU_VIEW_REPORT,		BU_TOOLBAR, BUILTIN(slick_view_detailed_16_png) },
+
+    // Other Dialogs
+
+    { myID_QUICKFIND_CLOSE,		BU_GENERAL, BUILTIN(slick_window_close_16_png) },
+    { myID_QUICKFIND_NEXT,		BU_GENERAL, BUILTIN(slick_go_down_16_png) },
+    { myID_QUICKFIND_PREV,		BU_GENERAL, BUILTIN(slick_go_up_16_png) },
+
+    { myID_QUICKGOTO_CLOSE,		BU_GENERAL, BUILTIN(slick_window_close_16_png) },
+    { myID_QUICKGOTO_GO,		BU_GENERAL, BUILTIN(slick_go_next_16_png) },
+
+    // Message Dialogs
+
+    { wxICON_ERROR,			BU_GENERAL, BUILTIN(slick_messagebox_error_48_png) },
+    { wxICON_WARNING,			BU_GENERAL, BUILTIN(slick_messagebox_warning_48_png) },
+    { wxICON_INFORMATION,		BU_GENERAL, BUILTIN(slick_messagebox_info_48_png) },
+
+    // FileType Icons
+
+    { myID_FILETYPE_BINARY,		BU_FILETYPE, BUILTIN(slick_file_binary_16_png) },
+    { myID_FILETYPE_TEXT,		BU_FILETYPE, BUILTIN(slick_file_text_16_png) },
+    { myID_FILETYPE_IMAGE,		BU_FILETYPE, BUILTIN(slick_file_image_16_png) },
+
+    { myID_FILETYPE_BINARY_LARGE,	BU_FILETYPE, BUILTIN(slick_file_binary_32_png) },
+    { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(slick_file_text_32_png) },
+    { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(slick_file_image_32_png) },
+
+    { 0, BU_GENERAL, NULL, 0 }
+};
+
+const BitmapCatalog::Theme BitmapCatalog::theme_slick_large =
+{
+    _("Slick with large toolbar icons"),
+    bitmaplist_slick_large
+};
+
+const BitmapCatalog::Theme BitmapCatalog::theme_slick_small =
+{
+    _("Slick with small toolbar icons"),
+    bitmaplist_slick_small
+};
+
