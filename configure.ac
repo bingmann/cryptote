@@ -207,6 +207,7 @@ AC_CONFIG_FILES([Makefile
 		 libenctain/speedtest/Makefile
 		 src/Makefile
 		 src/art/Makefile
+		 src/art/crystal/Makefile
 		 src/pwgen/Makefile
 		 src/pwtutor/Makefile
 		 src/cryptote/Makefile])

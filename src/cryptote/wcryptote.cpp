@@ -520,7 +520,7 @@ static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
 					 const wxString& text, const wxString& helpString)
 {
     wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
-    mi->SetBitmap( bitmapcatalog.GetBitmap(id) );
+    mi->SetBitmap( bitmapcatalog.GetMenuBitmap(id) );
     parentMenu->Append(mi);
     return mi;
 }
@@ -725,6 +725,13 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
     return menubar;
 }
 
+static inline void appendTool(wxToolBar* toolbar, int toolId, const wxString& label, wxItemKind kind = wxITEM_NORMAL, const wxString& longHelpString = wxEmptyString)
+{
+    toolbar->AddTool(toolId, label,
+		     bitmapcatalog.GetToolbarBitmap(toolId), wxNullBitmap,
+		     kind, label, longHelpString);
+}
+
 void WCryptoTE::CreateToolBar()
 {
     if (!toolbar)
@@ -739,34 +746,17 @@ void WCryptoTE::CreateToolBar()
 
     // *** Container
 
-    #include "art/document_open.h"
-    #include "art/document_save.h"
-    #include "art/document_saveas.h"
-    #include "art/view_choose.h"
+    appendTool(toolbar, wxID_OPEN, _("Open Container"), wxITEM_NORMAL,
+	       _("Open an existing encrypted container in the editor."));
 
-    toolbar->AddTool(wxID_OPEN,
-		     _("Open Container"),
-		     wxBitmapFromMemory(document_open_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Open Container"),
-		     _("Open an existing encrypted container in the editor."));
+    appendTool(toolbar, wxID_SAVE, _("Save Container"), wxITEM_NORMAL,
+	       _("Save the current encrypted container to disk."));
 
-    toolbar->AddTool(wxID_SAVE,
-		     _("Save Container"),
-		     wxBitmapFromMemory(document_save_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Save Container"),
-		     _("Save the current encrypted container to disk."));
+    appendTool(toolbar, wxID_SAVEAS, _("Save Container as..."), wxITEM_NORMAL,
+	       _("Choose a file name and save the current encrypted container to disk."));
 
-    toolbar->AddTool(wxID_SAVEAS,
-		     _("Save Container as..."),
-		     wxBitmapFromMemory(document_saveas_png), wxNullBitmap, wxITEM_NORMAL,
-		     _("Save Container as..."),
-		     _("Choose a file name and save the current encrypted container to disk."));
-
-    toolbar->AddTool(myID_MENU_CONTAINER_SHOWLIST,
-		     _("Show SubFile List"),
-		     wxBitmapFromMemory(view_choose_png), wxNullBitmap, wxITEM_CHECK,
-		     _("Show SubFile List"),
-		     _("Show list of subfiles contained in current encrypted container."));
+    appendTool(toolbar, myID_MENU_CONTAINER_SHOWLIST, _("Show SubFile List"), wxITEM_CHECK,
+	       _("Show list of subfiles contained in current encrypted container."));
 
     // *** SubFile
 
@@ -776,65 +766,33 @@ void WCryptoTE::CreateToolBar()
 
 	// *** Edit
 
-        #include "art/edit_undo.h"
-        #include "art/edit_redo.h"
-        #include "art/edit_cut.h"
-        #include "art/edit_copy.h"
-        #include "art/edit_paste.h"
-        #include "art/edit_find.h"
-        #include "art/edit_goto.h"
+	appendTool(toolbar, wxID_UNDO, _("Undo Operation"), wxITEM_NORMAL,
+		   _("Undo the last change."));
 
-	toolbar->AddTool(wxID_UNDO,
-			 _("Undo Operation"),
-			 wxBitmapFromMemory(edit_undo_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Undo Operation"),
-			 _("Undo the last change."));
-
-	toolbar->AddTool(wxID_REDO,
-			 _("Redo Operation"),
-			 wxBitmapFromMemory(edit_redo_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Redo Operation"),
-			 _("Redo the previously undone change."));
+	appendTool(toolbar, wxID_REDO, _("Redo Operation"), wxITEM_NORMAL,
+		   _("Redo the previously undone change."));
 
 	toolbar->AddSeparator();
 
-	toolbar->AddTool(wxID_CUT,
-			 _("Cut Selection"),
-			 wxBitmapFromMemory(edit_cut_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Cut Selection"),
-			 _("Cut selected text into clipboard."));
+	appendTool(toolbar, wxID_CUT, _("Cut Selection"), wxITEM_NORMAL,
+		   _("Cut selected text into clipboard."));
 
-	toolbar->AddTool(wxID_COPY,
-			 _("Copy Selection"),
-			 wxBitmapFromMemory(edit_copy_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Copy Selection"),
-			 _("Copy selected text into clipboard."));
+	appendTool(toolbar, wxID_COPY, _("Copy Selection"), wxITEM_NORMAL,
+		   _("Copy selected text into clipboard."));
 
-	toolbar->AddTool(wxID_PASTE,
-			 _("Paste Clipboard"),
-			 wxBitmapFromMemory(edit_paste_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Paste Clipboard"),
-			 _("Paste clipboard contents at the current text position."));
+	appendTool(toolbar, wxID_PASTE, _("Paste Clipboard"), wxITEM_NORMAL,
+		   _("Paste clipboard contents at the current text position."));
 
 	toolbar->AddSeparator();
 
-	toolbar->AddTool(wxID_FIND,
-			 _("Find Text"),
-			 wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Find Text"),
-			 _("Open find dialog to search for a string in the buffer."));
+	appendTool(toolbar, wxID_FIND, _("Find Text"), wxITEM_NORMAL,
+		   _("Open find dialog to search for a string in the buffer."));
 
-	toolbar->AddTool(wxID_REPLACE,
-			 _("Find and Replace Text"),
-			 wxBitmapFromMemory(edit_find_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Find and Replace Text"),
-			 _("Open find and replace dialog to search for and replace a string in the buffer."));
+	appendTool(toolbar, wxID_REPLACE, _("Find and Replace Text"), wxITEM_NORMAL,
+		   _("Open find and replace dialog to search for and replace a string in the buffer."));
 
-	toolbar->AddTool(myID_MENU_EDIT_GOTO,
-			 _("Goto to Line"),
-			 wxBitmapFromMemory(edit_goto_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Goto to Line"),
-			 _("Jump to the entered line number."));
+	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Line"), wxITEM_NORMAL,
+		   _("Jump to the entered line number."));
     }
 
     if (cpage && cpage->IsKindOf(CLASSINFO(WBinaryPage)))
@@ -843,13 +801,8 @@ void WCryptoTE::CreateToolBar()
 
 	// *** Edit
 
-        #include "art/edit_goto.h"
-
-	toolbar->AddTool(myID_MENU_EDIT_GOTO,
-			 _("Goto to Offset"),
-			 wxBitmapFromMemory(edit_goto_png), wxNullBitmap, wxITEM_NORMAL,
-			 _("Goto to Offset"),
-			 _("Jump to the entered offset."));
+	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Offset"), wxITEM_NORMAL,
+		   _("Jump to the entered offset."));
     }
 
     // *** Help
@@ -1037,6 +990,7 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
     container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
 
     container->SetSubFileProperty(sfnew, "Name", "Untitled.txt");
+    container->SetSubFileProperty(sfnew, "Filetype", "1");
 
     filelistpane->ResetItems();
 
@@ -1739,7 +1693,7 @@ WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& p
     #include "art/cryptote-48.h"
     bitmapIcon->SetBitmap( wxBitmapFromMemory(cryptote_48_png) );
 
-    #include "art/web-16.h"
+    #include "art/crystal/web-16.h"
     bitmapWeb->SetBitmap( wxBitmapFromMemory(web_16_png) );
 
     Layout();
@@ -1822,7 +1776,7 @@ void BitmapCatalog::SetTheme(int nt)
     themeid = nt;
 }
 
-wxBitmap BitmapCatalog::GetBitmap(int id, int size)
+wxBitmap BitmapCatalog::GetMenuBitmap(int id)
 {
     if (themeid == 0)
     {
@@ -1830,134 +1784,141 @@ wxBitmap BitmapCatalog::GetBitmap(int id, int size)
 	{
 	    // *** Container Menu ***
 
-	case wxID_OPEN: {
-            #include "art/document_open.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_open_png);
+	case wxID_OPEN:
+	case WFileList::myID_FILE_OPEN: {
+            #include "art/crystal/document-open-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_open_16_png);
 	    return bmp;
 	}
 	case wxID_SAVE: {
-            #include "art/document_save.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_save_png);
+            #include "art/crystal/document-save-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_16_png);
 	    return bmp;
 	}
 	case wxID_SAVEAS: {
-            #include "art/document_saveas.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_saveas_png);
+            #include "art/crystal/document-save-as-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_as_16_png);
 	    return bmp;
 	}
 	case wxID_REVERT: {
-            #include "art/document_revert.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_revert_png);
+            #include "art/crystal/document-revert-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_revert_16_png);
 	    return bmp;
 	}
 	case wxID_CLOSE: {
-            #include "art/document_close.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_close_png);
+            #include "art/crystal/document-close-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_16_png);
 	    return bmp;
 	}
 
 	case WCryptoTE::myID_MENU_CONTAINER_SHOWLIST: {
-            #include "art/view_choose.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(view_choose_png);
+            #include "art/crystal/view-choose-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_choose_16_png);
 	    return bmp;
 	}
 	case wxID_PROPERTIES: {
-            #include "art/document_properties.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_png);
+            #include "art/crystal/document-properties-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_16_png);
 	    return bmp;
 	}
 	case WCryptoTE::myID_MENU_CONTAINER_SETPASS: {
-            #include "art/setpassword.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(setpassword_png);
+            #include "art/crystal/document-password-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_password_16_png);
 	    return bmp;
 	}
 
 	case wxID_EXIT: {
-            #include "art/application_exit.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(application_exit_png);
+            #include "art/crystal/application-exit-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_exit_16_png);
 	    return bmp;
 	}
 
 	    // *** SubFile Menu ***
 
 	case WCryptoTE::myID_MENU_SUBFILE_NEW: {
-            #include "art/document_new.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_new_png);
+            #include "art/crystal/document-new-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_new_16_png);
 	    return bmp;
 	}
 	case WCryptoTE::myID_MENU_SUBFILE_IMPORT: {
-            #include "art/document_import.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_import_png);
+            #include "art/crystal/document-import-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_import_16_png);
 	    return bmp;
 	}
-	case WCryptoTE::myID_MENU_SUBFILE_EXPORT: {
-            #include "art/document_export.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_export_png);
+	case WCryptoTE::myID_MENU_SUBFILE_EXPORT:
+	case WFileList::myID_FILE_EXPORT: {
+            #include "art/crystal/document-export-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_export_16_png);
 	    return bmp;
 	}
 	case WCryptoTE::myID_MENU_SUBFILE_PROPERTIES: {
-            #include "art/document_properties.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_png);
+            #include "art/crystal/document-properties-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_16_png);
 	    return bmp;
 	}
 	case WCryptoTE::myID_MENU_SUBFILE_CLOSE: {
-            #include "art/document_close.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(document_close_png);
+            #include "art/crystal/document-close-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_16_png);
+	    return bmp;
+	}
+	case WFileList::myID_FILE_DELETE: {
+            #include "art/crystal/document-delete-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_delete_16_png);
 	    return bmp;
 	}
 
 	    // *** Edit Menu ***
 
 	case wxID_UNDO: {
-            #include "art/edit_undo.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_undo_png);
+            #include "art/crystal/edit-undo-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_undo_16_png);
 	    return bmp;
 	}
 	case wxID_REDO: {
-            #include "art/edit_redo.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_redo_png);
+            #include "art/crystal/edit-redo-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_redo_16_png);
 	    return bmp;
 	}
 	case wxID_CUT: {
-            #include "art/edit_cut.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_cut_png);
+            #include "art/crystal/edit-cut-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_cut_16_png);
 	    return bmp;
 	}
 	case wxID_COPY: {
-            #include "art/edit_copy.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_copy_png);
+            #include "art/crystal/edit-copy-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_copy_16_png);
 	    return bmp;
 	}
 	case wxID_PASTE: {
-            #include "art/edit_paste.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_paste_png);
+            #include "art/crystal/edit-paste-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_paste_16_png);
 	    return bmp;
 	}
 	case wxID_CLEAR: {
-            #include "art/edit_clear.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_clear_png);
+            #include "art/crystal/edit-clear-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_clear_16_png);
 	    return bmp;
 	}
 
 	case WCryptoTE::myID_MENU_EDIT_QUICKFIND: {
-            #include "art/edit_find.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_png);
+            #include "art/crystal/edit-find-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_16_png);
 	    return bmp;
 	}
 	case wxID_FIND: {
-            #include "art/edit_find.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_png);
+            #include "art/crystal/edit-find-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_16_png);
 	    return bmp;
 	}
 	case wxID_REPLACE: {
-            #include "art/edit_find.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_png);
+            #include "art/crystal/edit-find-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_16_png);
 	    return bmp;
 	}
 
 	case WCryptoTE::myID_MENU_EDIT_GOTO: {
-            #include "art/edit_goto.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(edit_goto_png);
+            #include "art/crystal/edit-goto-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_goto_16_png);
 	    return bmp;
 	}
 
@@ -1971,8 +1932,24 @@ wxBitmap BitmapCatalog::GetBitmap(int id, int size)
 	    // *** Help Menu ***
 
 	case wxID_ABOUT: {
-            #include "art/application_info.h"
-	    static wxBitmap bmp = wxBitmapFromMemory(application_info_png);
+            #include "art/crystal/application-info-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_info_16_png);
+	    return bmp;
+	}
+
+	case WFileList::myID_VIEW_BIGICONS: {
+            #include "art/crystal/view-icon-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_icon_16_png);
+	    return bmp;
+	}
+	case WFileList::myID_VIEW_LIST: {
+            #include "art/crystal/view-multicolumn-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_multicolumn_16_png);
+	    return bmp;
+	}
+	case WFileList::myID_VIEW_REPORT: {
+            #include "art/crystal/view-detailed-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_detailed_16_png);
 	    return bmp;
 	}
 
@@ -1980,4 +1957,9 @@ wxBitmap BitmapCatalog::GetBitmap(int id, int size)
     }
 
     return wxNullBitmap;
+}
+
+wxBitmap BitmapCatalog::GetToolbarBitmap(int id)
+{
+    return GetMenuBitmap(id);
 }

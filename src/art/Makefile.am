@@ -1,5 +1,7 @@
 # $Id$
 
+SUBDIRS = . crystal
+
 noinst_PROGRAMS = file2h
 
 file2h_SOURCES = file2h.cpp
@@ -24,51 +26,7 @@ noinst_HEADERS = \
 	cryptote-48.h \
 	ectfile-16.h \
 	ectfile-32.h \
-	ectfile-48.h \
-	document_new.h \
-	document_open.h \
-	document_save.h \
-	document_saveas.h \
-	document_revert.h \
-	document_close.h \
-	document_import.h \
-	document_export.h \
-	document_delete.h \
-	document_properties.h \
-	setpassword.h \
-	application_exit.h \
-	application_info.h \
-	edit_undo.h \
-	edit_redo.h \
-	edit_cut.h \
-	edit_copy.h \
-	edit_paste.h \
-	edit_clear.h \
-	edit_find.h \
-	edit_add.h \
-	edit_remove.h \
-	edit_goto.h \
-	go_up.h \
-	go_down.h \
-	go_next.h \
-	window_close.h \
-	stock_lock.h \
-	stock_unlock.h \
-	messagebox_error.h \
-	messagebox_warning.h \
-	messagebox_info.h \
-	web-16.h \
-	file_binary-16.h \
-	file_binary-32.h \
-	file_text-16.h \
-	file_text-32.h \
-	file_image-16.h \
-	file_image-32.h \
-	view_icon.h \
-	view_detailed.h \
-	view_choose.h \
-	view_multicolumn.h \
-	modified-12.h
+	ectfile-48.h
 
 EXTRA_DIST = \
 	pwgen-16.png \
@@ -92,48 +50,4 @@ EXTRA_DIST = \
 	ectfile-32.png \
 	ectfile-48.png \
 	ectfile.ico \
-	ectfile.svg \
-	document_new.png \
-	document_open.png \
-	document_save.png \
-	document_saveas.png \
-	document_revert.png \
-	document_close.png \
-	document_import.png \
-	document_export.png \
-	document_delete.png \
-	document_properties.png \
-	setpassword.png \
-	application_exit.png \
-	application_info.png \
-	edit_undo.png \
-	edit_redo.png \
-	edit_cut.png \
-	edit_copy.png \
-	edit_paste.png \
-	edit_clear.png \
-	edit_find.png \
-	edit_add.png \
-	edit_remove.png \
-	edit_goto.png \
-	go_up.png \
-	go_down.png \
-	go_next.png \
-	window_close.png \
-	stock_lock.png \
-	stock_unlock.png \
-	messagebox_error.png \
-	messagebox_warning.png \
-	messagebox_info.png \
-	web-16.png \
-	file_binary-16.png \
-	file_binary-32.png \
-	file_text-16.png \
-	file_text-32.png \
-	file_image-16.png \
-	file_image-32.png \
-	view_icon.png \
-	view_detailed.png \
-	view_choose.png \
-	view_multicolumn.png \
-	modified-12.png
+	ectfile.svg

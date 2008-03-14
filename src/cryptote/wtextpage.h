@@ -149,8 +149,14 @@ public:
 
     WQuickFindBar(class WCryptoTE* wmain);
 
+    void		set_bitmaps();
+
     class wxBoxSizer*	sizerQuickFind;
+
+    wxBitmapButton*	buttonQuickFindClose;
     class wxTextCtrl*	textctrlQuickFind;
+    wxBitmapButton*	buttonQuickFindNext;
+    wxBitmapButton*	buttonQuickFindPrev;
 };
 
 class WQuickGotoBar : public wxPanel
@@ -159,8 +165,12 @@ public:
 
     WQuickGotoBar(class WCryptoTE* wmain);
 
+    void		set_bitmaps();
+
+    wxBitmapButton*	buttonGotoCancel;
     class wxBoxSizer*	sizerQuickGoto;
     class wxTextCtrl*	textctrlGoto;
+    wxBitmapButton*	buttonGotoGo;
 };
 
 #endif // WTEXTPAGE_H

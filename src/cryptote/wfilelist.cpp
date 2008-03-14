@@ -17,9 +17,9 @@ WFileList::WFileList(class WCryptoTE* parent)
     SetWindowStyleFlag(wxLC_ICON | wxLC_EDIT_LABELS);
 
     {
-        #include "art/file_binary-16.h"
-        #include "art/file_text-16.h"
-        #include "art/file_image-16.h"
+        #include "art/crystal/file-binary-16.h"
+        #include "art/crystal/file-text-16.h"
+        #include "art/crystal/file-image-16.h"
 
 	wxImageList* imagelist = new wxImageList(16, 16);
 	imagelist->Add( wxBitmapFromMemory(file_binary_16_png) );
@@ -30,9 +30,9 @@ WFileList::WFileList(class WCryptoTE* parent)
     }
 
     {
-        #include "art/file_binary-32.h"
-        #include "art/file_text-32.h"
-        #include "art/file_image-32.h"
+        #include "art/crystal/file-binary-32.h"
+        #include "art/crystal/file-text-32.h"
+        #include "art/crystal/file-image-32.h"
 
 	wxImageList* imagelist = new wxImageList(32, 32);
 	imagelist->Add( wxBitmapFromMemory(file_binary_32_png) );
@@ -78,6 +78,15 @@ void WFileList::UpdateItem(unsigned int sfid)
     wmain->UpdateSubFileCaption(sfid);
 }
 
+static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
+					 const wxString& text, const wxString& helpString)
+{
+    wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
+    mi->SetBitmap( bitmapcatalog.GetMenuBitmap(id) );
+    parentMenu->Append(mi);
+    return mi;
+}
+
 static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
 					 const wxString& text, const wxString& helpString,
 					 const wxBitmap& bmp)
@@ -89,89 +98,55 @@ static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
 
 void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 {
-    #include "art/document_open.h"
-    #include "art/document_new.h"
-    #include "art/document_import.h"
-    #include "art/document_export.h"
-    #include "art/document_delete.h"
-    #include "art/document_properties.h"
-
     wxMenu* menu = new wxMenu;
 
-    menu->Append(
-	createMenuItem(menu, myID_FILE_OPEN,
-		       _("&Open SubFile"),
-		       _("Open subfile in editor."),
-		       wxBitmapFromMemory(document_open_png))
-	);
-    menu->Append(
-	createMenuItem(menu, WCryptoTE::myID_MENU_SUBFILE_NEW,
-		       _("&Add New SubFile"),
-		       _("Add new text subfile to container and open it in the editor."),
-		       wxBitmapFromMemory(document_new_png))
-	);
-    menu->Append(
-	createMenuItem(menu, WCryptoTE::myID_MENU_SUBFILE_IMPORT,
-		       _("&Import New SubFile"),
-		       _("Import any file from the disk into the container."),
-		       wxBitmapFromMemory(document_import_png))
-	);
-    menu->Append(
-	createMenuItem(menu, myID_FILE_EXPORT,
-		       _("&Export SubFiles"),
-		       _("Export subfiles from encrypted container to disk."),
-		       wxBitmapFromMemory(document_export_png))
-	);
-    menu->Append(
-	createMenuItem(menu, myID_FILE_DELETE,
-		       _("&Delete SubFiles"),
-		       _("Delete selected subfiles from encrypted container."),
-		       wxBitmapFromMemory(document_delete_png))
-	);
-    menu->AppendSeparator();
+    appendMenuItem(menu, myID_FILE_OPEN,
+		   _("&Open SubFile"),
+		   _("Open subfile in editor."));
 
-    #include "art/view_icon.h"
-    #include "art/view_multicolumn.h"
-    #include "art/view_detailed.h"
+    appendMenuItem(menu, WCryptoTE::myID_MENU_SUBFILE_NEW,
+		   _("&Add New SubFile"),
+		   _("Add new text subfile to container and open it in the editor."));
+
+    appendMenuItem(menu, WCryptoTE::myID_MENU_SUBFILE_IMPORT,
+		   _("&Import New SubFile"),
+		   _("Import any file from the disk into the container."));
+
+    appendMenuItem(menu, myID_FILE_EXPORT,
+		   _("&Export SubFiles"),
+		   _("Export subfiles from encrypted container to disk."));
+
+    appendMenuItem(menu, myID_FILE_DELETE,
+		   _("&Delete SubFiles"),
+		   _("Delete selected subfiles from encrypted container."));
+
+    menu->AppendSeparator();
 
     wxMenu* viewmenu = new wxMenu;
 
-    viewmenu->Append(
-	createMenuItem(menu, myID_VIEW_BIGICONS,
-		       _("Big &Icons"),
-		       wxEmptyString,
-		       wxBitmapFromMemory(view_icon_png))
-	);
-    viewmenu->Append(
-	createMenuItem(menu, myID_VIEW_LIST,
-		       _("&List"),
-		       wxEmptyString,
-		       wxBitmapFromMemory(view_multicolumn_png))
-	);
-    viewmenu->Append(
-	createMenuItem(menu, myID_VIEW_REPORT,
-		       _("&Report"),	
-		       wxEmptyString,
-		       wxBitmapFromMemory(view_detailed_png))
-	);
+    appendMenuItem(viewmenu, myID_VIEW_BIGICONS,
+		   _("Big &Icons"),
+		   wxEmptyString);
+
+    appendMenuItem(viewmenu, myID_VIEW_LIST,
+		   _("&List"),
+		   wxEmptyString);
+
+    appendMenuItem(viewmenu, myID_VIEW_REPORT,
+		   _("&Report"),	
+		   wxEmptyString);
 
     menu->AppendSubMenu(viewmenu, _("&View"));
 
     menu->AppendSeparator();
 
-    menu->Append(
-	createMenuItem(menu, myID_FILE_RENAME,
-		       _("&Rename"),
-		       _("Rename selected subfile."),
-		       wxNullBitmap)
-	);
+    appendMenuItem(menu, myID_FILE_RENAME,
+		   _("&Rename"),
+		   _("Rename selected subfile."));
 
-    menu->Append(
-	createMenuItem(menu, myID_FILE_PROPERTIES,
-		       _("&Properties"),
-		       _("Show metadata properties of selected subfile."),
-		       wxBitmapFromMemory(document_properties_png))
-	);
+    appendMenuItem(menu, myID_FILE_PROPERTIES,
+		   _("&Properties"),
+		   _("Show metadata properties of selected subfile."));
 
     // disable items not applicable
     int si = GetSelectedItemCount();

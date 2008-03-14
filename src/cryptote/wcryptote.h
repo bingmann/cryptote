@@ -386,8 +386,11 @@ public:
     /// Set the current bitmap/icon theme
     void	SetTheme(int themeid);
 
-    /// Return an associated bitmap for the identifier id.
-    wxBitmap	GetBitmap(int id, int size = 0);
+    /// Return an associated bitmap for the menu identifier id.
+    wxBitmap	GetMenuBitmap(int id);
+
+    /// Return an associated bitmap for the toolbar identifier id.
+    wxBitmap	GetToolbarBitmap(int id);
 };
 
 extern class BitmapCatalog bitmapcatalog;

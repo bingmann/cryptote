@@ -732,12 +732,8 @@ bool CEWEditCtrl::LoadInputStream(wxInputStream& stream)
 WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
     : wxPanel(parent)
 {
-    #include "art/window_close.h"
-    #include "art/go_up.h"
-    #include "art/go_down.h"
-
-    wxBitmapButton* buttonQuickFindClose
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_CLOSE, wxBitmapFromMemory(window_close_png),
+    buttonQuickFindClose
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_CLOSE, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonQuickFindClose->SetLabel(_("Close"));
     buttonQuickFindClose->SetToolTip(_("Close Quick-Find bar"));
@@ -746,14 +742,14 @@ WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
 
     textctrlQuickFind = new wxTextCtrl(this, WCryptoTE::myID_QUICKFIND_TEXT, wxEmptyString);
 
-    wxBitmapButton* buttonQuickFindNext
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_NEXT, wxBitmapFromMemory(go_down_png),
+    buttonQuickFindNext
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_NEXT, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonQuickFindNext->SetLabel(_("Next"));
     buttonQuickFindNext->SetToolTip(_("Search for next occurance"));
 
-    wxBitmapButton* buttonQuickFindPrev
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_PREV, wxBitmapFromMemory(go_up_png),
+    buttonQuickFindPrev
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKFIND_PREV, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonQuickFindPrev->SetLabel(_("Previous"));
     buttonQuickFindPrev->SetToolTip(_("Search for previous occurance"));
@@ -773,6 +769,18 @@ WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
     SetSizer(sizerMain);
     Layout();
     sizerMain->Fit(this);
+
+    set_bitmaps();
+}
+
+void WQuickFindBar::set_bitmaps()
+{
+    buttonQuickFindClose->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKFIND_CLOSE) );
+
+    buttonQuickFindNext->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKFIND_NEXT) );
+    buttonQuickFindPrev->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKFIND_PREV) );
+
+    Layout();
 }
 
 // *** WQuickGotoBar ***
@@ -780,11 +788,8 @@ WQuickFindBar::WQuickFindBar(class WCryptoTE* parent)
 WQuickGotoBar::WQuickGotoBar(class WCryptoTE* parent)
     : wxPanel(parent)
 {
-    #include "art/window_close.h"
-    #include "art/go_next.h"
-
-    wxBitmapButton* buttonGotoCancel
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_CLOSE, wxBitmapFromMemory(window_close_png),
+    buttonGotoCancel
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_CLOSE, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonGotoCancel->SetLabel(_("Cancel"));
     buttonGotoCancel->SetToolTip(_("Cancel Go to Line"));
@@ -794,8 +799,8 @@ WQuickGotoBar::WQuickGotoBar(class WCryptoTE* parent)
     textctrlGoto = new wxTextCtrl(this, WCryptoTE::myID_QUICKGOTO_TEXT, wxEmptyString,
 				   wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
 
-    wxBitmapButton* buttonGotoGo
-	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_GO, wxBitmapFromMemory(go_next_png),
+    buttonGotoGo
+	= new wxBitmapButton(this, WCryptoTE::myID_QUICKGOTO_GO, wxNullBitmap,
 			     wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
     buttonGotoGo->SetLabel(_("Go"));
     buttonGotoGo->SetToolTip(_("Go to Line"));
@@ -814,4 +819,15 @@ WQuickGotoBar::WQuickGotoBar(class WCryptoTE* parent)
     SetSizer(sizerMain);
     Layout();
     sizerMain->Fit(this);
+
+    set_bitmaps();
+}
+
+void WQuickGotoBar::set_bitmaps()
+{
+    buttonGotoCancel->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKGOTO_CLOSE) );
+
+    buttonGotoGo->SetBitmapLabel( bitmapcatalog.GetMenuBitmap(WCryptoTE::myID_QUICKGOTO_GO) );
+
+    Layout();
 }

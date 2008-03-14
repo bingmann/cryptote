@@ -20,9 +20,9 @@ WMessageDialog::WMessageDialog(wxWindow *parent, const wxString& message,
     // 1) icon
     if (style & wxICON_MASK)
     {
-	#include "art/messagebox_error.h"
-	#include "art/messagebox_warning.h"
-	#include "art/messagebox_info.h"
+	#include "art/crystal/messagebox-error-32.h"
+	#include "art/crystal/messagebox-warning-32.h"
+	#include "art/crystal/messagebox-info-32.h"
 
         wxBitmap bitmap;
         switch (style & wxICON_MASK)
@@ -32,15 +32,15 @@ WMessageDialog::WMessageDialog(wxWindow *parent, const wxString& message,
 	    // fall through
 
 	case wxICON_ERROR:
-	    bitmap = wxBitmapFromMemory(messagebox_error_png);
+	    bitmap = wxBitmapFromMemory(messagebox_error_32_png);
 	    break;
 
 	case wxICON_WARNING:
-	    bitmap = wxBitmapFromMemory(messagebox_warning_png);
+	    bitmap = wxBitmapFromMemory(messagebox_warning_32_png);
 	    break;
 
 	case wxICON_INFORMATION:
-	    bitmap = wxBitmapFromMemory(messagebox_info_png);
+	    bitmap = wxBitmapFromMemory(messagebox_info_32_png);
 	    break;
         }
 
