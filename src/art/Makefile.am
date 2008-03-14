@@ -47,6 +47,7 @@ noinst_HEADERS = \
 	edit_find.h \
 	edit_add.h \
 	edit_remove.h \
+	edit_goto.h \
 	go_up.h \
 	go_down.h \
 	go_next.h \
@@ -114,6 +115,7 @@ EXTRA_DIST = \
 	edit_find.png \
 	edit_add.png \
 	edit_remove.png \
+	edit_goto.png \
 	go_up.png \
 	go_down.png \
 	go_next.png \
