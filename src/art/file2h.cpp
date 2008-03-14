@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	std::cerr << "Reading " << argv[ai] << "\n";
 
 	// open file path
-	std::ifstream filestream(argv[ai]);
+	std::ifstream filestream(argv[ai], std::ios::in | std::ios::binary);
 	if (!filestream.good()) {
 	    std::cerr << "Could not open " << argv[ai] << "\n";
 	    return 0;
