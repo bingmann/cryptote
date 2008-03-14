@@ -618,7 +618,7 @@ bool WTextPage::GetViewLonglineGuide()
 }
 
 
-BEGIN_EVENT_TABLE(WTextPage, wxPanel)
+BEGIN_EVENT_TABLE(WTextPage, WNotePage)
 
     // *** Edit Menu Event passed down by WCryptoTE
 
@@ -640,6 +640,8 @@ BEGIN_EVENT_TABLE(WTextPage, wxPanel)
     EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WTextPage::OnScintillaSavePointLeft)
 
 END_EVENT_TABLE()
+
+IMPLEMENT_ABSTRACT_CLASS(WTextPage, WNotePage);
 
 #if 0
 /*****************************************************************************/

@@ -63,7 +63,9 @@ public:
     class WBinaryPageList* listctrl;
 
 private:
-    DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE();
+
+    DECLARE_ABSTRACT_CLASS(WBinaryPage);
 };
 
 class WBinaryPageList : public wxListCtrl

@@ -122,9 +122,11 @@ bool WBinaryPage::DoQuickGoto(const wxString& gototext)
     return true;
 }
 
-BEGIN_EVENT_TABLE(WBinaryPage, wxPanel)
+BEGIN_EVENT_TABLE(WBinaryPage, WNotePage)
 
 END_EVENT_TABLE();
+
+IMPLEMENT_ABSTRACT_CLASS(WBinaryPage, WNotePage);
 
 // *** WBinaryPageList ***
 

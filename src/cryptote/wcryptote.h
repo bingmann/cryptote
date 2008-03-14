@@ -366,4 +366,23 @@ public:
     DECLARE_ABSTRACT_CLASS(WNotePage);
 };
 
+class BitmapCatalog
+{
+public:
+
+    /// Theme id
+    int		themeid;
+
+    /// Construct and initialize the bitmap catalog
+    BitmapCatalog();
+
+    /// Set the current bitmap/icon theme
+    void	SetTheme(int themeid);
+
+    /// Return an associated bitmap for the identifier id.
+    wxBitmap	GetBitmap(int id, int size = 0);
+};
+
+extern class BitmapCatalog bitmapcatalog;
+
 #endif // WCRYPTOTE_H

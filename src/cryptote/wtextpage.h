@@ -138,7 +138,9 @@ protected:
 	__attribute__((packed));
 
 private:
-    DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE();
+
+    DECLARE_ABSTRACT_CLASS(WTextPage);
 };
 
 class WQuickFindBar : public wxPanel
