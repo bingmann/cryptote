@@ -39,6 +39,9 @@ protected:
 public:
     // *** Operations ***
 
+    /// Rebuild the image list of file icons
+    void	BuildImageList();
+    
     /// Reload all items from the Container's list
     void	ResetItems();
 

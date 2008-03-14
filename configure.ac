@@ -208,6 +208,7 @@ AC_CONFIG_FILES([Makefile
 		 src/Makefile
 		 src/art/Makefile
 		 src/art/crystal/Makefile
+		 src/art/slick/Makefile
 		 src/pwgen/Makefile
 		 src/pwtutor/Makefile
 		 src/cryptote/Makefile])

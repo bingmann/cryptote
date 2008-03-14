@@ -5807,7 +5807,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile libenctain/speedtest/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile libenctain/speedtest/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6438,6 +6438,7 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/art/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/Makefile" ;;
     "src/art/crystal/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/crystal/Makefile" ;;
+    "src/art/slick/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/slick/Makefile" ;;
     "src/pwgen/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwgen/Makefile" ;;
     "src/pwtutor/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwtutor/Makefile" ;;
     "src/cryptote/Makefile") CONFIG_FILES="$CONFIG_FILES src/cryptote/Makefile" ;;

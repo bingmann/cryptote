@@ -237,7 +237,8 @@ noinst_HEADERS = \
 	view-multicolumn-16.h \
 	view-multicolumn-22.h \
 	web-16.h \
-	window-close-16.h
+	window-close-16.h \
+	window-close-22.h
 
 EXTRA_DIST = \
 	application-exit-16.png \
@@ -265,7 +266,7 @@ EXTRA_DIST = \
 	document-save-16.png \
 	document-save-22.png \
 	document-save-as-16.png \
-	document-save-as-226.png \
+	document-save-as-22.png \
 	edit-add-16.png \
 	edit-add-22.png \
 	edit-clear-16.png \
@@ -312,7 +313,8 @@ EXTRA_DIST = \
 	view-multicolumn-16.png \
 	view-multicolumn-22.png \
 	web-16.png \
-	window-close-16.png
+	window-close-16.png \
+	window-close-22.png
 
 all: all-am
 

@@ -1767,7 +1767,7 @@ IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);
 BitmapCatalog	bitmapcatalog;
 
 BitmapCatalog::BitmapCatalog()
-    : themeid(0)
+    : themeid(1)
 {
 }
 
@@ -1851,7 +1851,8 @@ wxBitmap BitmapCatalog::GetMenuBitmap(int id)
 	    static wxBitmap bmp = wxBitmapFromMemory(document_export_16_png);
 	    return bmp;
 	}
-	case WCryptoTE::myID_MENU_SUBFILE_PROPERTIES: {
+	case WCryptoTE::myID_MENU_SUBFILE_PROPERTIES:
+	case WFileList::myID_FILE_PROPERTIES: {
             #include "art/crystal/document-properties-16.h"
 	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_16_png);
 	    return bmp;
@@ -1955,6 +1956,180 @@ wxBitmap BitmapCatalog::GetMenuBitmap(int id)
 
 	}
     }
+    else if (themeid == 1)
+    {
+	switch (id)
+	{
+	    // *** Container Menu ***
+
+	case wxID_OPEN:
+	case WFileList::myID_FILE_OPEN: {
+            #include "art/slick/document-open-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_open_16_png);
+	    return bmp;
+	}
+	case wxID_SAVE: {
+            #include "art/slick/document-save-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_16_png);
+	    return bmp;
+	}
+	case wxID_SAVEAS: {
+            #include "art/slick/document-save-as-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_as_16_png);
+	    return bmp;
+	}
+	case wxID_REVERT: {
+            #include "art/slick/document-revert-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_revert_16_png);
+	    return bmp;
+	}
+	case wxID_CLOSE: {
+            #include "art/slick/document-close-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_16_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_CONTAINER_SHOWLIST: {
+            #include "art/slick/view-choose-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_choose_16_png);
+	    return bmp;
+	}
+	case wxID_PROPERTIES: {
+            #include "art/slick/document-properties-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_16_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_CONTAINER_SETPASS: {
+            #include "art/slick/document-password-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_password_16_png);
+	    return bmp;
+	}
+
+	case wxID_EXIT: {
+            #include "art/slick/application-exit-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_exit_16_png);
+	    return bmp;
+	}
+
+	    // *** SubFile Menu ***
+
+	case WCryptoTE::myID_MENU_SUBFILE_NEW: {
+            #include "art/slick/document-new-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_new_16_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_IMPORT: {
+	    return wxNullBitmap;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_EXPORT:
+	case WFileList::myID_FILE_EXPORT: {
+	    return wxNullBitmap;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_PROPERTIES:
+	case WFileList::myID_FILE_PROPERTIES: {
+            #include "art/slick/document-properties-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_16_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_CLOSE: {
+            #include "art/slick/document-close-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_16_png);
+	    return bmp;
+	}
+	case WFileList::myID_FILE_DELETE: {
+            #include "art/slick/document-delete-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_delete_16_png);
+	    return bmp;
+	}
+
+	    // *** Edit Menu ***
+
+	case wxID_UNDO: {
+            #include "art/slick/edit-undo-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_undo_16_png);
+	    return bmp;
+	}
+	case wxID_REDO: {
+            #include "art/slick/edit-redo-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_redo_16_png);
+	    return bmp;
+	}
+	case wxID_CUT: {
+            #include "art/slick/edit-cut-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_cut_16_png);
+	    return bmp;
+	}
+	case wxID_COPY: {
+            #include "art/slick/edit-copy-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_copy_16_png);
+	    return bmp;
+	}
+	case wxID_PASTE: {
+            #include "art/slick/edit-paste-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_paste_16_png);
+	    return bmp;
+	}
+	case wxID_CLEAR: {
+            #include "art/slick/edit-clear-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_clear_16_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_EDIT_QUICKFIND: {
+            #include "art/slick/edit-find-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_16_png);
+	    return bmp;
+	}
+	case wxID_FIND: {
+            #include "art/slick/edit-find-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_16_png);
+	    return bmp;
+	}
+	case wxID_REPLACE: {
+            #include "art/slick/edit-find-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_16_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_EDIT_GOTO: {
+            #include "art/slick/edit-goto-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_goto_16_png);
+	    return bmp;
+	}
+
+	case wxID_SELECTALL: {
+	    return wxNullBitmap;
+	}
+	case WCryptoTE::myID_MENU_EDIT_SELECTLINE: {
+	    return wxNullBitmap;
+	}
+
+	    // *** Help Menu ***
+
+	case wxID_ABOUT: {
+            #include "art/slick/application-info-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_info_16_png);
+	    return bmp;
+	}
+
+	case WFileList::myID_VIEW_BIGICONS: {
+            #include "art/slick/view-icon-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_icon_16_png);
+	    return bmp;
+	}
+	case WFileList::myID_VIEW_LIST: {
+            #include "art/slick/view-multicolumn-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_multicolumn_16_png);
+	    return bmp;
+	}
+	case WFileList::myID_VIEW_REPORT: {
+            #include "art/slick/view-detailed-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_detailed_16_png);
+	    return bmp;
+	}
+
+	}
+    }
 
     return wxNullBitmap;
 }
@@ -1967,8 +2142,7 @@ wxBitmap BitmapCatalog::GetToolbarBitmap(int id)
 	{
 	    // *** Container Menu ***
 
-	case wxID_OPEN:
-	{
+	case wxID_OPEN:	{
             #include "art/crystal/document-open-22.h"
 	    static wxBitmap bmp = wxBitmapFromMemory(document_open_22_png);
 	    return bmp;
@@ -2028,8 +2202,7 @@ wxBitmap BitmapCatalog::GetToolbarBitmap(int id)
 	    static wxBitmap bmp = wxBitmapFromMemory(document_import_22_png);
 	    return bmp;
 	}
-	case WCryptoTE::myID_MENU_SUBFILE_EXPORT:
-	{
+	case WCryptoTE::myID_MENU_SUBFILE_EXPORT: {
             #include "art/crystal/document-export-22.h"
 	    static wxBitmap bmp = wxBitmapFromMemory(document_export_22_png);
 	    return bmp;
@@ -2117,6 +2290,246 @@ wxBitmap BitmapCatalog::GetToolbarBitmap(int id)
 
 	}
     }
+    else if (themeid == 1)
+    {
+	switch (id)
+	{
+	    // *** Container Menu ***
+
+	case wxID_OPEN:
+	{
+            #include "art/slick/document-open-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_open_22_png);
+	    return bmp;
+	}
+	case wxID_SAVE: {
+            #include "art/slick/document-save-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_22_png);
+	    return bmp;
+	}
+	case wxID_SAVEAS: {
+            #include "art/slick/document-save-as-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_save_as_22_png);
+	    return bmp;
+	}
+	case wxID_REVERT: {
+            #include "art/slick/document-revert-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_revert_22_png);
+	    return bmp;
+	}
+	case wxID_CLOSE: {
+            #include "art/slick/document-close-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_22_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_CONTAINER_SHOWLIST: {
+            #include "art/slick/view-choose-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(view_choose_22_png);
+	    return bmp;
+	}
+	case wxID_PROPERTIES: {
+            #include "art/slick/document-properties-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_CONTAINER_SETPASS: {
+            #include "art/slick/document-password-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_password_22_png);
+	    return bmp;
+	}
+
+	case wxID_EXIT: {
+            #include "art/slick/application-exit-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_exit_22_png);
+	    return bmp;
+	}
+
+	    // *** SubFile Menu ***
+
+	case WCryptoTE::myID_MENU_SUBFILE_NEW: {
+            #include "art/slick/document-new-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_new_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_IMPORT: {
+	    return GetMenuBitmap(id);
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_EXPORT: {
+	    return GetMenuBitmap(id);
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_PROPERTIES: {
+            #include "art/slick/document-properties-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_properties_22_png);
+	    return bmp;
+	}
+	case WCryptoTE::myID_MENU_SUBFILE_CLOSE: {
+            #include "art/slick/document-close-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(document_close_22_png);
+	    return bmp;
+	}
+
+	    // *** Edit Menu ***
+
+	case wxID_UNDO: {
+            #include "art/slick/edit-undo-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_undo_22_png);
+	    return bmp;
+	}
+	case wxID_REDO: {
+            #include "art/slick/edit-redo-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_redo_22_png);
+	    return bmp;
+	}
+	case wxID_CUT: {
+            #include "art/slick/edit-cut-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_cut_22_png);
+	    return bmp;
+	}
+	case wxID_COPY: {
+            #include "art/slick/edit-copy-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_copy_22_png);
+	    return bmp;
+	}
+	case wxID_PASTE: {
+            #include "art/slick/edit-paste-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_paste_22_png);
+	    return bmp;
+	}
+	case wxID_CLEAR: {
+	    return GetMenuBitmap(id);
+	}
+
+	case WCryptoTE::myID_MENU_EDIT_QUICKFIND: {
+            #include "art/slick/edit-find-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_22_png);
+	    return bmp;
+	}
+	case wxID_FIND: {
+            #include "art/slick/edit-find-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_22_png);
+	    return bmp;
+	}
+	case wxID_REPLACE: {
+            #include "art/slick/edit-find-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_find_22_png);
+	    return bmp;
+	}
+
+	case WCryptoTE::myID_MENU_EDIT_GOTO: {
+            #include "art/slick/edit-goto-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(edit_goto_22_png);
+	    return bmp;
+	}
+
+	case wxID_SELECTALL: {
+	    return wxNullBitmap;
+	}
+	case WCryptoTE::myID_MENU_EDIT_SELECTLINE: {
+	    return wxNullBitmap;
+	}
+
+	    // *** Help Menu ***
+
+	case wxID_ABOUT: {
+            #include "art/slick/application-info-22.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(application_info_22_png);
+	    return bmp;
+	}
+
+	}
+    }
 
     return GetMenuBitmap(id);
+}
+
+/// Return an associated bitmap for the file list.
+wxBitmap BitmapCatalog::GetFileTypeBitmap(int id, int size)
+{
+    if (size == 16 && themeid == 0)
+    {
+	switch(id)
+	{
+	case 0: {
+            #include "art/crystal/file-binary-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_binary_16_png);
+	    return bmp;
+	}
+	case 1: {
+            #include "art/crystal/file-text-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_text_16_png);
+	    return bmp;
+	}
+	case 2: {
+            #include "art/crystal/file-image-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_image_16_png);
+	    return bmp;
+	}
+	}
+    }
+    if (size == 16 && themeid == 1)
+    {
+	switch(id)
+	{
+	case 0: {
+            #include "art/slick/file-binary-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_binary_16_png);
+	    return bmp;
+	}
+	case 1: {
+            #include "art/slick/file-text-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_text_16_png);
+	    return bmp;
+	}
+	case 2: {
+            #include "art/slick/file-image-16.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_image_16_png);
+	    return bmp;
+	}
+	}
+    }
+    else if (size == 32 && themeid == 0)
+    {
+	switch(id)
+	{
+	case 0: {
+            #include "art/crystal/file-binary-32.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_binary_32_png);
+	    return bmp;
+	}
+	case 1: {
+            #include "art/crystal/file-text-32.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_text_32_png);
+	    return bmp;
+	}
+	case 2: {
+            #include "art/crystal/file-image-32.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_image_32_png);
+	    return bmp;
+	}
+	}
+    }
+    else if (size == 32 && themeid == 1)
+    {
+	switch(id)
+	{
+	case 0: {
+            #include "art/slick/file-binary-32.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_binary_32_png);
+	    return bmp;
+	}
+	case 1: {
+            #include "art/slick/file-text-32.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_text_32_png);
+	    return bmp;
+	}
+	case 2: {
+            #include "art/slick/file-image-32.h"
+	    static wxBitmap bmp = wxBitmapFromMemory(file_image_32_png);
+	    return bmp;
+	}
+	}
+    }
+
+    return wxNullBitmap;
 }

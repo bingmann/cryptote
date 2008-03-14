@@ -16,28 +16,25 @@ WFileList::WFileList(class WCryptoTE* parent)
 {
     SetWindowStyleFlag(wxLC_ICON | wxLC_EDIT_LABELS);
 
-    {
-        #include "art/crystal/file-binary-16.h"
-        #include "art/crystal/file-text-16.h"
-        #include "art/crystal/file-image-16.h"
+    BuildImageList();
+}
 
+void WFileList::BuildImageList()
+{
+    {
 	wxImageList* imagelist = new wxImageList(16, 16);
-	imagelist->Add( wxBitmapFromMemory(file_binary_16_png) );
-	imagelist->Add( wxBitmapFromMemory(file_text_16_png) );
-	imagelist->Add( wxBitmapFromMemory(file_image_16_png) );
+	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(0, 16) );
+	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(1, 16) );
+	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(2, 16) );
 
 	AssignImageList(imagelist, wxIMAGE_LIST_SMALL);
     }
 
     {
-        #include "art/crystal/file-binary-32.h"
-        #include "art/crystal/file-text-32.h"
-        #include "art/crystal/file-image-32.h"
-
 	wxImageList* imagelist = new wxImageList(32, 32);
-	imagelist->Add( wxBitmapFromMemory(file_binary_32_png) );
-	imagelist->Add( wxBitmapFromMemory(file_text_32_png) );
-	imagelist->Add( wxBitmapFromMemory(file_image_32_png) );
+	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(0, 32) );
+	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(1, 32) );
+	imagelist->Add( bitmapcatalog.GetFileTypeBitmap(2, 32) );
 
 	AssignImageList(imagelist, wxIMAGE_LIST_NORMAL);
     }

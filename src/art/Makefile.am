@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = . crystal
+SUBDIRS = . crystal slick
 
 noinst_PROGRAMS = file2h
 

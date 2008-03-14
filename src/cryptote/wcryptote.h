@@ -391,6 +391,9 @@ public:
 
     /// Return an associated bitmap for the toolbar identifier id.
     wxBitmap	GetToolbarBitmap(int id);
+
+    /// Return an associated bitmap for the file list.
+    wxBitmap	GetFileTypeBitmap(int id, int size);
 };
 
 extern class BitmapCatalog bitmapcatalog;
