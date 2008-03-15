@@ -260,6 +260,144 @@ void WCryptoTE::UpdateSubFileModified(WNotePage* page, bool modified)
     UpdateModified();
 }
 
+static inline bool CheckTextASCII(char c)
+{
+    static const unsigned char ok[256] = {
+	// 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F
+	0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, // 00-0F: NUL - SI
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 10-1F: DLE - US
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 20-2F: " !"#$%&'()*+,-./"
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 30-3F: "0123456789:;<=>?"
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 40-4F: "@ABCDEFGHIJKLMNO"
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 50-5F: "PQRSTUVWXYZ[\]^_"
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 60-6F: "`abcdefghijklmno"
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, // 70-7F: "pqrstuvwxyz{|}~ "
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 80-8F: depends on codepage
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 90-9F: depends on codepage
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // A0-AF: depends on codepage
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // B0-BF: depends on codepage
+	0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // C0-CF: depends on codepage
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // D0-DF: depends on codepage
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // E0-EF: depends on codepage
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  // F0-FF: depends on codepage
+    };
+    return ok[(unsigned char)(c) & 0xFF];
+}
+
+void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, int importtype, bool openpage)
+{
+    size_t importsize = 0;
+    size_t importnum = 0;
+
+    for (unsigned int fi = 0; fi < importlist.GetCount(); ++fi)
+    {
+	wxFile filehandle(importlist[fi], wxFile::read);
+	if (!filehandle.IsOpened()) continue;
+
+	// Create new file in the container
+	unsigned int sfnew = container->AppendSubFile();
+    
+	// TODO: use defaults from global properties.
+	container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
+	container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
+
+	wxFileName fname (importlist[fi]);
+	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
+	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
+
+	int filetype = importtype;
+	if (filetype < 0)
+	{
+	    // try to detect file type
+	    if (fname.GetExt().Lower() == _T("txt"))
+		filetype = 1;
+	    else
+		filetype = 0;
+	}
+	container->SetSubFileProperty(sfnew, "Filetype", strWX2STL(wxString::Format(_T("%u"), filetype)));
+
+	if (openpage)
+	{
+	    // Open empty subfileid in text editor or binary viewer page and
+	    // load the file via the page's method
+
+	    OpenSubFile(sfnew);
+	    
+	    WNotePage* page = FindSubFilePage(sfnew);
+
+	    importnum++;
+	    importsize += page->ImportFile(filehandle);
+	}
+	else
+	{
+	    // Load complete file into wxMemoryBuffer and save data via SetSubFileData()
+	    wxMemoryBuffer filedata;
+	    bool istextfile = false;
+	    if (importtype < 0) istextfile = true;
+
+	    {
+		wxFileOffset filesize = filehandle.Length();
+		statusbar->ProgressStart("Importing", 0, filesize);
+
+		filedata.SetBufSize(filesize);
+		size_t offset = 0;
+
+		for (int i = 0; !filehandle.Eof(); i++)
+		{
+		    filedata.SetBufSize(offset + 65536);
+		
+		    size_t readmax = wxMin(65536, filedata.GetBufSize() - offset);
+		    size_t rb = filehandle.Read((char*)filedata.GetData() + offset, readmax);
+		    if (rb <= 0) break;
+
+		    if (istextfile) // check if any non-printable ascii character is found
+		    {
+			char* cdata = (char*)filedata.GetData();
+			for(unsigned int bo = offset; bo < offset + rb; ++bo)
+			{
+			    if (!CheckTextASCII(cdata[bo])) {
+				istextfile = false;
+				break;
+			    }
+			}
+		    }
+
+		    offset += rb;
+
+		    statusbar->ProgressUpdate(offset);
+		}
+
+		filehandle.Close();
+		filedata.SetDataLen(offset);
+
+		statusbar->ProgressStop();
+	    }
+
+	    if (istextfile && importtype < 0)
+	    {
+		container->SetSubFileProperty(sfnew, "Filetype", "1");
+	    }
+
+	    container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
+
+	    importnum++;
+	    importsize += filedata.GetDataLen();
+	}
+    }
+
+    // update window
+    filelistpane->ResetItems();
+
+    UpdateStatusBar(wxString::Format(_("Imported %u bytes into %u new subfiles in container."),
+				     importsize, importnum));
+    SetModified();
+
+    if (openpage)
+    {
+	if (cpage) cpage->SetFocus();
+    }
+}
+
 /** Write the incoming file data into the export file. */
 class ExportAcceptor : public Enctain::DataAcceptor
 {
@@ -1071,53 +1209,15 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
     wxArrayString importlist;
     dlg.GetPaths(importlist);
 
-    size_t importsize = 0;
-    size_t importnum = 0;
-
-    for (unsigned int fi = 0; fi < importlist.GetCount(); ++fi)
-    {
-	wxFile importfile(importlist[fi], wxFile::read);
-	if (!importfile.IsOpened()) continue;
-
-	// Create new text file in the container
-	unsigned int sfnew = container->AppendSubFile();
-    
-	// TODO: use defaults from global properties.
-	container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
-	container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
-
-	wxFileName fname (importlist[fi]);
-	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
-	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
-
-	unsigned int filetype = 0;
-	if (dlg.GetFilterIndex() == 0 || dlg.GetFilterIndex() == 1)
-	{
-	    filetype = 1;
-	}
-	else
-	{
-	    filetype = 0;
-	}
-	container->SetSubFileProperty(sfnew, "Filetype", strWX2STL(wxString::Format(_T("%u"), filetype)));
-
-	// open file in text editor or binary viewer
-	OpenSubFile(sfnew);
-
-	WNotePage* page = FindSubFilePage(sfnew);
-
-	importnum++;
-	importsize += page->ImportFile(importfile);
+    unsigned int filetype = 0;
+    if (dlg.GetFilterIndex() == 0 || dlg.GetFilterIndex() == 1) {
+	filetype = 1;
+    }
+    else {
+	filetype = 0;
     }
 
-    // update window
-    filelistpane->ResetItems();
-
-    UpdateStatusBar(wxString::Format(_("Imported %u bytes into %u new subfiles in container."),
-				     importsize, importnum));
-    SetModified();
-
-    if (cpage) cpage->SetFocus();
+    ImportSubFiles(importlist, filetype, true);
 }
 
 void WCryptoTE::OnMenuSubFileExport(wxCommandEvent& WXUNUSED(event))

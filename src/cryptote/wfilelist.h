@@ -4,7 +4,23 @@
 #define WFILELIST_H
 
 #include <wx/wx.h>
+#include <wx/dnd.h>
 #include <wx/listctrl.h>
+
+class WFileListDropTarget : public wxFileDropTarget
+{
+private:
+    /// Reference to main window
+    class WCryptoTE* wmain;
+
+public:
+
+    WFileListDropTarget(class WCryptoTE* wmain);
+
+    // Virtual Callback from wxFileDropTarget
+    
+    virtual bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames);
+};
 
 class WFileList : public wxListCtrl
 {
@@ -23,6 +39,9 @@ protected:
 
     /// Reference to main window
     class WCryptoTE* wmain;
+
+    /// Drop Target object
+    WFileListDropTarget* droptarget;
 
 public:
     // *** Operations ***

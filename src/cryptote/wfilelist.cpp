@@ -17,6 +17,9 @@ WFileList::WFileList(class WCryptoTE* parent)
 {
     SetWindowStyleFlag(wxLC_ICON | wxLC_EDIT_LABELS);
 
+    droptarget = new WFileListDropTarget(parent);
+    SetDropTarget(droptarget);
+
     BuildImageList();
 }
 
@@ -353,6 +356,18 @@ void WFileList::OnMenuView(wxCommandEvent& event)
     }
 
     ResetItems();
+}
+
+WFileListDropTarget::WFileListDropTarget(class WCryptoTE* _wmain)
+    : wmain(_wmain)
+{
+}
+
+bool WFileListDropTarget::OnDropFiles(wxCoord WXUNUSED(x), wxCoord WXUNUSED(y), const wxArrayString& filenames)
+{
+    wmain->ImportSubFiles(filenames, -1, false);
+
+    return true;
 }
 
 BEGIN_EVENT_TABLE(WFileList, wxListCtrl)

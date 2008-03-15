@@ -7,7 +7,8 @@
 #include <wx/wfstream.h>
 
 WBinaryPage::WBinaryPage(class WCryptoTE* parent)
-    : WNotePage(parent)
+    : WNotePage(parent),
+      needsave(false)
 {
     // *** Create Control ***
 
@@ -35,6 +36,7 @@ bool WBinaryPage::LoadSubFile(unsigned int sfid)
     wmain->container->GetSubFileData(sfid, bindata);
 
     subfileid = sfid;
+    needsave = false;
 
     listctrl->UpdateData();
 
@@ -62,6 +64,8 @@ size_t WBinaryPage::ImportFile(wxFile& file)
     }
 
     listctrl->UpdateData();
+    needsave = true;
+
     wmain->statusbar->ProgressStop();
 
     return bindata.GetDataLen();
@@ -84,6 +88,30 @@ void WBinaryPage::PageBlurred()
 
 void WBinaryPage::PageSaveData()
 {
+    if (needsave)
+    {
+	wmain->container->SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
+
+	size_t savelen = wmain->container->GetSubFileStorageSize(subfileid);
+
+	if (savelen != bindata.GetDataLen())
+	{
+	    UpdateStatusBar(
+		wxString::Format(_("Compressed %u bytes from buffer into %u bytes for encrypted storage."),
+				 bindata.GetDataLen(), savelen)
+		);
+	}
+	else
+	{
+	    UpdateStatusBar(
+		wxString::Format(_("Saving %u bytes from buffer for encrypted storage."),
+				 bindata.GetDataLen())
+		);
+	}
+
+	wmain->SetModified();
+	needsave = false;
+    }
 }
 
 void WBinaryPage::PageClosed()

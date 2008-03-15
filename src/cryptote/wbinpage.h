@@ -23,7 +23,12 @@ public:
 
     // *** Variables ***
 
+    /// Buffer holding the binary data
     wxMemoryBuffer	bindata;
+
+    /// Flag if the data needs to be saved, this is the case after importing a
+    /// file directly into the page.
+    bool		needsave;
 
     // *** Operations ***
  

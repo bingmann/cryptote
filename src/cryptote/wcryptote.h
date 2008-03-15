@@ -111,6 +111,9 @@ public:
     /// Set the modified page image on notebook pages
     void	UpdateSubFileModified(WNotePage* page, bool modified);
 
+    /// Import a list of full file paths as new subfiles into the container.
+    void	ImportSubFiles(const wxArrayString& filelist, int filetype, bool openpage);
+
     /// Export one of the SubFiles of the container, either the currently
     /// opened buffer or directly from the container.
     void	ExportSubFile(unsigned int sfid, wxOutputStream& os);
