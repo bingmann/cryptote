@@ -65,6 +65,8 @@ protected:
     /// Singleton class
     static BitmapCatalog*	singleton;
 
+    /// Registered wxArtProvider derived class
+    class BitmapCatalogArtProvider* artprovider;
 public:
 
     /// Set the current bitmap/icon theme
@@ -103,6 +105,9 @@ public:
 
     /// Return Singleton class
     static BitmapCatalog*	GetSingleton();
+
+    /// Register a wxArtProvider providing bitmaps from this object.
+    void		RegisterArtProvider();
 };
 
 #endif // BITMAPCATALOG_H

@@ -5,6 +5,8 @@
 #include "wcryptote.h"
 #include "common/tools.h"
 
+#include <wx/artprov.h>
+
 // *** BitmapManager Code ***
 
 enum bitmapusage_type { BU_GENERAL, BU_MENU, BU_TOOLBAR, BU_FILETYPE };
@@ -13,7 +15,11 @@ class BitmapCatalog* BitmapCatalog::singleton = NULL;
 
 class BitmapCatalog* BitmapCatalog::GetSingleton()
 {
-    if (!singleton) singleton = new BitmapCatalog;
+    if (!singleton)
+    {
+	singleton = new BitmapCatalog;
+	singleton->RegisterArtProvider();
+    }
     return singleton;
 }
 
@@ -23,6 +29,7 @@ class BitmapCatalog* BitmapCatalog()
 }
 
 BitmapCatalog::BitmapCatalog()
+    : artprovider(NULL)
 {
     SetTheme(2);
 }
@@ -129,6 +136,40 @@ wxBitmap BitmapCatalog::GetFileTypeBitmap(int id)
     return GetSingleton()->_GetFileTypeBitmap(id);
 }
 
+class BitmapCatalogArtProvider : public wxArtProvider
+{
+public:
+    class BitmapCatalog&	bmpcat;
+
+    BitmapCatalogArtProvider(class BitmapCatalog& bitmapcatalog)
+	: wxArtProvider(),
+	  bmpcat(bitmapcatalog)
+    {
+    }
+
+    virtual wxBitmap CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& WXUNUSED(size))
+    {
+	if (client == wxART_MESSAGE_BOX)
+	{
+	    if (id == wxART_ERROR)
+		return bmpcat.GetBitmap(wxICON_ERROR);
+	    else if (id == wxART_WARNING)
+		return bmpcat.GetBitmap(wxICON_WARNING);
+	    else if (id == wxART_INFORMATION)
+		return bmpcat.GetBitmap(wxICON_INFORMATION);
+	}
+	return wxNullBitmap;
+    }
+};
+
+void BitmapCatalog::RegisterArtProvider()
+{
+    if (!artprovider)
+    {
+	artprovider = new BitmapCatalogArtProvider(*this);
+	wxArtProvider::Push(artprovider);
+    }
+}
 
 struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
 {
