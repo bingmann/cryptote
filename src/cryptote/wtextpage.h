@@ -47,6 +47,8 @@ public:
 
     // *** Event Handlers ***
 
+    void	OnContextMenu(wxContextMenuEvent& event);
+
     // Edit Menu
     void	OnMenuEditUndo(wxCommandEvent& event);
     void	OnMenuEditRedo(wxCommandEvent& event);

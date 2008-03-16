@@ -102,11 +102,65 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
 				wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
 }
 
+void WPreferences::set_properties()
+{
+    // begin wxGlade: WPreferences::set_properties
+    SetTitle(_("CryptoTE Preferences"));
+    // end wxGlade
+}
+
+void WPreferences::do_layout()
+{
+    // begin wxGlade: WPreferences::do_layout
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizerB1 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer* sizerB2 = new wxStaticBoxSizer(sizerB2_staticbox, wxVERTICAL);
+    wxBoxSizer* sizerA1 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer* sizerA6 = new wxStaticBoxSizer(sizerA6_staticbox, wxVERTICAL);
+    wxStaticBoxSizer* sizerA4 = new wxStaticBoxSizer(sizerA4_staticbox, wxVERTICAL);
+    wxBoxSizer* sizerA5 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticBoxSizer* sizerA2 = new wxStaticBoxSizer(sizerA2_staticbox, wxVERTICAL);
+    wxFlexGridSizer* sizerA3 = new wxFlexGridSizer(2, 2, 0, 0);
+    sizerA2->Add(checkboxBackups, 0, wxALL, 4);
+    sizerA3->Add(labelBackup1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 4);
+    sizerA3->Add(spinctrlBackupNum, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 4);
+    sizerA2->Add(sizerA3, 1, wxEXPAND, 0);
+    sizerA1->Add(sizerA2, 0, wxALL|wxEXPAND, 8);
+    sizerA4->Add(checkboxAutoClose, 0, wxALL, 4);
+    sizerA5->Add(labelAutoClose1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 4);
+    sizerA5->Add(spinctrlAutoCloseTime, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 4);
+    sizerA5->Add(labelAutoClose2, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 4);
+    sizerA4->Add(sizerA5, 0, wxEXPAND, 0);
+    sizerA4->Add(checkboxAutoCloseExit, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4);
+    sizerA1->Add(sizerA4, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    sizerA6->Add(checkboxShareLock, 0, wxALL, 4);
+    sizerA6->Add(label_1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4);
+    sizerA1->Add(sizerA6, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    sizerA1->Add(0, 0, 1, 0, 0);
+    notebook_pane1->SetSizer(sizerA1);
+    sizerB2->Add(listctrlTheme, 1, wxALL|wxEXPAND, 4);
+    sizerB1->Add(sizerB2, 1, wxALL|wxEXPAND, 8);
+    notebook_pane2->SetSizer(sizerB1);
+    notebook->AddPage(notebook_pane1, _("Containers"));
+    notebook->AddPage(notebook_pane2, _("Icons"));
+    sizer1->Add(notebook, 1, wxALL|wxEXPAND, 8);
+    sizer2->Add(5, 5, 1, 0, 0);
+    sizer2->Add(buttonOK, 0, wxLEFT|wxTOP|wxBOTTOM, 4);
+    sizer2->Add(buttonCancel, 0, wxALL, 4);
+    sizer1->Add(sizer2, 0, wxEXPAND, 0);
+    SetSizer(sizer1);
+    sizer1->Fit(this);
+    Layout();
+    Centre();
+    // end wxGlade
+}
+
 BEGIN_EVENT_TABLE(WPreferences, wxDialog)
     // begin wxGlade: WPreferences::event_table
     EVT_CHECKBOX(myID_CHECK_BACKUPS, WPreferences::OnCheckboxBackups)
     EVT_CHECKBOX(myID_CHECK_AUTOCLOSE, WPreferences::OnCheckboxAutoClose)
-    EVT_BUTTON(wxID_OK, WPreferences::OnButtonOK)
+    EVT_BUTTON(wxID_ANY, WPreferences::OnButtonOK)
     // end wxGlade
 END_EVENT_TABLE();
 
@@ -145,60 +199,4 @@ void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
     cfg->Flush();
 
     EndModal(wxID_OK);
-}
-
-// wxGlade: add WPreferences event handlers
-
-void WPreferences::set_properties()
-{
-    // begin wxGlade: WPreferences::set_properties
-    SetTitle(_("CryptoTE Preferences"));
-    // end wxGlade
-}
-
-void WPreferences::do_layout()
-{
-    // begin wxGlade: WPreferences::do_layout
-    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizerB1 = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer* sizerB2 = new wxStaticBoxSizer(sizerB2_staticbox, wxVERTICAL);
-    wxBoxSizer* sizerA1 = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer* sizerA6 = new wxStaticBoxSizer(sizerA6_staticbox, wxVERTICAL);
-    wxStaticBoxSizer* sizerA4 = new wxStaticBoxSizer(sizerA4_staticbox, wxVERTICAL);
-    wxBoxSizer* sizerA5 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticBoxSizer* sizerA2 = new wxStaticBoxSizer(sizerA2_staticbox, wxVERTICAL);
-    wxFlexGridSizer* sizerA3 = new wxFlexGridSizer(2, 2, 0, 0);
-    sizerA2->Add(checkboxBackups, 0, wxALL, 2);
-    sizerA3->Add(labelBackup1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA3->Add(spinctrlBackupNum, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA2->Add(sizerA3, 1, wxEXPAND, 0);
-    sizerA1->Add(sizerA2, 0, wxALL|wxEXPAND, 6);
-    sizerA4->Add(checkboxAutoClose, 0, wxALL, 2);
-    sizerA5->Add(labelAutoClose1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA5->Add(spinctrlAutoCloseTime, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA5->Add(labelAutoClose2, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA4->Add(sizerA5, 0, wxEXPAND, 0);
-    sizerA4->Add(checkboxAutoCloseExit, 0, wxLEFT|wxRIGHT|wxBOTTOM, 2);
-    sizerA1->Add(sizerA4, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 6);
-    sizerA6->Add(checkboxShareLock, 0, wxALL, 2);
-    sizerA6->Add(label_1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 2);
-    sizerA1->Add(sizerA6, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 6);
-    sizerA1->Add(0, 0, 1, 0, 0);
-    notebook_pane1->SetSizer(sizerA1);
-    sizerB2->Add(listctrlTheme, 1, wxALL|wxEXPAND, 2);
-    sizerB1->Add(sizerB2, 1, wxALL|wxEXPAND, 6);
-    notebook_pane2->SetSizer(sizerB1);
-    notebook->AddPage(notebook_pane1, _("Containers"));
-    notebook->AddPage(notebook_pane2, _("Icons"));
-    sizer1->Add(notebook, 1, wxALL|wxEXPAND, 6);
-    sizer2->Add(5, 5, 1, 0, 0);
-    sizer2->Add(buttonOK, 0, wxLEFT|wxTOP|wxBOTTOM, 4);
-    sizer2->Add(buttonCancel, 0, wxALL, 4);
-    sizer1->Add(sizer2, 0, wxEXPAND, 0);
-    SetSizer(sizer1);
-    sizer1->Fit(this);
-    Layout();
-    Centre();
-    // end wxGlade
 }

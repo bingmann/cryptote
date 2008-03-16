@@ -88,15 +88,6 @@ static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
     return mi;
 }
 
-static inline wxMenuItem* createMenuItem(class wxMenu* parentMenu, int id,
-					 const wxString& text, const wxString& helpString,
-					 const wxBitmap& bmp)
-{
-    wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
-    mi->SetBitmap(bmp);
-    return mi;
-}
-
 void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 {
     wxMenu* menu = new wxMenu;

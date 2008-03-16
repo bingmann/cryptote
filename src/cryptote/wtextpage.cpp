@@ -23,6 +23,8 @@ WTextPage::WTextPage(class WCryptoTE* parent)
     editctrl = new wxStyledTextCtrl(this, myID_EDITCTRL);
     editctrl->SetFocus();
 
+    //editctrl->UsePopUp(false);	// we show a context menu ourselves.
+
     // *** Set up Sizer ***
  
     wxBoxSizer* sizerMain = new wxBoxSizer(wxVERTICAL);
@@ -197,6 +199,73 @@ void WTextPage::ExportBuffer(wxOutputStream& outstream)
 }
 
 // *** Event Handlers ***
+
+static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
+					 const wxString& text, const wxString& helpString)
+{
+    wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
+    mi->SetBitmap( BitmapCatalog::GetMenuBitmap(id) );
+    parentMenu->Append(mi);
+    return mi;
+}
+
+void WTextPage::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
+{
+    // Create Popup-Menu
+
+    wxMenu* menu = new wxMenu;
+
+    appendMenuItem(menu, wxID_UNDO,
+		   _("&Undo\tCtrl+Z"),
+		   _("Undo the last change."));
+
+    appendMenuItem(menu, wxID_REDO,
+		   _("&Redo\tCtrl+Shift+Z"),
+		   _("Redo the previously undone change."));
+
+    menu->AppendSeparator();
+
+    appendMenuItem(menu, wxID_CUT,
+		   _("Cu&t\tCtrl+X"),
+		   _("Cut selected text into clipboard."));
+
+    appendMenuItem(menu, wxID_COPY,
+		   _("&Copy\tCtrl+C"),
+		   _("Copy selected text into clipboard."));
+
+    appendMenuItem(menu, wxID_PASTE,
+		   _("&Paste\tCtrl+V"),
+		   _("Paste clipboard contents at the current text position."));
+
+    appendMenuItem(menu, wxID_CLEAR,
+		   _("&Delete\tDel"),
+		   _("Delete selected text."));
+
+    menu->AppendSeparator();
+
+
+    appendMenuItem(menu, wxID_SELECTALL,
+		   _("&Select all\tCtrl+A"),
+		   _("Select all text in the current buffer."));
+
+    appendMenuItem(menu, myID_MENU_EDIT_SELECTLINE,
+		   _("Select &line\tCtrl+L"),
+		   _("Select whole line at the current cursor position."));
+
+    // Enable or Disable Menu Items and Tool Bar Items
+
+    menu->Enable(wxID_UNDO, editctrl->CanUndo());
+    menu->Enable(wxID_REDO, editctrl->CanRedo());
+
+    bool HasSelection = editctrl->GetSelectionEnd() > editctrl->GetSelectionStart();
+
+    menu->Enable(wxID_CUT, HasSelection);
+    menu->Enable(wxID_COPY, HasSelection);
+    menu->Enable(wxID_CLEAR, HasSelection);
+    menu->Enable(wxID_PASTE, editctrl->CanPaste());
+
+    PopupMenu(menu);
+}
 
 void WTextPage::OnMenuEditUndo(wxCommandEvent& WXUNUSED(event))
 {
@@ -618,8 +687,9 @@ bool WTextPage::GetViewLonglineGuide()
     return view_longlineguide;
 }
 
-
 BEGIN_EVENT_TABLE(WTextPage, WNotePage)
+
+    EVT_CONTEXT_MENU(WTextPage::OnContextMenu)
 
     // *** Edit Menu Event passed down by WCryptoTE
 
