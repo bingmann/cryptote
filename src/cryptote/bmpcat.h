@@ -42,6 +42,14 @@ private:
     const static Theme		theme_slick_small;
     const static ThemeEntry	bitmaplist_slick_small[];
 
+    // *** Thrid Theme: Gnome's Standard ***
+
+    const static Theme		theme_gnome_large;
+    const static ThemeEntry	bitmaplist_gnome_large[];
+
+    const static Theme		theme_gnome_small;
+    const static ThemeEntry	bitmaplist_gnome_small[];
+
     struct BitmapInfo
     {
 	const int     	identifier;

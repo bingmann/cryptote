@@ -16,7 +16,6 @@
 
 # $Id$
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -35,8 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = file2h$(EXEEXT)
-subdir = src/art
+subdir = src/art/gnome
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -45,33 +43,11 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
-PROGRAMS = $(noinst_PROGRAMS)
-am_file2h_OBJECTS = file2h.$(OBJEXT)
-file2h_OBJECTS = $(am_file2h_OBJECTS)
-file2h_LDADD = $(LDADD)
-DEFAULT_INCLUDES = -I.@am__isrc@
-depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
-am__depfiles_maybe = depfiles
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
-SOURCES = $(file2h_SOURCES)
-DIST_SOURCES = $(file2h_SOURCES)
-RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
-	html-recursive info-recursive install-data-recursive \
-	install-dvi-recursive install-exec-recursive \
-	install-html-recursive install-info-recursive \
-	install-pdf-recursive install-ps-recursive install-recursive \
-	installcheck-recursive installdirs-recursive pdf-recursive \
-	ps-recursive uninstall-recursive
+SOURCES =
+DIST_SOURCES =
 HEADERS = $(noinst_HEADERS)
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -188,56 +164,164 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = . crystal slick gnome
-file2h_SOURCES = file2h.cpp
-AM_CFLAGS = -W -Wall
-AM_CXXFLAGS = -W -Wall
 noinst_HEADERS = \
-	pwgen-16.h \
-	pwgen-22.h \
-	pwgen-32.h \
-	pwgen-48.h \
-	pwtutor-16.h \
-	pwtutor-22.h \
-	pwtutor-32.h \
-	pwtutor-48.h \
-	cryptote-16.h \
-	cryptote-32.h \
-	cryptote-48.h \
-	ectfile-16.h \
-	ectfile-32.h \
-	ectfile-48.h \
-	web-16.h
+	application-about-tool.h \
+	application-about.h \
+	application-exit-tool.h \
+	application-exit.h \
+	application-preferences-tool.h \
+	application-preferences.h \
+	container-close.h \
+	container-open-tool.h \
+	container-open.h \
+	container-password.h \
+	container-properties-tool.h \
+	container-properties.h \
+	container-revert-tool.h \
+	container-revert.h \
+	container-save-as-tool.h \
+	container-save-as.h \
+	container-save-tool.h \
+	container-save.h \
+	container-showlist-tool.h \
+	container-showlist.h \
+	edit-clear-tool.h \
+	edit-clear.h \
+	edit-copy-tool.h \
+	edit-copy.h \
+	edit-cut-tool.h \
+	edit-cut.h \
+	edit-delete-tool.h \
+	edit-delete.h \
+	edit-find-replace-tool.h \
+	edit-find-replace.h \
+	edit-find-tool.h \
+	edit-find.h \
+	edit-paste-tool.h \
+	edit-paste.h \
+	edit-redo-tool.h \
+	edit-redo.h \
+	edit-select-all-tool.h \
+	edit-select-all.h \
+	edit-undo-tool.h \
+	edit-undo.h \
+	file-binary-16.h \
+	file-binary-32.h \
+	file-image-16.h \
+	file-image-32.h \
+	file-text-16.h \
+	file-text-32.h \
+	go-down-tool.h \
+	go-down.h \
+	go-jump-tool.h \
+	go-jump.h \
+	go-next-tool.h \
+	go-next.h \
+	go-previous-tool.h \
+	go-previous.h \
+	go-up-tool.h \
+	go-up.h \
+	list-add-tool.h \
+	list-add.h \
+	list-remove-tool.h \
+	list-remove.h \
+	messagebox-error.h \
+	messagebox-information.h \
+	messagebox-question.h \
+	messagebox-warning.h \
+	process-stop-tool.h \
+	process-stop.h \
+	snapshot.h \
+	subfile-close.h \
+	subfile-export.h \
+	subfile-import.h \
+	subfile-new-tool.h \
+	subfile-new.h \
+	subfile-open-tool.h \
+	subfile-open.h \
+	subfile-properties.h
 
 EXTRA_DIST = \
-	pwgen-16.png \
-	pwgen-22.png \
-	pwgen-32.png \
-	pwgen-48.png \
-	pwgen-128.png \
-	pwgen.ico \
-	pwtutor-16.png \
-	pwtutor-22.png \
-	pwtutor-32.png \
-	pwtutor-48.png \
-	pwtutor-128.png \
-	pwtutor.ico \
-	cryptote-16.png \
-	cryptote-32.png \
-	cryptote-48.png \
-	cryptote.ico \
-	cryptote.svg \
-	ectfile-16.png \
-	ectfile-32.png \
-	ectfile-48.png \
-	ectfile.ico \
-	ectfile.svg \
-	web-16.png
+	application-about-tool.png \
+	application-about.png \
+	application-exit-tool.png \
+	application-exit.png \
+	application-preferences-tool.png \
+	application-preferences.png \
+	container-close.png \
+	container-open-tool.png \
+	container-open.png \
+	container-password.png \
+	container-properties-tool.png \
+	container-properties.png \
+	container-revert-tool.png \
+	container-revert.png \
+	container-save-as-tool.png \
+	container-save-as.png \
+	container-save-tool.png \
+	container-save.png \
+	container-showlist-tool.png \
+	container-showlist.png \
+	edit-clear-tool.png \
+	edit-clear.png \
+	edit-copy-tool.png \
+	edit-copy.png \
+	edit-cut-tool.png \
+	edit-cut.png \
+	edit-delete-tool.png \
+	edit-delete.png \
+	edit-find-replace-tool.png \
+	edit-find-replace.png \
+	edit-find-tool.png \
+	edit-find.png \
+	edit-paste-tool.png \
+	edit-paste.png \
+	edit-redo-tool.png \
+	edit-redo.png \
+	edit-select-all-tool.png \
+	edit-select-all.png \
+	edit-undo-tool.png \
+	edit-undo.png \
+	file-binary-16.png \
+	file-binary-32.png \
+	file-image-16.png \
+	file-image-32.png \
+	file-text-16.png \
+	file-text-32.png \
+	go-down-tool.png \
+	go-down.png \
+	go-jump-tool.png \
+	go-jump.png \
+	go-next-tool.png \
+	go-next.png \
+	go-previous-tool.png \
+	go-previous.png \
+	go-up-tool.png \
+	go-up.png \
+	list-add-tool.png \
+	list-add.png \
+	list-remove-tool.png \
+	list-remove.png \
+	messagebox-error.png \
+	messagebox-information.png \
+	messagebox-question.png \
+	messagebox-warning.png \
+	process-stop-tool.png \
+	process-stop.png \
+	snapshot.png \
+	snapshot.xcf \
+	subfile-close.png \
+	subfile-export.png \
+	subfile-import.png \
+	subfile-new-tool.png \
+	subfile-new.png \
+	subfile-open-tool.png \
+	subfile-open.png \
+	subfile-properties.png
 
-all: all-recursive
+all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -247,9 +331,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/art/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/art/gnome/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/art/Makefile
+	  $(AUTOMAKE) --foreign  src/art/gnome/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -268,104 +352,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-file2h$(EXEEXT): $(file2h_OBJECTS) $(file2h_DEPENDENCIES) 
-	@rm -f file2h$(EXEEXT)
-	$(CXXLINK) $(file2h_OBJECTS) $(file2h_LDADD) $(LIBS)
-
-mostlyclean-compile:
-	-rm -f *.$(OBJEXT)
-
-distclean-compile:
-	-rm -f *.tab.c
-
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file2h.Po@am__quote@
-
-.cpp.o:
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
-
-.cpp.obj:
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run `make' without going through this Makefile.
-# To change the values of `make' variables: instead of editing Makefiles,
-# (1) if the variable is set in `config.status', edit `config.status'
-#     (which will cause the Makefiles to be regenerated when you run `make');
-# (2) otherwise, pass the desired values on the `make' command line.
-$(RECURSIVE_TARGETS):
-	@failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
-$(RECURSIVE_CLEAN_TARGETS):
-	@failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	rev=''; for subdir in $$list; do \
-	  if test "$$subdir" = "."; then :; else \
-	    rev="$$subdir $$rev"; \
-	  fi; \
-	done; \
-	rev="$$rev ."; \
-	target=`echo $@ | sed s/-recursive//`; \
-	for subdir in $$rev; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done && test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
-	done
-ctags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
-	done
-
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
@@ -376,23 +362,10 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -405,7 +378,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -453,37 +426,19 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test -d "$(distdir)/$$subdir" \
-	    || $(MKDIR_P) "$(distdir)/$$subdir" \
-	    || exit 1; \
-	    distdir=`$(am__cd) $(distdir) && pwd`; \
-	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
-	    (cd $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$top_distdir" \
-	        distdir="$$distdir/$$subdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
 check-am: all-am
-check: check-recursive
-all-am: Makefile $(PROGRAMS) $(HEADERS)
-installdirs: installdirs-recursive
-installdirs-am:
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+check: check-am
+all-am: Makefile $(HEADERS)
+installdirs:
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
@@ -499,83 +454,76 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
-clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
-distclean: distclean-recursive
-	-rm -rf ./$(DEPDIR)
+distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+distclean-am: clean-am distclean-generic distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
-info: info-recursive
+info: info-am
 
 info-am:
 
 install-data-am:
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-exec-am:
 
-install-html: install-html-recursive
+install-html: install-html-am
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
-	-rm -rf ./$(DEPDIR)
+maintainer-clean: maintainer-clean-am
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-generic
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
 uninstall-am:
 
-.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) install-am \
-	install-strip
+.MAKE: install-am install-strip
 
-.PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am check check-am clean clean-generic \
-	clean-noinstPROGRAMS ctags ctags-recursive distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	ctags distclean distclean-generic distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-pdf \
 	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags uninstall uninstall-am
 
 
 %.h: %.png
-	./file2h $< > $@
+	../file2h -p "gnome-" $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

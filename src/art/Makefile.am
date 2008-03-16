@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = . crystal slick
+SUBDIRS = . crystal slick gnome
 
 noinst_PROGRAMS = file2h
 
