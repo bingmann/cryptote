@@ -22,6 +22,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 {
     cpage = NULL;
     container = NULL;
+    container_filehandle = NULL;
     main_modified = false;
     lastuserevent = ::wxGetLocalTime();
 
@@ -534,6 +535,10 @@ void WCryptoTE::ContainerNew()
 	delete container;
 	container = NULL;
     }
+    if (container_filehandle) {
+	delete container_filehandle;
+	container_filehandle = NULL;
+    }
 
     // close all notebook pages
     while( auinotebook->GetPageCount() > 0 )
@@ -572,27 +577,32 @@ void WCryptoTE::ContainerNew()
 
 bool WCryptoTE::ContainerOpen(const wxString& filename)
 {
-    wxFileInputStream stream(filename);
-    if (!stream.IsOk()) return false;
+    std::auto_ptr<wxFile> fh (new wxFile);
+    if (!fh->Open(filename.c_str(), wxFile::read)) return false;
 
     WGetPassword passdlg(this, filename);
     if (passdlg.ShowModal() != wxID_OK) return false;
 
-    Enctain::Container* nc = new Enctain::Container();
+    std::auto_ptr<Enctain::Container> nc (new Enctain::Container);
     nc->SetProgressIndicator(statusbar);
 
+    wxFileInputStream stream(*fh.get());
+    if (!stream.IsOk()) return false;
+
     bool b = nc->Load(stream, strWX2STL(passdlg.GetPass()));
-    if (!b) {
-	delete nc;
-	return false;
-    }
+    if (!b) return false;
 
     // Loading was successful
 
     if (container) {
 	delete container;
     }
-    container = nc;
+    container = nc.release();
+
+    if (container_filehandle) {
+	delete container_filehandle;
+    }
+    container_filehandle = fh.release();
 
     container_filename.Assign(filename);
     main_modified = false;
@@ -649,6 +659,12 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	container->SetKey( strWX2STL(passdlg.GetPass()) );
     }
 
+    // release share lock
+    if (container_filehandle) {
+	delete container_filehandle;
+	container_filehandle = NULL;
+    }
+
     if (prefs_makebackups)
     {
 	int havebacks = 0;
@@ -694,11 +710,15 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	}
     }
 
-    wxFileOutputStream stream(filename);
+    std::auto_ptr<wxFile> fh (new wxFile);
+    if (!fh->Open(filename.c_str(), wxFile::write)) return false;
+
+    wxFileOutputStream stream(*fh.get());
     if (!stream.IsOk()) return false;
 
     container->Save(stream);
 
+    container_filehandle = fh.release();
     container_filename.Assign(filename);
     main_modified = false;
 
@@ -1027,12 +1047,14 @@ void WCryptoTE::LoadPreferences()
     
     cfg->Read(_T("bitmaptheme"), &prefs_bitmaptheme, 0);
 
-    cfg->Read(_T("makebackups"), &prefs_makebackups, true);
+    cfg->Read(_T("backups"), &prefs_makebackups, true);
     cfg->Read(_T("backupnum"), &prefs_backupnum, 5);
 
     cfg->Read(_T("autoclose"), &prefs_autoclose, false);
     cfg->Read(_T("autoclosetime"), &prefs_autoclosetime, 15);
     cfg->Read(_T("autocloseexit"), &prefs_autocloseexit, true);
+
+    cfg->Read(_T("sharelock"), &prefs_sharelock, true);
 }
 
 // *** Generic Events ***
@@ -1151,9 +1173,12 @@ void WCryptoTE::OnMenuContainerRevert(wxCommandEvent& WXUNUSED(event))
 {
     if (!AllowCloseModified()) return;
 
-    if (!container_filename.IsOk()) return;
-
-    ContainerOpen( container_filename.GetFullPath() );
+    if (!container_filename.IsOk()) {
+	ContainerNew();
+    }
+    else {
+	ContainerOpen( container_filename.GetFullPath() );
+    }
 }
 
 void WCryptoTE::OnMenuContainerClose(wxCommandEvent& WXUNUSED(event))

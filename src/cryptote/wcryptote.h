@@ -159,6 +159,10 @@ public:
     /// Flag if to also close CryptoTE after the idle timeout.
     bool	prefs_autocloseexit;
     
+    /// Flag to keep the current file open on Win32 and thus locking it. On
+    /// Linux the opened file is flock()-ed
+    bool	prefs_sharelock;
+
     /// Retrieve config settings from registry or config file
     void	LoadPreferences();
 
@@ -276,6 +280,9 @@ public:
 
     /// Associated file name
     wxFileName		container_filename;
+
+    /// File Object which stays open to keep an exclusive share lock on Win32.
+    wxFile*		container_filehandle;
 
     /// Whether the container's or a subfile's metadata was modified
     bool		main_modified;

@@ -33,7 +33,7 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     labelAutoClose2 = new wxStaticText(notebook_pane1, wxID_ANY, _("minutes of inactivity."));
     checkboxAutoCloseExit = new wxCheckBox(notebook_pane1, wxID_ANY, _("Also close CryptoTE after saving the container."));
     checkboxShareLock = new wxCheckBox(notebook_pane1, wxID_ANY, _("Keep exclusive Share-Lock on container file."));
-    label_1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Other user cannot open it while loaded."));
+    labelShareLock1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Other users cannot open it while loaded."));
     listctrlTheme = new wxListCtrl(notebook_pane2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
@@ -42,13 +42,16 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     do_layout();
     // end wxGlade
 
-    // Load current settings from WCryptoTE
+    // *** Load current settings from WCryptoTE ***
+
     checkboxBackups->SetValue(wmain->prefs_makebackups);
     spinctrlBackupNum->SetValue(wmain->prefs_backupnum);
 
     checkboxAutoClose->SetValue(wmain->prefs_autoclose);
     spinctrlAutoCloseTime->SetValue(wmain->prefs_autoclosetime);
     checkboxAutoCloseExit->SetValue(wmain->prefs_autocloseexit);
+
+    checkboxShareLock->SetValue(wmain->prefs_sharelock);
 
     wxCommandEvent event;
     OnCheckboxBackups(event);
@@ -135,7 +138,7 @@ void WPreferences::do_layout()
     sizerA4->Add(checkboxAutoCloseExit, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4);
     sizerA1->Add(sizerA4, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     sizerA6->Add(checkboxShareLock, 0, wxALL, 4);
-    sizerA6->Add(label_1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4);
+    sizerA6->Add(labelShareLock1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4);
     sizerA1->Add(sizerA6, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     sizerA1->Add(0, 0, 1, 0, 0);
     notebook_pane1->SetSizer(sizerA1);
@@ -189,12 +192,14 @@ void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	cfg->Write(_T("bitmaptheme"), bitmaptheme);
     }
 
-    cfg->Write(_T("makebackups"), checkboxBackups->GetValue());
+    cfg->Write(_T("backups"), checkboxBackups->GetValue());
     cfg->Write(_T("backupnum"), spinctrlBackupNum->GetValue());
 
     cfg->Write(_T("autoclose"), checkboxAutoClose->GetValue());
     cfg->Write(_T("autoclosetime"), spinctrlAutoCloseTime->GetValue());
     cfg->Write(_T("autocloseexit"), checkboxAutoCloseExit->GetValue());
+
+    cfg->Write(_T("sharelock"), checkboxShareLock->GetValue());
 
     cfg->Flush();
 

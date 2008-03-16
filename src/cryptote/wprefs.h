@@ -52,7 +52,7 @@ protected:
     wxStaticText* labelAutoClose2;
     wxCheckBox* checkboxAutoCloseExit;
     wxCheckBox* checkboxShareLock;
-    wxStaticText* label_1;
+    wxStaticText* labelShareLock1;
     wxPanel* notebook_pane1;
     wxListCtrl* listctrlTheme;
     wxPanel* notebook_pane2;
