@@ -16,6 +16,10 @@
 #include <wx/config.h>
 #include "common/tools.h"
 
+#ifdef __WXMSW__
+#include <share.h>
+#endif
+
 WCryptoTE::WCryptoTE(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),
 	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
@@ -578,7 +582,23 @@ void WCryptoTE::ContainerNew()
 bool WCryptoTE::ContainerOpen(const wxString& filename)
 {
     std::auto_ptr<wxFile> fh (new wxFile);
+
+#ifdef __WXMSW__
+    {
+#if wxUSE_UNICODE
+	int fd = _wsopen(filename.c_str(), _O_RDONLY | _O_BINARY, _SH_DENYRW);
+#else
+	int fd = _sopen(filename.c_str(), _O_RDONLY | _O_BINARY, _SH_DENYRW);
+#endif
+	if (fd < 0) {
+	    wxLogSysError(_("Cannot open file '%s'"), filename.c_str());
+	    return false;
+	}
+	fh->Attach(fd);
+    }
+#else
     if (!fh->Open(filename.c_str(), wxFile::read)) return false;
+#endif
 
     WGetPassword passdlg(this, filename);
     if (passdlg.ShowModal() != wxID_OK) return false;
@@ -711,7 +731,22 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     }
 
     std::auto_ptr<wxFile> fh (new wxFile);
+#ifdef __WXMSW__
+    {
+#if wxUSE_UNICODE
+	int fd = _wsopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY, _SH_DENYRW);
+#else
+	int fd = _sopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY, _SH_DENYRW);
+#endif
+	if (fd < 0) {
+	    wxLogSysError(_("Cannot create file '%s'"), filename.c_str());
+	    return false;
+	}
+	fh->Attach(fd);
+    }
+#else
     if (!fh->Open(filename.c_str(), wxFile::write)) return false;
+#endif
 
     wxFileOutputStream stream(*fh.get());
     if (!stream.IsOk()) return false;
