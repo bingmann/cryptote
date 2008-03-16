@@ -67,6 +67,7 @@ protected:
 
     /// Registered wxArtProvider derived class
     class BitmapCatalogArtProvider* artprovider;
+
 public:
 
     /// Set the current bitmap/icon theme

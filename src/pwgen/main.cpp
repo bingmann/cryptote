@@ -14,7 +14,9 @@ public:
     /// This function is called during application start-up.
     virtual bool	OnInit()
     {
-	wxInitAllImageHandlers();
+	if (!wxApp::OnInit()) return false;
+
+	wxImage::AddHandler(new wxPNGHandler());
 
 	SetAppName(_("CryptoTE"));
 	SetVendorName(_("idlebox.net"));
