@@ -2,6 +2,7 @@
 // $Id$
 
 #include "wprefs.h"
+#include "wcryptote.h"
 #include "bmpcat.h"
 #include "common/tools.h"
 
@@ -11,8 +12,9 @@
 // begin wxGlade: ::extracode
 // end wxGlade
 
-WPreferences::WPreferences(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
-    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE),
+      wmain(parent)
 {
     // begin wxGlade: WPreferences::WPreferences
     notebook = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
@@ -25,17 +27,12 @@ WPreferences::WPreferences(wxWindow* parent, int id, const wxString& title, cons
     checkboxBackups = new wxCheckBox(notebook_pane1, myID_CHECK_BACKUPS, _("Keep backups of container during saving."));
     labelBackup1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Number of backups to keep: "));
     spinctrlBackupNum = new wxSpinCtrl(notebook_pane1, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 1000);
-    labelBackup2 = new wxStaticText(notebook_pane1, wxID_ANY, _("Where to keep backups:"));
-    const wxString choiceBackupLocation_choices[] = {
-        _("Same Directory"),
-        _("Temporary Files Directory")
-    };
-    choiceBackupLocation = new wxChoice(notebook_pane1, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choiceBackupLocation_choices, 0);
     checkboxAutoClose = new wxCheckBox(notebook_pane1, myID_CHECK_AUTOCLOSE, _("Automatically save and close loaded containers"));
     labelAutoClose1 = new wxStaticText(notebook_pane1, wxID_ANY, _("after"));
     spinctrlAutoCloseTime = new wxSpinCtrl(notebook_pane1, wxID_ANY, wxT("15"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 10000);
     labelAutoClose2 = new wxStaticText(notebook_pane1, wxID_ANY, _("minutes of inactivity."));
-    checkboxShareLock = new wxCheckBox(notebook_pane1, wxID_ANY, _("Keep exclusive Share-Lock on container file.\nOther user cannot open it while loaded."));
+    checkboxShareLock = new wxCheckBox(notebook_pane1, wxID_ANY, _("Keep exclusive Share-Lock on container file."));
+    label_1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Other user cannot open it while loaded."));
     listctrlTheme = new wxListCtrl(notebook_pane2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
@@ -44,8 +41,11 @@ WPreferences::WPreferences(wxWindow* parent, int id, const wxString& title, cons
     do_layout();
     // end wxGlade
 
+    // Load current settings from WCryptoTE
+    checkboxBackups->SetValue(wmain->prefs_makebackups);
+    spinctrlBackupNum->SetValue(wmain->prefs_backupnum);
+
     wxCommandEvent event;
-    checkboxBackups->SetValue(false);
     checkboxAutoClose->SetValue(false);
     OnCheckboxBackups(event);
     OnCheckboxAutoClose(event);
@@ -93,8 +93,6 @@ void WPreferences::OnCheckboxBackups(wxCommandEvent& WXUNUSED(event))
 {
     labelBackup1->Enable( checkboxBackups->GetValue() );
     spinctrlBackupNum->Enable( checkboxBackups->GetValue() );
-    labelBackup2->Enable( checkboxBackups->GetValue() );
-    choiceBackupLocation->Enable( checkboxBackups->GetValue() );
 }
 
 void WPreferences::OnCheckboxAutoClose(wxCommandEvent& WXUNUSED(event))
@@ -115,6 +113,9 @@ void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	cfg->Write(_T("bitmaptheme"), bitmaptheme);
     }
 
+    cfg->Write(_T("makebackups"), checkboxBackups->GetValue());
+    cfg->Write(_T("backupnum"), spinctrlBackupNum->GetValue());
+
     cfg->Flush();
 
     EndModal(wxID_OK);
@@ -126,7 +127,6 @@ void WPreferences::set_properties()
 {
     // begin wxGlade: WPreferences::set_properties
     SetTitle(_("CryptoTE Preferences"));
-    choiceBackupLocation->SetSelection(0);
     // end wxGlade
 }
 
@@ -146,17 +146,16 @@ void WPreferences::do_layout()
     sizerA2->Add(checkboxBackups, 0, wxALL, 2);
     sizerA3->Add(labelBackup1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizerA3->Add(spinctrlBackupNum, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA3->Add(labelBackup2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA3->Add(choiceBackupLocation, 0, wxALL, 2);
     sizerA2->Add(sizerA3, 1, wxEXPAND, 0);
     sizerA1->Add(sizerA2, 0, wxALL|wxEXPAND, 6);
     sizerA4->Add(checkboxAutoClose, 0, wxALL, 2);
-    sizerA5->Add(labelAutoClose1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA5->Add(spinctrlAutoCloseTime, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA5->Add(labelAutoClose2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
+    sizerA5->Add(labelAutoClose1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
+    sizerA5->Add(spinctrlAutoCloseTime, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
+    sizerA5->Add(labelAutoClose2, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
     sizerA4->Add(sizerA5, 0, wxEXPAND, 0);
     sizerA1->Add(sizerA4, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 6);
     sizerA6->Add(checkboxShareLock, 0, wxALL, 2);
+    sizerA6->Add(label_1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 2);
     sizerA1->Add(sizerA6, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 6);
     sizerA1->Add(0, 0, 1, 0, 0);
     notebook_pane1->SetSizer(sizerA1);
@@ -176,11 +175,3 @@ void WPreferences::do_layout()
     Centre();
     // end wxGlade
 }
-
-
-
-
-
-
-
-

@@ -26,7 +26,10 @@ public:
     };
     // end wxGlade
 
-    WPreferences(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WPreferences(class WCryptoTE* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+    /// Reference to parent window class
+    class WCryptoTE*	wmain;
 
 private:
     // begin wxGlade: WPreferences::methods
@@ -43,13 +46,12 @@ protected:
     wxCheckBox* checkboxBackups;
     wxStaticText* labelBackup1;
     wxSpinCtrl* spinctrlBackupNum;
-    wxStaticText* labelBackup2;
-    wxChoice* choiceBackupLocation;
     wxCheckBox* checkboxAutoClose;
     wxStaticText* labelAutoClose1;
     wxSpinCtrl* spinctrlAutoCloseTime;
     wxStaticText* labelAutoClose2;
     wxCheckBox* checkboxShareLock;
+    wxStaticText* label_1;
     wxPanel* notebook_pane1;
     wxListCtrl* listctrlTheme;
     wxPanel* notebook_pane2;

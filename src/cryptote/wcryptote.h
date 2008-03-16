@@ -140,7 +140,13 @@ public:
     // *** Preference Variables ***
 
     /// Theme set using BitmapCatalog
-    int		bitmaptheme;
+    int		prefs_bitmaptheme;
+
+    /// Flag if backup files of the container should be created
+    bool	prefs_makebackups;
+
+    /// How many backups to keep.
+    int		prefs_backupnum;
     
     /// Retrieve config settings from registry or config file
     void	LoadPreferences();

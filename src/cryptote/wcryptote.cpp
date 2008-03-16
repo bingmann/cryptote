@@ -25,7 +25,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     main_modified = false;
 
     LoadPreferences();
-    BitmapCatalog::GetSingleton()->SetTheme(bitmaptheme);
+    BitmapCatalog::GetSingleton()->SetTheme(prefs_bitmaptheme);
 
     Enctain::Container::SetSignature("CryptoTE");
 
@@ -644,6 +644,51 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	container->SetKey( strWX2STL(passdlg.GetPass()) );
     }
 
+    if (prefs_makebackups)
+    {
+	int havebacks = 0;
+
+	// Look how many backup files are in the directory. backup = 0 is the
+	// current file in the directory.
+	for(havebacks = 0; ; ++havebacks)
+	{
+	    wxFileName backname(filename);
+	    if (havebacks != 0) {
+		backname.SetName(backname.GetName() + wxString::Format(_("-backup%d"), havebacks));
+	    }
+
+	    if (!backname.FileExists()) break;
+	}
+
+	havebacks--;
+	// havebacks == last available backup or real file.
+
+	// Move backups one slot forwards
+	while(havebacks >= 0)
+	{
+	    wxFileName backname(filename);
+	    if (havebacks != 0) {
+		backname.SetName(backname.GetName() + wxString::Format(_("-backup%d"), havebacks));
+	    }
+
+	    if (havebacks >= prefs_backupnum && havebacks != 0)
+	    {
+		// superfluous backup file. delete it.
+		wxRemoveFile(backname.GetFullPath());
+	    }
+	    else
+	    {
+		// move current backup file one slot forwards
+		wxFileName nextbackname(filename);
+		nextbackname.SetName(nextbackname.GetName() + wxString::Format(_("-backup%d"), havebacks+1));
+		
+		wxRenameFile(backname.GetFullPath(), nextbackname.GetFullPath(), false);
+	    }
+
+	    havebacks--;
+	}
+    }
+
     wxFileOutputStream stream(filename);
     if (!stream.IsOk()) return false;
 
@@ -975,7 +1020,9 @@ void WCryptoTE::LoadPreferences()
 
     cfg->SetPath(_T("/cryptote"));
     
-    cfg->Read(_T("bitmaptheme"), &bitmaptheme, 0);
+    cfg->Read(_T("bitmaptheme"), &prefs_bitmaptheme, 0);
+    cfg->Read(_T("makebackups"), &prefs_makebackups, 0);
+    cfg->Read(_T("backupnum"), &prefs_backupnum, 5);
 }
 
 // *** Generic Events ***
@@ -1141,10 +1188,10 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
     {
 	LoadPreferences();
 
-	if (bitmaptheme != BitmapCatalog::GetSingleton()->GetCurrentTheme())
+	if (prefs_bitmaptheme != BitmapCatalog::GetSingleton()->GetCurrentTheme())
 	{
 	    // reload all images
-	    BitmapCatalog::GetSingleton()->SetTheme(bitmaptheme);
+	    BitmapCatalog::GetSingleton()->SetTheme(prefs_bitmaptheme);
 
 	    // Rebuild menus
 	    SetMenuBar(NULL);
