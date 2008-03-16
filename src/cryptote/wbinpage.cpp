@@ -80,6 +80,8 @@ void WBinaryPage::ExportBuffer(wxOutputStream& outstream)
 
 void WBinaryPage::PageFocused()
 {
+    // clear status bar field 1
+    wmain->statusbar->SetStatusText(_T(""), 1);
 }
 
 void WBinaryPage::PageBlurred()
@@ -150,8 +152,16 @@ bool WBinaryPage::DoQuickGoto(const wxString& gototext)
     return true;
 }
 
+void WBinaryPage::OnListItemFocused(wxListEvent& WXUNUSED(event))
+{
+    // clear status bar field 1
+    wmain->statusbar->SetStatusText(_T(""), 1);
+}
+
 BEGIN_EVENT_TABLE(WBinaryPage, WNotePage)
 
+    EVT_LIST_ITEM_FOCUSED(myID_LISTCTRL, WBinaryPage::OnListItemFocused)
+    
 END_EVENT_TABLE();
 
 IMPLEMENT_ABSTRACT_CLASS(WBinaryPage, WNotePage);

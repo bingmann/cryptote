@@ -18,6 +18,7 @@ enum {
     // Main Window Controls
 
     myID_AUINOTEBOOK,
+    myID_TIMER_IDLECHECK,
 
     // Main Window Menu Items
 
@@ -147,6 +148,16 @@ public:
 
     /// How many backups to keep.
     int		prefs_backupnum;
+    
+    /// Flag if the editor should automatically save and close container files
+    /// after a period of inactivity.
+    bool	prefs_autoclose;
+
+    /// Number of minutes of inactivity until the container is saved and closed.
+    int		prefs_autoclosetime;
+
+    /// Flag if to also close CryptoTE after the idle timeout.
+    bool	prefs_autocloseexit;
     
     /// Retrieve config settings from registry or config file
     void	LoadPreferences();
@@ -287,6 +298,25 @@ public:
 
     /// Container File List Pane
     class WFileList*	filelistpane;
+
+public:
+
+    // *** Idle-Timer ***
+
+    /// wxEvent::GetTimestamp() value of the last user event.
+    long		lastuserevent;
+
+    /// wxTimer calling the idle event handler
+    wxTimer		idlechecktimer;
+
+    /// Old text from status bar before replacing it with idle time counter.
+    wxString		idletimestatusbar;
+    
+    /// Timer event handler called by the wxTimer object every 5 seconds
+    void		OnIdleTimerCheck(wxTimerEvent& event);
+
+    /// Called by the main event loop FilterEvent() in wxApp
+    void		ResetIdleTimer();
 
 private:
     DECLARE_EVENT_TABLE()

@@ -62,6 +62,10 @@ public:
     virtual void	DoQuickFind(bool backwards, const wxString& findtext);
     virtual bool	DoQuickGoto(const wxString& gototext);
 
+    // *** Event Handlers ***
+
+    void		OnListItemFocused(wxListEvent& event);
+
     // *** Control ***
 
     /// a list control showing the data in hexadecimal

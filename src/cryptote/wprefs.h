@@ -50,6 +50,7 @@ protected:
     wxStaticText* labelAutoClose1;
     wxSpinCtrl* spinctrlAutoCloseTime;
     wxStaticText* labelAutoClose2;
+    wxCheckBox* checkboxAutoCloseExit;
     wxCheckBox* checkboxShareLock;
     wxStaticText* label_1;
     wxPanel* notebook_pane1;

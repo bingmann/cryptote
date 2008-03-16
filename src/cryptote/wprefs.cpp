@@ -31,6 +31,7 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     labelAutoClose1 = new wxStaticText(notebook_pane1, wxID_ANY, _("after"));
     spinctrlAutoCloseTime = new wxSpinCtrl(notebook_pane1, wxID_ANY, wxT("15"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 10000);
     labelAutoClose2 = new wxStaticText(notebook_pane1, wxID_ANY, _("minutes of inactivity."));
+    checkboxAutoCloseExit = new wxCheckBox(notebook_pane1, wxID_ANY, _("Also close CryptoTE after saving the container."));
     checkboxShareLock = new wxCheckBox(notebook_pane1, wxID_ANY, _("Keep exclusive Share-Lock on container file."));
     label_1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Other user cannot open it while loaded."));
     listctrlTheme = new wxListCtrl(notebook_pane2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
@@ -45,8 +46,11 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     checkboxBackups->SetValue(wmain->prefs_makebackups);
     spinctrlBackupNum->SetValue(wmain->prefs_backupnum);
 
+    checkboxAutoClose->SetValue(wmain->prefs_autoclose);
+    spinctrlAutoCloseTime->SetValue(wmain->prefs_autoclosetime);
+    checkboxAutoCloseExit->SetValue(wmain->prefs_autocloseexit);
+
     wxCommandEvent event;
-    checkboxAutoClose->SetValue(false);
     OnCheckboxBackups(event);
     OnCheckboxAutoClose(event);
 
@@ -100,6 +104,7 @@ void WPreferences::OnCheckboxAutoClose(wxCommandEvent& WXUNUSED(event))
     labelAutoClose1->Enable( checkboxAutoClose->GetValue() );
     spinctrlAutoCloseTime->Enable( checkboxAutoClose->GetValue() );
     labelAutoClose2->Enable( checkboxAutoClose->GetValue() );
+    checkboxAutoCloseExit->Enable( checkboxAutoClose->GetValue() );
 }
 
 void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
@@ -115,6 +120,10 @@ void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
     cfg->Write(_T("makebackups"), checkboxBackups->GetValue());
     cfg->Write(_T("backupnum"), spinctrlBackupNum->GetValue());
+
+    cfg->Write(_T("autoclose"), checkboxAutoClose->GetValue());
+    cfg->Write(_T("autoclosetime"), spinctrlAutoCloseTime->GetValue());
+    cfg->Write(_T("autocloseexit"), checkboxAutoCloseExit->GetValue());
 
     cfg->Flush();
 
@@ -144,8 +153,8 @@ void WPreferences::do_layout()
     wxStaticBoxSizer* sizerA2 = new wxStaticBoxSizer(sizerA2_staticbox, wxVERTICAL);
     wxFlexGridSizer* sizerA3 = new wxFlexGridSizer(2, 2, 0, 0);
     sizerA2->Add(checkboxBackups, 0, wxALL, 2);
-    sizerA3->Add(labelBackup1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
-    sizerA3->Add(spinctrlBackupNum, 0, wxALL|wxALIGN_CENTER_VERTICAL, 2);
+    sizerA3->Add(labelBackup1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
+    sizerA3->Add(spinctrlBackupNum, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
     sizerA2->Add(sizerA3, 1, wxEXPAND, 0);
     sizerA1->Add(sizerA2, 0, wxALL|wxEXPAND, 6);
     sizerA4->Add(checkboxAutoClose, 0, wxALL, 2);
@@ -153,6 +162,7 @@ void WPreferences::do_layout()
     sizerA5->Add(spinctrlAutoCloseTime, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
     sizerA5->Add(labelAutoClose2, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 2);
     sizerA4->Add(sizerA5, 0, wxEXPAND, 0);
+    sizerA4->Add(checkboxAutoCloseExit, 0, wxLEFT|wxRIGHT|wxBOTTOM, 2);
     sizerA1->Add(sizerA4, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 6);
     sizerA6->Add(checkboxShareLock, 0, wxALL, 2);
     sizerA6->Add(label_1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 2);

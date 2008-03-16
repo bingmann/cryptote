@@ -15,6 +15,12 @@ private:
     wxString		cmdlinefile;
 
 public:
+
+    App()
+	: wxApp(), wmain(NULL)
+    {
+    }
+
     /// This function is called during application start-up.
     virtual bool	OnInit()
     {
@@ -59,10 +65,44 @@ public:
 	return true;
     }
 
-    /// Application exit function
-    virtual int		OnExit()
+    virtual int OnExit()
     {
 	return 0;
+    }
+
+    static inline bool IsUserEvent(const wxEvent& event)
+    {
+	// keyboard events
+	if (event.GetEventType() == wxEVT_KEY_DOWN) return true;
+
+	// mouse events
+	if (event.GetEventType() == wxEVT_LEFT_DOWN) return true;
+	if (event.GetEventType() == wxEVT_MIDDLE_DOWN) return true;
+	if (event.GetEventType() == wxEVT_RIGHT_DOWN) return true;
+	if (event.GetEventType() == wxEVT_LEFT_DCLICK) return true;
+	if (event.GetEventType() == wxEVT_MIDDLE_DCLICK) return true;
+	if (event.GetEventType() == wxEVT_RIGHT_DCLICK) return true;
+	if (event.GetEventType() == wxEVT_MOUSEWHEEL) return true;
+
+	// some extra events
+	if (event.GetEventType() == wxEVT_MENU_OPEN) return true;
+	if (event.GetEventType() == wxEVT_COMMAND_MENU_SELECTED) return true;
+
+	return false;
+    }
+
+    /// This function received all event before they are processed by the
+    /// target object. It monitors user events: keyboard and mouse actions and
+    /// resets the idle-timer in the main window.
+    virtual int FilterEvent(wxEvent& event)
+    {
+	if (wmain)
+	{
+	    if (IsUserEvent(event))
+		wmain->ResetIdleTimer();
+	}
+
+	return -1;
     }
 };
 

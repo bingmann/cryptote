@@ -23,6 +23,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     cpage = NULL;
     container = NULL;
     main_modified = false;
+    lastuserevent = ::wxGetLocalTime();
 
     LoadPreferences();
     BitmapCatalog::GetSingleton()->SetTheme(prefs_bitmaptheme);
@@ -115,6 +116,10 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 
     // "commit" all changes made to wxAuiManager
     auimgr.Update();
+
+    // Create and start idle-timer check function
+    idlechecktimer.SetOwner(this, myID_TIMER_IDLECHECK);
+    idlechecktimer.Start(1000, wxTIMER_CONTINUOUS);
 
     Centre();
 
@@ -1021,8 +1026,13 @@ void WCryptoTE::LoadPreferences()
     cfg->SetPath(_T("/cryptote"));
     
     cfg->Read(_T("bitmaptheme"), &prefs_bitmaptheme, 0);
-    cfg->Read(_T("makebackups"), &prefs_makebackups, 0);
+
+    cfg->Read(_T("makebackups"), &prefs_makebackups, true);
     cfg->Read(_T("backupnum"), &prefs_backupnum, 5);
+
+    cfg->Read(_T("autoclose"), &prefs_autoclose, false);
+    cfg->Read(_T("autoclosetime"), &prefs_autoclosetime, 15);
+    cfg->Read(_T("autocloseexit"), &prefs_autocloseexit, true);
 }
 
 // *** Generic Events ***
@@ -1233,6 +1243,9 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
 
 	    filelistpane->BuildImageList();
 	}
+
+	// no need to check if idle timer changed, the user's mouse click will
+	// have reset the timer anyway.
     }
 }
 
@@ -1715,11 +1728,70 @@ void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
     auimgr.Update();
 }
 
+void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
+{
+    if (lastuserevent == 0) return;
+
+    long timenow = ::wxGetLocalTime();
+
+    if (prefs_autoclose)
+    {
+	long timedelta = timenow - lastuserevent;
+
+	if (timedelta >= prefs_autoclosetime * 60)
+	{
+	    lastuserevent = timenow; // reset timer before processing
+
+	    // cannot auto-close if the filename is unset.
+	    if (!container_filename.IsOk()) {
+		UpdateStatusBar(_("Inactivity time elapsed. But could not auto-save container: no default file name set."));
+		return;
+	    }
+
+	    if (IsModified()) {
+		// error during save?
+		if (!UserContainerSave()) return;
+	    }
+	    else {
+		UpdateStatusBar(_("Inactivity time elapsed. No modifications to save."));
+	    }
+
+	    if (prefs_autocloseexit) {
+		Close();
+	    }
+	    else {
+		ContainerNew();
+	    }
+	}
+	else if (timedelta > 60)
+	{
+	    if (idletimestatusbar.IsEmpty())
+		idletimestatusbar = statusbar->GetStatusText(1);
+
+	    wxString sb = wxString::Format(_("Auto-close in %ds"), prefs_autoclosetime * 60 - timedelta);
+	    statusbar->SetStatusText(sb, 1);
+	}
+    }
+}
+
+void WCryptoTE::ResetIdleTimer()
+{
+    lastuserevent = ::wxGetLocalTime();
+
+    if (!idletimestatusbar.IsEmpty())
+    {
+	statusbar->SetStatusText(idletimestatusbar, 1);
+	idletimestatusbar.Clear();
+    }
+}
+
 BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     // *** Generic Events
 
     EVT_CLOSE	(WCryptoTE::OnClose)
+
+    EVT_TIMER	(myID_TIMER_IDLECHECK, WCryptoTE::OnIdleTimerCheck)
 
     // *** Menu Items
 
