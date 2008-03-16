@@ -54,9 +54,27 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     OnCheckboxBackups(event);
     OnCheckboxAutoClose(event);
 
-    BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
-    wxImageList *imglist = new wxImageList;
+    // *** Initialize the Theme List ***
 
+    BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
+
+    // first calculate the imagelist's items size
+
+    int maxwidth = 0, maxheight = 0;
+    for(int ti = 0; ; ++ti)
+    {
+	wxString str;
+	wxBitmap bmp;
+
+	if (!bitmapcatalog->GetThemeInfo(ti, str, bmp)) break;
+
+	maxwidth = wxMax(maxwidth, bmp.GetWidth());
+	maxheight = wxMax(maxheight, bmp.GetHeight());
+    }
+
+    wxImageList *imglist = new wxImageList(maxwidth, maxheight);
+
+    listctrlTheme->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
     for(int ti = 0; ; ++ti)
     {
 	wxString str;
@@ -66,7 +84,6 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
 
 	imglist->Add(bmp);
     }
-    listctrlTheme->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
     listctrlTheme->InsertColumn(0, _("Theme"), wxLIST_FORMAT_LEFT);
     for(int ti = 0; ; ++ti)

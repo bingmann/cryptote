@@ -1740,7 +1740,8 @@ void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
 
 	if (timedelta >= prefs_autoclosetime * 60)
 	{
-	    lastuserevent = timenow; // reset timer before processing
+	    lastuserevent = 0; // disable timer before processing, only one
+			       // idle-timeout per user-event.
 
 	    // cannot auto-close if the filename is unset.
 	    if (!container_filename.IsOk()) {
