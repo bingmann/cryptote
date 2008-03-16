@@ -50,7 +50,7 @@ am_cryptote_OBJECTS = main.$(OBJEXT) wcryptote.$(OBJEXT) \
 	bmpcat.$(OBJEXT) wtextpage.$(OBJEXT) wfind.$(OBJEXT) \
 	wfilelist.$(OBJEXT) wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) \
 	wmsgdlg.$(OBJEXT) wbinpage.$(OBJEXT) wpass.$(OBJEXT) \
-	woptions.$(OBJEXT)
+	wprefs.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -198,7 +198,7 @@ cryptote_SOURCES = main.cpp \
 	wmsgdlg.cpp wmsgdlg.h \
 	wbinpage.cpp wbinpage.h \
 	wpass.cpp wpass.h \
-	woptions.cpp woptions.h
+	wprefs.cpp wprefs.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) $(WX_CXXFLAGS)
@@ -280,8 +280,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfileprop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wmsgdlg.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/woptions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wprefs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wtextpage.Po@am__quote@
 
 .cpp.o:

@@ -137,6 +137,14 @@ public:
     /// Save the current container to a file.
     bool	ContainerSaveAs(const wxString& filename);
 
+    // *** Preference Variables ***
+
+    /// Theme set using BitmapCatalog
+    int		bitmaptheme;
+    
+    /// Retrieve config settings from registry or config file
+    void	LoadPreferences();
+
     // *** Event Handlers ***
 
     // Generic Events
@@ -163,7 +171,7 @@ public:
     void	OnMenuContainerProperties(wxCommandEvent& event);
     void	OnMenuContainerSetPassword(wxCommandEvent& event);
 
-    void	OnMenuContainerOptions(wxCommandEvent& event);
+    void	OnMenuContainerPreferences(wxCommandEvent& event);
 
     void	OnMenuContainerQuit(wxCommandEvent& event);
 

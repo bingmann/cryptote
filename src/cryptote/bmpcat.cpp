@@ -34,6 +34,15 @@ BitmapCatalog::BitmapCatalog()
     SetTheme(2);
 }
 
+const BitmapCatalog::Theme* BitmapCatalog::themelist[] =
+{
+    &theme_crystal_large, &theme_crystal_small,
+    &theme_slick_large, &theme_slick_small,
+    &theme_gnome_large, &theme_gnome_small
+};
+
+const int BitmapCatalog::themelistsize = sizeof(themelist) / sizeof(themelist[0]);
+
 void BitmapCatalog::SetTheme(int nt)
 {
     themeid = nt;
@@ -45,29 +54,13 @@ void BitmapCatalog::SetTheme(int nt)
     }
 
     // load built-in theme
-    if (nt == 0)
+    if (nt >= 0 && nt < themelistsize)
     {
-	AddBuiltInTheme(&theme_crystal_large);
+	AddBuiltInTheme(themelist[nt]);
     }
-    else if (nt == 1)
+    else
     {
-	AddBuiltInTheme(&theme_crystal_small);
-    }
-    else if (nt == 2)
-    {
-	AddBuiltInTheme(&theme_slick_large);
-    }
-    else if (nt == 3)
-    {
-	AddBuiltInTheme(&theme_slick_small);
-    }
-    else if (nt == 4)
-    {
-	AddBuiltInTheme(&theme_gnome_large);
-    }
-    else if (nt == 5)
-    {
-	AddBuiltInTheme(&theme_gnome_small);
+	AddBuiltInTheme(themelist[0]);
     }
 }
 
@@ -78,39 +71,12 @@ int BitmapCatalog::GetCurrentTheme()
 
 bool BitmapCatalog::GetThemeInfo(int themeid, wxString& name, wxBitmap& snapshot)
 {
-    switch(themeid)
+    if (themeid >= 0 && themeid < themelistsize)
     {
-    case 0:
-	name = theme_crystal_large.name;
-	snapshot = wxBitmapFromMemory2(theme_crystal_large.snapshot_data, theme_crystal_large.snapshot_datalen);
-	return true;
-
-    case 1:
-	name = theme_crystal_small.name;
-	snapshot = wxBitmapFromMemory2(theme_crystal_small.snapshot_data, theme_crystal_small.snapshot_datalen);
-	return true;
-
-    case 2:
-	name = theme_slick_large.name;
-	snapshot = wxBitmapFromMemory2(theme_slick_large.snapshot_data, theme_slick_large.snapshot_datalen);
-	return true;
-
-    case 3:
-	name = theme_slick_small.name;
-	snapshot = wxBitmapFromMemory2(theme_slick_small.snapshot_data, theme_slick_small.snapshot_datalen);
-	return true;
-
-    case 4:
-	name = theme_gnome_large.name;
-	snapshot = wxBitmapFromMemory2(theme_gnome_large.snapshot_data, theme_gnome_large.snapshot_datalen);
-	return true;
-
-    case 5:
-	name = theme_gnome_small.name;
-	snapshot = wxBitmapFromMemory2(theme_gnome_small.snapshot_data, theme_gnome_small.snapshot_datalen);
+	name = themelist[themeid]->name;
+	snapshot = wxBitmapFromMemory2(themelist[themeid]->snapshot_data, themelist[themeid]->snapshot_datalen);
 	return true;
     }
-
     return false;
 }
 

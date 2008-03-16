@@ -10,32 +10,32 @@
 #include <wx/notebook.h>
 // end wxGlade
 
-#ifndef WOPTIONS_H
-#define WOPTIONS_H
+#ifndef WPREFERENCES_H
+#define WPREFERENCES_H
 
 // begin wxGlade: ::extracode
 // end wxGlade
 
-class WOptions : public wxDialog
+class WPreferences : public wxDialog
 {
 public:
-    // begin wxGlade: WOptions::ids
+    // begin wxGlade: WPreferences::ids
     enum {
         myID_CHECK_BACKUPS = wxID_HIGHEST + 1000,
         myID_CHECK_AUTOCLOSE = wxID_HIGHEST + 1002
     };
     // end wxGlade
 
-    WOptions(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WPreferences(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
-    // begin wxGlade: WOptions::methods
+    // begin wxGlade: WPreferences::methods
     void set_properties();
     void do_layout();
     // end wxGlade
 
 protected:
-    // begin wxGlade: WOptions::attributes
+    // begin wxGlade: WPreferences::attributes
     wxStaticBox* sizerB2_staticbox;
     wxStaticBox* sizerA6_staticbox;
     wxStaticBox* sizerA4_staticbox;
@@ -66,4 +66,4 @@ public:
     virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
-#endif // WOPTIONS_H
+#endif // WPREFERENCES_H

@@ -10,9 +10,10 @@
 #include "wmsgdlg.h"
 #include "wbinpage.h"
 #include "wpass.h"
-#include "woptions.h"
+#include "wprefs.h"
 
 #include <wx/wfstream.h>
+#include <wx/config.h>
 #include "common/tools.h"
 
 WCryptoTE::WCryptoTE(wxWindow* parent)
@@ -22,6 +23,9 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     cpage = NULL;
     container = NULL;
     main_modified = false;
+
+    LoadPreferences();
+    BitmapCatalog::GetSingleton()->SetTheme(bitmaptheme);
 
     Enctain::Container::SetSignature("CryptoTE");
 
@@ -963,6 +967,17 @@ void WCryptoTE::CreateToolBar()
     }
 }
 
+// *** Preference Variables ***
+
+void WCryptoTE::LoadPreferences()
+{
+    wxConfigBase* cfg = wxConfigBase::Get();
+
+    cfg->SetPath(_T("/cryptote"));
+    
+    cfg->Read(_T("bitmaptheme"), &bitmaptheme, 0);
+}
+
 // *** Generic Events ***
 
 bool WCryptoTE::AllowCloseModified()
@@ -1119,16 +1134,17 @@ void WCryptoTE::OnMenuContainerSetPassword(wxCommandEvent& WXUNUSED(event))
     SetModified();
 }
 
-void WCryptoTE::OnMenuContainerOptions(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
 {
-    int oldtheme = BitmapCatalog::GetSingleton()->GetCurrentTheme();
-
-    WOptions dlg(this);
+    WPreferences dlg(this);
     if (dlg.ShowModal() == wxID_OK)
     {
-	if (oldtheme != BitmapCatalog::GetSingleton()->GetCurrentTheme())
+	LoadPreferences();
+
+	if (bitmaptheme != BitmapCatalog::GetSingleton()->GetCurrentTheme())
 	{
 	    // reload all images
+	    BitmapCatalog::GetSingleton()->SetTheme(bitmaptheme);
 
 	    // Rebuild menus
 	    SetMenuBar(NULL);
@@ -1152,11 +1168,16 @@ void WCryptoTE::OnMenuContainerOptions(wxCommandEvent& WXUNUSED(event))
 
 	    SetMenuBar(menubar_active);
 
+	    CreateToolBar();
+
+	    // Force page and others to update their menu item status
+
 	    menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, true);
 	    menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, true);
 	    menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, true);
 
-	    CreateToolBar();
+	    UpdateModified();
+	    if (cpage) cpage->PageFocused();
 
 	    // QuickFind and Goto Panes
 
@@ -1666,7 +1687,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_PROPERTIES,	WCryptoTE::OnMenuContainerProperties)
     EVT_MENU	(myID_MENU_CONTAINER_SETPASS, WCryptoTE::OnMenuContainerSetPassword)
 
-    EVT_MENU	(wxID_PREFERENCES,	WCryptoTE::OnMenuContainerOptions)
+    EVT_MENU	(wxID_PREFERENCES,	WCryptoTE::OnMenuContainerPreferences)
 
     EVT_MENU	(wxID_EXIT,		WCryptoTE::OnMenuContainerQuit)
 
