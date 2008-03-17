@@ -37,6 +37,7 @@ enum {
     myID_MENU_EDIT_QUICKFIND,
     myID_MENU_EDIT_GOTO,
     myID_MENU_EDIT_SELECTLINE,
+    myID_MENU_EDIT_INSERT_PASSWORD,
 
     myID_MENU_VIEW_LINEWRAP,
     myID_MENU_VIEW_LINENUMBER,
@@ -207,6 +208,7 @@ public:
     void	OnMenuEditGoto(wxCommandEvent& event);
     void	OnMenuEditFind(wxCommandEvent& event);
     void	OnMenuEditFindReplace(wxCommandEvent& event);
+    void	OnMenuEditInsertPassword(wxCommandEvent& event);
 
     void	OnMenuViewLineWrap(wxCommandEvent& event);
     void	OnMenuViewLineNumber(wxCommandEvent& event);
@@ -430,14 +432,6 @@ public:
 
     /// Write current data buffer to the output stream. Used by SubFile->Export.
     virtual void	ExportBuffer(wxOutputStream& outstream) = 0;
-
-    /// Prepare for a Quick-Find by setting the search anchor point, backwards
-    /// for searching backwards and reset for terminating incremental search
-    /// and restarting.
-    virtual void	PrepareQuickFind(bool backwards, bool reset) = 0;
-
-    /// Execute Quick-Find for a search string.
-    virtual void	DoQuickFind(bool backwards, const wxString& findtext) = 0;
 
     /// Execute Quick-Goto for a given string or set an error message. The goto
     /// window will close if the function returns true.

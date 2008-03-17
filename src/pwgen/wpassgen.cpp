@@ -60,11 +60,11 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 
     // set bitmap from compiled-in PNGs
     {
-	#include "art/crystal/edit-add-16.h"
-	#include "art/crystal/edit-remove-16.h"
+	#include "art/gnome/list-add.h"
+	#include "art/gnome/list-remove.h"
 
-	buttonPresetAdd->SetBitmapLabel( wxBitmapFromMemory(crystal_edit_add_16_png) );
-	buttonPresetRemove->SetBitmapLabel( wxBitmapFromMemory(crystal_edit_remove_16_png) );
+	buttonPresetAdd->SetBitmapLabel( wxBitmapFromMemory(gnome_list_add_png) );
+	buttonPresetRemove->SetBitmapLabel( wxBitmapFromMemory(gnome_list_remove_png) );
     }
 
     // insert password type names

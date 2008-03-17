@@ -58,8 +58,6 @@ public:
     /// Called when the notebook page is closed.
     virtual void	PageClosed();
 
-    virtual void	PrepareQuickFind(bool backwards, bool reset);
-    virtual void	DoQuickFind(bool backwards, const wxString& findtext);
     virtual bool	DoQuickGoto(const wxString& gototext);
 
     // *** Event Handlers ***

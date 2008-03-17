@@ -121,14 +121,6 @@ void WBinaryPage::PageClosed()
     PageSaveData();
 }
 
-void WBinaryPage::PrepareQuickFind(bool backwards, bool reset)
-{
-}
-
-void WBinaryPage::DoQuickFind(bool backwards, const wxString& findbinary)
-{
-}
-
 bool WBinaryPage::DoQuickGoto(const wxString& gototext)
 {
     long offset;

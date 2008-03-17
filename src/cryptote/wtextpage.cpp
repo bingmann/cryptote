@@ -198,6 +198,11 @@ void WTextPage::ExportBuffer(wxOutputStream& outstream)
     outstream.Write(buf.data(), buflen);
 }
 
+void WTextPage::AddText(const wxString& text)
+{
+    editctrl->AddText(text);
+}
+
 // *** Event Handlers ***
 
 static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
@@ -243,7 +248,6 @@ void WTextPage::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 
     menu->AppendSeparator();
 
-
     appendMenuItem(menu, wxID_SELECTALL,
 		   _("&Select all\tCtrl+A"),
 		   _("Select all text in the current buffer."));
@@ -251,6 +255,13 @@ void WTextPage::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
     appendMenuItem(menu, myID_MENU_EDIT_SELECTLINE,
 		   _("Select &line\tCtrl+L"),
 		   _("Select whole line at the current cursor position."));
+
+    menu->AppendSeparator();
+
+    appendMenuItem(menu, myID_MENU_EDIT_INSERT_PASSWORD,
+		   _("Insert &Password ...\tCtrl+P"),
+		   _("Open random generator dialog box and insert the generated password."));
+
 
     // Enable or Disable Menu Items and Tool Bar Items
 

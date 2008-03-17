@@ -70,6 +70,8 @@ noinst_HEADERS = \
 	messagebox-warning.h \
 	process-stop-tool.h \
 	process-stop.h \
+	seahorse.h \
+	seahorse-tool.h \
 	snapshot.h \
 	subfile-close.h \
 	subfile-export.h \
@@ -147,6 +149,9 @@ EXTRA_DIST = \
 	messagebox-warning.png \
 	process-stop-tool.png \
 	process-stop.png \
+	seahorse.png \
+	seahorse-tool.png \
+	seahorse.svg \
 	snapshot.png \
 	snapshot.xcf \
 	subfile-close.png \

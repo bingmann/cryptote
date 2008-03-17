@@ -11,6 +11,7 @@
 #include "wbinpage.h"
 #include "wpass.h"
 #include "wprefs.h"
+#include "pwgen/wpassgen.h"
 
 #include <wx/wfstream.h>
 #include <wx/config.h>
@@ -138,6 +139,10 @@ WCryptoTE::~WCryptoTE()
     if (container) {
 	delete container;
 	container = NULL;
+    }
+    if (container_filehandle) {
+	delete container_filehandle;
+	container_filehandle = NULL;
     }
 }
 
@@ -944,11 +949,10 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 	menuEdit->AppendSeparator();
 
 	appendMenuItem(menuEdit, myID_MENU_EDIT_GOTO,
-		       _("&Go to Line ...\tCtrl+G"),
+		       _("&Go to line ...\tCtrl+G"),
 		       _("Jump to the entered line number."));
 
 	menuEdit->AppendSeparator();
-
 
 	appendMenuItem(menuEdit, wxID_SELECTALL,
 		       _("&Select all\tCtrl+A"),
@@ -957,6 +961,12 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 	appendMenuItem(menuEdit, myID_MENU_EDIT_SELECTLINE,
 		       _("Select &line\tCtrl+L"),
 		       _("Select whole line at the current cursor position."));
+
+	menuEdit->AppendSeparator();
+
+	appendMenuItem(menuEdit, myID_MENU_EDIT_INSERT_PASSWORD,
+		       _("Insert &Password ...\tCtrl+P"),
+		       _("Open random generator dialog box and insert the generated password."));
 
 	menubar->Append(menuEdit, _("&Edit"));
 
@@ -1085,6 +1095,9 @@ void WCryptoTE::CreateToolBar()
 
 	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Line ..."), wxITEM_NORMAL,
 		   _("Jump to the entered line number."));
+
+	appendTool(toolbar, myID_MENU_EDIT_INSERT_PASSWORD, _("Insert Password ..."), wxITEM_NORMAL,
+		   _("Open random generator dialog box and insert the generated password."));
     }
 
     if (cpage && cpage->IsKindOf(CLASSINFO(WBinaryPage)))
@@ -1496,7 +1509,8 @@ void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
 
 void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 {
-    if (!cpage) return;
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
 
     if (quickfindbar_visible)
     {
@@ -1506,9 +1520,9 @@ void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 	
 	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
 
-	cpage->PrepareQuickFind(false, false);
+	page->PrepareQuickFind(false, false);
 
-	cpage->DoQuickFind(false, findtext);
+	page->DoQuickFind(false, findtext);
     }
     else
     {
@@ -1521,7 +1535,7 @@ void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 	quickgotobar_visible = false;
 	quickfindbar_visible = true;
 
-	cpage->PrepareQuickFind(false, true);
+	page->PrepareQuickFind(false, true);
 
 	quickfindbar->textctrlQuickFind->SetFocus();
 	quickfindbar->textctrlQuickFind->SetValue(wxT(""));
@@ -1545,6 +1559,19 @@ void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
     else
     {
 	quickgotobar->textctrlGoto->SetFocus();
+    }
+}
+
+void WCryptoTE::OnMenuEditInsertPassword(wxCommandEvent& WXUNUSED(event))
+{
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
+
+    WPassGen dlg(this, false);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+	page->AddText(dlg.GetSelectedPassword());
     }
 }
 
@@ -1740,36 +1767,36 @@ void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
 {
-    if (cpage)
-    {
-	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
 
-	cpage->DoQuickFind(false, findtext);
-    }
+    wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+
+    page->DoQuickFind(false, findtext);
 }
 
 void WCryptoTE::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
 {
-    if (cpage)
-    {
-	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
 
-	cpage->PrepareQuickFind(false, false);
+    wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
 
-	cpage->DoQuickFind(false, findtext);
-    }
+    page->PrepareQuickFind(false, false);
+
+    page->DoQuickFind(false, findtext);
 }
 
 void WCryptoTE::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
 {
-    if (cpage)
-    {
-	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
 
-	cpage->PrepareQuickFind(true, false);
+    wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
 
-	cpage->DoQuickFind(true, findtext);
-    }
+    page->PrepareQuickFind(true, false);
+
+    page->DoQuickFind(true, findtext);
 }
 // *** WQuickGotoBar Callbacks ***
 
@@ -1947,6 +1974,8 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_EDIT_SELECTLINE, WCryptoTE::OnMenuEditGeneric)
+
+    EVT_MENU	(myID_MENU_EDIT_INSERT_PASSWORD, WCryptoTE::OnMenuEditInsertPassword)
 
     // View
     EVT_MENU	(myID_MENU_VIEW_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)

@@ -45,6 +45,17 @@ public:
     /// Write buffer to the output stream
     virtual void	ExportBuffer(wxOutputStream& outstream);
 
+    /// Insert a string at current position.
+    void		AddText(const wxString& text);
+
+    /// Prepare for a Quick-Find by setting the search anchor point, backwards
+    /// for searching backwards and reset for terminating incremental search
+    /// and restarting.
+    void		PrepareQuickFind(bool backwards, bool reset);
+
+    /// Execute Quick-Find for a search string.
+    void		DoQuickFind(bool backwards, const wxString& findtext);
+
     // *** Event Handlers ***
 
     void	OnContextMenu(wxContextMenuEvent& event);
@@ -75,8 +86,8 @@ public:
     /// Called when the notebook page is closed.
     virtual void	PageClosed();
 
-    virtual void	PrepareQuickFind(bool backwards, bool reset);
-    virtual void	DoQuickFind(bool backwards, const wxString& findtext);
+    /// Execute Quick-Goto for a given string or set an error message. The goto
+    /// window will close if the function returns true.
     virtual bool	DoQuickGoto(const wxString& gototext);
 
     // *** Scintilla Callbacks ***

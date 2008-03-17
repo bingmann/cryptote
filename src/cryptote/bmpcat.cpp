@@ -193,6 +193,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { myID_MENU_EDIT_GOTO,		BU_MENU, _T("edit-goto"), wxNullBitmap },
     { wxID_SELECTALL,			BU_MENU, _T("edit-select-all"), wxNullBitmap },
     { myID_MENU_EDIT_SELECTLINE,	BU_MENU, _T("edit-select-line"), wxNullBitmap },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, _T("edit-insert-password"), wxNullBitmap },
 
     { wxID_ADD,				BU_MENU, _T("list-add"), wxNullBitmap },
     { wxID_REMOVE,			BU_MENU, _T("list-remove"), wxNullBitmap },
@@ -237,6 +238,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, _T("edit-goto-tool"), wxNullBitmap },
     { wxID_SELECTALL,			BU_TOOLBAR, _T("edit-select-all-tool"), wxNullBitmap },
     { myID_MENU_EDIT_SELECTLINE,	BU_TOOLBAR, _T("edit-select-line-tool"), wxNullBitmap },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, _T("edit-insert-password-tool"), wxNullBitmap },
 
     { wxID_ADD,				BU_TOOLBAR, _T("list-add-tool"), wxNullBitmap },
     { wxID_REMOVE,			BU_TOOLBAR, _T("list-remove-tool"), wxNullBitmap },
@@ -440,6 +442,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
     { wxID_FIND,			BU_MENU, BUILTIN(crystal_edit_find_16_png) },
     { wxID_REPLACE,			BU_MENU, BUILTIN(crystal_edit_find_16_png) },
     { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(crystal_edit_goto_16_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
 
     { wxID_ADD,				BU_MENU, BUILTIN(crystal_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(crystal_edit_remove_16_png) },
@@ -482,6 +485,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
     { wxID_FIND,			BU_TOOLBAR, BUILTIN(crystal_edit_find_22_png) },
     { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(crystal_edit_find_22_png) },
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(crystal_edit_goto_22_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, BUILTIN(crystal_document_password_22_png) },
 
     { wxID_ADD,				BU_TOOLBAR, BUILTIN(crystal_edit_add_22_png) },
     { wxID_REMOVE,			BU_TOOLBAR, BUILTIN(crystal_edit_remove_22_png) },
@@ -554,6 +558,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     { wxID_FIND,			BU_MENU, BUILTIN(crystal_edit_find_16_png) },
     { wxID_REPLACE,			BU_MENU, BUILTIN(crystal_edit_find_16_png) },
     { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(crystal_edit_goto_16_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
 
     { wxID_ADD,				BU_MENU, BUILTIN(crystal_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(crystal_edit_remove_16_png) },
@@ -596,6 +601,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     { wxID_FIND,			BU_TOOLBAR, BUILTIN(crystal_edit_find_16_png) },
     { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(crystal_edit_find_16_png) },
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(crystal_edit_goto_16_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, BUILTIN(crystal_document_password_16_png) },
 
     { wxID_ADD,				BU_TOOLBAR, BUILTIN(crystal_edit_add_16_png) },
     { wxID_REMOVE,			BU_TOOLBAR, BUILTIN(crystal_edit_remove_16_png) },
@@ -746,6 +752,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
     { wxID_FIND,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
     { wxID_REPLACE,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
     { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(slick_edit_goto_16_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
 
     { wxID_ADD,				BU_MENU, BUILTIN(slick_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(slick_edit_remove_16_png) },
@@ -785,6 +792,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
     { wxID_FIND,			BU_TOOLBAR, BUILTIN(slick_edit_find_22_png) },
     { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(slick_edit_find_22_png) },
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(slick_edit_goto_22_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, BUILTIN(crystal_document_password_22_png) },
 
     { wxID_ABOUT,			BU_TOOLBAR, BUILTIN(slick_application_info_22_png) },
 
@@ -852,6 +860,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     { wxID_FIND,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
     { wxID_REPLACE,			BU_MENU, BUILTIN(slick_edit_find_16_png) },
     { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(slick_edit_goto_16_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
 
     { wxID_ADD,				BU_MENU, BUILTIN(slick_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(slick_edit_remove_16_png) },
@@ -892,6 +901,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     { wxID_FIND,			BU_TOOLBAR, BUILTIN(slick_edit_find_16_png) },
     { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(slick_edit_find_16_png) },
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(slick_edit_goto_16_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, BUILTIN(crystal_document_password_16_png) },
 
     { wxID_ADD,				BU_TOOLBAR, BUILTIN(slick_edit_add_16_png) },
     { wxID_REMOVE,			BU_TOOLBAR, BUILTIN(slick_edit_remove_16_png) },
@@ -1006,6 +1016,8 @@ const BitmapCatalog::Theme BitmapCatalog::theme_slick_small =
 #include "art/gnome/messagebox-question.h"
 #include "art/gnome/messagebox-warning.h"
 #include "art/gnome/process-stop.h"
+#include "art/gnome/seahorse.h"
+#include "art/gnome/seahorse-tool.h"
 #include "art/gnome/snapshot.h"
 #include "art/gnome/subfile-close.h"
 #include "art/gnome/subfile-export.h"
@@ -1051,6 +1063,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
     { wxID_REPLACE,			BU_MENU, BUILTIN(gnome_edit_find_replace_png) },
     { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(gnome_go_jump_png) },
     { wxID_SELECTALL,			BU_MENU, BUILTIN(gnome_edit_select_all_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, BUILTIN(gnome_seahorse_png) },
 
     { wxID_ADD,				BU_MENU, BUILTIN(gnome_list_add_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(gnome_list_remove_png) },
@@ -1092,6 +1105,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
     { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(gnome_edit_find_replace_tool_png) },
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(gnome_go_jump_tool_png) },
     { wxID_SELECTALL,			BU_TOOLBAR, BUILTIN(gnome_edit_select_all_tool_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, BUILTIN(gnome_seahorse_tool_png) },
 
     { wxID_ADD,				BU_TOOLBAR, BUILTIN(gnome_list_add_tool_png) },
     { wxID_REMOVE,			BU_TOOLBAR, BUILTIN(gnome_list_remove_tool_png) },
@@ -1166,6 +1180,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
     { wxID_REPLACE,			BU_MENU, BUILTIN(gnome_edit_find_replace_png) },
     { myID_MENU_EDIT_GOTO,		BU_MENU, BUILTIN(gnome_go_jump_png) },
     { wxID_SELECTALL,			BU_MENU, BUILTIN(gnome_edit_select_all_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_MENU, BUILTIN(gnome_seahorse_png) },
 
     { wxID_ADD,				BU_MENU, BUILTIN(gnome_list_add_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(gnome_list_remove_png) },
@@ -1207,6 +1222,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
     { wxID_REPLACE,			BU_TOOLBAR, BUILTIN(gnome_edit_find_replace_png) },
     { myID_MENU_EDIT_GOTO,		BU_TOOLBAR, BUILTIN(gnome_go_jump_png) },
     { wxID_SELECTALL,			BU_TOOLBAR, BUILTIN(gnome_edit_select_all_png) },
+    { myID_MENU_EDIT_INSERT_PASSWORD,	BU_TOOLBAR, BUILTIN(gnome_seahorse_png) },
 
     { wxID_ADD,				BU_TOOLBAR, BUILTIN(gnome_list_add_png) },
     { wxID_REMOVE,			BU_TOOLBAR, BUILTIN(gnome_list_remove_png) },
