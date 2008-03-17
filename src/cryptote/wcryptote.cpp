@@ -16,7 +16,7 @@
 #include <wx/config.h>
 #include "common/tools.h"
 
-#ifdef __WXMSW__
+#if defined(__WINDOWS__)
 #include <share.h>
 #endif
 
@@ -583,7 +583,8 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 {
     std::auto_ptr<wxFile> fh (new wxFile);
 
-#ifdef __WXMSW__
+#if defined(__WINDOWS__)
+    if (prefs_sharelock)
     {
 #if wxUSE_UNICODE
 	int fd = _wsopen(filename.c_str(), _O_RDONLY | _O_BINARY, _SH_DENYRW);
@@ -595,6 +596,26 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 	    return false;
 	}
 	fh->Attach(fd);
+    }
+    else
+    {
+	if (!fh->Open(filename.c_str(), wxFile::read)) return false;
+    }
+#elif defined(__UNIX__)
+    if (prefs_sharelock)
+    {
+	// read_write is required to make a write-lock
+	if (!fh->Open(filename.c_str(), wxFile::read_write)) return false;
+
+	int lf = lockf(fh->fd(), F_TLOCK, 0);
+	if (lf != 0) {
+	    wxLogSysError(_("Cannot open file '%s'"), filename.c_str());
+	    return false;
+	}
+    }
+    else
+    {
+	if (!fh->Open(filename.c_str(), wxFile::read)) return false;
     }
 #else
     if (!fh->Open(filename.c_str(), wxFile::read)) return false;
@@ -731,7 +752,8 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     }
 
     std::auto_ptr<wxFile> fh (new wxFile);
-#ifdef __WXMSW__
+#if defined(__WINDOWS__)
+    if (prefs_sharelock)
     {
 #if wxUSE_UNICODE
 	int fd = _wsopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY, _SH_DENYRW);
@@ -744,8 +766,23 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	}
 	fh->Attach(fd);
     }
+    else
+    {
+	if (!fh->Create(filename.c_str(), true, wxS_DEFAULT)) return false;
+    }
+#elif defined(__UNIX__)
+    if (prefs_sharelock)
+    {
+	if (!fh->Create(filename.c_str(), true, 02640)) return false;
+
+	lockf(fh->fd(), F_LOCK, 0);
+    }
+    else
+    {
+	if (!fh->Create(filename.c_str(), true, wxS_DEFAULT)) return false;
+    }
 #else
-    if (!fh->Open(filename.c_str(), wxFile::write)) return false;
+    if (!fh->Create(filename.c_str(), true, wxS_DEFAULT)) return false;
 #endif
 
     wxFileOutputStream stream(*fh.get());
@@ -1089,7 +1126,13 @@ void WCryptoTE::LoadPreferences()
     cfg->Read(_T("autoclosetime"), &prefs_autoclosetime, 15);
     cfg->Read(_T("autocloseexit"), &prefs_autocloseexit, true);
 
-    cfg->Read(_T("sharelock"), &prefs_sharelock, true);
+#if defined(__WINDOWS__)
+    bool default_sharelock = true;
+#else
+    bool default_sharelock = false;
+#endif
+
+    cfg->Read(_T("sharelock"), &prefs_sharelock, default_sharelock);
 }
 
 // *** Generic Events ***
@@ -1306,6 +1349,15 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
 
 	// no need to check if idle timer changed, the user's mouse click will
 	// have reset the timer anyway.
+
+	if (!prefs_sharelock)
+	{
+	    // release file handle and thus the lock if it exists.
+	    if (container_filehandle) {
+		delete container_filehandle;
+		container_filehandle = NULL;
+	    }
+	}
     }
 }
 

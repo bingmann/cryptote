@@ -42,6 +42,21 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     do_layout();
     // end wxGlade
 
+    // *** Change dialog depending on OS ***
+
+#if defined(__WINDOWS__)
+    labelShareLock1->SetLabel(_("Windows: No other user or program can open the container file while it is loaded in CryptoTE."));
+#elif defined(__LINUX__)
+    labelShareLock1->SetLabel(_("Linux: advisory file locking is used.\nNo two instances of CryptoTE can open the same file. Mandatory file locking can only be enabled using a mount option (see man mount, option 'mand')."));
+#else
+    checkboxShareLock->Disable();
+    labelShareLock1->SetLabel(_("Unknown OS: share locking is not supported."));
+#endif
+    labelShareLock1->Wrap(340);
+    Layout();
+    GetSizer()->Fit(this);
+    Centre();
+
     // *** Load current settings from WCryptoTE ***
 
     checkboxBackups->SetValue(wmain->prefs_makebackups);
