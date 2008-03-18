@@ -52,8 +52,8 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
     textctrlPasslist = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
-    buttonClose = new wxButton(this, wxID_CLOSE, wxEmptyString);
     buttonAbout = new wxButton(this, wxID_ABOUT, _("&About"));
+    buttonClose = new wxButton(this, wxID_CLOSE, wxEmptyString);
 
     set_properties();
     do_layout();
@@ -240,8 +240,8 @@ void WPassGen::do_layout()
     sizer5->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
     sizer5->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
     sizer1->Add(sizer5, 0, wxEXPAND, 0);
-    sizer6->Add(buttonClose, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer6->Add(buttonAbout, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer6->Add(buttonAbout, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer6->Add(buttonClose, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
     sizer1->Add(sizer6, 0, wxEXPAND, 0);
     SetSizer(sizer1);
     Layout();
@@ -279,8 +279,8 @@ BEGIN_EVENT_TABLE(WPassGen, wxDialog)
     EVT_LIST_ITEM_ACTIVATED(myID_PASSLIST, WPassGen::OnPasslistActivated)
     EVT_BUTTON(wxID_OK, WPassGen::OnButtonOK)
     EVT_BUTTON(wxID_CANCEL, WPassGen::OnButtonCancel)
-    EVT_BUTTON(wxID_CLOSE, WPassGen::OnButtonClose)
     EVT_BUTTON(wxID_ABOUT, WPassGen::OnButtonAbout)
+    EVT_BUTTON(wxID_ANY, WPassGen::OnButtonClose)
     // end wxGlade
     EVT_CLOSE(WPassGen::OnClose)
 END_EVENT_TABLE();
@@ -961,5 +961,9 @@ void PGWAbout::do_layout()
     Layout();
     // end wxGlade
 }
+
+
+
+
 
 

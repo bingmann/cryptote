@@ -170,30 +170,30 @@ protected:
     wxTextCtrl* textctrlPasslist;
     wxButton* buttonOK;
     wxButton* buttonCancel;
-    wxButton* buttonClose;
     wxButton* buttonAbout;
+    wxButton* buttonClose;
     // end wxGlade
 
     DECLARE_EVENT_TABLE();
 
 public:
-    virtual void OnClose(wxCloseEvent& event);
-    virtual void OnChoicePreset(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnChoiceType(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnCheckSkipSimilarChar(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnCheckSkipSwappedChar(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnTextExtraCharChange(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnSpinLength(wxSpinEvent &event); // wxGlade: <event_handler>
-    virtual void OnCheckEnumerate(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonGenerate(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnPasslistSelected(wxListEvent &event); // wxGlade: <event_handler>
-    virtual void OnPasslistActivated(wxListEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonCancel(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonClose(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonAbout(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonPresetAdd(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnButtonPresetRemove(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnClose(wxCloseEvent& event);
+    void OnChoicePreset(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnChoiceType(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnCheckSkipSimilarChar(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnCheckSkipSwappedChar(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnTextExtraCharChange(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnSpinLength(wxSpinEvent &event); // wxGlade: <event_handler>
+    void OnCheckEnumerate(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnButtonGenerate(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnPasslistSelected(wxListEvent &event); // wxGlade: <event_handler>
+    void OnPasslistActivated(wxListEvent &event); // wxGlade: <event_handler>
+    void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnButtonCancel(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnButtonClose(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnButtonAbout(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnButtonPresetAdd(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnButtonPresetRemove(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 class PGWAbout : public wxDialog
