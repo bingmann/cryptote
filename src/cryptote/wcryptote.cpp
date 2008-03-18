@@ -30,6 +30,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     container_filehandle = NULL;
     main_modified = false;
     lastuserevent = ::wxGetLocalTime();
+    wpassgen = NULL;
 
     LoadPreferences();
     BitmapCatalog::GetSingleton()->SetTheme(prefs_bitmaptheme);
@@ -87,6 +88,9 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     findreplacedlg = NULL;
 
     filelistpane = new WFileList(this);
+
+    wpassgen = new WPassGen(this, false);
+    UpdateMenuInsertPassword();
 
     // *** wxAUI Layout ***
 
@@ -963,10 +967,25 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		       _("Select whole line at the current cursor position."));
 
 	menuEdit->AppendSeparator();
+	
+	// Create Password Generator Submenu
+	wxMenu* passgenmenu = new wxMenu;
+ 
+	passgenmenu->Append(myID_MENU_EDIT_INSERT_PASSWORD_DIALOG,
+			    _("Open Generator Dialog ...\tCtrl+P"),
+			    _("Open random generator dialog box and insert the generated password."));
 
-	appendMenuItem(menuEdit, myID_MENU_EDIT_INSERT_PASSWORD,
-		       _("Insert &Password ...\tCtrl+P"),
-		       _("Open random generator dialog box and insert the generated password."));
+	passgenmenu->AppendSeparator();
+
+	// Create wxMenuItem for PassGen Submenu
+	wxMenuItem* passgenitem
+	    = new wxMenuItem(menuEdit, myID_MENU_EDIT_INSERT_PASSWORD,
+			     _("Insert &Password"),
+			     _("Insert random password from generator preset or open generator dialog box."),
+			     wxITEM_NORMAL, passgenmenu);
+	
+	passgenitem->SetBitmap( BitmapCatalog::GetMenuBitmap(myID_MENU_EDIT_INSERT_PASSWORD) );
+	menuEdit->Append(passgenitem);
 
 	menubar->Append(menuEdit, _("&Edit"));
 
@@ -1023,6 +1042,8 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		   _("Show some information about CryptoTE."));
 
     menubar->Append(menuHelp, _("&Help"));
+
+    UpdateMenuInsertPassword();
 
     return menubar;
 }
@@ -1096,8 +1117,8 @@ void WCryptoTE::CreateToolBar()
 	appendTool(toolbar, myID_MENU_EDIT_GOTO, _("Goto to Line ..."), wxITEM_NORMAL,
 		   _("Jump to the entered line number."));
 
-	appendTool(toolbar, myID_MENU_EDIT_INSERT_PASSWORD, _("Insert Password ..."), wxITEM_NORMAL,
-		   _("Open random generator dialog box and insert the generated password."));
+	appendTool(toolbar, myID_TOOL_EDIT_INSERT_PASSWORD, _("Insert Password ..."), wxITEM_NORMAL,
+		   _("Insert random password from generator preset or open generator dialog box."));
     }
 
     if (cpage && cpage->IsKindOf(CLASSINFO(WBinaryPage)))
@@ -1567,12 +1588,86 @@ void WCryptoTE::OnMenuEditInsertPassword(wxCommandEvent& WXUNUSED(event))
     WTextPage* page = wxDynamicCast(cpage, WTextPage);
     if (!page) return;
 
-    WPassGen dlg(this, false);
-
-    if (dlg.ShowModal() == wxID_OK)
+    wpassgen->Centre();
+    if (wpassgen->ShowModal() == wxID_OK)
     {
-	page->AddText(dlg.GetSelectedPassword());
+	page->AddText(wpassgen->GetSelectedPassword());
     }
+
+    UpdateMenuInsertPassword();
+}
+
+void WCryptoTE::UpdateMenuInsertPassword()
+{
+    if (!menubar_textpage) return;
+    if (!wpassgen) return;
+
+    wxMenuItem* pgitem = menubar_textpage->FindItem(myID_MENU_EDIT_INSERT_PASSWORD);
+    wxMenu* pgsubmenu = pgitem ? pgitem->GetSubMenu() : NULL;
+    
+    if (!pgitem || !pgsubmenu) {
+	wxLogError(_T("Internal Menu Error: could not find insert-password submenu"));
+	return;
+    }
+
+    // Delete all preset items
+    {
+	unsigned int pi = myID_MENU_EDIT_INSERT_PASSWORD_FIRST;
+	wxMenuItem* presetitem = pgsubmenu->FindItem(pi);
+	
+	while(presetitem != NULL)
+	{
+	    pgsubmenu->Remove(presetitem);
+	    delete presetitem;
+	    presetitem = pgsubmenu->FindItem(++pi);
+	}
+    }
+
+    // Append all presets
+    for (unsigned int pi = 0; pi < wpassgen->presetlist.size(); ++pi)
+    {
+	const WPassGen::Preset& preset = wpassgen->presetlist[pi];
+    
+	pgsubmenu->Append(myID_MENU_EDIT_INSERT_PASSWORD_FIRST + pi,
+			  preset.name,
+			  wxString::Format(_("Insert a password generated with the preset %s"), preset.name.c_str()));
+    }
+}
+
+void WCryptoTE::OnToolEditInsertPassword(wxCommandEvent& WXUNUSED(event))
+{
+    wxMenu* menu = new wxMenu(_("Password Presets"));
+ 
+    for (unsigned int pi = 0; pi < wpassgen->presetlist.size(); ++pi)
+    {
+	const WPassGen::Preset& preset = wpassgen->presetlist[pi];
+    
+	menu->Append(myID_MENU_EDIT_INSERT_PASSWORD_FIRST + pi,
+		     preset.name,
+		     wxString::Format(_("Insert a password generated with the preset %s"), preset.name.c_str()));
+    }
+
+    menu->AppendSeparator();
+
+    menu->Append(myID_MENU_EDIT_INSERT_PASSWORD_DIALOG,
+		 _("Open Generator Dialog ..."),
+		 _("Open random generator dialog box and insert the generated password."));
+
+    PopupMenu(menu);
+}
+
+void WCryptoTE::OnMenuEditInsertPasswordPreset(wxCommandEvent& event)
+{
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
+
+    int id = event.GetId() - myID_MENU_EDIT_INSERT_PASSWORD_FIRST;
+
+    if (id < 0 || id >= (int)wpassgen->presetlist.size()) return;
+
+    const WPassGen::Preset& preset = wpassgen->presetlist[id];
+    
+    page->AddText(wpassgen->MakePassword(preset));
 }
 
 void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
@@ -1975,7 +2070,10 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(wxID_SELECTALL,	WCryptoTE::OnMenuEditGeneric)
     EVT_MENU	(myID_MENU_EDIT_SELECTLINE, WCryptoTE::OnMenuEditGeneric)
 
-    EVT_MENU	(myID_MENU_EDIT_INSERT_PASSWORD, WCryptoTE::OnMenuEditInsertPassword)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_PASSWORD_DIALOG, WCryptoTE::OnMenuEditInsertPassword)
+    EVT_TOOL	(myID_TOOL_EDIT_INSERT_PASSWORD, WCryptoTE::OnToolEditInsertPassword)
+    EVT_MENU_RANGE(myID_MENU_EDIT_INSERT_PASSWORD_FIRST, myID_MENU_EDIT_INSERT_PASSWORD_FIRST + 999,
+		   WCryptoTE::OnMenuEditInsertPasswordPreset)
 
     // View
     EVT_MENU	(myID_MENU_VIEW_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)

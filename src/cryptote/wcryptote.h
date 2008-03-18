@@ -38,6 +38,8 @@ enum {
     myID_MENU_EDIT_GOTO,
     myID_MENU_EDIT_SELECTLINE,
     myID_MENU_EDIT_INSERT_PASSWORD,
+    myID_MENU_EDIT_INSERT_PASSWORD_DIALOG,
+    myID_TOOL_EDIT_INSERT_PASSWORD,
 
     myID_MENU_VIEW_LINEWRAP,
     myID_MENU_VIEW_LINENUMBER,
@@ -76,6 +78,10 @@ enum {
     myID_FILETYPE_BINARY_LARGE,
     myID_FILETYPE_TEXT_LARGE,
     myID_FILETYPE_IMAGE_LARGE,
+
+    // *** Variable Menu Item Ranges
+
+    myID_MENU_EDIT_INSERT_PASSWORD_FIRST = wxID_HIGHEST + 1000,
 };
 
 class WCryptoTE : public wxFrame
@@ -209,6 +215,8 @@ public:
     void	OnMenuEditFind(wxCommandEvent& event);
     void	OnMenuEditFindReplace(wxCommandEvent& event);
     void	OnMenuEditInsertPassword(wxCommandEvent& event);
+    void	OnToolEditInsertPassword(wxCommandEvent& event);
+    void	OnMenuEditInsertPasswordPreset(wxCommandEvent& event);
 
     void	OnMenuViewLineWrap(wxCommandEvent& event);
     void	OnMenuViewLineNumber(wxCommandEvent& event);
@@ -264,6 +272,8 @@ public:
 
     void 		CreateToolBar();
 
+    void		UpdateMenuInsertPassword();
+
 protected:
     // *** wxAUI Window Manager ***
 
@@ -307,6 +317,9 @@ public:
 
     /// Container File List Pane
     class WFileList*	filelistpane;
+
+    /// Password Generator Dialog Box
+    class WPassGen*	wpassgen;
 
 public:
 

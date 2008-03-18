@@ -46,8 +46,6 @@ public:
     /// Return password selected by the user
     const wxString&	GetSelectedPassword() const;
 
-protected:
-
     /// Password generator types
     enum pass_type {
 	PT_ALPHANUMERICSYMBOL,
