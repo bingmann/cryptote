@@ -41,8 +41,9 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
     buttonPresetRemove = new wxBitmapButton(this, myID_PRESET_REMOVE, wxNullBitmap);
     const wxString *choiceType_choices = NULL;
     choiceType = new wxChoice(this, myID_TYPE, wxDefaultPosition, wxDefaultSize, 0, choiceType_choices, 0);
-    checkboxSkipSimilarChars = new wxCheckBox(this, myID_SKIPSIMILARCHARS, _("Don't use 0/O and 1/l."));
-    checkboxSkipSwappedChars = new wxCheckBox(this, myID_SKIPSWAPPEDCHARS, _("Don't use z/y."));
+    checkboxSkipSimilarChar = new wxCheckBox(this, myID_SKIPSIMILARCHAR, _("Don't use 0/O and 1/l."));
+    checkboxSkipSwappedChar = new wxCheckBox(this, myID_SKIPSWAPPEDCHAR, _("Don't use z/y."));
+    textctrlExtraChar = new wxTextCtrl(this, myID_TEXT_EXTRACHAR, wxEmptyString);
     spinctrlLength = new wxSpinCtrl(this, myID_LENGTH, wxT("12"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 6, 100);
     textctrlStrength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     checkboxEnumerate = new wxCheckBox(this, myID_ENUMERATE, _("Enumerate Passwords"));
@@ -80,23 +81,26 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 	cfg->SetPath(_T("/pwgen"));
 
 	int preset, type, length;
-	bool skipsimilar, skipswapped, enumerate;
+	bool skip_similar, skip_swapped, enumerate;
+	wxString extrachar;
 
 	cfg->Read(_T("preset"), &preset, PT_ALPHANUMERIC);
 	cfg->Read(_T("type"), &type, 0);
-	cfg->Read(_T("skipsimilar"), &skipsimilar, false);
-	cfg->Read(_T("skipswapped"), &skipswapped, false);
+	cfg->Read(_T("skip_similar"), &skip_similar, false);
+	cfg->Read(_T("skip_swapped"), &skip_swapped, false);
+	cfg->Read(_T("extrachar"), &extrachar);
 	cfg->Read(_T("length"), &length, 12);
 	cfg->Read(_T("enumerate"), &enumerate, false);
 
 	choicePreset->SetSelection(preset);
 	choiceType->SetSelection(type);
-	checkboxSkipSimilarChars->SetValue(skipsimilar);
-	checkboxSkipSwappedChars->SetValue(skipswapped);
+	checkboxSkipSimilarChar->SetValue(skip_similar);
+	checkboxSkipSwappedChar->SetValue(skip_swapped);
+	textctrlExtraChar->SetValue(extrachar);
 	spinctrlLength->SetValue(length);
 	checkboxEnumerate->SetValue(enumerate);
 
-	if (0  && cfg->Exists(_T("/pwgen/presets")))
+	if (cfg->Exists(_T("/pwgen/presets")))
 	{
 	    cfg->SetPath(_T("/pwgen/presets"));
 
@@ -107,11 +111,11 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 		Preset preset;
 
 		cfg->Read(_T("name"), &preset.name, _("<unknown>"));
-		cfg->Read(_T("type"), &preset.type, 0);
-		cfg->Read(_T("skipsimilar"), &preset.skipsimilar, false);
-		cfg->Read(_T("skipswapped"), &preset.skipswapped, false);
+		cfg->Read(_T("type"), (int*)&preset.type, 0);
+		cfg->Read(_T("skip_similar"), &preset.skip_similar, false);
+		cfg->Read(_T("skip_swapped"), &preset.skip_swapped, false);
+		cfg->Read(_T("extrachar"), &preset.extrachar);
 		cfg->Read(_T("length"), &preset.length, 12);
-		cfg->Read(_T("enumerate"), &preset.enumerate, false);
 
 		presetlist.push_back(preset);
 
@@ -124,37 +128,37 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 	    // storage.
 
 	    presetlist.push_back(Preset(_("8 Char AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, 8, true));
+					PT_ALPHANUMERIC, false, false, _T(""), 8));
 
 	    presetlist.push_back(Preset(_("12 Char AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, 12, true));
+					PT_ALPHANUMERIC, false, false, _T(""), 12));
 
 	    presetlist.push_back(Preset(_("12 Letter Pronounceable"),
-					PT_PRONOUNCEABLE, false, false, 12, true));
+					PT_PRONOUNCEABLE, false, false, _T(""), 12));
 
 	    presetlist.push_back(Preset(_("16 Char AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, 16, true));
+					PT_ALPHANUMERIC, false, false, _T(""), 16));
 
 	    presetlist.push_back(Preset(_("16 Letter Pronounceable"),
-					PT_PRONOUNCEABLE, false, false, 16, true));
+					PT_PRONOUNCEABLE, false, false, _T(""), 16));
 
 	    presetlist.push_back(Preset(_("128 Keybits AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, 22, true));
+					PT_ALPHANUMERIC, false, false, _T(""), 22));
 
 	    presetlist.push_back(Preset(_("256 Keybits AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, 43, true));
+					PT_ALPHANUMERIC, false, false, _T(""), 43));
 
 	    presetlist.push_back(Preset(_("IP Port Number"),
-					PT_PORTNUMBER, false, false, 5, true));
+					PT_PORTNUMBER, false, false, _T(""), 5));
 
 	    presetlist.push_back(Preset(_("64-bit WEP Key (40 keybits)"),
-					PT_HEXADECIMAL, false, false, 10, true));
+					PT_HEXADECIMAL, false, false, _T(""), 10));
 
 	    presetlist.push_back(Preset(_("128-bit WEP Key (104 keybits)"),
-					PT_HEXADECIMAL, false, false, 26, true));
+					PT_HEXADECIMAL, false, false, _T(""), 26));
 	    
 	    presetlist.push_back(Preset(_("256-bit WEP Key (232 keybits)"),
-					PT_HEXADECIMAL, false, false, 58, true));
+					PT_HEXADECIMAL, false, false, _T(""), 58));
 	}
     }
 
@@ -178,8 +182,9 @@ void WPassGen::set_properties()
     buttonPresetRemove->SetToolTip(_("Remove current preset."));
     buttonPresetRemove->SetSize(buttonPresetRemove->GetBestSize());
     choiceType->SetToolTip(_("Select the components you wish to include in the password."));
-    checkboxSkipSimilarChars->SetToolTip(_("Does not include similar, badly recognizable characters in password."));
-    checkboxSkipSwappedChars->SetToolTip(_("Does not include characters in password which are swapped on some keyboards."));
+    checkboxSkipSimilarChar->SetToolTip(_("Does not include similar, badly recognizable characters in password."));
+    checkboxSkipSwappedChar->SetToolTip(_("Does not include characters in password which are swapped on some keyboards."));
+    textctrlExtraChar->SetToolTip(_("Extra non-standard characters to include in the base random set."));
     spinctrlLength->SetToolTip(_("Password length desired."));
     textctrlStrength->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
     textctrlStrength->SetToolTip(_("Theoretic number of keybits the entropy of the selected pass type generates."));
@@ -196,7 +201,7 @@ void WPassGen::do_layout()
     wxGridSizer* sizer6 = new wxGridSizer(1, 2, 0, 0);
     wxGridSizer* sizer5 = new wxGridSizer(1, 2, 0, 0);
     wxStaticBoxSizer* sizer2 = new wxStaticBoxSizer(sizer2_staticbox, wxVERTICAL);
-    wxFlexGridSizer* sizer3 = new wxFlexGridSizer(7, 2, 0, 0);
+    wxFlexGridSizer* sizer3 = new wxFlexGridSizer(8, 2, 0, 0);
     wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Preset:"));
     sizer3->Add(label1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
@@ -208,14 +213,17 @@ void WPassGen::do_layout()
     sizer3->Add(label2, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(choiceType, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(5, 5, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer3->Add(checkboxSkipSimilarChars, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
+    sizer3->Add(checkboxSkipSimilarChar, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
     sizer3->Add(5, 5, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer3->Add(checkboxSkipSwappedChars, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
-    wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("Length:"));
+    sizer3->Add(checkboxSkipSwappedChar, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
+    wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("Extra Characters:"));
     sizer3->Add(label3, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer3->Add(spinctrlLength, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
-    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Theoretic Strength:"));
+    sizer3->Add(textctrlExtraChar, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL, 6);
+    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Length:"));
     sizer3->Add(label4, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer3->Add(spinctrlLength, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
+    wxStaticText* label5 = new wxStaticText(this, wxID_ANY, _("Theoretic Strength:"));
+    sizer3->Add(label5, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(textctrlStrength, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(5, 5, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(checkboxEnumerate, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
@@ -260,8 +268,9 @@ BEGIN_EVENT_TABLE(WPassGen, wxDialog)
     EVT_BUTTON(myID_PRESET_ADD, WPassGen::OnButtonPresetAdd)
     EVT_BUTTON(myID_PRESET_REMOVE, WPassGen::OnButtonPresetRemove)
     EVT_CHOICE(myID_TYPE, WPassGen::OnChoiceType)
-    EVT_CHECKBOX(myID_SKIPSIMILARCHARS, WPassGen::OnCheckSkipSimilarChars)
-    EVT_CHECKBOX(myID_SKIPSWAPPEDCHARS, WPassGen::OnCheckSkipSwappedChars)
+    EVT_CHECKBOX(myID_SKIPSIMILARCHAR, WPassGen::OnCheckSkipSimilarChar)
+    EVT_CHECKBOX(myID_SKIPSWAPPEDCHAR, WPassGen::OnCheckSkipSwappedChar)
+    EVT_TEXT(myID_TEXT_EXTRACHAR, WPassGen::OnTextExtraCharChange)
     EVT_SPINCTRL(myID_LENGTH, WPassGen::OnSpinLength)
     EVT_CHECKBOX(myID_ENUMERATE, WPassGen::OnCheckEnumerate)
     EVT_BUTTON(myID_GENERATE, WPassGen::OnButtonGenerate)
@@ -284,8 +293,9 @@ void WPassGen::SaveSettings()
 
     cfg->Write(_T("preset"), choicePreset->GetSelection());
     cfg->Write(_T("type"), choiceType->GetSelection());
-    cfg->Write(_T("skipsimilar"), checkboxSkipSimilarChars->GetValue());
-    cfg->Write(_T("skipswapped"), checkboxSkipSwappedChars->GetValue());
+    cfg->Write(_T("skip_similar"), checkboxSkipSimilarChar->GetValue());
+    cfg->Write(_T("skip_swapped"), checkboxSkipSwappedChar->GetValue());
+    cfg->Write(_T("extrachar"), textctrlExtraChar->GetValue());
     cfg->Write(_T("length"), spinctrlLength->GetValue());
     cfg->Write(_T("enumerate"), checkboxEnumerate->GetValue());
 
@@ -298,10 +308,10 @@ void WPassGen::SaveSettings()
 
 	cfg->Write(_T("name"), presetlist[pi].name);
 	cfg->Write(_T("type"), presetlist[pi].type);
-	cfg->Write(_T("skipsimilar"), presetlist[pi].skipsimilar);
-	cfg->Write(_T("skipswapped"), presetlist[pi].skipswapped);
+	cfg->Write(_T("skip_similar"), presetlist[pi].skip_similar);
+	cfg->Write(_T("skip_swapped"), presetlist[pi].skip_swapped);
+	cfg->Write(_T("extrachar"), presetlist[pi].extrachar);
 	cfg->Write(_T("length"), presetlist[pi].length);
-	cfg->Write(_T("enumerate"), presetlist[pi].enumerate);
 
 	cfg->SetPath(_T(".."));
     }
@@ -332,10 +342,13 @@ void WPassGen::OnChoicePreset(wxCommandEvent& WXUNUSED(event))
     const Preset& preset = presetlist[ni];
 
     choiceType->SetSelection(preset.type);
-    checkboxSkipSimilarChars->SetValue(preset.skipsimilar);
-    checkboxSkipSwappedChars->SetValue(preset.skipswapped);
+    checkboxSkipSimilarChar->SetValue(preset.skip_similar);
+    checkboxSkipSwappedChar->SetValue(preset.skip_swapped);
+    textctrlExtraChar->ChangeValue(preset.extrachar);
     spinctrlLength->SetValue(preset.length);
-    checkboxEnumerate->SetValue(preset.enumerate);
+
+    UpdateCheckboxes();
+    UpdateKeyStrength();
 }
 
 void WPassGen::OnButtonPresetAdd(wxCommandEvent& WXUNUSED(event))
@@ -347,11 +360,11 @@ void WPassGen::OnButtonPresetAdd(wxCommandEvent& WXUNUSED(event))
     Preset preset;
 
     preset.name = dlg.GetValue();
-    preset.type = choiceType->GetSelection();
-    preset.skipsimilar = checkboxSkipSimilarChars->GetValue();
-    preset.skipswapped = checkboxSkipSwappedChars->GetValue();
+    preset.type = (pass_type)choiceType->GetSelection();
+    preset.skip_similar = checkboxSkipSimilarChar->GetValue();
+    preset.skip_swapped = checkboxSkipSwappedChar->GetValue();
+    preset.extrachar = textctrlExtraChar->GetValue();
     preset.length = spinctrlLength->GetValue();
-    preset.enumerate = checkboxEnumerate->GetValue();
 
     presetlist.push_back(preset);
 
@@ -376,13 +389,19 @@ void WPassGen::OnChoiceType(wxCommandEvent& WXUNUSED(event))
     UpdateKeyStrength();
 }
 
-void WPassGen::OnCheckSkipSimilarChars(wxCommandEvent& WXUNUSED(event))
+void WPassGen::OnCheckSkipSimilarChar(wxCommandEvent& WXUNUSED(event))
 {
     ResetPresetChoice();
     UpdateKeyStrength();
 }
 
-void WPassGen::OnCheckSkipSwappedChars(wxCommandEvent& WXUNUSED(event))
+void WPassGen::OnCheckSkipSwappedChar(wxCommandEvent& WXUNUSED(event))
+{
+    ResetPresetChoice();
+    UpdateKeyStrength();
+}
+
+void WPassGen::OnTextExtraCharChange(wxCommandEvent& WXUNUSED(event))
 {
     ResetPresetChoice();
     UpdateKeyStrength();
@@ -396,7 +415,6 @@ void WPassGen::OnSpinLength(wxSpinEvent& WXUNUSED(event))
 
 void WPassGen::OnCheckEnumerate(wxCommandEvent& WXUNUSED(event))
 {
-    ResetPresetChoice();
 }
 
 void WPassGen::OnButtonGenerate(wxCommandEvent& WXUNUSED(event))
@@ -454,16 +472,16 @@ void WPassGen::ResetPresetChoice()
         int ni = choicePreset->Append(pi->name);
 
 	int passtype = choiceType->GetSelection();
-	bool skipsimilar = checkboxSkipSimilarChars->GetValue();
-	bool skipswapped = checkboxSkipSwappedChars->GetValue();
+	bool skip_similar = checkboxSkipSimilarChar->GetValue();
+	bool skip_swapped = checkboxSkipSwappedChar->GetValue();
+	wxString extrachar = textctrlExtraChar->GetValue();
 	int length = spinctrlLength->GetValue();
-	bool enumerate = checkboxEnumerate->GetValue();
 
 	if (pi->type == passtype &&
-	    pi->skipsimilar == skipsimilar &&
-	    pi->skipswapped == skipswapped &&
-	    pi->length == length &&
-	    pi->enumerate == enumerate)
+	    pi->skip_similar == skip_similar &&
+	    pi->skip_swapped == skip_swapped &&
+	    pi->extrachar == extrachar &&
+	    pi->length == length)
 	{
 	    choicePreset->SetSelection(ni);
 	}
@@ -472,16 +490,23 @@ void WPassGen::ResetPresetChoice()
 
 void WPassGen::UpdateCheckboxes()
 {
-    checkboxSkipSimilarChars->Enable( IsAllowedSimilar() );
-    checkboxSkipSwappedChars->Enable( IsAllowedSwapped() );
+    checkboxSkipSimilarChar->Enable( IsAllowedSimilar() );
+    checkboxSkipSwappedChar->Enable( IsAllowedSwapped() );
+    textctrlExtraChar->Enable( IsAllowedExtraChar() );
     spinctrlLength->Enable( IsAllowedLength() );
 }
 
 void WPassGen::UpdateKeyStrength()
 {
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+    bool skip_similar = checkboxSkipSimilarChar->GetValue();
+    bool skip_swapped = checkboxSkipSwappedChar->GetValue();
+    wxString extrachar = textctrlExtraChar->GetValue();
     int passlen = spinctrlLength->GetValue();
 
-    double keybits = GetTypeKeybits();
+    Preset preset(_T(""), passtype, skip_similar, skip_swapped, extrachar, passlen);
+
+    double keybits = GetTypeKeybits(preset);
 
     if (IsAllowedLength()) keybits *= passlen;
 
@@ -492,8 +517,14 @@ void WPassGen::UpdateKeyStrength()
 
 void WPassGen::GenerateList()
 {
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+    bool skip_similar = checkboxSkipSimilarChar->GetValue();
+    bool skip_swapped = checkboxSkipSwappedChar->GetValue();
+    wxString extrachar = textctrlExtraChar->GetValue();
     int passlen = spinctrlLength->GetValue();
     bool enumerate = checkboxEnumerate->GetValue();
+
+    Preset preset(_T(""), passtype, skip_similar, skip_swapped, extrachar, passlen);
 
     if (standalone)
     {
@@ -506,7 +537,7 @@ void WPassGen::GenerateList()
 	    if (enumerate)
 		text += wxString::Format(_T("%u "), i);
 
-	    text += MakePassword(passlen) + _T("\n");
+	    text += MakePassword(preset) + _T("\n");
 	}
 
 	textctrlPasslist->SetValue(text);
@@ -519,7 +550,7 @@ void WPassGen::GenerateList()
 
 	for(unsigned int i = 0; i < 10; i++)
 	{
-	    listctrlPasslist->InsertItem(i, MakePassword(passlen) );
+	    listctrlPasslist->InsertItem(i, MakePassword(preset) );
 	}
     }
 
@@ -531,7 +562,109 @@ const wxString& WPassGen::GetSelectedPassword() const
     return selpass;
 }
 
-// *** Password Generator Functions ***
+bool WPassGen::IsAllowedSimilar() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	return false;
+	
+    case PT_ALPHANUMERICSYMBOL:
+    case PT_ALPHANUMERIC:
+	return true;
+
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+	return false;
+   
+    case PT_HEXADECIMAL:
+    case PT_NUMERIC:
+    case PT_PORTNUMBER:
+	return false;
+    }
+
+    return false;
+}
+
+bool WPassGen::IsAllowedSwapped() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	return false;
+	
+    case PT_ALPHANUMERICSYMBOL:
+    case PT_ALPHANUMERIC:
+	return true;
+
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+	return true;
+   
+    case PT_HEXADECIMAL:
+    case PT_NUMERIC:
+    case PT_PORTNUMBER:
+	return false;
+    }
+
+    return false;
+}
+
+bool WPassGen::IsAllowedExtraChar() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+	return false;
+	
+    case PT_ALPHANUMERICSYMBOL:
+    case PT_ALPHANUMERIC:
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+    case PT_NUMERIC:
+	return true;
+   
+    case PT_HEXADECIMAL:
+    case PT_PORTNUMBER:
+	return false;
+    }
+
+    return false;
+}
+
+bool WPassGen::IsAllowedLength() const
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+
+    switch(passtype)
+    {
+    case PT_PRONOUNCEABLE:
+    case PT_ALPHANUMERICSYMBOL:
+    case PT_ALPHANUMERIC:
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+    case PT_HEXADECIMAL:
+    case PT_NUMERIC:
+	return true;
+
+    case PT_PORTNUMBER:
+	return false;
+    }
+
+    return false;
+}
+
+// *** Static Password Generator Functions ***
 
 const wxChar* WPassGen::GetTypeName(pass_type pt)
 {
@@ -636,13 +769,38 @@ const wxChar* WPassGen::GetType0Letters(pass_type pt, bool skip_similar, bool sk
     return _T("");
 }
 
-float WPassGen::GetTypeKeybits() const
+wxString WPassGen::GetType0LettersExtra(const Preset& preset)
 {
-    pass_type passtype = (pass_type)choiceType->GetSelection();
-    bool skip_similar = checkboxSkipSimilarChars->GetValue();
-    bool skip_swapped = checkboxSkipSwappedChars->GetValue();
+    switch(preset.type)
+    {
+    case PT_PRONOUNCEABLE:
+	assert(0);
+	return _T("");
 
-    switch(passtype)
+    case PT_ALPHANUMERICSYMBOL:
+    case PT_ALPHANUMERIC:
+    case PT_ALPHA:
+    case PT_ALPHALOWER:
+    case PT_ALPHAUPPER:
+    case PT_NUMERIC:
+
+	return wxString(GetType0Letters(preset.type, preset.skip_similar, preset.skip_swapped)) + preset.extrachar;
+
+    case PT_HEXADECIMAL:
+    
+	return GetType0Letters(preset.type, preset.skip_similar, preset.skip_swapped);
+
+    case PT_PORTNUMBER:
+	assert(0);
+	return _T("");
+    }
+
+    return _T("");
+}
+
+float WPassGen::GetTypeKeybits(const Preset& preset)
+{
+    switch(preset.type)
     {
     case PT_PRONOUNCEABLE:
 	// The FIPS-181 standard says "Approximately 18 million 6-character,
@@ -659,8 +817,18 @@ float WPassGen::GetTypeKeybits() const
     case PT_HEXADECIMAL:
     case PT_NUMERIC:
     {
-	double letternum = wxStrlen( GetType0Letters(passtype, skip_similar, skip_swapped) );
-	return log(letternum) / log(2);
+	wxString letters = GetType0LettersExtra(preset);
+
+	// remove duplicate letters
+	for (unsigned int i = 0; i < letters.size(); ++i)
+	{
+	    for(unsigned int  j = i+1; j < letters.size(); ++j)
+	    {
+		if (letters[i] == letters[j]) letters.Remove(j--, 1);
+	    }
+	}
+
+	return log(letters.size()) / log(2);
     }
 
     case PT_PORTNUMBER:
@@ -668,83 +836,6 @@ float WPassGen::GetTypeKeybits() const
     }
 
     return 0;
-}
-
-bool WPassGen::IsAllowedSimilar() const
-{
-    pass_type passtype = (pass_type)choiceType->GetSelection();
-
-    switch(passtype)
-    {
-    case PT_PRONOUNCEABLE:
-	return false;
-	
-    case PT_ALPHANUMERICSYMBOL:
-    case PT_ALPHANUMERIC:
-	return true;
-
-    case PT_ALPHA:
-    case PT_ALPHALOWER:
-    case PT_ALPHAUPPER:
-	return false;
-   
-    case PT_HEXADECIMAL:
-    case PT_NUMERIC:
-    case PT_PORTNUMBER:
-	return false;
-    }
-
-    return false;
-}
-
-bool WPassGen::IsAllowedSwapped() const
-{
-    pass_type passtype = (pass_type)choiceType->GetSelection();
-
-    switch(passtype)
-    {
-    case PT_PRONOUNCEABLE:
-	return false;
-	
-    case PT_ALPHANUMERICSYMBOL:
-    case PT_ALPHANUMERIC:
-	return true;
-
-    case PT_ALPHA:
-    case PT_ALPHALOWER:
-    case PT_ALPHAUPPER:
-	return true;
-   
-    case PT_HEXADECIMAL:
-    case PT_NUMERIC:
-    case PT_PORTNUMBER:
-	return false;
-    }
-
-    return false;
-}
-
-bool WPassGen::IsAllowedLength() const
-{
-    pass_type passtype = (pass_type)choiceType->GetSelection();
-
-    switch(passtype)
-    {
-    case PT_PRONOUNCEABLE:
-    case PT_ALPHANUMERICSYMBOL:
-    case PT_ALPHANUMERIC:
-    case PT_ALPHA:
-    case PT_ALPHALOWER:
-    case PT_ALPHAUPPER:
-    case PT_HEXADECIMAL:
-    case PT_NUMERIC:
-	return true;
-
-    case PT_PORTNUMBER:
-	return false;
-    }
-
-    return false;
 }
 
 // Use one global random generator instance for password.
@@ -756,10 +847,10 @@ static int randgen_func()
     return randgen.get_int32();
 }
 
-wxString WPassGen::MakePasswordType0(unsigned int len, const wxChar* letters)
+wxString WPassGen::MakePasswordType0(unsigned int len, const wxString& letters)
 {
     wxString s;
-    unsigned int lettlen = wxStrlen(letters);
+    unsigned int lettlen = letters.size();
 
     for(unsigned int i = 0; i < len; ++i)
     {
@@ -769,20 +860,16 @@ wxString WPassGen::MakePasswordType0(unsigned int len, const wxChar* letters)
     return s;
 }
 
-wxString WPassGen::MakePassword(unsigned int passlen)
+wxString WPassGen::MakePassword(const Preset& preset)
 {
-    pass_type passtype = (pass_type)choiceType->GetSelection();
-    bool skip_similar = checkboxSkipSimilarChars->GetValue();
-    bool skip_swapped = checkboxSkipSwappedChars->GetValue();
-
-    switch(passtype)
+    switch(preset.type)
     {
     case PT_PRONOUNCEABLE:
     {
 	FIPS181 fips181 (randgen_func);
 
 	std::string word, hypenated_word;
-	fips181.randomword(word, hypenated_word, passlen, passlen);
+	fips181.randomword(word, hypenated_word, preset.length, preset.length);
 
 	return wxString(word.data(), wxConvUTF8, word.size());
     }
@@ -795,9 +882,9 @@ wxString WPassGen::MakePassword(unsigned int passlen)
     case PT_HEXADECIMAL:
     case PT_NUMERIC:
     {
-	const wxChar* letters = GetType0Letters(passtype, skip_similar, skip_swapped);
+	wxString letters = GetType0LettersExtra(preset);
 
-	return MakePasswordType0(passlen, letters);
+	return MakePasswordType0(preset.length, letters);
     }
 
     case PT_PORTNUMBER:
@@ -875,4 +962,4 @@ void PGWAbout::do_layout()
     // end wxGlade
 }
 
-// wxGlade: add PGWAbout event handlers
+

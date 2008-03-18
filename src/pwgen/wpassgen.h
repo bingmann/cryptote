@@ -28,12 +28,13 @@ public:
         myID_PRESET_ADD = wxID_HIGHEST + 1002,
         myID_PRESET_REMOVE = wxID_HIGHEST + 1004,
         myID_TYPE = wxID_HIGHEST + 1006,
-        myID_SKIPSIMILARCHARS = wxID_HIGHEST + 1008,
-        myID_SKIPSWAPPEDCHARS = wxID_HIGHEST + 1010,
-        myID_LENGTH = wxID_HIGHEST + 1012,
-        myID_ENUMERATE = wxID_HIGHEST + 1014,
-        myID_GENERATE = wxID_HIGHEST + 1016,
-        myID_PASSLIST = wxID_HIGHEST + 1018
+        myID_SKIPSIMILARCHAR = wxID_HIGHEST + 1008,
+        myID_SKIPSWAPPEDCHAR = wxID_HIGHEST + 1010,
+        myID_TEXT_EXTRACHAR = wxID_HIGHEST + 1012,
+        myID_LENGTH = wxID_HIGHEST + 1014,
+        myID_ENUMERATE = wxID_HIGHEST + 1016,
+        myID_GENERATE = wxID_HIGHEST + 1018,
+        myID_PASSLIST = wxID_HIGHEST + 1020
     };
     // end wxGlade
 
@@ -46,27 +47,43 @@ public:
     const wxString&	GetSelectedPassword() const;
 
 protected:
+
+    /// Password generator types
+    enum pass_type {
+	PT_ALPHANUMERICSYMBOL,
+	PT_ALPHANUMERIC,
+	PT_ALPHA,
+	PT_ALPHALOWER,
+	PT_PRONOUNCEABLE,
+	PT_ALPHAUPPER,
+	PT_HEXADECIMAL,
+	PT_NUMERIC,
+	PT_PORTNUMBER,
+	PT_LAST = PT_PORTNUMBER
+    };
+
     // *** Preset Management ***
 
     struct Preset
     {
 	wxString	name;
-	int		type;
-	bool		skipsimilar;
-	bool		skipswapped;
+	pass_type	type;
+	bool		skip_similar;
+	bool		skip_swapped;
+	wxString	extrachar;
 	int		length;
-	bool		enumerate;
 
 	// Default Constructor
 	Preset() {}
 
 	// Initializing Constructor
-	Preset(const wxString& _name, int _type,
-	       bool _skipsimilar, bool _skipswapped,
-	       int _length, bool _enumerate)
+	Preset(const wxString& _name, pass_type _type,
+	       bool _skip_similar, bool _skip_swapped,
+	       const wxString& _extrachar, int _length)
 	    : name(_name), type(_type),
-	      skipsimilar(_skipsimilar), skipswapped(_skipswapped),
-	      length(_length), enumerate(_enumerate)
+	      skip_similar(_skip_similar), skip_swapped(_skip_swapped),
+	      extrachar(_extrachar),
+	      length(_length)
 	{}
     };
 
@@ -94,34 +111,6 @@ protected:
     /// Save current settings to config file/registry
     void		SaveSettings();
 
-    // *** Password Generator Functions ***
-
-    /// Password generator types
-    enum pass_type {
-	PT_ALPHANUMERICSYMBOL,
-	PT_ALPHANUMERIC,
-	PT_ALPHA,
-	PT_ALPHALOWER,
-	PT_PRONOUNCEABLE,
-	PT_ALPHAUPPER,
-	PT_HEXADECIMAL,
-	PT_NUMERIC,
-	PT_PORTNUMBER,
-	PT_LAST = PT_PORTNUMBER
-    };
-
-    /// Return ASCII Name for password generator type
-    static const wxChar* GetTypeName(pass_type pt);
-
-    /// Make one password of the generic random sequence type.
-    static wxString	MakePasswordType0(unsigned int len, const wxChar* letters);
-
-    /// Return array of possible letters in simple random password.
-    static const wxChar* GetType0Letters(pass_type pt, bool skip_similar, bool skip_swapped);
-
-    /// Return keybits per letter for currently selected generator type;
-    float		GetTypeKeybits() const;
-
     /// Return true if the options skip similar characters is available with
     /// the selected generator type.
     bool		IsAllowedSimilar() const;
@@ -130,12 +119,32 @@ protected:
     /// the selected generator type.
     bool		IsAllowedSwapped() const;
 
+    /// Return true if the selected generator type supports extra characters.
+    bool		IsAllowedExtraChar() const;
+
     /// Return true if the spinctrl length is available with the selected
     /// generator type.
     bool		IsAllowedLength() const;
 
-    /// Make one password of the currently set type.
-    wxString		MakePassword(unsigned int passlen);
+    // *** Static Password Generator Functions ***
+
+    /// Return ASCII Name for password generator type
+    static const wxChar* GetTypeName(pass_type pt);
+
+    /// Return array of possible letters in simple random password.
+    static const wxChar* GetType0Letters(pass_type pt, bool skip_similar, bool skip_swapped);
+
+    /// Return array of possible letters in simple random password plus extra characters
+    static wxString	GetType0LettersExtra(const Preset& preset);
+
+    /// Make one password of the generic random sequence type.
+    static wxString	MakePasswordType0(unsigned int len, const wxString& letters);
+
+    /// Return keybits per letter for currently selected generator type;
+    static float	GetTypeKeybits(const Preset& preset);
+
+    /// Make one password of the given Preset type
+    static wxString	MakePassword(const Preset& preset);
 
 private:
     // begin wxGlade: WPassGen::methods
@@ -150,8 +159,9 @@ protected:
     wxBitmapButton* buttonPresetAdd;
     wxBitmapButton* buttonPresetRemove;
     wxChoice* choiceType;
-    wxCheckBox* checkboxSkipSimilarChars;
-    wxCheckBox* checkboxSkipSwappedChars;
+    wxCheckBox* checkboxSkipSimilarChar;
+    wxCheckBox* checkboxSkipSwappedChar;
+    wxTextCtrl* textctrlExtraChar;
     wxSpinCtrl* spinctrlLength;
     wxTextCtrl* textctrlStrength;
     wxCheckBox* checkboxEnumerate;
@@ -170,8 +180,9 @@ public:
     virtual void OnClose(wxCloseEvent& event);
     virtual void OnChoicePreset(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnChoiceType(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnCheckSkipSimilarChars(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnCheckSkipSwappedChars(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnCheckSkipSimilarChar(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnCheckSkipSwappedChar(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnTextExtraCharChange(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnSpinLength(wxSpinEvent &event); // wxGlade: <event_handler>
     virtual void OnCheckEnumerate(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonGenerate(wxCommandEvent &event); // wxGlade: <event_handler>
