@@ -82,7 +82,7 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 	int preset, type, length;
 	bool skipsimilar, skipswapped, enumerate;
 
-	cfg->Read(_T("preset"), &preset, 0);
+	cfg->Read(_T("preset"), &preset, PT_ALPHANUMERIC);
 	cfg->Read(_T("type"), &type, 0);
 	cfg->Read(_T("skipsimilar"), &skipsimilar, false);
 	cfg->Read(_T("skipswapped"), &skipswapped, false);
@@ -96,24 +96,65 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 	spinctrlLength->SetValue(length);
 	checkboxEnumerate->SetValue(enumerate);
 
-	cfg->SetPath(_T("/pwgen/presets"));
-
-	for (unsigned int pi = 0; cfg->HasGroup(wxString::Format(_T("%d"), pi)) ; ++pi)
+	if (0  && cfg->Exists(_T("/pwgen/presets")))
 	{
-	    cfg->SetPath( wxString::Format(_T("%d"), pi) );
+	    cfg->SetPath(_T("/pwgen/presets"));
 
-	    Preset preset;
+	    for (unsigned int pi = 0; cfg->HasGroup(wxString::Format(_T("%d"), pi)) ; ++pi)
+	    {
+		cfg->SetPath( wxString::Format(_T("%d"), pi) );
 
-	    cfg->Read(_T("name"), &preset.name, _("<unknown>"));
-	    cfg->Read(_T("type"), &preset.type, 0);
-	    cfg->Read(_T("skipsimilar"), &preset.skipsimilar, false);
-	    cfg->Read(_T("skipswapped"), &preset.skipswapped, false);
-	    cfg->Read(_T("length"), &preset.length, 12);
-	    cfg->Read(_T("enumerate"), &preset.enumerate, false);
+		Preset preset;
 
-	    presetlist.push_back(preset);
+		cfg->Read(_T("name"), &preset.name, _("<unknown>"));
+		cfg->Read(_T("type"), &preset.type, 0);
+		cfg->Read(_T("skipsimilar"), &preset.skipsimilar, false);
+		cfg->Read(_T("skipswapped"), &preset.skipswapped, false);
+		cfg->Read(_T("length"), &preset.length, 12);
+		cfg->Read(_T("enumerate"), &preset.enumerate, false);
 
-	    cfg->SetPath(_T(".."));
+		presetlist.push_back(preset);
+
+		cfg->SetPath(_T(".."));
+	    }
+	}
+	else
+	{
+	    // Load a list of default presets if none are defined in the config
+	    // storage.
+
+	    presetlist.push_back(Preset(_("8 Char AlPhANuM"),
+					PT_ALPHANUMERIC, false, false, 8, true));
+
+	    presetlist.push_back(Preset(_("12 Char AlPhANuM"),
+					PT_ALPHANUMERIC, false, false, 12, true));
+
+	    presetlist.push_back(Preset(_("12 Letter Pronounceable"),
+					PT_PRONOUNCEABLE, false, false, 12, true));
+
+	    presetlist.push_back(Preset(_("16 Char AlPhANuM"),
+					PT_ALPHANUMERIC, false, false, 16, true));
+
+	    presetlist.push_back(Preset(_("16 Letter Pronounceable"),
+					PT_PRONOUNCEABLE, false, false, 16, true));
+
+	    presetlist.push_back(Preset(_("128 Keybits AlPhANuM"),
+					PT_ALPHANUMERIC, false, false, 22, true));
+
+	    presetlist.push_back(Preset(_("256 Keybits AlPhANuM"),
+					PT_ALPHANUMERIC, false, false, 43, true));
+
+	    presetlist.push_back(Preset(_("IP Port Number"),
+					PT_PORTNUMBER, false, false, 5, true));
+
+	    presetlist.push_back(Preset(_("64-bit WEP Key (40 keybits)"),
+					PT_HEXADECIMAL, false, false, 10, true));
+
+	    presetlist.push_back(Preset(_("128-bit WEP Key (104 keybits)"),
+					PT_HEXADECIMAL, false, false, 26, true));
+	    
+	    presetlist.push_back(Preset(_("256-bit WEP Key (232 keybits)"),
+					PT_HEXADECIMAL, false, false, 58, true));
 	}
     }
 
@@ -496,8 +537,8 @@ const wxChar* WPassGen::GetTypeName(pass_type pt)
 {
     switch(pt)
     {
-    case PT_PRONOUNCEABLE:
-	return _("Pronounceable Password");
+    case PT_ALPHANUMERICSYMBOL:
+	return _("Random Letters + Numbers + Symbols");
 
     case PT_ALPHANUMERIC:
 	return _("Random Letters + Numbers");
@@ -507,6 +548,9 @@ const wxChar* WPassGen::GetTypeName(pass_type pt)
 
     case PT_ALPHALOWER:
 	return _("Random Lower-case Letters");
+
+    case PT_PRONOUNCEABLE:
+	return _("Pronounceable Lower-case Letters");
 
     case PT_ALPHAUPPER:
 	return _("Random Upper-case Letters");
@@ -532,6 +576,17 @@ const wxChar* WPassGen::GetType0Letters(pass_type pt, bool skip_similar, bool sk
     case PT_PRONOUNCEABLE:
 	assert(0);
 	return _T("");
+
+    case PT_ALPHANUMERICSYMBOL:
+        
+	if (skip_similar && skip_swapped)
+	    return _T("ABCDEFGHIJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx23456789!?\"#$%&*()[]{}<>,.;:+-=/_");
+	else if (skip_similar && !skip_swapped)
+	    return _T("ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!?\"#$%&*()[]{}<>,.;:+-=/_");
+	else if (!skip_similar && skip_swapped)
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXabcdefghijklmnopqrstuvwx0123456789!?\"#$%&*()[]{}<>,.;:+-=/_");
+	else
+	    return _T("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?\"#$%&*()[]{}<>,.;:+-=/_");
 
     case PT_ALPHANUMERIC:
     
@@ -596,6 +651,7 @@ float WPassGen::GetTypeKeybits() const
 	// per letter.
 	return 4.05;
 
+    case PT_ALPHANUMERICSYMBOL:
     case PT_ALPHANUMERIC:
     case PT_ALPHA:
     case PT_ALPHALOWER:
@@ -623,6 +679,7 @@ bool WPassGen::IsAllowedSimilar() const
     case PT_PRONOUNCEABLE:
 	return false;
 	
+    case PT_ALPHANUMERICSYMBOL:
     case PT_ALPHANUMERIC:
 	return true;
 
@@ -633,9 +690,11 @@ bool WPassGen::IsAllowedSimilar() const
    
     case PT_HEXADECIMAL:
     case PT_NUMERIC:
-    default:
+    case PT_PORTNUMBER:
 	return false;
     }
+
+    return false;
 }
 
 bool WPassGen::IsAllowedSwapped() const
@@ -647,6 +706,7 @@ bool WPassGen::IsAllowedSwapped() const
     case PT_PRONOUNCEABLE:
 	return false;
 	
+    case PT_ALPHANUMERICSYMBOL:
     case PT_ALPHANUMERIC:
 	return true;
 
@@ -657,9 +717,11 @@ bool WPassGen::IsAllowedSwapped() const
    
     case PT_HEXADECIMAL:
     case PT_NUMERIC:
-    default:
+    case PT_PORTNUMBER:
 	return false;
     }
+
+    return false;
 }
 
 bool WPassGen::IsAllowedLength() const
@@ -669,6 +731,7 @@ bool WPassGen::IsAllowedLength() const
     switch(passtype)
     {
     case PT_PRONOUNCEABLE:
+    case PT_ALPHANUMERICSYMBOL:
     case PT_ALPHANUMERIC:
     case PT_ALPHA:
     case PT_ALPHALOWER:
@@ -679,10 +742,9 @@ bool WPassGen::IsAllowedLength() const
 
     case PT_PORTNUMBER:
 	return false;
-   
-    default:
-	return false;
     }
+
+    return false;
 }
 
 // Use one global random generator instance for password.
@@ -725,6 +787,7 @@ wxString WPassGen::MakePassword(unsigned int passlen)
 	return wxString(word.data(), wxConvUTF8, word.size());
     }
 
+    case PT_ALPHANUMERICSYMBOL:
     case PT_ALPHANUMERIC:
     case PT_ALPHA:
     case PT_ALPHALOWER:

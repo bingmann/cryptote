@@ -56,6 +56,18 @@ protected:
 	bool		skipswapped;
 	int		length;
 	bool		enumerate;
+
+	// Default Constructor
+	Preset() {}
+
+	// Initializing Constructor
+	Preset(const wxString& _name, int _type,
+	       bool _skipsimilar, bool _skipswapped,
+	       int _length, bool _enumerate)
+	    : name(_name), type(_type),
+	      skipsimilar(_skipsimilar), skipswapped(_skipswapped),
+	      length(_length), enumerate(_enumerate)
+	{}
     };
 
     typedef std::vector<Preset> presetlist_type;
@@ -86,10 +98,11 @@ protected:
 
     /// Password generator types
     enum pass_type {
-	PT_PRONOUNCEABLE,
+	PT_ALPHANUMERICSYMBOL,
 	PT_ALPHANUMERIC,
 	PT_ALPHA,
 	PT_ALPHALOWER,
+	PT_PRONOUNCEABLE,
 	PT_ALPHAUPPER,
 	PT_HEXADECIMAL,
 	PT_NUMERIC,
