@@ -4,6 +4,19 @@
 #include <wx/cmdline.h>
 
 #include "wpassgen.h"
+#include "common/myintl.h"
+#include "locale/de.h"
+
+static MyLocaleMemoryCatalogLanguage cryptote_cataloglangs[] =
+{
+    { _T("de"), NULL, locale_de_mo, sizeof(locale_de_mo) },
+    { NULL, NULL, NULL, 0 }
+};
+
+static MyLocaleMemoryCatalog cryptote_catalog =
+{
+    _T("cryptote"), cryptote_cataloglangs
+};
 
 class App : public wxApp
 {
@@ -12,7 +25,7 @@ private:
     class WPassGen*	wmain;
 
     /// Locale object holding translations
-    wxLocale		locale;
+    MyLocale		locale;
 
 public:
     /// This function is called during application start-up.
@@ -25,13 +38,10 @@ public:
 	SetAppName(_("CryptoTE"));
 	SetVendorName(_("idlebox.net"));
 
-	// Add further search path for testing package without installing it.
-	wxLocale::AddCatalogLookupPathPrefix(wxT("../locale"));
-
 	// Load and initialize the catalog
-	if (!locale.AddCatalog(_T("cryptote")))
+	if (!locale.AddCatalogFromMemory(cryptote_catalog))
 	{
-	    wxLogError(_T("Could not load message catalog."));
+	    wxLogError(_T("Could not load message catalog for defined language."));
 	    return false;
 	}
 

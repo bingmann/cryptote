@@ -15,6 +15,9 @@ XGETTEXT_ARGS=-CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
 %.mo: %.po
 	$(MSGFMT) -c -o $@ $<
 
+%.h: %.mo
+	../art/file2h -p "locale-" $< > $@
+
 # PO files must be updated from cryptote.pot to include new translations
 %.po: cryptote.pot
 	if [ -f $@ ]; then $(MSGMERGE) $@ cryptote.pot > $@.new && mv $@.new $@; else cp cryptote.pot $@; fi
@@ -30,6 +33,9 @@ allpo: force-update
 
 allmo:
 	@for t in $(LINGUAS); do $(MAKE) $$t.mo; done
+
+allh:
+	@for t in $(LINGUAS); do $(MAKE) $$t.h; done
 
 # print out the percentage of the translated strings
 stats:
