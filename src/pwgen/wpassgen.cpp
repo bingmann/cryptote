@@ -176,13 +176,13 @@ void WPassGen::set_properties()
     // begin wxGlade: WPassGen::set_properties
     SetTitle(_("CryptoTE Password Generator"));
     SetSize(wxSize(400, 600));
-    choicePreset->SetToolTip(_("Default or saved password presets."));
+    choicePreset->SetToolTip(_("Default or saved password generation presets."));
     buttonPresetAdd->SetToolTip(_("Save the current settings as a new preset."));
     buttonPresetAdd->SetSize(buttonPresetAdd->GetBestSize());
     buttonPresetRemove->SetToolTip(_("Remove current preset."));
     buttonPresetRemove->SetSize(buttonPresetRemove->GetBestSize());
-    choiceType->SetToolTip(_("Select the components you wish to include in the password."));
-    checkboxSkipSimilarChar->SetToolTip(_("Does not include similar, badly recognizable characters in password."));
+    choiceType->SetToolTip(_("Select desired password components."));
+    checkboxSkipSimilarChar->SetToolTip(_("Does not use 0/O and 1/l, because these can hardly be distinguished in some fonts."));
     checkboxSkipSwappedChar->SetToolTip(_("Does not include characters in password which are swapped on some keyboards."));
     textctrlExtraChar->SetToolTip(_("Extra non-standard characters to include in the base random set."));
     spinctrlLength->SetToolTip(_("Password length desired."));
@@ -961,9 +961,3 @@ void PGWAbout::do_layout()
     Layout();
     // end wxGlade
 }
-
-
-
-
-
-

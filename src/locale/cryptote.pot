@@ -1,0 +1,257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-03-19 11:54+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../pwgen/main.cpp:25
+msgid "CryptoTE"
+msgstr ""
+
+#: ../pwgen/main.cpp:26
+msgid "idlebox.net"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:37
+msgid "Generator Options"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:44
+msgid "Don't use 0/O and 1/l."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:45
+msgid "Don't use z/y."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:49
+msgid "Enumerate Passwords"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:50
+msgid "&Generate"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:55
+msgid "&About"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:113
+msgid "<unknown>"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:130
+msgid "8 Char AlPhANuM"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:133
+msgid "12 Char AlPhANuM"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:136
+msgid "12 Letter Pronounceable"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:139
+msgid "16 Char AlPhANuM"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:142
+msgid "16 Letter Pronounceable"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:145
+msgid "128 Keybits AlPhANuM"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:148
+msgid "256 Keybits AlPhANuM"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:151
+msgid "IP Port Number"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:154
+msgid "64-bit WEP Key (40 keybits)"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:157
+msgid "128-bit WEP Key (104 keybits)"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:160
+msgid "256-bit WEP Key (232 keybits)"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:177
+msgid "CryptoTE Password Generator"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:179
+msgid "Default or saved password generation presets."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:180
+msgid "Save the current settings as a new preset."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:182
+msgid "Remove current preset."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:184
+msgid "Select desired password components."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:185
+msgid ""
+"Does not use 0/O and 1/l, because these can hardly be distinguished in some "
+"fonts."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:186
+msgid ""
+"Does not include characters in password which are swapped on some keyboards."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:187
+msgid "Extra non-standard characters to include in the base random set."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:188
+msgid "Password length desired."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:190
+msgid ""
+"Theoretic number of keybits the entropy of the selected pass type generates."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:191
+msgid "Add serial enumeration to each password line."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:206
+msgid "Preset:"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:212
+msgid "Type:"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:219
+msgid "Extra Characters:"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:222
+msgid "Length:"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:225
+msgid "Theoretic Strength:"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:356
+msgid "Add New Password Preset"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:356
+msgid "Enter a descriptive name for the new preset:"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:674
+msgid "Random Letters + Numbers + Symbols"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:677
+msgid "Random Letters + Numbers"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:680
+msgid "Random Letters"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:683
+msgid "Random Lower-case Letters"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:686
+msgid "Pronounceable Lower-case Letters"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:689
+msgid "Random Upper-case Letters"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:692
+msgid "Random Hexadecimal Number"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:695
+msgid "Random Numbers"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:698
+msgid "Random IP Port Number"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:701
+msgid "Unknown"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:907
+msgid "Visit http://idlebox.net/2008/cryptote/"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:907
+msgid "http://idlebox.net/2008/cryptote/"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:928
+msgid "About CryptoTE Password Generator"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:941
+msgid ""
+"CryptoTE\n"
+"Password Generator v0.1"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:944
+msgid ""
+"This is a stand-alone program containing only the\n"
+"random password generator found in CryptoTE\n"
+"text editor and CryptoTE password tutor components."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:946
+msgid ""
+"The random password generator can generate\n"
+"pronounceable English passwords or general upper-\n"
+"and/or lowercase letter and digit combinations.\n"
+"It also displays the theoretic strength in key bits of\n"
+"the chosen generator settings."
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:948
+msgid ""
+"Copyright 2008 Timo Bingmann\n"
+"Released under the GNU General Public License v2"
+msgstr ""
+
+#: ../pwgen/wpassgen.cpp:952
+msgid "for updates and more."
+msgstr ""

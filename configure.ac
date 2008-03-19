@@ -212,5 +212,6 @@ AC_CONFIG_FILES([Makefile
 		 src/art/gnome/Makefile
 		 src/pwgen/Makefile
 		 src/pwtutor/Makefile
-		 src/cryptote/Makefile])
+		 src/cryptote/Makefile
+		 src/locale/Makefile])
 AC_OUTPUT
