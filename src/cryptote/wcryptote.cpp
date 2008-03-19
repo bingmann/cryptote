@@ -111,13 +111,23 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     auimgr.AddPane(quickfindbar, wxAuiPaneInfo().Hide().
 		   Name(wxT("quickfindbar")).Caption(_("Quick-Find")).
 		   CaptionVisible(false).PaneBorder(false).Row(10).
-		   Bottom().DockFixed().Gripper().
+		   Bottom().Gripper().
+#if wxCHECK_VERSION(2,8,7)
+		   DockFixed().
+#else
+		   Dock().
+#endif
 		   LeftDockable(false).RightDockable(false));
 
     auimgr.AddPane(quickgotobar, wxAuiPaneInfo().Hide().
 		   Name(wxT("quickgotobar")).Caption(_("Quick-Goto")).
 		   CaptionVisible(false).PaneBorder(false).Row(10).
-		   Bottom().DockFixed().Gripper().
+		   Bottom().Gripper().
+#if wxCHECK_VERSION(2,8,7)
+		   DockFixed().
+#else
+		   Dock().
+#endif
 		   LeftDockable(false).RightDockable(false));
 
     auimgr.AddPane(filelistpane, wxAuiPaneInfo().
@@ -2098,7 +2108,9 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     EVT_AUINOTEBOOK_PAGE_CHANGED(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageChanged)
     EVT_AUINOTEBOOK_PAGE_CLOSE(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageClose)
+#if wxCHECK_VERSION(2,8,7)
     EVT_AUINOTEBOOK_TAB_RIGHT_DOWN(myID_AUINOTEBOOK, WCryptoTE::OnNotebookPageRightDown)
+#endif
 
     // *** Quick-Find Bar
 
