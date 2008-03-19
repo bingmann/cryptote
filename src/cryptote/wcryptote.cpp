@@ -2293,7 +2293,7 @@ void WAbout::do_layout()
 // *** WNotePage ***
 
 WNotePage::WNotePage(class WCryptoTE* _wmain)
-    : wxPanel(_wmain),
+    : wxPanel(_wmain->auinotebook),
       wmain(_wmain),
       subfileid(-1), page_modified(false)
 {

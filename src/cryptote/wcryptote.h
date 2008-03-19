@@ -279,11 +279,10 @@ protected:
 
     wxAuiManager 	auimgr;
 
+public:
     // *** Displayed or Hidden Panes ***
 
     wxAuiNotebook*	auinotebook;
-
-public:
 
     // *** Container Loaded ***
 
