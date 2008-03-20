@@ -8,8 +8,8 @@ pwgen_SOURCES = main.cpp \
 	fips181.cpp fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS)
-LIBS = $(WX_LIBS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS) $(ZLIB_CFLAGS)
+LIBS = $(WX_LIBS) $(ZLIB_LIBS)
 
 if GOT_RESCOMP
 
