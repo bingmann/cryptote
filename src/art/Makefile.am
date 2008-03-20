@@ -29,6 +29,8 @@ noinst_HEADERS = \
 	ectfile-32.h \
 	ectfile-48.h \
 	modified-12.h \
+	modified-16.h \
+	unmodified-16.h \
 	web-16.h
 
 EXTRA_DIST = \
@@ -57,4 +59,6 @@ EXTRA_DIST = \
 	ectfile.svg \
 	modified-12.png \
 	modified-12.svg \
+	modified-16.png \
+	unmodified-16.png \
 	web-16.png

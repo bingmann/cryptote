@@ -349,7 +349,7 @@ public:
     WStatusBar(wxWindow *parent);
 
     void		OnSize(wxSizeEvent& event);
-    void		SetLock(bool on);
+    void		SetModified(bool on);
 
     wxWindow *parent;
 

@@ -200,6 +200,8 @@ void WCryptoTE::UpdateModified()
     menubar_active->Enable(wxID_REVERT, modified);
 
     toolbar->EnableTool(wxID_SAVE, modified);
+
+    statusbar->SetModified(modified);
 }
 
 void WCryptoTE::SetModified()
@@ -517,6 +519,8 @@ void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
     
     if (resetfilelist)
 	filelistpane->ResetItems();
+
+    SetModified();
 }
 
 void WCryptoTE::ShowFilelistPane(bool on)
@@ -2139,9 +2143,9 @@ WStatusBar::WStatusBar(wxWindow *_parent)
     SetFieldsCount(3);
     SetStatusWidths(3, statusbar_widths);
 
-    #include "art/stock_lock.h"
+    #include "art/unmodified-16.h"
 
-    lockbitmap = new wxStaticBitmap(this, wxID_ANY, wxIconFromMemory(stock_lock_png));
+    lockbitmap = new wxStaticBitmap(this, wxID_ANY, wxIconFromMemory(unmodified_16_png));
 
     panelProgress = new wxWindow(this, wxID_ANY);
     labelProgress = new wxStaticText(panelProgress, wxID_ANY, _("Reencrypting:"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
@@ -2177,18 +2181,18 @@ void WStatusBar::OnSize(wxSizeEvent& event)
     event.Skip();
 }
 
-void WStatusBar::SetLock(bool on)
+void WStatusBar::SetModified(bool on)
 {
-    #include "art/stock_lock.h"
-    #include "art/stock_unlock.h"
+    #include "art/modified-16.h"
+    #include "art/unmodified-16.h"
 
     if (on) {
-	lockbitmap->SetBitmap(wxIconFromMemory(stock_lock_png));
-	lockbitmap->SetToolTip(_("Text file is encrypted."));
+	lockbitmap->SetBitmap(wxIconFromMemory(modified_16_png));
+	lockbitmap->SetToolTip(_("Container is modified."));
     }
     else {
-	lockbitmap->SetBitmap(wxIconFromMemory(stock_unlock_png));
-	lockbitmap->SetToolTip(_("Text file is NOT encrypted."));
+	lockbitmap->SetBitmap(wxIconFromMemory(unmodified_16_png));
+	lockbitmap->SetToolTip(_("Container is saved to disk and unmodified."));
     }
 }
 
