@@ -104,7 +104,7 @@ LIBGCRYPT_CFLAGS = @LIBGCRYPT_CFLAGS@
 LIBGCRYPT_CONFIG = @LIBGCRYPT_CONFIG@
 LIBGCRYPT_LIBS = @LIBGCRYPT_LIBS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(WX_LIBS)
+LIBS = $(WX_LIBS) $(ZLIB_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -190,7 +190,7 @@ pwgen_SOURCES = main.cpp \
 	fips181.cpp fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS) $(ZLIB_CFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o
 @GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
 all: $(BUILT_SOURCES)
