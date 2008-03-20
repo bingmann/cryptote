@@ -95,7 +95,7 @@ wxButton* WMessageDialog::CreateButton(int id)
 	return new wxButton(this, id, wxEmptyString);
 
     case wxID_IGNORE:
-	return new wxButton(this, id, _("Ignore"));
+	return new wxButton(this, id, _("&Ignore"));
 
     default:
 	wxFAIL_MSG(_T("Unknown button id"));

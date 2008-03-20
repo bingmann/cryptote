@@ -24,6 +24,7 @@ XGETTEXT_ARGS=-CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
 
 cryptote.pot:
 	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot ../pwgen/*.h ../pwgen/*.cpp
+	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot ../cryptote/*.h ../cryptote/*.cpp
 
 force-update:
 	$(RM) cryptote.pot
@@ -36,6 +37,8 @@ allmo:
 
 allh:
 	@for t in $(LINGUAS); do $(MAKE) $$t.h; done
+
+all-local: allmo allh
 
 # print out the percentage of the translated strings
 stats:

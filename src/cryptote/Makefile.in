@@ -51,7 +51,7 @@ am_cryptote_OBJECTS = main.$(OBJEXT) wcryptote.$(OBJEXT) \
 	wfilelist.$(OBJEXT) wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) \
 	wmsgdlg.$(OBJEXT) wbinpage.$(OBJEXT) wpass.$(OBJEXT) \
 	wprefs.$(OBJEXT) wpassgen.$(OBJEXT) prng.$(OBJEXT) \
-	fips181.$(OBJEXT)
+	fips181.$(OBJEXT) myintl.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -202,7 +202,8 @@ cryptote_SOURCES = main.cpp \
 	wprefs.cpp wprefs.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
 	../pwgen/prng.cpp ../pwgen/prng.h \
-	../pwgen/fips181.cpp ../pwgen/fips181.h
+	../pwgen/fips181.cpp ../pwgen/fips181.h \
+	../common/myintl.cpp ../common/myintl.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) $(WX_CXXFLAGS)
@@ -278,6 +279,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bmpcat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/myintl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wbinpage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wcntprop.Po@am__quote@
@@ -346,6 +348,20 @@ fips181.obj: ../pwgen/fips181.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/fips181.cpp' object='fips181.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o fips181.obj `if test -f '../pwgen/fips181.cpp'; then $(CYGPATH_W) '../pwgen/fips181.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/fips181.cpp'; fi`
+
+myintl.o: ../common/myintl.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT myintl.o -MD -MP -MF $(DEPDIR)/myintl.Tpo -c -o myintl.o `test -f '../common/myintl.cpp' || echo '$(srcdir)/'`../common/myintl.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/myintl.Tpo $(DEPDIR)/myintl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common/myintl.cpp' object='myintl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o myintl.o `test -f '../common/myintl.cpp' || echo '$(srcdir)/'`../common/myintl.cpp
+
+myintl.obj: ../common/myintl.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT myintl.obj -MD -MP -MF $(DEPDIR)/myintl.Tpo -c -o myintl.obj `if test -f '../common/myintl.cpp'; then $(CYGPATH_W) '../common/myintl.cpp'; else $(CYGPATH_W) '$(srcdir)/../common/myintl.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/myintl.Tpo $(DEPDIR)/myintl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common/myintl.cpp' object='myintl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o myintl.obj `if test -f '../common/myintl.cpp'; then $(CYGPATH_W) '../common/myintl.cpp'; else $(CYGPATH_W) '$(srcdir)/../common/myintl.cpp'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

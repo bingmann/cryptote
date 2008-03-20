@@ -4,6 +4,19 @@
 #include <wx/cmdline.h>
 
 #include "wcryptote.h"
+#include "common/myintl.h"
+#include "locale/de.h"
+
+static MyLocaleMemoryCatalogLanguage cryptote_cataloglangs[] =
+{
+    { _T("de"), NULL, locale_de_mo, sizeof(locale_de_mo) },
+    { NULL, NULL, NULL, 0 }
+};
+
+static MyLocaleMemoryCatalog cryptote_catalog =
+{
+    _T("cryptote"), cryptote_cataloglangs
+};
 
 class App : public wxApp
 {
@@ -13,6 +26,9 @@ private:
 
     /// File path to load initially
     wxString		cmdlinefile;
+
+    /// Locale object holding translations
+    MyLocale		locale;
 
 public:
 
@@ -31,6 +47,21 @@ public:
 
 	SetAppName(_("CryptoTE"));
 	SetVendorName(_("idlebox.net"));
+
+        // Load and initialize the catalog
+	if (!locale.AddCatalogFromMemory(cryptote_catalog))
+        {
+	    wxLogError(_T("Could not load message catalog for defined language."));
+            return false;
+        }
+
+#ifdef __LINUX__
+	{   // Something from the wxWidgets example: load fileutils catalog for
+	    // further messages
+	    wxLogNull noLog;
+	    locale.AddCatalog(_T("fileutils"));
+	}
+#endif
 
 	// Create main window frame
 	wmain = new WCryptoTE(NULL);
@@ -51,6 +82,10 @@ public:
 			 _("Display help for the command line parameters."),
 			 wxCMD_LINE_OPTION_HELP);
 
+        parser.AddOption(_T("l"), _T("lang"),
+			 _T("Set language for messages. Example: de or de_DE."),
+			 wxCMD_LINE_VAL_STRING, 0);
+
 	parser.AddParam(wxT("container-to-load"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 
 	// must refuse '/' as parameter starter or cannot use "/path" style paths
@@ -59,9 +94,32 @@ public:
 
     bool	OnCmdLineParsed(wxCmdLineParser& parser)
     {
+	wxLog::SetActiveTarget(new wxLogStderr);
+
 	if (parser.GetParamCount() > 0)
 	    cmdlinefile = parser.GetParam(0);
 
+	wxString langtext;
+	if ( parser.Found(_T("l"), &langtext) )
+	{
+	    const wxLanguageInfo* langinfo = wxLocale::FindLanguageInfo(langtext);
+
+	    if (!langinfo) {
+		wxLogError(_T("Invalid language identifier specified with --lang."));
+		return false;
+	    }
+
+	    if (!locale.Init(langinfo->Language, wxLOCALE_CONV_ENCODING)) {
+		wxLogError(_T("This language is not supported by the program."));
+		return false;
+	    }
+	}
+	else
+	{
+	    locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+	}
+
+	wxLog::SetActiveTarget(NULL);
 	return true;
     }
 

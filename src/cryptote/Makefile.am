@@ -16,7 +16,8 @@ cryptote_SOURCES = main.cpp \
 	wprefs.cpp wprefs.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
 	../pwgen/prng.cpp ../pwgen/prng.h \
-	../pwgen/fips181.cpp ../pwgen/fips181.h
+	../pwgen/fips181.cpp ../pwgen/fips181.h \
+	../common/myintl.cpp ../common/myintl.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 

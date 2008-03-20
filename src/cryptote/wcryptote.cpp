@@ -544,7 +544,7 @@ void WCryptoTE::UpdateTitle()
     if (container_filename.IsOk())
     {
 	title += container_filename.GetFullName();
-	title += _(" - ");
+	title += _T(" - ");
     }
 
     title += _("CryptoTE v0.1");
@@ -853,11 +853,11 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		   _("Choose a file name and save the current encrypted container to disk."));
 
     appendMenuItem(menuContainer, wxID_REVERT,
-		   _("&Revert\tShift+Ctrl+W"),
+		   _("&Revert\tCtrl+Shift+W"),
 		   _("Revert the current container by reloading it from disk and losing all unsaved changes."));
 
     appendMenuItem(menuContainer, wxID_CLOSE,
-		   _("&Close\tShift+Ctrl+N"),
+		   _("&Close\tCtrl+Shift+N"),
 		   _("Close the current encrypted container."));
 
     menuContainer->AppendSeparator();
@@ -883,8 +883,8 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
     menuContainer->AppendSeparator();
 
     appendMenuItem(menuContainer, wxID_EXIT,
-		   _("&Quit\tCtrl+Q"),
-		   _("Exit CryptoTE"));
+		   _("&Quit\tAlt+F4"),
+		   _("Exit CryptoTE."));
 
     menubar->Append(menuContainer, _("&Container"));
 
@@ -1242,7 +1242,7 @@ bool WCryptoTE::UserContainerOpen()
     if (!AllowCloseModified()) return false;
 
     wxFileDialog dlg(this,
-		     _("Open Container File"), wxEmptyString, wxEmptyString,
+		     _("Open Container"), wxEmptyString, wxEmptyString,
 		     _("Encrypted Container (*.ect)|*.ect"),
                      wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
@@ -1275,7 +1275,7 @@ bool WCryptoTE::UserContainerSaveAs()
     if (!container) return false;
 
     wxFileDialog dlg(this,
-		     _("Save Container File"), wxEmptyString, container_filename.GetFullName(),
+		     _("Save Container"), wxEmptyString, container_filename.GetFullName(),
 		     _("Encrypted Container (*.ect)|*.ect"),
 		     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
@@ -1841,11 +1841,11 @@ void WCryptoTE::OnNotebookPageRightDown(wxAuiNotebookEvent& WXUNUSED(event))
     wxMenu* menu = new wxMenu;
  
     appendMenuItem(menu, myID_MENU_SUBFILE_EXPORT,
-		   _("&Export SubFile"),
+		   _("&Export SubFile ..."),
 		   _("Export current subfile to disk."));
  
     appendMenuItem(menu, myID_MENU_SUBFILE_PROPERTIES,
-		   _("&Properties"),
+		   _("&Properties ..."),
 		   _("Show metadata properties of current subfile."));
 
     appendMenuItem(menu, myID_MENU_SUBFILE_CLOSE,

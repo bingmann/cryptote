@@ -236,7 +236,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile
+all-am: Makefile all-local
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -318,15 +318,16 @@ uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic distclean \
-	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
+.PHONY: all all-am all-local check check-am clean clean-generic \
+	distclean distclean-generic distdir dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am uninstall \
+	uninstall-am
 
 
 # implicit rule: generate binary message catalogs
@@ -342,6 +343,7 @@ uninstall-am:
 
 cryptote.pot:
 	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot ../pwgen/*.h ../pwgen/*.cpp
+	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot ../cryptote/*.h ../cryptote/*.cpp
 
 force-update:
 	$(RM) cryptote.pot
@@ -354,6 +356,8 @@ allmo:
 
 allh:
 	@for t in $(LINGUAS); do $(MAKE) $$t.h; done
+
+all-local: allmo allh
 
 # print out the percentage of the translated strings
 stats:
