@@ -24,7 +24,7 @@
 
 /// List of message catalogs for different languages: binary .mo files stored
 /// in memory (passed by msgCatalogData / msgCatalogDataLen)
-struct MyLocaleMemoryCatalogLanguage
+struct MyLocaleMemoryCatalog
 {
     const wxChar*	msgIdLanguage;	// language e.g. "us_GB"
     const wxChar*	msgIdCharset;	// character set
@@ -32,17 +32,6 @@ struct MyLocaleMemoryCatalogLanguage
     unsigned int	msgCatalogDataLen; // size of data at ptr
     unsigned int	msgCatalogUncompLen; // uncompressed size len, if 0 ->
 					     // not compressed.
-};
-
-/// Message Catalog of a given domain, contains a list of languages defining
-/// the domain.
-struct MyLocaleMemoryCatalog
-{
-    const wxChar *szDomain;	// usually name of program
-    
-    /// List of language catalogs. The list is terminated with a msgIdLanguage
-    /// == NULL.
-    MyLocaleMemoryCatalogLanguage* langs;
 };
 
 class MyLocale : public wxLocale
@@ -69,10 +58,12 @@ public:
     // add a catalog from memory: load the desired language from the catalog
     // list.
     //
-    // The loaded catalog will be used for message lookup by GetString().
+    // The loaded catalog will be used for message lookup by GetString(). List
+    // of language catalogs. The list is terminated with a msgIdLanguage ==
+    // NULL.
     //
     // Returns 'true' if it was successfully loaded
-    bool AddCatalogFromMemory(const MyLocaleMemoryCatalog& msgCatalogMemory);
+    bool AddCatalogFromMemory(const wxChar *szDomain, const MyLocaleMemoryCatalog* msgCatalogMemory);
 
     // check if the given catalog is loaded
     bool IsLoaded(const wxChar *szDomain) const;

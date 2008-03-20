@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-20 13:34+0100\n"
+"POT-Creation-Date: 2008-03-20 14:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,15 +40,7 @@ msgstr ""
 msgid "Gnome with small toolbar icons"
 msgstr ""
 
-#: ../cryptote/main.cpp:48 ../pwgen/main.cpp:38
-msgid "CryptoTE"
-msgstr ""
-
-#: ../cryptote/main.cpp:49 ../pwgen/main.cpp:39
-msgid "idlebox.net"
-msgstr ""
-
-#: ../cryptote/main.cpp:82
+#: ../cryptote/main.cpp:91
 msgid "Display help for the command line parameters."
 msgstr ""
 

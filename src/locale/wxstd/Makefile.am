@@ -1,39 +1,17 @@
 # $Id$
 # Based on wxWidgets-2.8.7/locale/Makefile
 
-SUBDIRS = wxstd
-
 LINGUAS = de
 
 # the programs we use (TODO: use configure to detect them)
 MSGFMT=msgfmt --verbose
-MSGMERGE=msgmerge --verbose
-XGETTEXT=xgettext
-
-# common xgettext args: C++ syntax, joining, use the specified macro names as markers
-XGETTEXT_ARGS=-CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
 
 # implicit rule: generate binary message catalogs
 %.mo: %.po
 	$(MSGFMT) -c -o $@ $<
 
 %.h: %.mo
-	../art/file2h -c -p "locale-" $< > $@
-
-# PO files must be updated from cryptote.pot to include new translations
-%.po: cryptote.pot
-	if [ -f $@ ]; then $(MSGMERGE) $@ cryptote.pot > $@.new && mv $@.new $@; else cp cryptote.pot $@; fi
-
-cryptote.pot:
-	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot \
-		../pwgen/*.h ../pwgen/*.cpp \
-		../cryptote/*.h ../cryptote/*.cpp
-
-force-update:
-	$(RM) cryptote.pot
-
-allpo: force-update
-	@for t in $(LINGUAS); do $(MAKE) $$t.po; done
+	../../art/file2h -c -p "locale-wxstd-" $< > $@
 
 allmo:
 	@for t in $(LINGUAS); do $(MAKE) $$t.mo; done
@@ -56,4 +34,4 @@ stats:
 		echo "$$i.po `expr 100 "*" $$TR / $$TOTAL`% of $$TOTAL strings"; \
 	done
 
-.PHONY: allpo allmo allh force-update stats
+.PHONY: allmo allh force-update stats

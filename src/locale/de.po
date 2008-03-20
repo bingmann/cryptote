@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-20 13:34+0100\n"
+"POT-Creation-Date: 2008-03-20 14:18+0100\n"
 "PO-Revision-Date: 2008-03-20 13:39+0100\n"
 "Last-Translator: Timo Bingmann\n"
 "Language-Team: German\n"
@@ -38,15 +38,7 @@ msgstr "Gnome mit großen Werkzeugleisten-Icons"
 msgid "Gnome with small toolbar icons"
 msgstr "Gnome mit kleinen Werkzeugleisten-Icons"
 
-#: ../cryptote/main.cpp:48 ../pwgen/main.cpp:38
-msgid "CryptoTE"
-msgstr "CryptoTE"
-
-#: ../cryptote/main.cpp:49 ../pwgen/main.cpp:39
-msgid "idlebox.net"
-msgstr "idlebox.net"
-
-#: ../cryptote/main.cpp:82
+#: ../cryptote/main.cpp:91
 msgid "Display help for the command line parameters."
 msgstr "Hilfe zu den Kommandozeilenparameter anzeigen."
 
@@ -286,7 +278,8 @@ msgstr "&Eigenschaften ...\tAlt+Enter"
 
 #: ../cryptote/wcryptote.cpp:871
 msgid "Show metadata properties of the encrypted container."
-msgstr "Zeigt die Metadaten und Eigenschaften des verschlüsselten Containers an."
+msgstr ""
+"Zeigt die Metadaten und Eigenschaften des verschlüsselten Containers an."
 
 #: ../cryptote/wcryptote.cpp:874
 msgid "&Change Password ..."
@@ -338,7 +331,8 @@ msgstr "Subdatei &exportieren ...\tCtrl+E"
 
 #: ../cryptote/wcryptote.cpp:905 ../cryptote/wcryptote.cpp:1845
 msgid "Export current subfile to disk."
-msgstr "Exportiert die aktuelle Subdatei in eine externe unverschlüsselte Datei."
+msgstr ""
+"Exportiert die aktuelle Subdatei in eine externe unverschlüsselte Datei."
 
 #: ../cryptote/wcryptote.cpp:908
 msgid "&Properties ...\tAlt+Shift+Enter"
@@ -429,7 +423,8 @@ msgstr "&Suchen ...\tCtrl+Shift+F"
 
 #: ../cryptote/wcryptote.cpp:957 ../cryptote/wcryptote.cpp:1122
 msgid "Open find dialog to search for a string in the buffer."
-msgstr "Öffnet das Suchen-Dialogfeld, um eine Zeichenfolge in dem Dokument zu finden."
+msgstr ""
+"Öffnet das Suchen-Dialogfeld, um eine Zeichenfolge in dem Dokument zu finden."
 
 #: ../cryptote/wcryptote.cpp:960
 msgid "&Replace ...\tCtrl+H"
@@ -483,7 +478,8 @@ msgid "Insert &Password"
 msgstr "&Password einfügen"
 
 #: ../cryptote/wcryptote.cpp:994 ../cryptote/wcryptote.cpp:1131
-msgid "Insert random password from generator preset or open generator dialog box."
+msgid ""
+"Insert random password from generator preset or open generator dialog box."
 msgstr ""
 "Fügt ein zufällig generiertes Password von einer Passwortgenerator-Vorgabe "
 "ein, oder öffnet das Generator-Dialogfeld."
@@ -652,7 +648,8 @@ msgid "Import File(s)"
 msgstr "Datei(en) importieren"
 
 #: ../cryptote/wcryptote.cpp:1441
-msgid "Text File (*.txt)|*.txt|Any Text File (*.txt;*)|*.txt;*|Any Binary File (*)|*"
+msgid ""
+"Text File (*.txt)|*.txt|Any Text File (*.txt;*)|*.txt;*|Any Binary File (*)|*"
 msgstr ""
 "Textdatei (*.txt)|*.txt|Beliebige Textdatei (*.txt;*)|*.txt;*|Beliebige "
 "Binärdatei (*)|*"
@@ -802,7 +799,8 @@ msgstr "Subdatei(en) &exportieren"
 
 #: ../cryptote/wfilelist.cpp:109
 msgid "Export subfiles from encrypted container to disk."
-msgstr "Exportiert die gewählten Subdateien in externe unverschlüsselte Dateien."
+msgstr ""
+"Exportiert die gewählten Subdateien in externe unverschlüsselte Dateien."
 
 #: ../cryptote/wfilelist.cpp:112
 msgid "&Delete SubFiles"
@@ -865,14 +863,16 @@ msgstr "Exportierte %u Subdatei(en) nach %s"
 
 #: ../cryptote/wfilelist.cpp:290
 #, c-format
-msgid "Going to permanently delete \"%s\". This cannot be undone, are you sure?"
+msgid ""
+"Going to permanently delete \"%s\". This cannot be undone, are you sure?"
 msgstr ""
 "\"%s\" wird permanent gelöscht. Dies kann nicht widerrufen werden. Sind Sie "
 "sicher?"
 
 #: ../cryptote/wfilelist.cpp:293
 #, c-format
-msgid "Going to permanently delete %u files. This cannot be undone, are you sure?"
+msgid ""
+"Going to permanently delete %u files. This cannot be undone, are you sure?"
 msgstr ""
 "Es werden %u Subdateien permanent gelöscht. Dies kann nicht widerrufen "
 "werden. Sind Sie sicher?"
@@ -928,7 +928,8 @@ msgstr "Verschlüsselung:"
 
 #: ../cryptote/wfileprop.cpp:195
 #, c-format
-msgid "Recompressed and reencrypted %u subfile bytes into %u bytes (old size %u)."
+msgid ""
+"Recompressed and reencrypted %u subfile bytes into %u bytes (old size %u)."
 msgstr ""
 "Es wurden %u Bytes der Subdatei zu %u Bytes (alter Wert %u) rekomprimiert "
 "und neuverschlüsselt."
@@ -1169,7 +1170,8 @@ msgstr "%u Zeichen auf der Zeile markiert."
 
 #: ../cryptote/wtextpage.cpp:432
 #, c-format
-msgid "Compressed %u characters from buffer into %u bytes for encrypted storage."
+msgid ""
+"Compressed %u characters from buffer into %u bytes for encrypted storage."
 msgstr ""
 "Komprimierte die %u Zeichen des Dokuments in %u Bytes für den "
 "verschlüsselten Container."
@@ -1338,7 +1340,8 @@ msgstr ""
 "zu unterscheiden sin."
 
 #: ../pwgen/wpassgen.cpp:186
-msgid "Does not include characters in password which are swapped on some keyboards."
+msgid ""
+"Does not include characters in password which are swapped on some keyboards."
 msgstr ""
 "Deaktiviert z/y, da diese auf dem deutschen und englischen Tastaturlayout "
 "genau getauscht sind."
@@ -1352,7 +1355,8 @@ msgid "Password length desired."
 msgstr "Gewünschte Passwortlänge."
 
 #: ../pwgen/wpassgen.cpp:190
-msgid "Theoretic number of keybits the entropy of the selected pass type generates."
+msgid ""
+"Theoretic number of keybits the entropy of the selected pass type generates."
 msgstr ""
 "Theoretische Anzahl der Schlüsselbits, welche von der Entropie des "
 "Zufallsgenerators mit der ausgewählten Generatoroptionen erzeugt werden."
@@ -1461,4 +1465,3 @@ msgstr ""
 "und Kleinbuchstaben und Zahlen erzeugen. Er zeigt\n"
 "auch die theoretische Komplexität der von der\n"
 "aktuellen Einstellungen erzeugen Passwörter an."
-

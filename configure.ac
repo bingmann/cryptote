@@ -213,5 +213,6 @@ AC_CONFIG_FILES([Makefile
 		 src/pwgen/Makefile
 		 src/pwtutor/Makefile
 		 src/cryptote/Makefile
-		 src/locale/Makefile])
+		 src/locale/Makefile
+		 src/locale/wxstd/Makefile])
 AC_OUTPUT

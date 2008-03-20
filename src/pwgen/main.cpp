@@ -6,16 +6,18 @@
 #include "wpassgen.h"
 #include "common/myintl.h"
 #include "locale/de.h"
+#include "locale/wxstd/de.h"
 
-static MyLocaleMemoryCatalogLanguage cryptote_cataloglangs[] =
+static MyLocaleMemoryCatalog cryptote_catalogs[] =
 {
     { _T("de"), NULL, locale_de_mo, sizeof(locale_de_mo), locale_de_mo_uncompressed },
     { NULL, NULL, NULL, 0, 0 }
 };
 
-static MyLocaleMemoryCatalog cryptote_catalog =
+static MyLocaleMemoryCatalog wxstd_catalogs[] =
 {
-    _T("cryptote"), cryptote_cataloglangs
+    { _T("de"), NULL, locale_wxstd_de_mo, sizeof(locale_wxstd_de_mo), locale_wxstd_de_mo_uncompressed },
+    { NULL, NULL, NULL, 0, 0 }
 };
 
 class App : public wxApp
@@ -35,11 +37,18 @@ public:
 
 	wxImage::AddHandler(new wxPNGHandler());
 
-	SetAppName(_("CryptoTE"));
-	SetVendorName(_("idlebox.net"));
+	SetAppName(_T("CryptoTE"));
+	SetVendorName(_T("idlebox.net"));
 
 	// Load and initialize the catalog
-	if (!locale.AddCatalogFromMemory(cryptote_catalog))
+	if (!locale.AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs))
+	{
+	    wxLogError(_T("Could not load message catalog for defined language."));
+	    return false;
+	}
+
+	// Load and initialize the catalog
+	if (!locale.AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
 	{
 	    wxLogError(_T("Could not load message catalog for defined language."));
 	    return false;

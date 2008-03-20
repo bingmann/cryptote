@@ -23,6 +23,10 @@
 #include "wx/hashmap.h"
 #include "wx/utils.h"
 #include "wx/ptr_scpd.h"
+#include "wx/fontmap.h"
+#include "wx/stdpaths.h"
+#include "wx/file.h"
+#include "wx/filename.h"
 
 #include <zlib.h>
 #include <stdexcept>
@@ -765,6 +769,10 @@ public:
     bool Load(const char* pData, size_t32 nDataLen, size_t32 nCatalogUncomp,
               MyPluralFormsCalculatorPtr& rPluralFormsCalculator);
 
+    // load the catalog from disk
+    bool LoadFile(const wxChar *szDirPrefix, const wxChar *szName,
+		  MyPluralFormsCalculatorPtr& rPluralFormsCalculator);
+
     // fills the hash with string-translation pairs
     void FillHash(MyMessagesHash& hash,
                   const wxString& msgIdCharset,
@@ -847,10 +855,14 @@ public:
     MyMsgCatalog() { m_conv = NULL; }
     ~MyMsgCatalog();
 
-    // load the catalog from disk
+    // load the catalog from memory
     bool Load(const wxChar *szName,
 	      const char* pCatalogData, size_t nCatalogDataLen, size_t nCatalogUncomp,
               const wxChar *msgIdCharset = NULL, bool bConvertEncoding = false);
+
+    // load the catalog from disk
+    bool LoadFile(const wxChar *szDirPrefix, const wxChar *szName,
+		  const wxChar *msgIdCharset, bool bConvertEncoding);
 
     // get name of the catalog
     wxString GetName() const { return m_name; }
@@ -939,8 +951,7 @@ bool MyMsgCatalogMemory::Load(const char* pData, size_t32 nDataLen, size_t32 nCa
 			      MyPluralFormsCalculatorPtr& rPluralFormsCalculator)
 {
     if (nCatalogUncomp > 0)
-	m_strData = decompress
-(pData, nDataLen, nCatalogUncomp);
+	m_strData = decompress(pData, nDataLen, nCatalogUncomp);
     else
 	m_strData = std::string(pData, nDataLen);
     
@@ -1023,6 +1034,176 @@ bool MyMsgCatalogMemory::Load(const char* pData, size_t32 nDataLen, size_t32 nCa
 
     // everything is fine
     return true;
+}
+
+// return the directories to search for message catalogs under the given
+// prefix, separated by wxPATH_SEP
+static wxString GetMsgCatalogSubdirs(const wxChar *prefix, const wxChar *lang)
+{
+    // Search first in Unix-standard prefix/lang/LC_MESSAGES, then in
+    // prefix/lang and finally in just prefix.
+    //
+    // Note that we use LC_MESSAGES on all platforms and not just Unix, because
+    // it doesn't cost much to look into one more directory and doing it this
+    // way has two important benefits:
+    // a) we don't break compatibility with wx-2.6 and older by stopping to
+    //    look in a directory where the catalogs used to be and thus silently
+    //    breaking apps after they are recompiled against the latest wx
+    // b) it makes it possible to package app's support files in the same
+    //    way on all target platforms
+    wxString pathPrefix;
+    pathPrefix << prefix << wxFILE_SEP_PATH << lang;
+
+    wxString searchPath;
+    searchPath.reserve(4*pathPrefix.length());
+    searchPath << pathPrefix << wxFILE_SEP_PATH << wxT("LC_MESSAGES") << wxPATH_SEP
+               << prefix << wxFILE_SEP_PATH << wxPATH_SEP
+               << pathPrefix;
+
+    return searchPath;
+}
+
+// the list of the directories to search for message catalog files
+static wxArrayString gs_searchPrefixes;
+
+// construct the search path for the given language
+static wxString GetFullSearchPath(const wxChar *lang)
+{
+    // first take the entries explicitly added by the program
+    wxArrayString paths;
+    paths.reserve(gs_searchPrefixes.size() + 1);
+    size_t n,
+	count = gs_searchPrefixes.size();
+    for ( n = 0; n < count; n++ )
+    {
+        paths.Add(GetMsgCatalogSubdirs(gs_searchPrefixes[n], lang));
+    }
+
+
+#if wxUSE_STDPATHS
+    // then look in the standard location
+    const wxString stdp = wxStandardPaths::Get().
+        GetLocalizedResourcesDir(lang, wxStandardPaths::ResourceCat_Messages);
+
+    if ( paths.Index(stdp) == wxNOT_FOUND )
+        paths.Add(stdp);
+#endif // wxUSE_STDPATHS
+
+    // last look in default locations
+#ifdef __UNIX__
+    // LC_PATH is a standard env var containing the search path for the .mo
+    // files
+    const wxChar *pszLcPath = wxGetenv(wxT("LC_PATH"));
+    if ( pszLcPath )
+    {
+        const wxString lcp = GetMsgCatalogSubdirs(pszLcPath, lang);
+        if ( paths.Index(lcp) == wxNOT_FOUND )
+            paths.Add(lcp);
+    }
+
+    // also add the one from where wxWin was installed:
+    wxString wxp = wxGetInstallPrefix();
+    if ( !wxp.empty() )
+    {
+        wxp = GetMsgCatalogSubdirs(wxp + _T("/share/locale"), lang);
+        if ( paths.Index(wxp) == wxNOT_FOUND )
+            paths.Add(wxp);
+    }
+#endif // __UNIX__
+
+
+    // finally construct the full search path
+    wxString searchPath;
+    searchPath.reserve(500);
+    count = paths.size();
+    for ( n = 0; n < count; n++ )
+    {
+        searchPath += paths[n];
+        if ( n != count - 1 )
+            searchPath += wxPATH_SEP;
+    }
+
+    return searchPath;
+}
+
+// open disk file and read in it's contents
+bool MyMsgCatalogMemory::LoadFile(const wxChar *szDirPrefix, const wxChar *szName,
+				  MyPluralFormsCalculatorPtr& rPluralFormsCalculator)
+{
+    wxString searchPath;
+
+#if wxUSE_FONTMAP
+    // first look for the catalog for this language and the current locale:
+    // notice that we don't use the system name for the locale as this would
+    // force us to install catalogs in different locations depending on the
+    // system but always use the canonical name
+    wxFontEncoding encSys = wxLocale::GetSystemEncoding();
+    if ( encSys != wxFONTENCODING_SYSTEM )
+    {
+	wxString fullname(szDirPrefix);
+	fullname << _T('.') << wxFontMapperBase::GetEncodingName(encSys);
+	searchPath << GetFullSearchPath(fullname) << wxPATH_SEP;
+    }
+#endif // wxUSE_FONTMAP
+
+    searchPath += GetFullSearchPath(szDirPrefix);
+    const wxChar *sublocale = wxStrchr(szDirPrefix, wxT('_'));
+    if ( sublocale )
+    {
+	// also add just base locale name: for things like "fr_BE" (belgium
+	// french) we should use "fr" if no belgium specific message catalogs
+	// exist
+	searchPath << wxPATH_SEP
+		   << GetFullSearchPath(wxString(szDirPrefix).
+					Left((size_t)(sublocale - szDirPrefix)));
+    }
+
+    // don't give translation errors here because the wxstd catalog might
+    // not yet be loaded (and it's normal)
+    //
+    // (we're using an object because we have several return paths)
+
+    wxLogVerbose(_("looking for catalog '%s' in path '%s'."),
+		 szName, searchPath.c_str());
+    wxLogTrace(_T("i18n"), _T("Looking for \"%s.mo\" in \"%s\""),
+	       szName, searchPath.c_str());
+
+    wxFileName fn(szName);
+    fn.SetExt(_T("mo"));
+    wxString strFullName;
+    if ( !wxFindFileInPath(&strFullName, searchPath, fn.GetFullPath()) ) {
+	wxLogVerbose(_("catalog file for domain '%s' not found."), szName);
+	wxLogTrace(_T("i18n"), _T("Catalog \"%s.mo\" not found"), szName);
+	return false;
+    }
+
+    // open file
+    wxLogVerbose(_("using catalog '%s' from '%s'."), szName, strFullName.c_str());
+    wxLogTrace(_T("i18n"), _T("Using catalog \"%s\"."), strFullName.c_str());
+
+    wxFile fileMsg(strFullName);
+    if ( !fileMsg.IsOpened() )
+	return false;
+
+    // get the file size (assume it is less than 4Gb...)
+    wxFileOffset lenFile = fileMsg.Length();
+    if ( lenFile == wxInvalidOffset )
+	return false;
+
+    size_t nSize = wx_truncate_cast(size_t, lenFile);
+    wxASSERT_MSG( nSize == lenFile + size_t(0), _T("message catalog bigger than 4GB?") );
+
+    // read the whole file in memory
+    char* pData = new char[nSize];
+    if ( fileMsg.Read(pData, nSize) != lenFile ) {
+	wxDELETEA(pData);
+	return false;
+    }
+
+    bool b = Load(pData, nSize, 0, rPluralFormsCalculator);
+    wxDELETEA(pData);
+    
+    return b;
 }
 
 void MyMsgCatalogMemory::FillHash(MyMessagesHash& hash,
@@ -1214,6 +1395,39 @@ bool MyMsgCatalog::Load(const wxChar *szName,
 	 wxConvUI == &wxConvLocal )
     {
         wxConvUI = m_conv = new wxCSConv(memfile.GetCharset());
+    }
+#endif // wxUSE_WCHAR_T
+
+    return true;
+}
+
+bool MyMsgCatalog::LoadFile(const wxChar *szDirPrefix, const wxChar *szName,
+			    const wxChar *msgIdCharset, bool bConvertEncoding)
+{
+    MyMsgCatalogMemory file;
+
+    m_name = szName;
+
+    if ( !file.LoadFile(szDirPrefix, szName, m_pluralFormsCalculator) )
+        return false;
+
+    file.FillHash(m_messages, msgIdCharset, bConvertEncoding);
+
+#if wxUSE_WCHAR_T
+    // we should use a conversion compatible with the message catalog encoding
+    // in the GUI if we don't convert the strings to the current conversion but
+    // as the encoding is global, only change it once, otherwise we could get
+    // into trouble if we use several message catalogs with different encodings
+    //
+    // this is, of course, a hack but it at least allows the program to use
+    // message catalogs in any encodings without asking the user to change his
+    // locale
+    if ( !bConvertEncoding &&
+            !file.GetCharset().empty() &&
+                wxConvUI == &wxConvLocal )
+    {
+        wxConvUI =
+        m_conv = new wxCSConv(file.GetCharset());
     }
 #endif // wxUSE_WCHAR_T
 
@@ -1415,24 +1629,36 @@ bool MyLocale::IsLoaded(const wxChar *szDomain) const
     return FindCatalog(szDomain) != NULL;
 }
 
-bool MyLocale::AddCatalogFromMemory(const MyLocaleMemoryCatalog& msgCatalogMemory)
+bool MyLocale::AddCatalogFromMemory(const wxChar *szDomain, const MyLocaleMemoryCatalog* msgCatalogMemory)
 {
     wxString strlocale = GetCanonicalName();
     wxString sublocale = strlocale.BeforeFirst(_T('_'));
 
-    for (unsigned int cati = 0; msgCatalogMemory.langs[cati].msgIdLanguage; ++cati)
+    std::auto_ptr<MyMsgCatalog> pMsgCat (new MyMsgCatalog);
+
+    // First: look for a locale.mo file at the standard positions
+    if ( pMsgCat->LoadFile(strlocale.c_str(), szDomain, NULL, true) ) {
+	// add it to the head of the list so that in GetString it will
+	// be searched before the catalogs added earlier
+	pMsgCat->m_pNext = m_pMsgCat;
+	m_pMsgCat = pMsgCat.release();
+
+	return true;
+    }
+
+    for (unsigned int cati = 0; msgCatalogMemory[cati].msgIdLanguage; ++cati)
     {
-	const MyLocaleMemoryCatalogLanguage& catlang = msgCatalogMemory.langs[cati];
+	const MyLocaleMemoryCatalog& catlang = msgCatalogMemory[cati];
 
 	if (catlang.msgIdLanguage == strlocale ||
 	    catlang.msgIdLanguage == sublocale)
 	{
-	    std::auto_ptr<MyMsgCatalog> pMsgCat (new MyMsgCatalog);
-
-	    if ( pMsgCat->Load(msgCatalogMemory.szDomain,
+	    if ( pMsgCat->Load(szDomain,
 			       catlang.msgCatalogData, catlang.msgCatalogDataLen, catlang.msgCatalogUncompLen,
 			       catlang.msgIdCharset, true) )
 	    {
+		wxLogTrace(_T("i18n"), _T("Loading memory catalog for \"%s\"."), szDomain);
+
 		// add it to the head of the list so that in GetString it will
 		// be searched before the catalogs added earlier
 		pMsgCat->m_pNext = m_pMsgCat;

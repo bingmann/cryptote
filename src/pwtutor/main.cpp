@@ -18,8 +18,8 @@ public:
 
 	wxImage::AddHandler(new wxPNGHandler());
 
-	SetAppName(_("CryptoTE"));
-	SetVendorName(_("idlebox.net"));
+	SetAppName(_T("CryptoTE"));
+	SetVendorName(_T("idlebox.net"));
 
 	// Create main window frame
 	wmain = new WPWTutor(NULL);
