@@ -309,6 +309,7 @@ EXTRA_DIST = \
 	messagebox-info-32.png \
 	messagebox-warning-32.png \
 	snapshot.png \
+	snapshot.xcf \
 	view-choose-16.png \
 	view-choose-22.png \
 	view-detailed-16.png \

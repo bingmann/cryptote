@@ -185,6 +185,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pwgen_SOURCES = main.cpp \
+	../common/tools.h \
 	wpassgen.cpp wpassgen.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
@@ -193,6 +194,9 @@ pwgen_SOURCES = main.cpp \
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS) $(ZLIB_CFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o
 @GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
+EXTRA_DIST = pwgen.rc pwgen.xml \
+	wpassgen.wxg
+
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

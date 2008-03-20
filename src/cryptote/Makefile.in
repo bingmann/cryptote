@@ -189,6 +189,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 cryptote_SOURCES = main.cpp \
+	../common/tools.h \
 	wcryptote.cpp wcryptote.h \
 	bmpcat.cpp bmpcat.h \
 	wtextpage.cpp wtextpage.h \
@@ -209,6 +210,10 @@ cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) $(WX_CXXFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = cryptote-rc.o
 @GOT_RESCOMP_TRUE@cryptote_LDFLAGS = cryptote-rc.o
+EXTRA_DIST = cryptote.rc cryptote.xml \
+	wabout.wxg wcntprop.wxg wfileprop.wxg \
+	wfind.wxg wpass.wxg wprefs.wxg
+
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

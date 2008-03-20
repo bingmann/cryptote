@@ -3,6 +3,7 @@
 bin_PROGRAMS = pwtutor
 
 pwtutor_SOURCES = main.cpp \
+	../common/tools.h \
 	wpwtutor.cpp wpwtutor.h \
 	wnewpass.cpp wnewpass.h \
 	wquery.cpp wquery.h \
@@ -24,3 +25,7 @@ pwtutor-rc.o: pwtutor.rc
 pwtutor_LDFLAGS = pwtutor-rc.o
 
 endif
+
+EXTRA_DIST = pwtutor.rc pwtutor.xml \
+	wnewpass.wxg wpwtutor.wxg wquery.wxg \
+	wstats.wxg

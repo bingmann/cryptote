@@ -164,6 +164,9 @@ LINGUAS = de
 
 # the programs we use (TODO: use configure to detect them)
 MSGFMT = msgfmt --verbose
+EXTRA_DIST = \
+	de.po de.mo de.h
+
 all: all-am
 
 .SUFFIXES:

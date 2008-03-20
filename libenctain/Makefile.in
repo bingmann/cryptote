@@ -194,7 +194,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . testsuite speedtest
 noinst_LIBRARIES = libenctain.a
-libenctain_a_SOURCES = \
+libenctain_a_SOURCES = bytebuff.h \
 	crc32.cpp crc32.h \
 	sha256.cpp sha256.h \
 	serpent.cpp serpent.h \

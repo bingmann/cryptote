@@ -2,6 +2,8 @@
 
 SUBDIRS = libstc libenctain src
 
+EXTRA_DIST = cryptote-win32.iss
+
 if GCOV
 
 clean-local:

@@ -3,6 +3,7 @@
 bin_PROGRAMS = cryptote
 
 cryptote_SOURCES = main.cpp \
+	../common/tools.h \
 	wcryptote.cpp wcryptote.h \
 	bmpcat.cpp bmpcat.h \
 	wtextpage.cpp wtextpage.h \
@@ -34,3 +35,7 @@ cryptote-rc.o: cryptote.rc
 cryptote_LDFLAGS = cryptote-rc.o
 
 endif
+
+EXTRA_DIST = cryptote.rc cryptote.xml \
+	wabout.wxg wcntprop.wxg wfileprop.wxg \
+	wfind.wxg wpass.wxg wprefs.wxg

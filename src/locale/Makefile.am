@@ -58,3 +58,6 @@ stats:
 	done
 
 .PHONY: allpo allmo allh force-update stats
+
+EXTRA_DIST = cryptote.pot \
+	de.po de.mo de.h

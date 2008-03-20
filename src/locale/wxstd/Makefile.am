@@ -35,3 +35,6 @@ stats:
 	done
 
 .PHONY: allmo allh force-update stats
+
+EXTRA_DIST = \
+	de.po de.mo de.h

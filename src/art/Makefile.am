@@ -28,6 +28,7 @@ noinst_HEADERS = \
 	ectfile-16.h \
 	ectfile-32.h \
 	ectfile-48.h \
+	modified-12.h \
 	web-16.h
 
 EXTRA_DIST = \
@@ -42,6 +43,7 @@ EXTRA_DIST = \
 	pwtutor-32.png \
 	pwtutor-48.png \
 	pwtutor-128.png \
+	pwtutor-128.xcf \
 	pwtutor.ico \
 	cryptote-16.png \
 	cryptote-32.png \
@@ -53,4 +55,6 @@ EXTRA_DIST = \
 	ectfile-48.png \
 	ectfile.ico \
 	ectfile.svg \
+	modified-12.png \
+	modified-12.svg \
 	web-16.png

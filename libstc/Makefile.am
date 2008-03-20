@@ -12,6 +12,9 @@ libstc_a_SOURCES = \
 	scintilla/include/Scintilla.h \
 	scintilla/include/ScintillaWidget.h \
 	scintilla/include/WindowAccessor.h \
+	scintilla/include/Face.py \
+	scintilla/include/HFacer.py \
+	scintilla/include/Scintilla.iface \
 	\
 	scintilla/src/AutoComplete.cxx \
 	scintilla/src/AutoComplete.h \
@@ -142,7 +145,8 @@ libstc_a_SOURCES = \
 
 EXTRA_DIST = README.txt \
 	scintilla/README.txt \
-	scintilla/License.txt
+	scintilla/License.txt \
+	scintilla/doc/*
 
-AM_CFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -Iscintilla/include -Iscintilla/src $(WX_CFLAGS)
-AM_CXXFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -Iscintilla/include -Iscintilla/src $(WX_CXXFLAGS)
+AM_CFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CFLAGS)
+AM_CXXFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CXXFLAGS)

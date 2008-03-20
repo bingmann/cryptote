@@ -3,6 +3,7 @@
 bin_PROGRAMS = pwgen
 
 pwgen_SOURCES = main.cpp \
+	../common/tools.h \
 	wpassgen.cpp wpassgen.h \
 	prng.cpp prng.h \
 	fips181.cpp fips181.h \
@@ -21,3 +22,6 @@ pwgen-rc.o: pwgen.rc
 pwgen_LDFLAGS = pwgen-rc.o
 
 endif
+
+EXTRA_DIST = pwgen.rc pwgen.xml \
+	wpassgen.wxg

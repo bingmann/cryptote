@@ -186,6 +186,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pwtutor_SOURCES = main.cpp \
+	../common/tools.h \
 	wpwtutor.cpp wpwtutor.h \
 	wnewpass.cpp wnewpass.h \
 	wquery.cpp wquery.h \
@@ -197,6 +198,10 @@ pwtutor_SOURCES = main.cpp \
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwtutor-rc.o
 @GOT_RESCOMP_TRUE@pwtutor_LDFLAGS = pwtutor-rc.o
+EXTRA_DIST = pwtutor.rc pwtutor.xml \
+	wnewpass.wxg wpwtutor.wxg wquery.wxg \
+	wstats.wxg
+
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

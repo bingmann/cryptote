@@ -182,6 +182,9 @@ XGETTEXT = xgettext
 
 # common xgettext args: C++ syntax, joining, use the specified macro names as markers
 XGETTEXT_ARGS = -CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
+EXTRA_DIST = cryptote.pot \
+	de.po de.mo de.h
+
 all: all-recursive
 
 .SUFFIXES:
