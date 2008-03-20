@@ -27,7 +27,8 @@ XGETTEXT_ARGS=-CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
 cryptote.pot:
 	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot \
 		../pwgen/*.h ../pwgen/*.cpp \
-		../cryptote/*.h ../cryptote/*.cpp
+		../cryptote/*.h ../cryptote/*.cpp \
+		../../libenctain/*.h ../../libenctain/*.cpp
 
 force-update:
 	$(RM) cryptote.pot

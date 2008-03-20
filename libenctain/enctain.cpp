@@ -78,7 +78,7 @@ bool Container::Save(wxOutputStream& outstream)
     off_t streamoff = outstream.TellO();
 
     if (!iskeyset) {
-	wxLogError( _("Error loading container: no encryption password set!") );
+	wxLogError( _("Error saving container: no encryption password set!") );
 	return false;
     }
 

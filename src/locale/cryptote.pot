@@ -8,13 +8,128 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-20 14:18+0100\n"
+"POT-Creation-Date: 2008-03-20 16:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../libenctain/enctain.cpp:81
+msgid "Error saving container: no encryption password set!"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:173 ../../libenctain/enctain.cpp:381
+#: ../../libenctain/enctain.cpp:961 ../../libenctain/enctain.cpp:1242
+#, c-format
+msgid "Exception during zlib initialization: (%d) %s"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:201
+#, c-format
+msgid "Exception during compression: (%d) %s"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:265
+msgid "Error loading container: could not read header."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:271
+msgid "Error loading container: invalid signature."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:282
+msgid "Error loading container: invalid file version."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:299
+msgid "Error loading container: could not unencrypted metadata."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:321
+msgid "Error loading container: could not parse unencrypted metadata buffer."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:332
+msgid "Error loading container: could not read secondary header."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:352
+msgid ""
+"Error loading container: could not decrypt header. Check the encryption key."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:363
+msgid ""
+"Error loading container: could not decrypt metadata. Check the encryption "
+"key."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:404 ../../libenctain/enctain.cpp:1304
+#, c-format
+msgid "Exception during decompression: (%d) %s"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:414
+msgid "Error loading container: metadata crc32 does not match."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:462
+msgid "Error loading container: could not parse metadata buffer."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:491
+msgid "Error loading container: could not read encrypted subfile data."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:902
+msgid "Exception during encryption: unknown encryption cipher."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1006
+#, c-format
+msgid "Exception during zlib compression: (%d) %s"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1039 ../../libenctain/enctain.cpp:1319
+msgid "Exception during bzip2 initialization."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1083
+#, c-format
+msgid "Exception during bzip2 compression: %d"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1110
+msgid "Exception during compression: unknown compression algorithm."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1180
+msgid "Exception during subfile decryption: invalid data length."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1191
+msgid "Exception during decryption: unknown encryption cipher."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1260 ../../libenctain/enctain.cpp:1336
+msgid "Exception during decompression: reading beyond end of stream"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1382
+#, c-format
+msgid "Exception during bzip2 decompression: %d"
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1389
+msgid "Exception during decompression: unknown decompression algorithm."
+msgstr ""
+
+#: ../../libenctain/enctain.cpp:1396
+msgid ""
+"Exception during subfile loading: crc32 mismatch - data possibly corrupt."
+msgstr ""
 
 #: ../cryptote/bmpcat.cpp:645
 msgid "Crystal with large toolbar icons"
