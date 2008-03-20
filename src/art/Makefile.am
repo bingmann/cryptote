@@ -6,8 +6,9 @@ noinst_PROGRAMS = file2h
 
 file2h_SOURCES = file2h.cpp
 
-AM_CFLAGS = -W -Wall
-AM_CXXFLAGS = -W -Wall
+AM_CFLAGS = -W -Wall $(ZLIB_CFLAGS)
+AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS)
+LIBS = $(ZLIB_LIBS)
 
 %.h: %.png
 	./file2h $< > $@

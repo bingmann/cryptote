@@ -24,6 +24,10 @@
 #include "wx/utils.h"
 #include "wx/ptr_scpd.h"
 
+#include <zlib.h>
+#include <stdexcept>
+#include <sstream>
+
 // ----------------------------------------------------------------------------
 // simple types
 // ----------------------------------------------------------------------------
@@ -758,7 +762,7 @@ public:
 
     // associate this object with the catalog from memory, the memory is not
     // copied or freed.
-    bool Load(const char* pData, size_t32 nDataLen,
+    bool Load(const char* pData, size_t32 nDataLen, size_t32 nCatalogUncomp,
               MyPluralFormsCalculatorPtr& rPluralFormsCalculator);
 
     // fills the hash with string-translation pairs
@@ -792,11 +796,8 @@ private:
 	          ofsHashTable;   //        +18:  offset of hash table start
     };
 
-    // all data is stored here, NULL if no data loaded
-    const size_t8 *m_pData;
-
-    // amount of memory pointed to by m_pData.
-    size_t32 m_nSize;
+    // data is stored here
+    std::string   m_strData;
 
     // data description
     size_t32                m_numStrings;   // number of strings in this domain
@@ -820,12 +821,12 @@ private:
 
         // this check could fail for a corrupt message catalog
         size_t32 ofsString = Swap(ent->ofsString);
-        if ( ofsString + Swap(ent->nLen) > m_nSize)
+        if ( ofsString + Swap(ent->nLen) > m_strData.size())
         {
             return NULL;
         }
 
-        return (const char *)(m_pData + ofsString);
+        return m_strData.data() + ofsString;
     }
 
     bool m_bSwapped;   // wrong endianness?
@@ -848,7 +849,7 @@ public:
 
     // load the catalog from disk
     bool Load(const wxChar *szName,
-	      const char* pCatalogData, size_t nCatalogDataLen,
+	      const char* pCatalogData, size_t nCatalogDataLen, size_t nCatalogUncomp,
               const wxChar *msgIdCharset = NULL, bool bConvertEncoding = false);
 
     // get name of the catalog
@@ -875,6 +876,52 @@ private:
 // implementation
 // ============================================================================
 
+/**
+ * Decompress a string using zlib and return the original data. Throws
+ * std::runtime_error if an error occurred during decompression.
+ */
+static inline std::string decompress(const char* str, unsigned int slen, unsigned int possiblelen=0)
+{
+    z_stream zs;	// z_stream is zlib's control structure
+    memset(&zs, 0, sizeof(zs));
+
+    if (inflateInit(&zs) != Z_OK)
+	throw(std::runtime_error("inflateInit failed while decompressing."));
+
+    zs.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(str));
+    zs.avail_in = slen;
+
+    int ret;
+    char outbuffer[32768];
+    std::string outstring;
+    outstring.reserve(possiblelen);
+
+    // get the uncompressed bytes blockwise using repeated calls to inflate
+    do {
+	zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+	zs.avail_out = sizeof(outbuffer);
+
+	ret = inflate(&zs, 0);
+
+	if (outstring.size() < zs.total_out) {
+	    outstring.append(outbuffer,
+			     zs.total_out - outstring.size());
+	}
+
+    } while (ret == Z_OK);
+
+    inflateEnd(&zs);
+
+    if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
+	std::ostringstream oss;
+	oss << "Exception during zlib uncompression: (" << ret << ") "
+	    << zs.msg;
+	throw(std::runtime_error(oss.str()));
+    }
+
+    return outstring;
+}
+
 // ----------------------------------------------------------------------------
 // MyMsgCatalogMemory class
 // ----------------------------------------------------------------------------
@@ -888,15 +935,19 @@ MyMsgCatalogMemory::~MyMsgCatalogMemory()
 }
 
 // open disk file and read in it's contents
-bool MyMsgCatalogMemory::Load(const char* pData, size_t32 nDataLen,
+bool MyMsgCatalogMemory::Load(const char* pData, size_t32 nDataLen, size_t32 nCatalogUncomp,
 			      MyPluralFormsCalculatorPtr& rPluralFormsCalculator)
 {
-    m_pData = (size_t8*)pData;
-
+    if (nCatalogUncomp > 0)
+	m_strData = decompress
+(pData, nDataLen, nCatalogUncomp);
+    else
+	m_strData = std::string(pData, nDataLen);
+    
     // examine header
-    bool bValid = nDataLen + (size_t)0 > sizeof(MyMsgCatalogHeader);
+    bool bValid = m_strData.size() + (size_t)0 > sizeof(MyMsgCatalogHeader);
 
-    MyMsgCatalogHeader *pHeader = (MyMsgCatalogHeader *)m_pData;
+    MyMsgCatalogHeader *pHeader = (MyMsgCatalogHeader *)m_strData.data();
     if ( bValid ) {
 	// we'll have to swap all the integers if it's true
 	m_bSwapped = pHeader->magic == MSGCATALOG_MAGIC_SW;
@@ -913,11 +964,10 @@ bool MyMsgCatalogMemory::Load(const char* pData, size_t32 nDataLen,
 
     // initialize
     m_numStrings  = Swap(pHeader->numStrings);
-    m_pOrigTable  = (MyMsgTableEntry *)(m_pData +
+    m_pOrigTable  = (MyMsgTableEntry *)(m_strData.data() +
 					Swap(pHeader->ofsOrigTable));
-    m_pTransTable = (MyMsgTableEntry *)(m_pData +
+    m_pTransTable = (MyMsgTableEntry *)(m_strData.data() +
 					Swap(pHeader->ofsTransTable));
-    m_nSize = (size_t32)nDataLen;
 
     // now parse catalog's header and try to extract catalog charset and
     // plural forms formula from it:
@@ -1138,14 +1188,14 @@ MyMsgCatalog::~MyMsgCatalog()
 }
 
 bool MyMsgCatalog::Load(const wxChar *szName,
-			const char* pCatalogData, size_t nCatalogDataLen,
+			const char* pCatalogData, size_t nCatalogDataLen, size_t nCatalogUncomp,
 			const wxChar *msgIdCharset, bool bConvertEncoding)
 {
     MyMsgCatalogMemory memfile;
 
     m_name = szName;
 
-    if ( !memfile.Load(pCatalogData, nCatalogDataLen, m_pluralFormsCalculator) )
+    if ( !memfile.Load(pCatalogData, nCatalogDataLen, nCatalogUncomp, m_pluralFormsCalculator) )
         return false;
 
     memfile.FillHash(m_messages, msgIdCharset, bConvertEncoding);
@@ -1380,7 +1430,7 @@ bool MyLocale::AddCatalogFromMemory(const MyLocaleMemoryCatalog& msgCatalogMemor
 	    std::auto_ptr<MyMsgCatalog> pMsgCat (new MyMsgCatalog);
 
 	    if ( pMsgCat->Load(msgCatalogMemory.szDomain,
-			       catlang.msgCatalogData, catlang.msgCatalogDataLen,
+			       catlang.msgCatalogData, catlang.msgCatalogDataLen, catlang.msgCatalogUncompLen,
 			       catlang.msgIdCharset, true) )
 	    {
 		// add it to the head of the list so that in GetString it will

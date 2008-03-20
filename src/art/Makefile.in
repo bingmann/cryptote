@@ -108,7 +108,7 @@ LIBGCRYPT_CFLAGS = @LIBGCRYPT_CFLAGS@
 LIBGCRYPT_CONFIG = @LIBGCRYPT_CONFIG@
 LIBGCRYPT_LIBS = @LIBGCRYPT_LIBS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = $(ZLIB_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -190,8 +190,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . crystal slick gnome
 file2h_SOURCES = file2h.cpp
-AM_CFLAGS = -W -Wall
-AM_CXXFLAGS = -W -Wall
+AM_CFLAGS = -W -Wall $(ZLIB_CFLAGS)
+AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS)
 noinst_HEADERS = \
 	pwgen-16.h \
 	pwgen-22.h \

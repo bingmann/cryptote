@@ -9,8 +9,8 @@
 
 static MyLocaleMemoryCatalogLanguage cryptote_cataloglangs[] =
 {
-    { _T("de"), NULL, locale_de_mo, sizeof(locale_de_mo) },
-    { NULL, NULL, NULL, 0 }
+    { _T("de"), NULL, locale_de_mo, sizeof(locale_de_mo), locale_de_mo_uncompressed },
+    { NULL, NULL, NULL, 0, 0 }
 };
 
 static MyLocaleMemoryCatalog cryptote_catalog =

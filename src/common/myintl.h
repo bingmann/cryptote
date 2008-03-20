@@ -29,7 +29,9 @@ struct MyLocaleMemoryCatalogLanguage
     const wxChar*	msgIdLanguage;	// language e.g. "us_GB"
     const wxChar*	msgIdCharset;	// character set
     const char*		msgCatalogData;	// ptr to binary catalog
-    unsigned int	msgCatalogDataLen;
+    unsigned int	msgCatalogDataLen; // size of data at ptr
+    unsigned int	msgCatalogUncompLen; // uncompressed size len, if 0 ->
+					     // not compressed.
 };
 
 /// Message Catalog of a given domain, contains a list of languages defining

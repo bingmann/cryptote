@@ -16,15 +16,16 @@ XGETTEXT_ARGS=-CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
 	$(MSGFMT) -c -o $@ $<
 
 %.h: %.mo
-	../art/file2h -p "locale-" $< > $@
+	../art/file2h -c -p "locale-" $< > $@
 
 # PO files must be updated from cryptote.pot to include new translations
 %.po: cryptote.pot
 	if [ -f $@ ]; then $(MSGMERGE) $@ cryptote.pot > $@.new && mv $@.new $@; else cp cryptote.pot $@; fi
 
 cryptote.pot:
-	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot ../pwgen/*.h ../pwgen/*.cpp
-	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot ../cryptote/*.h ../cryptote/*.cpp
+	$(XGETTEXT) $(XGETTEXT_ARGS) -o cryptote.pot \
+		../pwgen/*.h ../pwgen/*.cpp \
+		../cryptote/*.h ../cryptote/*.cpp
 
 force-update:
 	$(RM) cryptote.pot
