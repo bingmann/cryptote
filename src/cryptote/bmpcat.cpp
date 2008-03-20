@@ -34,15 +34,6 @@ BitmapCatalog::BitmapCatalog()
     SetTheme(2);
 }
 
-const BitmapCatalog::Theme* BitmapCatalog::themelist[] =
-{
-    &theme_crystal_large, &theme_crystal_small,
-    &theme_slick_large, &theme_slick_small,
-    &theme_gnome_large, &theme_gnome_small
-};
-
-const int BitmapCatalog::themelistsize = sizeof(themelist) / sizeof(themelist[0]);
-
 void BitmapCatalog::SetTheme(int nt)
 {
     themeid = nt;
@@ -52,6 +43,9 @@ void BitmapCatalog::SetTheme(int nt)
     {
 	bitmaplist[i].current = wxNullBitmap;
     }
+
+    int themelistsize;
+    const Theme** themelist = GetThemeList(themelistsize);
 
     // load built-in theme
     if (nt >= 0 && nt < themelistsize)
@@ -71,6 +65,9 @@ int BitmapCatalog::GetCurrentTheme()
 
 bool BitmapCatalog::GetThemeInfo(int themeid, wxString& name, wxBitmap& snapshot)
 {
+    int themelistsize;
+    const Theme** themelist = GetThemeList(themelistsize);
+
     if (themeid >= 0 && themeid < themelistsize)
     {
 	name = themelist[themeid]->name;
@@ -640,20 +637,6 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     { 0, BU_GENERAL, NULL, 0 }
 };
 
-const BitmapCatalog::Theme BitmapCatalog::theme_crystal_large =
-{
-    _("Crystal with large toolbar icons"),
-    BUILTIN(crystal_snapshot_png),
-    bitmaplist_crystal_large
-};
-
-const BitmapCatalog::Theme BitmapCatalog::theme_crystal_small =
-{
-    _("Crystal with small toolbar icons"),
-    BUILTIN(crystal_snapshot_png),
-    bitmaplist_crystal_small
-};
-
 // *** Slick ***
 
 #include "art/slick/application-exit-16.h"
@@ -938,20 +921,6 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(slick_file_image_32_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
-};
-
-const BitmapCatalog::Theme BitmapCatalog::theme_slick_large =
-{
-    _("Slick with large toolbar icons"),
-    BUILTIN(slick_snapshot_png),
-    bitmaplist_slick_large
-};
-
-const BitmapCatalog::Theme BitmapCatalog::theme_slick_small =
-{
-    _("Slick with small toolbar icons"),
-    BUILTIN(slick_snapshot_png),
-    bitmaplist_slick_small
 };
 
 // *** Gnome Icons ***
@@ -1262,16 +1231,50 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
     { 0, BU_GENERAL, NULL, 0 }
 };
 
-const BitmapCatalog::Theme BitmapCatalog::theme_gnome_large =
+const BitmapCatalog::Theme** BitmapCatalog::GetThemeList(int& size)
 {
-    _("Gnome with large toolbar icons"),
-    BUILTIN(gnome_snapshot_png),
-    bitmaplist_gnome_large
-};
+    const static Theme theme_crystal_large = {
+	_("Crystal with large toolbar icons"),
+	BUILTIN(crystal_snapshot_png),
+	bitmaplist_crystal_large
+    };
 
-const BitmapCatalog::Theme BitmapCatalog::theme_gnome_small =
-{
-    _("Gnome with small toolbar icons"),
-    BUILTIN(gnome_snapshot_png),
-    bitmaplist_gnome_small
-};
+    const static Theme theme_crystal_small = {
+	_("Crystal with small toolbar icons"),
+	BUILTIN(crystal_snapshot_png),
+	bitmaplist_crystal_small
+    };
+
+    const static Theme theme_slick_large = {
+	_("Slick with large toolbar icons"),
+	BUILTIN(slick_snapshot_png),
+	bitmaplist_slick_large
+    };
+
+    const static Theme theme_slick_small = {
+	_("Slick with small toolbar icons"),
+	BUILTIN(slick_snapshot_png),
+	bitmaplist_slick_small
+    };
+
+    const static Theme theme_gnome_large = {
+	_("Gnome with large toolbar icons"),
+	BUILTIN(gnome_snapshot_png),
+	bitmaplist_gnome_large
+    };
+
+    const static Theme theme_gnome_small = {
+	_("Gnome with small toolbar icons"),
+	BUILTIN(gnome_snapshot_png),
+	bitmaplist_gnome_small
+    };
+
+    const static Theme* themelist[] = {
+	&theme_crystal_large, &theme_crystal_small,
+	&theme_slick_large, &theme_slick_small,
+	&theme_gnome_large, &theme_gnome_small
+    };
+
+    size = sizeof(themelist) / sizeof(themelist[0]);
+    return themelist;
+}

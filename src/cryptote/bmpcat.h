@@ -20,7 +20,7 @@ private:
 
     struct Theme
     {
-	const wxString		name;
+	const wxChar*		name;
 	const char*		snapshot_data;
 	size_t			snapshot_datalen;
 	const ThemeEntry*	entries;
@@ -28,32 +28,23 @@ private:
 
     // *** First Theme: KDE's Crystal ***
 
-    const static Theme		theme_crystal_large;
     const static ThemeEntry	bitmaplist_crystal_large[];
-
-    const static Theme		theme_crystal_small;
     const static ThemeEntry	bitmaplist_crystal_small[];
 
     // *** Second Theme: KDE's Slick ***
 
-    const static Theme		theme_slick_large;
     const static ThemeEntry	bitmaplist_slick_large[];
-
-    const static Theme		theme_slick_small;
     const static ThemeEntry	bitmaplist_slick_small[];
 
     // *** Third Theme: Gnome's Standard ***
 
-    const static Theme		theme_gnome_large;
     const static ThemeEntry	bitmaplist_gnome_large[];
-
-    const static Theme		theme_gnome_small;
     const static ThemeEntry	bitmaplist_gnome_small[];
 
     // *** List of Built-In Themes ***
 
-    const static Theme*		themelist[];
-    const static int		themelistsize;
+    /// This function is used because the arrays contain translated strings.
+    static const Theme**	GetThemeList(int& size);
 
     struct BitmapInfo
     {

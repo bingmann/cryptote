@@ -5,18 +5,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-20 16:22+0100\n"
-"PO-Revision-Date: 2008-03-20 16:22+0100\n"
+"POT-Creation-Date: 2008-03-20 22:13+0100\n"
+"PO-Revision-Date: 2008-03-20 21:02+0100\n"
 "Last-Translator: Timo Bingmann\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../libenctain/enctain.cpp:81
 msgid "Error saving container: no encryption password set!"
-msgstr "Fehler beim Speichern des Containers: kein Verschlüsselungspasswort gesetzt!"
+msgstr ""
+"Fehler beim Speichern des Containers: kein Verschlüsselungspasswort gesetzt!"
 
 #: ../../libenctain/enctain.cpp:173 ../../libenctain/enctain.cpp:381
 #: ../../libenctain/enctain.cpp:961 ../../libenctain/enctain.cpp:1242
@@ -43,18 +45,22 @@ msgstr "Fehler beim Laden des Containers: ungültige Dateiversion."
 
 #: ../../libenctain/enctain.cpp:299
 msgid "Error loading container: could not unencrypted metadata."
-msgstr "Fehler beim Laden des Containers: konnte die Metadaten nicht entschlüsseln."
+msgstr ""
+"Fehler beim Laden des Containers: konnte die Metadaten nicht entschlüsseln."
 
 #: ../../libenctain/enctain.cpp:321
 msgid "Error loading container: could not parse unencrypted metadata buffer."
-msgstr "Fehler beim Laden des Containers: Metadaten konnten nicht geparsed werden."
+msgstr ""
+"Fehler beim Laden des Containers: Metadaten konnten nicht geparsed werden."
 
 #: ../../libenctain/enctain.cpp:332
 msgid "Error loading container: could not read secondary header."
-msgstr "Fehler beim Laden des Containers: konnte sekundären Dateikopf nicht lesen."
+msgstr ""
+"Fehler beim Laden des Containers: konnte sekundären Dateikopf nicht lesen."
 
 #: ../../libenctain/enctain.cpp:352
-msgid "Error loading container: could not decrypt header. Check the encryption key."
+msgid ""
+"Error loading container: could not decrypt header. Check the encryption key."
 msgstr ""
 "Fehler beim Laden des Containers: konnte Dateikopf nicht entschlüsseln. "
 "Prüfen Sie das Verschlüsselungskennwort."
@@ -74,11 +80,13 @@ msgstr "Fehler beim Dekomprimieren: (%d) %s"
 
 #: ../../libenctain/enctain.cpp:414
 msgid "Error loading container: metadata crc32 does not match."
-msgstr "Fehler beim Laden des Containers: CRC32 stimmt nicht mit Metadaten überein."
+msgstr ""
+"Fehler beim Laden des Containers: CRC32 stimmt nicht mit Metadaten überein."
 
 #: ../../libenctain/enctain.cpp:462
 msgid "Error loading container: could not parse metadata buffer."
-msgstr "Fehler beim Laden des Containers: konnte den Metadatenpuffer nicht parsen."
+msgstr ""
+"Fehler beim Laden des Containers: konnte den Metadatenpuffer nicht parsen."
 
 #: ../../libenctain/enctain.cpp:491
 msgid "Error loading container: could not read encrypted subfile data."
@@ -114,11 +122,13 @@ msgstr "Fehler beim Entschlüsseln der Subdatei: ungültige Dateilänge."
 
 #: ../../libenctain/enctain.cpp:1191
 msgid "Exception during decryption: unknown encryption cipher."
-msgstr "Fehler während der Entschlüsselung: unbekannter Verschlüsselungsalgorithmus."
+msgstr ""
+"Fehler während der Entschlüsselung: unbekannter Verschlüsselungsalgorithmus."
 
 #: ../../libenctain/enctain.cpp:1260 ../../libenctain/enctain.cpp:1336
 msgid "Exception during decompression: reading beyond end of stream"
-msgstr "Fehler beim Dekomprimieren: Versuch jenseits des Stream-Endes zu lesen."
+msgstr ""
+"Fehler beim Dekomprimieren: Versuch jenseits des Stream-Endes zu lesen."
 
 #: ../../libenctain/enctain.cpp:1382
 #, c-format
@@ -130,32 +140,33 @@ msgid "Exception during decompression: unknown decompression algorithm."
 msgstr "Fehler beim Dekomprimieren: unbekannter Dekompressionsalgorithmus."
 
 #: ../../libenctain/enctain.cpp:1396
-msgid "Exception during subfile loading: crc32 mismatch - data possibly corrupt."
+msgid ""
+"Exception during subfile loading: crc32 mismatch - data possibly corrupt."
 msgstr ""
 "Fehler beim Laden der Subdatei: CRC32 stimmt nicht überein - Daten "
 "möglicherweise fehlerhaft."
 
-#: ../cryptote/bmpcat.cpp:645
+#: ../cryptote/bmpcat.cpp:1237
 msgid "Crystal with large toolbar icons"
 msgstr "Crystal mit großen Werkzeugleisten-Icons"
 
-#: ../cryptote/bmpcat.cpp:652
+#: ../cryptote/bmpcat.cpp:1243
 msgid "Crystal with small toolbar icons"
 msgstr "Crystal mit kleinen Werkzeugleisten-Icons"
 
-#: ../cryptote/bmpcat.cpp:945
+#: ../cryptote/bmpcat.cpp:1249
 msgid "Slick with large toolbar icons"
 msgstr "Slick mit großen Werkzeugleisten-Icons"
 
-#: ../cryptote/bmpcat.cpp:952
+#: ../cryptote/bmpcat.cpp:1255
 msgid "Slick with small toolbar icons"
 msgstr "Slick mit kleinen Werkzeugleisten-Icons"
 
-#: ../cryptote/bmpcat.cpp:1267
+#: ../cryptote/bmpcat.cpp:1261
 msgid "Gnome with large toolbar icons"
 msgstr "Gnome mit großen Werkzeugleisten-Icons"
 
-#: ../cryptote/bmpcat.cpp:1274
+#: ../cryptote/bmpcat.cpp:1267
 msgid "Gnome with small toolbar icons"
 msgstr "Gnome mit kleinen Werkzeugleisten-Icons"
 
@@ -399,7 +410,8 @@ msgstr "&Eigenschaften ...\tAlt+Enter"
 
 #: ../cryptote/wcryptote.cpp:871
 msgid "Show metadata properties of the encrypted container."
-msgstr "Zeigt die Metadaten und Eigenschaften des verschlüsselten Containers an."
+msgstr ""
+"Zeigt die Metadaten und Eigenschaften des verschlüsselten Containers an."
 
 #: ../cryptote/wcryptote.cpp:874
 msgid "&Change Password ..."
@@ -451,7 +463,8 @@ msgstr "Subdatei &exportieren ...\tCtrl+E"
 
 #: ../cryptote/wcryptote.cpp:905 ../cryptote/wcryptote.cpp:1845
 msgid "Export current subfile to disk."
-msgstr "Exportiert die aktuelle Subdatei in eine externe unverschlüsselte Datei."
+msgstr ""
+"Exportiert die aktuelle Subdatei in eine externe unverschlüsselte Datei."
 
 #: ../cryptote/wcryptote.cpp:908
 msgid "&Properties ...\tAlt+Shift+Enter"
@@ -542,7 +555,8 @@ msgstr "&Suchen ...\tCtrl+Shift+F"
 
 #: ../cryptote/wcryptote.cpp:957 ../cryptote/wcryptote.cpp:1122
 msgid "Open find dialog to search for a string in the buffer."
-msgstr "Öffnet das Suchen-Dialogfeld, um eine Zeichenfolge in dem Dokument zu finden."
+msgstr ""
+"Öffnet das Suchen-Dialogfeld, um eine Zeichenfolge in dem Dokument zu finden."
 
 #: ../cryptote/wcryptote.cpp:960
 msgid "&Replace ...\tCtrl+H"
@@ -596,7 +610,8 @@ msgid "Insert &Password"
 msgstr "&Password einfügen"
 
 #: ../cryptote/wcryptote.cpp:994 ../cryptote/wcryptote.cpp:1131
-msgid "Insert random password from generator preset or open generator dialog box."
+msgid ""
+"Insert random password from generator preset or open generator dialog box."
 msgstr ""
 "Fügt ein zufällig generiertes Password von einer Passwortgenerator-Vorgabe "
 "ein, oder öffnet das Generator-Dialogfeld."
@@ -765,7 +780,8 @@ msgid "Import File(s)"
 msgstr "Datei(en) importieren"
 
 #: ../cryptote/wcryptote.cpp:1441
-msgid "Text File (*.txt)|*.txt|Any Text File (*.txt;*)|*.txt;*|Any Binary File (*)|*"
+msgid ""
+"Text File (*.txt)|*.txt|Any Text File (*.txt;*)|*.txt;*|Any Binary File (*)|*"
 msgstr ""
 "Textdatei (*.txt)|*.txt|Beliebige Textdatei (*.txt;*)|*.txt;*|Beliebige "
 "Binärdatei (*)|*"
@@ -915,7 +931,8 @@ msgstr "Subdatei(en) &exportieren"
 
 #: ../cryptote/wfilelist.cpp:109
 msgid "Export subfiles from encrypted container to disk."
-msgstr "Exportiert die gewählten Subdateien in externe unverschlüsselte Dateien."
+msgstr ""
+"Exportiert die gewählten Subdateien in externe unverschlüsselte Dateien."
 
 #: ../cryptote/wfilelist.cpp:112
 msgid "&Delete SubFiles"
@@ -973,28 +990,32 @@ msgstr "Existierende Datei überschreiben?"
 
 #: ../cryptote/wfilelist.cpp:266
 #, c-format
-msgid "Exported %u subfile(s) to %s"
-msgstr "Exportierte %u Subdatei(en) nach %s"
+msgid "Exported %u subfile to %s"
+msgid_plural "Exported %u subfiles to %s"
+msgstr[0] "Exportierte %u Subdatei nach %s"
+msgstr[1] "Exportierte %u Subdateien nach %s"
 
-#: ../cryptote/wfilelist.cpp:290
+#: ../cryptote/wfilelist.cpp:291
 #, c-format
-msgid "Going to permanently delete \"%s\". This cannot be undone, are you sure?"
+msgid ""
+"Going to permanently delete \"%s\". This cannot be undone, are you sure?"
 msgstr ""
 "\"%s\" wird permanent gelöscht. Dies kann nicht widerrufen werden. Sind Sie "
 "sicher?"
 
-#: ../cryptote/wfilelist.cpp:293
+#: ../cryptote/wfilelist.cpp:294
 #, c-format
-msgid "Going to permanently delete %u files. This cannot be undone, are you sure?"
+msgid ""
+"Going to permanently delete %u files. This cannot be undone, are you sure?"
 msgstr ""
 "Es werden %u Subdateien permanent gelöscht. Dies kann nicht widerrufen "
 "werden. Sind Sie sicher?"
 
-#: ../cryptote/wfilelist.cpp:296
+#: ../cryptote/wfilelist.cpp:297
 msgid "Delete files?"
 msgstr "Dateien löschen?"
 
-#: ../cryptote/wfilelist.cpp:345
+#: ../cryptote/wfilelist.cpp:346
 msgid "Filename"
 msgstr "Dateiname"
 
@@ -1041,7 +1062,8 @@ msgstr "Verschlüsselung:"
 
 #: ../cryptote/wfileprop.cpp:195
 #, c-format
-msgid "Recompressed and reencrypted %u subfile bytes into %u bytes (old size %u)."
+msgid ""
+"Recompressed and reencrypted %u subfile bytes into %u bytes (old size %u)."
 msgstr ""
 "Es wurden %u Bytes der Subdatei zu %u Bytes (alter Wert %u) rekomprimiert "
 "und neuverschlüsselt."
@@ -1282,7 +1304,8 @@ msgstr "%u Zeichen auf der Zeile markiert."
 
 #: ../cryptote/wtextpage.cpp:432
 #, c-format
-msgid "Compressed %u characters from buffer into %u bytes for encrypted storage."
+msgid ""
+"Compressed %u characters from buffer into %u bytes for encrypted storage."
 msgstr ""
 "Komprimierte die %u Zeichen des Dokuments in %u Bytes für den "
 "verschlüsselten Container."
@@ -1451,7 +1474,8 @@ msgstr ""
 "einandern zu unterscheiden sind."
 
 #: ../pwgen/wpassgen.cpp:186
-msgid "Does not include characters in password which are swapped on some keyboards."
+msgid ""
+"Does not include characters in password which are swapped on some keyboards."
 msgstr ""
 "Deaktiviert z/y, da diese auf dem deutschen und englischen Tastaturlayout "
 "genau getauscht sind."
@@ -1465,7 +1489,8 @@ msgid "Password length desired."
 msgstr "Gewünschte Passwortlänge."
 
 #: ../pwgen/wpassgen.cpp:190
-msgid "Theoretic number of keybits the entropy of the selected pass type generates."
+msgid ""
+"Theoretic number of keybits the entropy of the selected pass type generates."
 msgstr ""
 "Theoretische Anzahl der Schlüsselbits, welche von der Entropie des "
 "Zufallsgenerators mit der ausgewählten Generatoroptionen erzeugt werden."
@@ -1574,4 +1599,3 @@ msgstr ""
 "und Kleinbuchstaben und Zahlen erzeugen. Er zeigt\n"
 "auch die theoretische Komplexität der von der\n"
 "aktuellen Einstellungen erzeugen Passwörter an."
-

@@ -263,7 +263,8 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
 	    filesok++;
 	}
 
-	wmain->UpdateStatusBar(wxString::Format(_("Exported %u subfile(s) to %s"),
+	wmain->UpdateStatusBar(wxString::Format(wxPLURAL("Exported %u subfile to %s",
+							 "Exported %u subfiles to %s", filesok),
 						filesok, dlg.GetPath().c_str()));
     }
 }
