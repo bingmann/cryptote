@@ -420,6 +420,8 @@ void WTextPage::PageSaveData()
 
     wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
 
+    wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
+
     SaveSubFileMetaSettings(subfileid);
 
     editctrl->SetSavePoint();

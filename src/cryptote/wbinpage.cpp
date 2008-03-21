@@ -94,6 +94,8 @@ void WBinaryPage::PageSaveData()
     {
 	wmain->container->SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
 
+	wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
+
 	size_t savelen = wmain->container->GetSubFileStorageSize(subfileid);
 
 	if (savelen != bindata.GetDataLen())

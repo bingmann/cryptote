@@ -216,6 +216,7 @@ AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(BZLIB_CFLAGS) \
 @HAVE_LIBGCRYPT_TRUE@test_sha256_SOURCES = test_sha256.cpp
 @HAVE_LIBGCRYPT_TRUE@test_serpent_ecb_SOURCES = test_serpent_ecb.cpp
 @HAVE_LIBGCRYPT_TRUE@test_serpent_cbc_SOURCES = test_serpent_cbc.cpp
+EXTRA_DIST = 
 all: all-am
 
 .SUFFIXES:

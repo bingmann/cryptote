@@ -63,8 +63,17 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     textSize->SetValue( wxString::Format(_T("%u"), cnt.GetSubFileSize(subfileid)) );
     textCompressed->SetValue( wxString::Format(_T("%u"), cnt.GetSubFileStorageSize(subfileid)) );
 
-    textCTime->SetValue( strSTL2WX(cnt.GetSubFileProperty(subfileid, "CTime")) );
-    textMTime->SetValue( strSTL2WX(cnt.GetSubFileProperty(subfileid, "MTime")) );
+    std::string timestr = cnt.GetSubFileProperty(subfileid, "CTime");
+    if (timestr.size() == sizeof(time_t)) {
+	wxDateTime ctime (*(time_t*)timestr.data());
+	textCTime->SetValue( ctime.Format(_("%c")) );
+    }
+
+    timestr = cnt.GetSubFileProperty(subfileid, "MTime");
+    if (timestr.size() == sizeof(time_t)) {
+	wxDateTime mtime (*(time_t*)timestr.data());
+	textMTime->SetValue( mtime.Format(_("%c")) );
+    }
 
     const std::string& filetype = wmain->container->GetSubFileProperty(subfileid, "Filetype");
     if (filetype == "text") {

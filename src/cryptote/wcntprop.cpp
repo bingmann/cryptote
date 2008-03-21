@@ -53,8 +53,17 @@ WContainerProperties::WContainerProperties(WCryptoTE* parent, int id, const wxSt
 
     textSubFileNum->SetValue( wxString::Format(_T("%u"), wmain->container->CountSubFile()) );
 
-    textCTime->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("CTime")) );
-    textMTime->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("MTime")) );
+    std::string timestr = wmain->container->GetGlobalEncryptedProperty("CTime");
+    if (timestr.size() == sizeof(time_t)) {
+	wxDateTime ctime (*(time_t*)timestr.data());
+	textCTime->SetValue( ctime.Format(_("%c")) );
+    }
+
+    timestr = wmain->container->GetGlobalEncryptedProperty("MTime");
+    if (timestr.size() == sizeof(time_t)) {
+	wxDateTime mtime (*(time_t*)timestr.data());
+	textMTime->SetValue( mtime.Format(_("%c")) );
+    }
 
     unsigned long enccomp;
     if ( strSTL2WX(wmain->container->GetGlobalEncryptedProperty("DefaultCompression")).ToULong(&enccomp) ) {

@@ -335,7 +335,8 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 
 	wxFileName fname (importlist[fi]);
 	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
-	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
+	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
+	container->SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
 
 	std::string filetype = importtype;
 	if (filetype.empty())
@@ -411,6 +412,7 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	    }
 
 	    container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
+	    container->SetSubFileProperty(sfnew, "MTime", strTimeStampNow());
 
 	    importnum++;
 	    importsize += filedata.GetDataLen();
@@ -578,6 +580,11 @@ void WCryptoTE::ContainerNew()
     container_filename.Clear();
     main_modified = false;
 
+    // Set up new container properties
+    container->SetGlobalUnencryptedProperty("Author", strWX2STL(wxGetUserId()));
+
+    container->SetGlobalEncryptedProperty("CTime", strTimeStampNow());
+
     // Set up one empty text file in the container
     unsigned int sf1 = container->AppendSubFile();
 
@@ -586,6 +593,8 @@ void WCryptoTE::ContainerNew()
 
     container->SetSubFileProperty(sf1, "Name", "Untitled.txt");
     container->SetSubFileProperty(sf1, "Filetype", "text");
+    container->SetSubFileProperty(sf1, "Author", strWX2STL(wxGetUserId()));
+    container->SetSubFileProperty(sf1, "CTime", strTimeStampNow());
 
     filelistpane->ResetItems();
 
@@ -808,7 +817,14 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     wxFileOutputStream stream(*fh.get());
     if (!stream.IsOk()) return false;
 
-    container->Save(stream);
+    container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
+
+    if (!container->Save(stream))
+    {
+	UpdateStatusBar(_("Error saving container!"));
+	wxLogError(_("Error saving container!"));
+	return false;
+    }
 
     container_filehandle = fh.release();
     container_filename.Assign(filename);
@@ -1424,6 +1440,8 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
 
     container->SetSubFileProperty(sfnew, "Name", "Untitled.txt");
     container->SetSubFileProperty(sfnew, "Filetype", "text");
+    container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
+    container->SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
 
     filelistpane->ResetItems();
 

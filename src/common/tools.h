@@ -6,6 +6,7 @@
 #include <wx/mstream.h>
 #include <wx/string.h>
 #include <string>
+#include <time.h>
 
 // *** Missing in 2.8, but always added by wxGlade ***
 #ifndef wxTHICK_FRAME
@@ -44,6 +45,13 @@ static inline std::string strWX2STL(const wxString& str) {
 #else
     return std::string(str.GetData(), str.Length());
 #endif
+}
+
+// *** Return the current unix timestamp packed into a std::string ***
+
+static inline std::string strTimeStampNow() {
+    time_t timenow = time(NULL);
+    return std::string((char*)&timenow, sizeof(timenow));
 }
 
 // *** Interpolate a color from the gradient given by support points.
