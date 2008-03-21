@@ -53,12 +53,13 @@ void WFileList::ResetItems()
 
     for(unsigned int fi = 0; fi < cnt.CountSubFile(); ++fi)
     {
-	unsigned long filetype;
-	if ( !strSTL2WX(wmain->container->GetSubFileProperty(fi, "Filetype")).ToULong(&filetype) ) {
-	    filetype = 0;
+	const std::string& filetype = wmain->container->GetSubFileProperty(fi, "Filetype");
+	int filetypeimage = 0;
+	if (filetype == "text") {
+	    filetypeimage = 1;
 	}
 
-	InsertItem(fi, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")), filetype);
+	InsertItem(fi, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")), filetypeimage);
     }
 }
 
@@ -69,12 +70,13 @@ void WFileList::UpdateItem(unsigned int sfid)
 
     SetItemText(sfid, strSTL2WX(cnt.GetSubFileProperty(sfid, "Name")));
 
-    unsigned long filetype;
-    if ( !strSTL2WX(wmain->container->GetSubFileProperty(sfid, "Filetype")).ToULong(&filetype) ) {
-	filetype = 0;
+    const std::string& filetype = wmain->container->GetSubFileProperty(sfid, "Filetype");
+    int filetypeimage = 0;
+    if (filetype == "text") {
+	filetypeimage = 1;
     }
 
-    SetItemImage(sfid, filetype);
+    SetItemImage(sfid, filetypeimage);
 
     wmain->UpdateSubFileCaption(sfid);
 }
@@ -357,7 +359,7 @@ WFileListDropTarget::WFileListDropTarget(class WCryptoTE* _wmain)
 
 bool WFileListDropTarget::OnDropFiles(wxCoord WXUNUSED(x), wxCoord WXUNUSED(y), const wxArrayString& filenames)
 {
-    wmain->ImportSubFiles(filenames, -1, false);
+    wmain->ImportSubFiles(filenames, "", false);
 
     return true;
 }

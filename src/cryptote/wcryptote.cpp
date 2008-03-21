@@ -237,12 +237,9 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	return;
     }
 
-    unsigned long filetype;
-    if ( !strSTL2WX(container->GetSubFileProperty(sfid, "Filetype")).ToULong(&filetype) ) {
-	filetype = 0;
-    }
+    const std::string& filetype = container->GetSubFileProperty(sfid, "Filetype");
 
-    if (filetype == 1)
+    if (filetype == "text")
     {
 	WTextPage* textpage = new WTextPage(this);
 
@@ -319,7 +316,7 @@ static inline bool CheckTextASCII(char c)
     return ok[(unsigned char)(c) & 0xFF];
 }
 
-void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, int importtype, bool openpage)
+void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::string& importtype, bool openpage)
 {
     size_t importsize = 0;
     size_t importnum = 0;
@@ -340,16 +337,16 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, int importtype, 
 	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
 	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserName()));
 
-	int filetype = importtype;
-	if (filetype < 0)
+	std::string filetype = importtype;
+	if (filetype.empty())
 	{
 	    // try to detect file type
 	    if (fname.GetExt().Lower() == _T("txt"))
-		filetype = 1;
+		filetype = "text";
 	    else
-		filetype = 0;
+		filetype = "";
 	}
-	container->SetSubFileProperty(sfnew, "Filetype", strWX2STL(wxString::Format(_T("%u"), filetype)));
+	container->SetSubFileProperty(sfnew, "Filetype", filetype);
 
 	if (openpage)
 	{
@@ -368,7 +365,7 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, int importtype, 
 	    // Load complete file into wxMemoryBuffer and save data via SetSubFileData()
 	    wxMemoryBuffer filedata;
 	    bool istextfile = false;
-	    if (importtype < 0) istextfile = true;
+	    if (importtype.empty()) istextfile = true;
 
 	    {
 		wxFileOffset filesize = filehandle.Length();
@@ -408,9 +405,9 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, int importtype, 
 		statusbar->ProgressStop();
 	    }
 
-	    if (istextfile && importtype < 0)
+	    if (istextfile && importtype.empty())
 	    {
-		container->SetSubFileProperty(sfnew, "Filetype", "1");
+		container->SetSubFileProperty(sfnew, "Filetype", "text");
 	    }
 
 	    container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
@@ -588,7 +585,7 @@ void WCryptoTE::ContainerNew()
     container->SetSubFileCompression(sf1, Enctain::COMPRESSION_ZLIB);
 
     container->SetSubFileProperty(sf1, "Name", "Untitled.txt");
-    container->SetSubFileProperty(sf1, "Filetype", "1");
+    container->SetSubFileProperty(sf1, "Filetype", "text");
 
     filelistpane->ResetItems();
 
@@ -1426,7 +1423,7 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
     container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
 
     container->SetSubFileProperty(sfnew, "Name", "Untitled.txt");
-    container->SetSubFileProperty(sfnew, "Filetype", "1");
+    container->SetSubFileProperty(sfnew, "Filetype", "text");
 
     filelistpane->ResetItems();
 
@@ -1450,12 +1447,9 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
     wxArrayString importlist;
     dlg.GetPaths(importlist);
 
-    unsigned int filetype = 0;
+    std::string filetype;
     if (dlg.GetFilterIndex() == 0 || dlg.GetFilterIndex() == 1) {
-	filetype = 1;
-    }
-    else {
-	filetype = 0;
+	filetype = "text";
     }
 
     ImportSubFiles(importlist, filetype, true);
