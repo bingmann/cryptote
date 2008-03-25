@@ -95,6 +95,7 @@ public:
     void	OnScintillaUpdateUI(class wxStyledTextEvent& event);
     void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
     void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
+    void	OnScintillaZoom(class wxStyledTextEvent& event);
 
     // *** Control ***
 
@@ -120,6 +121,9 @@ public:
     
     void	SetViewLonglineGuide(bool on);
     bool	GetViewLonglineGuide();
+
+    void	SetZoom(int level);
+    int		GetZoom();
 
 protected:
 

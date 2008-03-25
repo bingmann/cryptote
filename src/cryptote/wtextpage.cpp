@@ -629,6 +629,11 @@ void WTextPage::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
     SetModified(true);
 }
 
+void WTextPage::OnScintillaZoom(wxStyledTextEvent& WXUNUSED(event))
+{
+    UpdateStatusBar(wxString::Format(_("Zoom level set to %+d."), editctrl->GetZoom()));
+}
+
 // *** Set/Get View Options ***
 
 void WTextPage::SetViewLineWrap(bool on)
@@ -700,6 +705,16 @@ bool WTextPage::GetViewLonglineGuide()
     return view_longlineguide;
 }
 
+void WTextPage::SetZoom(int level)
+{
+    editctrl->SetZoom(level);
+}
+
+int WTextPage::GetZoom()
+{
+    return editctrl->GetZoom();
+}
+
 BEGIN_EVENT_TABLE(WTextPage, WNotePage)
 
     EVT_CONTEXT_MENU(WTextPage::OnContextMenu)
@@ -722,6 +737,7 @@ BEGIN_EVENT_TABLE(WTextPage, WNotePage)
     EVT_STC_UPDATEUI(myID_EDITCTRL,		WTextPage::OnScintillaUpdateUI)
     EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	WTextPage::OnScintillaSavePointReached)
     EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WTextPage::OnScintillaSavePointLeft)
+    EVT_STC_ZOOM(myID_EDITCTRL,			WTextPage::OnScintillaZoom)
 
 END_EVENT_TABLE()
 

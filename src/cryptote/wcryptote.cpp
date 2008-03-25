@@ -1047,6 +1047,34 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 				  _("Show guide line at &column 80"),
 				  _("Show guide line at column 80 to display over-long lines."));
 
+	menuView->AppendSeparator();
+
+	{
+	    // *** View -> Zoom Level
+
+	    wxMenu *menuZoom = new wxMenu;
+
+	    appendMenuItem(menuZoom, myID_MENU_VIEW_ZOOM_INCREASE,
+			   _("&Increase Zoom +1pt\tCtrl++"),
+			   _("Increase the font zoom size by one point."));
+
+	    appendMenuItem(menuZoom, myID_MENU_VIEW_ZOOM_DECREASE,
+			   _("&Decrease Zoom -1pt\tCtrl+-"),
+			   _("Decrease the font zoom size by one point."));
+
+	    appendMenuItem(menuZoom, myID_MENU_VIEW_ZOOM_RESET,
+			   _("&Reset Zoom\tCtrl+0"),
+			   _("Reset the font zoom size to the normal pointsize."));
+
+	    wxMenuItem* zoomitem
+		= new wxMenuItem(menuEdit, myID_MENU_VIEW_ZOOM,
+				 _("&Zoom Level ..."),
+				 _("Change zoom level of text. Added or substracted to font point size."),
+				 wxITEM_NORMAL, menuZoom);
+	    zoomitem->SetBitmap( BitmapCatalog::GetMenuBitmap(myID_MENU_VIEW_ZOOM) );
+	    menuView->Append(zoomitem);
+	}
+
 	menubar->Append(menuView, _("&View"));
     }
 
@@ -1740,6 +1768,30 @@ void WCryptoTE::OnMenuViewLonglineGuide(wxCommandEvent& event)
     ctext->SetViewLonglineGuide(event.IsChecked());
 }
 
+void WCryptoTE::OnMenuViewZoomIncrease(wxCommandEvent& WXUNUSED(event))
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetZoom( ctext->GetZoom() + 1 );
+}
+
+void WCryptoTE::OnMenuViewZoomDecrease(wxCommandEvent& WXUNUSED(event))
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetZoom( ctext->GetZoom() - 1 );
+}
+
+void WCryptoTE::OnMenuViewZoomReset(wxCommandEvent& WXUNUSED(event))
+{
+    if (!cpage || !cpage->IsKindOf(CLASSINFO(WTextPage))) return;
+    WTextPage* ctext = (WTextPage*)cpage;
+
+    ctext->SetZoom(0);
+}
+
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     WAbout dlg(this);
@@ -2119,6 +2171,10 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_VIEW_ENDOFLINE,	WCryptoTE::OnMenuViewEndOfLine)
     EVT_MENU	(myID_MENU_VIEW_INDENTGUIDE,	WCryptoTE::OnMenuViewIndentGuide)
     EVT_MENU	(myID_MENU_VIEW_LONGLINEGUIDE,	WCryptoTE::OnMenuViewLonglineGuide)
+
+    EVT_MENU	(myID_MENU_VIEW_ZOOM_INCREASE,	WCryptoTE::OnMenuViewZoomIncrease)
+    EVT_MENU	(myID_MENU_VIEW_ZOOM_DECREASE,	WCryptoTE::OnMenuViewZoomDecrease)
+    EVT_MENU	(myID_MENU_VIEW_ZOOM_RESET,	WCryptoTE::OnMenuViewZoomReset)
 
     // Help
     EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)

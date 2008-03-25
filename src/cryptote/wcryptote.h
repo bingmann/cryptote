@@ -47,6 +47,10 @@ enum {
     myID_MENU_VIEW_ENDOFLINE,
     myID_MENU_VIEW_INDENTGUIDE,
     myID_MENU_VIEW_LONGLINEGUIDE,
+    myID_MENU_VIEW_ZOOM,
+    myID_MENU_VIEW_ZOOM_INCREASE,
+    myID_MENU_VIEW_ZOOM_DECREASE,
+    myID_MENU_VIEW_ZOOM_RESET,
 
     myID_MENU_VIEW_BIGICONS,
     myID_MENU_VIEW_LIST,
@@ -224,6 +228,9 @@ public:
     void	OnMenuViewEndOfLine(wxCommandEvent& event);
     void	OnMenuViewIndentGuide(wxCommandEvent& event);
     void	OnMenuViewLonglineGuide(wxCommandEvent& event);
+    void	OnMenuViewZoomIncrease(wxCommandEvent& event);
+    void	OnMenuViewZoomDecrease(wxCommandEvent& event);
+    void	OnMenuViewZoomReset(wxCommandEvent& event);
 
     void	OnMenuHelpAbout(wxCommandEvent& event);
 

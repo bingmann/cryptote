@@ -80,7 +80,11 @@ noinst_HEADERS = \
 	subfile-new.h \
 	subfile-open-tool.h \
 	subfile-open.h \
-	subfile-properties.h
+	subfile-properties.h \
+	view-zoom.h \
+	view-zoom-increase.h \
+	view-zoom-decrease.h \
+	view-zoom-reset.h
 
 EXTRA_DIST = \
 	application-about-tool.png \
@@ -161,4 +165,8 @@ EXTRA_DIST = \
 	subfile-new.png \
 	subfile-open-tool.png \
 	subfile-open.png \
-	subfile-properties.png
+	subfile-properties.png \
+	view-zoom.png \
+	view-zoom-increase.png \
+	view-zoom-decrease.png \
+	view-zoom-reset.png

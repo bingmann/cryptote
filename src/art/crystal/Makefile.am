@@ -78,6 +78,10 @@ noinst_HEADERS = \
 	view-icon-22.h \
 	view-multicolumn-16.h \
 	view-multicolumn-22.h \
+	view-zoom.h \
+	view-zoom-increase.h \
+	view-zoom-decrease.h \
+	view-zoom-reset.h \
 	window-close-16.h \
 	window-close-22.h
 
@@ -157,5 +161,9 @@ EXTRA_DIST = \
 	view-icon-22.png \
 	view-multicolumn-16.png \
 	view-multicolumn-22.png \
+	view-zoom.png \
+	view-zoom-increase.png \
+	view-zoom-decrease.png \
+	view-zoom-reset.png \
 	window-close-16.png \
 	window-close-22.png

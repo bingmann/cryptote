@@ -195,6 +195,11 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { wxID_ADD,				BU_MENU, _T("list-add"), wxNullBitmap },
     { wxID_REMOVE,			BU_MENU, _T("list-remove"), wxNullBitmap },
 
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, _T("view-zoom"), wxNullBitmap },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, _T("view-zoom-increase"), wxNullBitmap },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, _T("view-zoom-decrease"), wxNullBitmap },
+    { myID_MENU_VIEW_ZOOM_RESET,	BU_MENU, _T("view-zoom-reset"), wxNullBitmap },
+
     { wxID_ABOUT,			BU_MENU, _T("application-about"), wxNullBitmap },
 
     { myID_MENU_VIEW_BIGICONS,		BU_MENU, _T("view-bigicons"), wxNullBitmap },
@@ -401,6 +406,10 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/view-icon-22.h"
 #include "art/crystal/view-multicolumn-16.h"
 #include "art/crystal/view-multicolumn-22.h"
+#include "art/crystal/view-zoom.h"
+#include "art/crystal/view-zoom-increase.h"
+#include "art/crystal/view-zoom-decrease.h"
+#include "art/crystal/view-zoom-reset.h"
 #include "art/crystal/window-close-16.h"
 
 #define BUILTIN(x)	x, sizeof(x)
@@ -443,6 +452,11 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
 
     { wxID_ADD,				BU_MENU, BUILTIN(crystal_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(crystal_edit_remove_16_png) },
+
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, BUILTIN(crystal_view_zoom_png) },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, BUILTIN(crystal_view_zoom_increase_png) },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, BUILTIN(crystal_view_zoom_decrease_png) },
+    { myID_MENU_VIEW_ZOOM_RESET,	BU_MENU, BUILTIN(crystal_view_zoom_reset_png) },
 
     { wxID_ABOUT,			BU_MENU, BUILTIN(crystal_application_info_16_png) },
 
@@ -559,6 +573,11 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 
     { wxID_ADD,				BU_MENU, BUILTIN(crystal_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(crystal_edit_remove_16_png) },
+
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, BUILTIN(crystal_view_zoom_png) },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, BUILTIN(crystal_view_zoom_increase_png) },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, BUILTIN(crystal_view_zoom_decrease_png) },
+    { myID_MENU_VIEW_ZOOM_RESET,	BU_MENU, BUILTIN(crystal_view_zoom_reset_png) },
 
     { wxID_ABOUT,			BU_MENU, BUILTIN(crystal_application_info_16_png) },
 
@@ -701,6 +720,9 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 #include "art/slick/view-icon-22.h"
 #include "art/slick/view-multicolumn-16.h"
 #include "art/slick/view-multicolumn-22.h"
+#include "art/slick/view-zoom.h"
+#include "art/slick/view-zoom-increase.h"
+#include "art/slick/view-zoom-decrease.h"
 #include "art/slick/window-close-16.h"
 
 const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
@@ -739,6 +761,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
 
     { wxID_ADD,				BU_MENU, BUILTIN(slick_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(slick_edit_remove_16_png) },
+
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, BUILTIN(slick_view_zoom_png) },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, BUILTIN(slick_view_zoom_increase_png) },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, BUILTIN(slick_view_zoom_decrease_png) },
 
     { wxID_ABOUT,			BU_MENU, BUILTIN(slick_application_info_16_png) },
 
@@ -847,6 +873,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 
     { wxID_ADD,				BU_MENU, BUILTIN(slick_edit_add_16_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(slick_edit_remove_16_png) },
+
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, BUILTIN(slick_view_zoom_png) },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, BUILTIN(slick_view_zoom_increase_png) },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, BUILTIN(slick_view_zoom_decrease_png) },
 
     { wxID_ABOUT,			BU_MENU, BUILTIN(slick_application_info_16_png) },
 
@@ -996,6 +1026,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 #include "art/gnome/subfile-open-tool.h"
 #include "art/gnome/subfile-open.h"
 #include "art/gnome/subfile-properties.h"
+#include "art/gnome/view-zoom.h"
+#include "art/gnome/view-zoom-increase.h"
+#include "art/gnome/view-zoom-decrease.h"
+#include "art/gnome/view-zoom-reset.h"
 
 const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
 {
@@ -1036,6 +1070,11 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
 
     { wxID_ADD,				BU_MENU, BUILTIN(gnome_list_add_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(gnome_list_remove_png) },
+
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, BUILTIN(gnome_view_zoom_png) },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, BUILTIN(gnome_view_zoom_increase_png) },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, BUILTIN(gnome_view_zoom_decrease_png) },
+    { myID_MENU_VIEW_ZOOM_RESET,	BU_MENU, BUILTIN(gnome_view_zoom_reset_png) },
 
     { wxID_ABOUT,			BU_MENU, BUILTIN(gnome_application_about_png) },
 
@@ -1153,6 +1192,11 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
 
     { wxID_ADD,				BU_MENU, BUILTIN(gnome_list_add_png) },
     { wxID_REMOVE,			BU_MENU, BUILTIN(gnome_list_remove_png) },
+
+    { myID_MENU_VIEW_ZOOM,		BU_MENU, BUILTIN(gnome_view_zoom_png) },
+    { myID_MENU_VIEW_ZOOM_INCREASE,	BU_MENU, BUILTIN(gnome_view_zoom_increase_png) },
+    { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, BUILTIN(gnome_view_zoom_decrease_png) },
+    { myID_MENU_VIEW_ZOOM_RESET,	BU_MENU, BUILTIN(gnome_view_zoom_reset_png) },
 
     { wxID_ABOUT,			BU_MENU, BUILTIN(gnome_application_about_png) },
 
