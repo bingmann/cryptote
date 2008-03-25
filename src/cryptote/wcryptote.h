@@ -241,6 +241,10 @@ public:
     void	OnNotebookPageClose(wxAuiNotebookEvent& event);
     void	OnNotebookPageRightDown(wxAuiNotebookEvent& event);
 
+    /// Update the window's menus and toolbars when a notebook page is
+    /// activated.
+    void	UpdateNotebookPageChanged(int pageid, WNotePage* page);
+
     // Quick-Find Bar
 
     void	OnTextQuickFind(wxCommandEvent& event);
@@ -302,6 +306,9 @@ public:
 
     /// Currently selected notebook page (or NULL).
     class WNotePage*	cpage;
+
+    /// Index in notebook of the current page
+    int			cpageid;
 
     /// Quick-Find Bar activated with Ctrl+F
     class WQuickFindBar* quickfindbar;

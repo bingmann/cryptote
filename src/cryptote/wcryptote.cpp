@@ -26,6 +26,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
 {
     cpage = NULL;
+    cpageid = -1;
     container = NULL;
     container_filehandle = NULL;
     main_modified = false;
@@ -231,9 +232,12 @@ WNotePage* WCryptoTE::FindSubFilePage(unsigned int sfid)
 
 void WCryptoTE::OpenSubFile(unsigned int sfid)
 {
-    if (FindSubFilePage(sfid) != NULL)
+    WNotePage* findpage = FindSubFilePage(sfid);
+    if (findpage != NULL)
     {
-	// subfile with specified id is already open.
+	// subfile with specified id is already open. change notebook tab to
+	// the selected subfile.
+	auinotebook->SetSelection( auinotebook->GetPageIndex(findpage) );
 	return;
     }
 
@@ -251,6 +255,8 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	else
 	{
 	    auinotebook->AddPage(textpage, textpage->GetCaption(), true);
+
+	    UpdateNotebookPageChanged(auinotebook->GetPageIndex(textpage), textpage);
 	}
     }
     else
@@ -265,6 +271,8 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	else
 	{
 	    auinotebook->AddPage(binarypage, binarypage->GetCaption(), true);
+
+	    UpdateNotebookPageChanged(auinotebook->GetPageIndex(binarypage), binarypage);
 	}
     }
 }
@@ -485,14 +493,7 @@ void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
 	if (auinotebook->GetPageCount() == 0)
 	{
 	    // will be empty after the last page is closed
-	    cpage = NULL;
-
-	    // always show the file list pane if no file is open
-	    ShowFilelistPane(true);
-
-	    menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, false);
-	    menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
-	    menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, false);
+	    UpdateNotebookPageChanged(-1, NULL);
 	}
     }
 
@@ -574,6 +575,7 @@ void WCryptoTE::ContainerNew()
 	w->Destroy();
     }
     cpage = NULL;
+    cpageid = -1;
 
     container = new Enctain::Container();
     container->SetProgressIndicator(statusbar);
@@ -685,6 +687,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 	w->Destroy();
     }
     cpage = NULL;
+    cpageid = -1;
 
     filelistpane->ResetItems();
 
@@ -1531,14 +1534,7 @@ void WCryptoTE::OnMenuSubFileClose(wxCommandEvent& WXUNUSED(event))
     if (auinotebook->GetPageCount() == 0)
     {
 	// will be empty after the last page is closed
-	cpage = NULL;
-
-	// always show the file list pane if no file is open
-	ShowFilelistPane(true);
-
-	menubar_active->Enable(myID_MENU_SUBFILE_EXPORT, false);
-	menubar_active->Enable(myID_MENU_SUBFILE_PROPERTIES, false);
-	menubar_active->Enable(myID_MENU_SUBFILE_CLOSE, false);
+	UpdateNotebookPageChanged(-1, NULL);
     }
 }
 
@@ -1785,22 +1781,58 @@ void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& event)
 
 void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 {
-    // printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
+    printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
 
     WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
 
     if (sel)
     {
-	if (cpage) cpage->PageBlurred();
+	UpdateNotebookPageChanged(event.GetSelection(), sel);
+    }
+    else
+    {
+	wxLogError(_T("Invalid notebook page activated."));
+    }
+}
 
+void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
+{
+    printf("Debug: OnNotebookPageClose() event\n");
+
+    WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
+
+    if (sel)
+    {
 	cpage = sel;
+	cpageid = -1;
+	cpage->PageClosed();
+    }
+
+    if (auinotebook->GetPageCount() == 1)
+    {
+	// will be empty after the last page is closed
+	UpdateNotebookPageChanged(-1, NULL);
+    }
+}
+
+void WCryptoTE::UpdateNotebookPageChanged(int pageid, WNotePage* page)
+{
+    if (cpageid == pageid) return;
+
+    if (cpage) cpage->PageBlurred();
+
+    cpage = page;
+    cpageid = pageid;
+
+    if (cpage)
+    {
 	cpage->PageFocused();
 
-	if (sel->IsKindOf(CLASSINFO(WTextPage)))
+	if (cpage->IsKindOf(CLASSINFO(WTextPage)))
 	{
 	    menubar_active = menubar_textpage;
 	}
-	else if (sel->IsKindOf(CLASSINFO(WBinaryPage)))
+	else if (cpage->IsKindOf(CLASSINFO(WBinaryPage)))
 	{
 	    menubar_active = menubar_binarypage;
 	}
@@ -1818,27 +1850,6 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
     }
     else
     {
-	wxLogError(_T("Invalid notebook page activated."));
-    }
-}
-
-void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
-{
-    // printf("Debug: OnNotebookPageClose() event\n");
-
-    WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
-
-    if (sel)
-    {
-	cpage = sel;
-	cpage->PageClosed();
-    }
-
-    if (auinotebook->GetPageCount() == 1)
-    {
-	// will be empty after the last page is closed
-	cpage = NULL;
-
 	menubar_active = menubar_plain;
 	SetMenuBar(menubar_active);
 	CreateToolBar();
