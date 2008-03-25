@@ -220,9 +220,9 @@ noinst_HEADERS = \
 	go-next-22.h \
 	go-up-16.h \
 	go-up-22.h \
-	messagebox-error-48.h \
-	messagebox-info-48.h \
-	messagebox-warning-48.h \
+	messagebox-error.h \
+	messagebox-information.h \
+	messagebox-warning.h \
 	snapshot.h \
 	view-choose-16.h \
 	view-choose-22.h \
@@ -294,9 +294,9 @@ EXTRA_DIST = \
 	go-next-22.png \
 	go-up-16.png \
 	go-up-22.png \
-	messagebox-error-48.png \
-	messagebox-info-48.png \
-	messagebox-warning-48.png \
+	messagebox-error.png \
+	messagebox-information.png \
+	messagebox-warning.png \
 	snapshot.png \
 	snapshot.xcf \
 	view-choose-16.png \

@@ -708,9 +708,9 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 #include "art/slick/go-down-16.h"
 #include "art/slick/go-next-16.h"
 #include "art/slick/go-up-16.h"
-#include "art/slick/messagebox-error-48.h"
-#include "art/slick/messagebox-info-48.h"
-#include "art/slick/messagebox-warning-48.h"
+#include "art/slick/messagebox-error.h"
+#include "art/slick/messagebox-information.h"
+#include "art/slick/messagebox-warning.h"
 #include "art/slick/snapshot.h"
 #include "art/slick/view-choose-16.h"
 #include "art/slick/view-choose-22.h"
@@ -820,9 +820,9 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
 
     // Message Dialogs
 
-    { wxICON_ERROR,			BU_GENERAL, BUILTIN(slick_messagebox_error_48_png) },
-    { wxICON_WARNING,			BU_GENERAL, BUILTIN(slick_messagebox_warning_48_png) },
-    { wxICON_INFORMATION,		BU_GENERAL, BUILTIN(slick_messagebox_info_48_png) },
+    { wxICON_ERROR,			BU_GENERAL, BUILTIN(slick_messagebox_error_png) },
+    { wxICON_WARNING,			BU_GENERAL, BUILTIN(slick_messagebox_warning_png) },
+    { wxICON_INFORMATION,		BU_GENERAL, BUILTIN(slick_messagebox_information_png) },
 
     // FileType Icons
 
@@ -936,9 +936,9 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 
     // Message Dialogs
 
-    { wxICON_ERROR,			BU_GENERAL, BUILTIN(slick_messagebox_error_48_png) },
-    { wxICON_WARNING,			BU_GENERAL, BUILTIN(slick_messagebox_warning_48_png) },
-    { wxICON_INFORMATION,		BU_GENERAL, BUILTIN(slick_messagebox_info_48_png) },
+    { wxICON_ERROR,			BU_GENERAL, BUILTIN(slick_messagebox_error_png) },
+    { wxICON_WARNING,			BU_GENERAL, BUILTIN(slick_messagebox_warning_png) },
+    { wxICON_INFORMATION,		BU_GENERAL, BUILTIN(slick_messagebox_information_png) },
 
     // FileType Icons
 
