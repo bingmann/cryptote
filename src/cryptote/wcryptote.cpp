@@ -1781,7 +1781,7 @@ void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& event)
 
 void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 {
-    printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
+    // printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
 
     WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
 
@@ -1797,7 +1797,7 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 
 void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 {
-    printf("Debug: OnNotebookPageClose() event\n");
+    // printf("Debug: OnNotebookPageClose() event\n");
 
     WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
 
