@@ -593,7 +593,7 @@ void WCryptoTE::ContainerNew()
     container->SetSubFileEncryption(sf1, Enctain::ENCRYPTION_SERPENT256);
     container->SetSubFileCompression(sf1, Enctain::COMPRESSION_ZLIB);
 
-    container->SetSubFileProperty(sf1, "Name", "Untitled.txt");
+    container->SetSubFileProperty(sf1, "Name", strWX2STL(_("Untitled.txt")));
     container->SetSubFileProperty(sf1, "Filetype", "text");
     container->SetSubFileProperty(sf1, "Author", strWX2STL(wxGetUserId()));
     container->SetSubFileProperty(sf1, "CTime", strTimeStampNow());
@@ -1393,6 +1393,8 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
     {
 	LoadPreferences();
 
+	Freeze();
+
 	if (prefs_bitmaptheme != BitmapCatalog::GetSingleton()->GetCurrentTheme())
 	{
 	    // reload all images
@@ -1450,6 +1452,8 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
 		container_filehandle = NULL;
 	    }
 	}
+
+	Thaw();
     }
 }
 
@@ -1469,7 +1473,7 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
     container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
     container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
 
-    container->SetSubFileProperty(sfnew, "Name", "Untitled.txt");
+    container->SetSubFileProperty(sfnew, "Name", strWX2STL(_("Untitled.txt")));
     container->SetSubFileProperty(sfnew, "Filetype", "text");
     container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
     container->SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
@@ -1876,6 +1880,8 @@ void WCryptoTE::UpdateNotebookPageChanged(int pageid, WNotePage* page)
     cpage = page;
     cpageid = pageid;
 
+    Freeze();
+
     if (cpage)
     {
 	cpage->PageFocused();
@@ -1913,6 +1919,8 @@ void WCryptoTE::UpdateNotebookPageChanged(int pageid, WNotePage* page)
 	// always show the file list pane if no file is open
 	ShowFilelistPane(true);
     }
+
+    Thaw();
 }
 
 void WCryptoTE::OnNotebookPageRightDown(wxAuiNotebookEvent& WXUNUSED(event))
