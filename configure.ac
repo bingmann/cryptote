@@ -214,5 +214,6 @@ AC_CONFIG_FILES([Makefile
 		 src/pwtutor/Makefile
 		 src/cryptote/Makefile
 		 src/locale/Makefile
-		 src/locale/wxstd/Makefile])
+		 src/locale/wxstd/Makefile
+		 desktop/Makefile])
 AC_OUTPUT

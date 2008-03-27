@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Icon=cryptote
+Exec=cryptote %f
+Name=CryptoTE
+GenericName=Encrypting Text Editor
+GenericName[de]=Verschlüsselnder Text Editor
+Comment=Text Editor with integrated cryptography
+Comment[de]=Text Editor mit eingebauter Verschlüsselung
+MimeType=application/x-cryptote-container;
+StartupNotify=true
+Categories=TextEditor;Utility;

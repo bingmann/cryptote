@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-encrypted-container">
+    <sub-class-of type="application/octet-stream" />
+    <comment>Encrypted Container</comment>
+    <comment xml:lang="de">Verschlüsselter Container</comment>
+    <magic priority="50">
+      <match type="string" value="CryptoTE" offset="0" />
+    </magic>
+    <glob pattern="*.ect"/>
+  </mime-type>
+</mime-info>

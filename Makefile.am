@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = libstc libenctain src
+SUBDIRS = libstc libenctain src desktop
 
 EXTRA_DIST = cryptote-win32.iss
 

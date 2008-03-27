@@ -5807,7 +5807,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile libenctain/speedtest/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile src/locale/Makefile src/locale/wxstd/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile libenctain/speedtest/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile src/locale/Makefile src/locale/wxstd/Makefile desktop/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6445,6 +6445,7 @@ do
     "src/cryptote/Makefile") CONFIG_FILES="$CONFIG_FILES src/cryptote/Makefile" ;;
     "src/locale/Makefile") CONFIG_FILES="$CONFIG_FILES src/locale/Makefile" ;;
     "src/locale/wxstd/Makefile") CONFIG_FILES="$CONFIG_FILES src/locale/wxstd/Makefile" ;;
+    "desktop/Makefile") CONFIG_FILES="$CONFIG_FILES desktop/Makefile" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

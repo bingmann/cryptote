@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=MimeType
+MimeType=application/x-cryptote-container
+Name=Encrypted Container
+Comment=Encrypted Container
+Comment[de]=Verschlüsselter Container
+Icon=cryptote_container
+Patterns=*.ect;*.ECT;
