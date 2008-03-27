@@ -337,9 +337,17 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	// Create new file in the container
 	unsigned int sfnew = container->AppendSubFile();
     
-	// TODO: use defaults from global properties.
-	container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
-	container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
+	// use defaults from global properties
+	long defcomp = 0;
+	if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
+	    defcomp = Enctain::COMPRESSION_ZLIB;
+
+	long defencr = 0;
+	if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
+	    defencr = Enctain::ENCRYPTION_SERPENT256;
+
+	container->SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
+	container->SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
 
 	wxFileName fname (importlist[fi]);
 	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
@@ -590,13 +598,22 @@ void WCryptoTE::ContainerNew()
     // Set up one empty text file in the container
     unsigned int sf1 = container->AppendSubFile();
 
-    container->SetSubFileEncryption(sf1, Enctain::ENCRYPTION_SERPENT256);
-    container->SetSubFileCompression(sf1, Enctain::COMPRESSION_ZLIB);
-
     container->SetSubFileProperty(sf1, "Name", strWX2STL(_("Untitled.txt")));
     container->SetSubFileProperty(sf1, "Filetype", "text");
     container->SetSubFileProperty(sf1, "Author", strWX2STL(wxGetUserId()));
     container->SetSubFileProperty(sf1, "CTime", strTimeStampNow());
+
+    // use defaults from global properties
+    long defcomp = 0;
+    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
+	defcomp = Enctain::COMPRESSION_ZLIB;
+
+    long defencr = 0;
+    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
+	defencr = Enctain::ENCRYPTION_SERPENT256;
+
+    container->SetSubFileCompression(sf1, (Enctain::compression_t)defcomp);
+    container->SetSubFileEncryption(sf1, (Enctain::encryption_t)defencr);
 
     filelistpane->ResetItems();
 
@@ -837,6 +854,8 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
     UpdateTitle();
     UpdateModified();
+
+    if (cpage) cpage->SetFocus();
 
     return true;
 }
@@ -1469,14 +1488,23 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
     // Set up an empty text file in the container
     unsigned int sfnew = container->AppendSubFile();
     
-    // TODO: use defaults from global properties.
-    container->SetSubFileEncryption(sfnew, Enctain::ENCRYPTION_SERPENT256);
-    container->SetSubFileCompression(sfnew, Enctain::COMPRESSION_ZLIB);
-
     container->SetSubFileProperty(sfnew, "Name", strWX2STL(_("Untitled.txt")));
     container->SetSubFileProperty(sfnew, "Filetype", "text");
     container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
     container->SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
+
+    // use defaults from global properties
+
+    long defcomp = 0;
+    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
+	defcomp = Enctain::COMPRESSION_ZLIB;
+
+    long defencr = 0;
+    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
+	defencr = Enctain::ENCRYPTION_SERPENT256;
+
+    container->SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
+    container->SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
 
     filelistpane->ResetItems();
 
@@ -1859,9 +1887,7 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 
     if (sel)
     {
-	cpage = sel;
-	cpageid = -1;
-	cpage->PageClosed();
+	sel->PageClosed();
     }
 
     if (auinotebook->GetPageCount() == 1)
