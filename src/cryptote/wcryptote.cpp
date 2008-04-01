@@ -706,6 +706,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     cpage = NULL;
     cpageid = -1;
 
+    filelistpane->LoadProperties();
     filelistpane->ResetItems();
 
     if (container->CountSubFile() == 1)
@@ -838,6 +839,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     if (!stream.IsOk()) return false;
 
     container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
+    filelistpane->SaveProperties();
 
     if (!container->Save(stream))
     {

@@ -1,6 +1,7 @@
 // $Id$
 
 #include "wbinpage.h"
+#include "wfilelist.h"
 #include "common/tools.h"
 
 #include <wx/file.h>
@@ -114,6 +115,8 @@ void WBinaryPage::PageSaveData()
 	}
 
 	wmain->SetModified();
+	wmain->filelistpane->UpdateItem(subfileid);
+
 	needsave = false;
     }
 }

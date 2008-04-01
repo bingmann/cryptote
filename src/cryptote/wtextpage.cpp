@@ -1,6 +1,7 @@
 // $Id$
 
 #include "wtextpage.h"
+#include "wfilelist.h"
 #include "bmpcat.h"
 #include "common/tools.h"
 
@@ -445,6 +446,8 @@ void WTextPage::PageSaveData()
 
     // Page Modified Flag is automatically cleared though SavePoint callbacks
     wmain->SetModified();
+
+    wmain->filelistpane->UpdateItem(subfileid);
 }
 
 void WTextPage::PageClosed()

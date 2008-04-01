@@ -86,6 +86,8 @@ enum {
     // *** Variable Menu Item Ranges
 
     myID_MENU_EDIT_INSERT_PASSWORD_FIRST = wxID_HIGHEST + 1000,
+
+    myID_MENU_SHOW_COLUMN0 = wxID_HIGHEST + 2000,
 };
 
 class WCryptoTE : public wxFrame
