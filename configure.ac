@@ -42,7 +42,7 @@ AC_CHECK_PROG(MSGFMT, msgfmt, msgfmt)
 AC_CHECK_PROG(MSGMERGE, msgmerge, msgmerge)
 AC_CHECK_PROG(XGETTEXT, xgettext, xgettext)
 
-AM_CONDITIONAL(GOT_GETTEXT, test "x$MSGFMT" != "xno" -a "x$MSGMERGE" != "xno" -a "$xXGETTEXT" != "xno")
+AM_CONDITIONAL(GOT_GETTEXT, test "$MSGFMT" != "" -a "$MSGMERGE" != "" -a "$XGETTEXT" != "")
 
 # Check whether to enable gcov coverage flags and macros
 

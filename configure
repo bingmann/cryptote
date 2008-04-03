@@ -4160,7 +4160,7 @@ fi
 
 
 
- if test "x$MSGFMT" != "xno" -a "x$MSGMERGE" != "xno" -a "$xXGETTEXT" != "xno"; then
+ if test "$MSGFMT" != "" -a "$MSGMERGE" != "" -a "$XGETTEXT" != ""; then
   GOT_GETTEXT_TRUE=
   GOT_GETTEXT_FALSE='#'
 else
