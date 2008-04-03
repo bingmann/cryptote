@@ -84,6 +84,10 @@ LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+
+# the programs we use (TODO: use configure to detect them)
+MSGFMT = msgfmt --verbose
+MSGMERGE = @MSGMERGE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -108,6 +112,7 @@ WX_LIBS = @WX_LIBS@
 WX_LIBS_STATIC = @WX_LIBS_STATIC@
 WX_RESCOMP = @WX_RESCOMP@
 WX_VERSION = @WX_VERSION@
+XGETTEXT = @XGETTEXT@
 ZLIB_CFLAGS = @ZLIB_CFLAGS@
 ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
@@ -161,9 +166,6 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LINGUAS = de
-
-# the programs we use (TODO: use configure to detect them)
-MSGFMT = msgfmt --verbose
 EXTRA_DIST = \
 	de.po de.mo de.h
 

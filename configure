@@ -703,6 +703,11 @@ CXXDEPMODE
 am__fastdepCXX_TRUE
 am__fastdepCXX_FALSE
 RANLIB
+MSGFMT
+MSGMERGE
+XGETTEXT
+GOT_GETTEXT_TRUE
+GOT_GETTEXT_FALSE
 GCOV_TRUE
 GCOV_FALSE
 WX_CONFIG_PATH
@@ -4041,6 +4046,129 @@ else
 fi
 
 
+# Check for gettext programs
+
+# Extract the first word of "msgfmt", so it can be a program name with args.
+set dummy msgfmt; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_MSGFMT+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$MSGFMT"; then
+  ac_cv_prog_MSGFMT="$MSGFMT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_MSGFMT="msgfmt"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+MSGFMT=$ac_cv_prog_MSGFMT
+if test -n "$MSGFMT"; then
+  { echo "$as_me:$LINENO: result: $MSGFMT" >&5
+echo "${ECHO_T}$MSGFMT" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+# Extract the first word of "msgmerge", so it can be a program name with args.
+set dummy msgmerge; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_MSGMERGE+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$MSGMERGE"; then
+  ac_cv_prog_MSGMERGE="$MSGMERGE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_MSGMERGE="msgmerge"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+MSGMERGE=$ac_cv_prog_MSGMERGE
+if test -n "$MSGMERGE"; then
+  { echo "$as_me:$LINENO: result: $MSGMERGE" >&5
+echo "${ECHO_T}$MSGMERGE" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+# Extract the first word of "xgettext", so it can be a program name with args.
+set dummy xgettext; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_XGETTEXT+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$XGETTEXT"; then
+  ac_cv_prog_XGETTEXT="$XGETTEXT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_XGETTEXT="xgettext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+XGETTEXT=$ac_cv_prog_XGETTEXT
+if test -n "$XGETTEXT"; then
+  { echo "$as_me:$LINENO: result: $XGETTEXT" >&5
+echo "${ECHO_T}$XGETTEXT" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+
+ if test "x$MSGFMT" != "xno" -a "x$MSGMERGE" != "xno" -a "$xXGETTEXT" != "xno"; then
+  GOT_GETTEXT_TRUE=
+  GOT_GETTEXT_FALSE='#'
+else
+  GOT_GETTEXT_TRUE='#'
+  GOT_GETTEXT_FALSE=
+fi
+
+
 # Check whether to enable gcov coverage flags and macros
 
 # Check whether --enable-gcov was given.
@@ -4057,7 +4185,7 @@ else
 fi
 
 
- if test x"$gcov" = "xtrue"; then
+ if test "x$gcov" = "xtrue"; then
   GCOV_TRUE=
   GCOV_FALSE='#'
 else
@@ -4066,7 +4194,7 @@ else
 fi
 
 
-if test x"$gcov" = "xtrue"; then
+if test "x$gcov" = "xtrue"; then
     CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
     CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
 fi
@@ -5956,6 +6084,13 @@ echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${GOT_GETTEXT_TRUE}" && test -z "${GOT_GETTEXT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GOT_GETTEXT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GOT_GETTEXT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${GCOV_TRUE}" && test -z "${GCOV_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"GCOV\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -6597,13 +6732,13 @@ CXXDEPMODE!$CXXDEPMODE$ac_delim
 am__fastdepCXX_TRUE!$am__fastdepCXX_TRUE$ac_delim
 am__fastdepCXX_FALSE!$am__fastdepCXX_FALSE$ac_delim
 RANLIB!$RANLIB$ac_delim
+MSGFMT!$MSGFMT$ac_delim
+MSGMERGE!$MSGMERGE$ac_delim
+XGETTEXT!$XGETTEXT$ac_delim
+GOT_GETTEXT_TRUE!$GOT_GETTEXT_TRUE$ac_delim
+GOT_GETTEXT_FALSE!$GOT_GETTEXT_FALSE$ac_delim
 GCOV_TRUE!$GCOV_TRUE$ac_delim
 GCOV_FALSE!$GCOV_FALSE$ac_delim
-WX_CONFIG_PATH!$WX_CONFIG_PATH$ac_delim
-WX_CPPFLAGS!$WX_CPPFLAGS$ac_delim
-WX_CFLAGS!$WX_CFLAGS$ac_delim
-WX_CXXFLAGS!$WX_CXXFLAGS$ac_delim
-WX_CFLAGS_ONLY!$WX_CFLAGS_ONLY$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -6645,6 +6780,11 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+WX_CONFIG_PATH!$WX_CONFIG_PATH$ac_delim
+WX_CPPFLAGS!$WX_CPPFLAGS$ac_delim
+WX_CFLAGS!$WX_CFLAGS$ac_delim
+WX_CXXFLAGS!$WX_CXXFLAGS$ac_delim
+WX_CFLAGS_ONLY!$WX_CFLAGS_ONLY$ac_delim
 WX_CXXFLAGS_ONLY!$WX_CXXFLAGS_ONLY$ac_delim
 WX_LIBS!$WX_LIBS$ac_delim
 WX_LIBS_STATIC!$WX_LIBS_STATIC$ac_delim
@@ -6669,7 +6809,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 22; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 27; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

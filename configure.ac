@@ -36,6 +36,14 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 
+# Check for gettext programs
+
+AC_CHECK_PROG(MSGFMT, msgfmt, msgfmt)
+AC_CHECK_PROG(MSGMERGE, msgmerge, msgmerge)
+AC_CHECK_PROG(XGETTEXT, xgettext, xgettext)
+
+AM_CONDITIONAL(GOT_GETTEXT, test "x$MSGFMT" != "xno" -a "x$MSGMERGE" != "xno" -a "$xXGETTEXT" != "xno")
+
 # Check whether to enable gcov coverage flags and macros
 
 AC_ARG_ENABLE(gcov,
@@ -48,9 +56,9 @@ AC_ARG_ENABLE(gcov,
          esac],
         [gcov=false])
 
-AM_CONDITIONAL(GCOV, test x"$gcov" = "xtrue")
+AM_CONDITIONAL(GCOV, test "x$gcov" = "xtrue")
 
-if test x"$gcov" = "xtrue"; then
+if test "x$gcov" = "xtrue"; then
     CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
     CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
 fi
