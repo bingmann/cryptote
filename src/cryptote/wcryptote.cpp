@@ -138,6 +138,9 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     // "commit" all changes made to wxAuiManager
     auimgr.Update();
 
+    quickfindbar_visible = false;
+    quickgotobar_visible = false;
+
     // Create and start idle-timer check function
     idlechecktimer.SetOwner(this, myID_TIMER_IDLECHECK);
     idlechecktimer.Start(1000, wxTIMER_CONTINUOUS);
@@ -549,6 +552,25 @@ void WCryptoTE::ShowFilelistPane(bool on)
     }
 }
 
+void WCryptoTE::HideQuickBars()
+{
+    // Hide Quick-Find Bar
+    if (quickfindbar_visible) {
+	auimgr.GetPane(quickfindbar).Hide();
+	auimgr.Update();
+
+	quickfindbar_visible = false;
+    }
+
+    // Hide Quick-Goto Bar
+    if (quickgotobar_visible) {
+	auimgr.GetPane(quickgotobar).Hide();
+	auimgr.Update();
+
+	quickgotobar_visible = false;
+    }
+}
+
 void WCryptoTE::UpdateTitle()
 {
     wxString title;
@@ -574,6 +596,8 @@ void WCryptoTE::ContainerNew()
 	delete container_filehandle;
 	container_filehandle = NULL;
     }
+
+    HideQuickBars();
 
     // close all notebook pages
     while( auinotebook->GetPageCount() > 0 )
@@ -695,6 +719,8 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 
     container_filename.Assign(filename);
     main_modified = false;
+
+    HideQuickBars();
 
     // close all notebook pages
     while( auinotebook->GetPageCount() > 0 )
@@ -1834,21 +1860,7 @@ void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnAccelEscape(wxCommandEvent& WXUNUSED(event))
 {
-    // Hide Quick-Find Bar
-    if (quickfindbar_visible) {
-	auimgr.GetPane(quickfindbar).Hide();
-	auimgr.Update();
-
-	quickfindbar_visible = false;
-    }
-
-    // Hide Quick-Goto Bar
-    if (quickgotobar_visible) {
-	auimgr.GetPane(quickgotobar).Hide();
-	auimgr.Update();
-
-	quickgotobar_visible = false;
-    }
+    HideQuickBars();
 
     if (cpage) cpage->SetFocus();
 }

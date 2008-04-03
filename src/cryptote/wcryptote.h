@@ -141,6 +141,9 @@ public:
     /// Toggle the filelist pane on or off and set the corresponding button
     void	ShowFilelistPane(bool on);
 
+    /// Hide Quick-Find and Quick-Goto Bars
+    void	HideQuickBars();
+
     /// Discard any current container and set up a default new one with one
     /// activated text file.
     void	ContainerNew();
