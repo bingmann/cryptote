@@ -72,22 +72,23 @@ am_libstc_a_OBJECTS = AutoComplete.$(OBJEXT) CallTip.$(OBJEXT) \
 	LexFortran.$(OBJEXT) LexGAP.$(OBJEXT) LexGui4Cli.$(OBJEXT) \
 	LexHTML.$(OBJEXT) LexHaskell.$(OBJEXT) LexInno.$(OBJEXT) \
 	LexKix.$(OBJEXT) LexLisp.$(OBJEXT) LexLout.$(OBJEXT) \
-	LexLua.$(OBJEXT) LexMMIXAL.$(OBJEXT) LexMPT.$(OBJEXT) \
-	LexMSSQL.$(OBJEXT) LexMatlab.$(OBJEXT) LexMetapost.$(OBJEXT) \
-	LexNsis.$(OBJEXT) LexOpal.$(OBJEXT) LexOthers.$(OBJEXT) \
-	LexPB.$(OBJEXT) LexPLM.$(OBJEXT) LexPOV.$(OBJEXT) \
-	LexPS.$(OBJEXT) LexPascal.$(OBJEXT) LexPerl.$(OBJEXT) \
-	LexProgress.$(OBJEXT) LexPython.$(OBJEXT) LexR.$(OBJEXT) \
-	LexRebol.$(OBJEXT) LexRuby.$(OBJEXT) LexSQL.$(OBJEXT) \
-	LexScriptol.$(OBJEXT) LexSmalltalk.$(OBJEXT) \
-	LexSpecman.$(OBJEXT) LexSpice.$(OBJEXT) LexTADS3.$(OBJEXT) \
-	LexTCL.$(OBJEXT) LexTeX.$(OBJEXT) LexVB.$(OBJEXT) \
-	LexVHDL.$(OBJEXT) LexVerilog.$(OBJEXT) LexYAML.$(OBJEXT) \
-	LineMarker.$(OBJEXT) PositionCache.$(OBJEXT) PropSet.$(OBJEXT) \
-	RESearch.$(OBJEXT) RunStyles.$(OBJEXT) ScintillaBase.$(OBJEXT) \
-	Style.$(OBJEXT) StyleContext.$(OBJEXT) UniConversion.$(OBJEXT) \
-	ViewStyle.$(OBJEXT) WindowAccessor.$(OBJEXT) XPM.$(OBJEXT) \
-	PlatWX.$(OBJEXT) ScintillaWX.$(OBJEXT) stc.$(OBJEXT)
+	LexLua.$(OBJEXT) LexMagik.$(OBJEXT) LexMMIXAL.$(OBJEXT) \
+	LexMPT.$(OBJEXT) LexMSSQL.$(OBJEXT) LexMatlab.$(OBJEXT) \
+	LexMetapost.$(OBJEXT) LexNsis.$(OBJEXT) LexOpal.$(OBJEXT) \
+	LexOthers.$(OBJEXT) LexPB.$(OBJEXT) LexPLM.$(OBJEXT) \
+	LexPOV.$(OBJEXT) LexPowerShell.$(OBJEXT) LexPS.$(OBJEXT) \
+	LexPascal.$(OBJEXT) LexPerl.$(OBJEXT) LexProgress.$(OBJEXT) \
+	LexPython.$(OBJEXT) LexR.$(OBJEXT) LexRebol.$(OBJEXT) \
+	LexRuby.$(OBJEXT) LexSQL.$(OBJEXT) LexScriptol.$(OBJEXT) \
+	LexSmalltalk.$(OBJEXT) LexSpecman.$(OBJEXT) LexSpice.$(OBJEXT) \
+	LexTADS3.$(OBJEXT) LexTCL.$(OBJEXT) LexTeX.$(OBJEXT) \
+	LexVB.$(OBJEXT) LexVHDL.$(OBJEXT) LexVerilog.$(OBJEXT) \
+	LexYAML.$(OBJEXT) LineMarker.$(OBJEXT) PositionCache.$(OBJEXT) \
+	PropSet.$(OBJEXT) RESearch.$(OBJEXT) RunStyles.$(OBJEXT) \
+	ScintillaBase.$(OBJEXT) Style.$(OBJEXT) StyleContext.$(OBJEXT) \
+	UniConversion.$(OBJEXT) ViewStyle.$(OBJEXT) \
+	WindowAccessor.$(OBJEXT) XPM.$(OBJEXT) PlatWX.$(OBJEXT) \
+	ScintillaWX.$(OBJEXT) stc.$(OBJEXT)
 libstc_a_OBJECTS = $(am_libstc_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
@@ -302,6 +303,7 @@ libstc_a_SOURCES = \
 	scintilla/src/LexLisp.cxx \
 	scintilla/src/LexLout.cxx \
 	scintilla/src/LexLua.cxx \
+	scintilla/src/LexMagik.cxx \
 	scintilla/src/LexMMIXAL.cxx \
 	scintilla/src/LexMPT.cxx \
 	scintilla/src/LexMSSQL.cxx \
@@ -313,6 +315,7 @@ libstc_a_SOURCES = \
 	scintilla/src/LexPB.cxx \
 	scintilla/src/LexPLM.cxx \
 	scintilla/src/LexPOV.cxx \
+	scintilla/src/LexPowerShell.cxx \
 	scintilla/src/LexPS.cxx \
 	scintilla/src/LexPascal.cxx \
 	scintilla/src/LexPerl.cxx \
@@ -498,6 +501,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMMIXAL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMPT.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMSSQL.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMagik.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMatlab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMetapost.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexNsis.Po@am__quote@
@@ -509,6 +513,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexPS.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexPascal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexPerl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexPowerShell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexProgress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexPython.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexR.Po@am__quote@
@@ -1242,6 +1247,20 @@ LexLua.obj: scintilla/src/LexLua.cxx
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexLua.obj `if test -f 'scintilla/src/LexLua.cxx'; then $(CYGPATH_W) 'scintilla/src/LexLua.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexLua.cxx'; fi`
 
+LexMagik.o: scintilla/src/LexMagik.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexMagik.o -MD -MP -MF $(DEPDIR)/LexMagik.Tpo -c -o LexMagik.o `test -f 'scintilla/src/LexMagik.cxx' || echo '$(srcdir)/'`scintilla/src/LexMagik.cxx
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexMagik.Tpo $(DEPDIR)/LexMagik.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexMagik.cxx' object='LexMagik.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexMagik.o `test -f 'scintilla/src/LexMagik.cxx' || echo '$(srcdir)/'`scintilla/src/LexMagik.cxx
+
+LexMagik.obj: scintilla/src/LexMagik.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexMagik.obj -MD -MP -MF $(DEPDIR)/LexMagik.Tpo -c -o LexMagik.obj `if test -f 'scintilla/src/LexMagik.cxx'; then $(CYGPATH_W) 'scintilla/src/LexMagik.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexMagik.cxx'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexMagik.Tpo $(DEPDIR)/LexMagik.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexMagik.cxx' object='LexMagik.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexMagik.obj `if test -f 'scintilla/src/LexMagik.cxx'; then $(CYGPATH_W) 'scintilla/src/LexMagik.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexMagik.cxx'; fi`
+
 LexMMIXAL.o: scintilla/src/LexMMIXAL.cxx
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexMMIXAL.o -MD -MP -MF $(DEPDIR)/LexMMIXAL.Tpo -c -o LexMMIXAL.o `test -f 'scintilla/src/LexMMIXAL.cxx' || echo '$(srcdir)/'`scintilla/src/LexMMIXAL.cxx
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexMMIXAL.Tpo $(DEPDIR)/LexMMIXAL.Po
@@ -1395,6 +1414,20 @@ LexPOV.obj: scintilla/src/LexPOV.cxx
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexPOV.cxx' object='LexPOV.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexPOV.obj `if test -f 'scintilla/src/LexPOV.cxx'; then $(CYGPATH_W) 'scintilla/src/LexPOV.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexPOV.cxx'; fi`
+
+LexPowerShell.o: scintilla/src/LexPowerShell.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexPowerShell.o -MD -MP -MF $(DEPDIR)/LexPowerShell.Tpo -c -o LexPowerShell.o `test -f 'scintilla/src/LexPowerShell.cxx' || echo '$(srcdir)/'`scintilla/src/LexPowerShell.cxx
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexPowerShell.Tpo $(DEPDIR)/LexPowerShell.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexPowerShell.cxx' object='LexPowerShell.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexPowerShell.o `test -f 'scintilla/src/LexPowerShell.cxx' || echo '$(srcdir)/'`scintilla/src/LexPowerShell.cxx
+
+LexPowerShell.obj: scintilla/src/LexPowerShell.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexPowerShell.obj -MD -MP -MF $(DEPDIR)/LexPowerShell.Tpo -c -o LexPowerShell.obj `if test -f 'scintilla/src/LexPowerShell.cxx'; then $(CYGPATH_W) 'scintilla/src/LexPowerShell.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexPowerShell.cxx'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexPowerShell.Tpo $(DEPDIR)/LexPowerShell.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexPowerShell.cxx' object='LexPowerShell.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexPowerShell.obj `if test -f 'scintilla/src/LexPowerShell.cxx'; then $(CYGPATH_W) 'scintilla/src/LexPowerShell.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexPowerShell.cxx'; fi`
 
 LexPS.o: scintilla/src/LexPS.cxx
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexPS.o -MD -MP -MF $(DEPDIR)/LexPS.Tpo -c -o LexPS.o `test -f 'scintilla/src/LexPS.cxx' || echo '$(srcdir)/'`scintilla/src/LexPS.cxx

@@ -79,6 +79,7 @@ libstc_a_SOURCES = \
 	scintilla/src/LexLisp.cxx \
 	scintilla/src/LexLout.cxx \
 	scintilla/src/LexLua.cxx \
+	scintilla/src/LexMagik.cxx \
 	scintilla/src/LexMMIXAL.cxx \
 	scintilla/src/LexMPT.cxx \
 	scintilla/src/LexMSSQL.cxx \
@@ -90,6 +91,7 @@ libstc_a_SOURCES = \
 	scintilla/src/LexPB.cxx \
 	scintilla/src/LexPLM.cxx \
 	scintilla/src/LexPOV.cxx \
+	scintilla/src/LexPowerShell.cxx \
 	scintilla/src/LexPS.cxx \
 	scintilla/src/LexPascal.cxx \
 	scintilla/src/LexPerl.cxx \
