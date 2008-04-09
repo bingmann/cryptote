@@ -19,6 +19,10 @@ WTextPage::WTextPage(class WCryptoTE* parent)
     view_indentguide = false;
     view_longlineguide = false;
 
+    cursor_firstvisibleline = -1;
+    cursor_xoffset = -1;
+    cursor_currentpos = -1;
+
     // *** Create Control ***
 
     editctrl = new wxStyledTextCtrl(this, myID_EDITCTRL);
@@ -98,8 +102,6 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 
     subfileid = sfid;
 
-    LoadSubFileMetaSettings(subfileid);
-
     editctrl->SetUndoCollection(true);
     editctrl->EmptyUndoBuffer();
     editctrl->SetSavePoint();
@@ -107,12 +109,16 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
     editctrl->ScrollToColumn(0); // extra help to ensure scrolled to 0
 				 // otherwise scrolled halfway thru 1st char
 
+    LoadSubFileMetaSettings();
+
     return true;
 }
 
-bool WTextPage::LoadSubFileMetaSettings(unsigned int sfid)
+bool WTextPage::LoadSubFileMetaSettings()
 {
-    std::string ms_str = wmain->container->GetSubFileProperty(sfid, "WTextPageSettings");
+    if (!wmain->copt_restoreview) return false;
+
+    std::string ms_str = wmain->container->GetSubFileProperty(subfileid, "WTextPageSettings");
     if (ms_str.size() < 4) return false;
 
     uint32_t version = *(uint32_t*)(ms_str.data());
@@ -128,6 +134,14 @@ bool WTextPage::LoadSubFileMetaSettings(unsigned int sfid)
 	SetViewIndentGuide(ms.view_indentguide);
 	SetViewLonglineGuide(ms.view_longlineguide);
 
+	SetZoom(ms.view_zoom);
+
+	// These cannot be set immediatedly because Scintilla hasn't update
+	// it's cache to wrap lines. They are set on the first PAINTED event.
+	cursor_firstvisibleline = ms.cursor_firstvisibleline;
+	cursor_xoffset = ms.cursor_xoffset;
+	cursor_currentpos = ms.cursor_currentpos;
+	
 	PageFocused(); // update menubar view checkmarks
 
 	return true;
@@ -138,11 +152,18 @@ bool WTextPage::LoadSubFileMetaSettings(unsigned int sfid)
     }
 }
 
-void WTextPage::SaveSubFileMetaSettings(unsigned int sfid)
+void WTextPage::SaveSubFileMetaSettings()
 {
+    if (!wmain->copt_restoreview)
+    {
+	wmain->container->EraseSubFileProperty(subfileid, "WTextPageSettings");
+	return;
+    }
+
     MetaSettingsv00000001 ms;
 
     ms.version = 0x00000001;
+
     ms.view_linewrap = view_linewrap;
     ms.view_linenumber = view_linenumber;
     ms.view_whitespace = view_whitespace;
@@ -150,7 +171,13 @@ void WTextPage::SaveSubFileMetaSettings(unsigned int sfid)
     ms.view_indentguide = view_indentguide;
     ms.view_longlineguide = view_longlineguide;
 
-    wmain->container->SetSubFileProperty(sfid, "WTextPageSettings", std::string((char*)&ms, sizeof(ms)));
+    ms.view_zoom = GetZoom();
+
+    ms.cursor_firstvisibleline = editctrl->GetFirstVisibleLine();
+    ms.cursor_xoffset = editctrl->GetXOffset();
+    ms.cursor_currentpos = editctrl->GetCurrentPos();
+
+    wmain->container->SetSubFileProperty(subfileid, "WTextPageSettings", std::string((char*)&ms, sizeof(ms)));
 }
 
 size_t WTextPage::ImportFile(wxFile& file)
@@ -187,6 +214,7 @@ size_t WTextPage::ImportFile(wxFile& file)
 				 // otherwise scrolled halfway thru 1st char
 
     wmain->statusbar->ProgressStop();
+    SetModified(true);
 
     return editctrl->GetTextLength();
 }
@@ -416,14 +444,17 @@ void WTextPage::PageBlurred()
 
 void WTextPage::PageSaveData()
 {
+    // always save view data
+    SaveSubFileMetaSettings();
+
+    if (!page_modified) return;	// no changes to save
+
     size_t buflen = editctrl->GetTextLength();
     wxCharBuffer buf = editctrl->GetTextRaw();
 
     wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
 
     wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
-
-    SaveSubFileMetaSettings(subfileid);
 
     editctrl->SetSavePoint();
 
@@ -612,7 +643,7 @@ void WTextPage::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
 	int sel = editctrl->GetSelectionEnd () - editctrl->GetSelectionStart();
 
 	wxString sb;
-	sb.Printf( _("Ln %d Col %d Sel %d"), row, col, sel);
+	sb.Printf( _("Ln %d Col %d Sel %d"), (row+1), col, sel);
 
 	wmain->statusbar->SetStatusText(sb, 1);
     }
@@ -635,6 +666,25 @@ void WTextPage::OnScintillaSavePointLeft(wxStyledTextEvent& WXUNUSED(event))
 void WTextPage::OnScintillaZoom(wxStyledTextEvent& WXUNUSED(event))
 {
     UpdateStatusBar(wxString::Format(_("Zoom level set to %+d."), editctrl->GetZoom()));
+}
+
+void WTextPage::OnScintillaPainted(wxStyledTextEvent& WXUNUSED(event))
+{
+    if (cursor_firstvisibleline >= 0)
+    {
+	editctrl->LineScroll(0, cursor_firstvisibleline);
+	cursor_firstvisibleline = -1;
+    }
+    if (cursor_xoffset >= 0)
+    {
+	editctrl->SetXOffset(cursor_xoffset);
+	cursor_xoffset = -1;
+    }
+    if (cursor_currentpos >= 0)
+    {
+	editctrl->GotoPos(cursor_currentpos);
+	cursor_currentpos = -1;
+    }
 }
 
 // *** Set/Get View Options ***
@@ -741,6 +791,7 @@ BEGIN_EVENT_TABLE(WTextPage, WNotePage)
     EVT_STC_SAVEPOINTREACHED(myID_EDITCTRL,	WTextPage::OnScintillaSavePointReached)
     EVT_STC_SAVEPOINTLEFT(myID_EDITCTRL,	WTextPage::OnScintillaSavePointLeft)
     EVT_STC_ZOOM(myID_EDITCTRL,			WTextPage::OnScintillaZoom)
+    EVT_STC_PAINTED(myID_EDITCTRL,		WTextPage::OnScintillaPainted)
 
 END_EVENT_TABLE()
 

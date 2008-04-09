@@ -40,6 +40,7 @@ protected:
     wxTextCtrl* textMTime;
     wxChoice* choiceCompression;
     wxChoice* choiceEncryption;
+    wxCheckBox* checkboxRestoreView;
     wxTextCtrl* textAuthor;
     wxTextCtrl* textSubject;
     wxTextCtrl* textDescription;

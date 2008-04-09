@@ -34,10 +34,10 @@ public:
     bool		LoadSubFile(unsigned int sfid);
 
     /// Load View Settings from Metadata
-    bool		LoadSubFileMetaSettings(unsigned int sfid);
+    bool		LoadSubFileMetaSettings();
 
     /// Load View Settings from Metadata
-    void		SaveSubFileMetaSettings(unsigned int sfid);
+    void		SaveSubFileMetaSettings();
 
     /// Clear buffer and load all data from a file
     virtual size_t	ImportFile(wxFile& file);
@@ -96,6 +96,7 @@ public:
     void	OnScintillaSavePointReached(class wxStyledTextEvent& event);
     void	OnScintillaSavePointLeft(class wxStyledTextEvent& event);
     void	OnScintillaZoom(class wxStyledTextEvent& event);
+    void	OnScintillaPainted(class wxStyledTextEvent& event);
 
     // *** Control ***
 
@@ -139,11 +140,15 @@ protected:
     bool	view_indentguide;
     bool	view_longlineguide;
 
+    int		cursor_firstvisibleline;
+    int		cursor_xoffset;
+    int		cursor_currentpos;
+
     // *** Structures used to Save View Options ***
 
     struct MetaSettingsv00000001
     {
-	uint32_t version;
+	uint32_t	version;
 
 	unsigned char	view_linewrap;
 	unsigned char	view_linenumber;
@@ -151,6 +156,12 @@ protected:
 	unsigned char	view_endofline;
 	unsigned char 	view_indentguide;
 	unsigned char	view_longlineguide;
+
+	int		view_zoom;
+
+	int		cursor_firstvisibleline;
+	int		cursor_xoffset;
+	int		cursor_currentpos;
     }
 	__attribute__((packed));
 

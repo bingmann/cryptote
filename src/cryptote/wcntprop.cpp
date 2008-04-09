@@ -30,6 +30,7 @@ WContainerProperties::WContainerProperties(WCryptoTE* parent, int id, const wxSt
         _("Serpent 256 keybits")
     };
     choiceEncryption = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choiceEncryption_choices, 0);
+    checkboxRestoreView = new wxCheckBox(this, wxID_ANY, _("Restore open subfiles and editor\npositions on reload."));
     textAuthor = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
     textSubject = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
     textDescription = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
@@ -80,6 +81,14 @@ WContainerProperties::WContainerProperties(WCryptoTE* parent, int id, const wxSt
 	choiceEncryption->SetSelection(1);
     }
 
+    unsigned long restoreview;
+    if ( strSTL2WX(wmain->container->GetGlobalEncryptedProperty("RestoreView")).ToULong(&restoreview) ) {
+	checkboxRestoreView->SetValue(restoreview != 0);
+    }
+    else {
+	checkboxRestoreView->SetValue(true);
+    }
+
     textAuthor->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("Author")) );
     textSubject->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("Subject")) );
     textDescription->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("Description")) );
@@ -105,7 +114,7 @@ void WContainerProperties::do_layout()
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxGridSizer* sizer4 = new wxGridSizer(1, 2, 0, 0);
     wxFlexGridSizer* sizer3 = new wxFlexGridSizer(4, 2, 0, 0);
-    wxFlexGridSizer* sizer2 = new wxFlexGridSizer(7, 2, 0, 0);
+    wxFlexGridSizer* sizer2 = new wxFlexGridSizer(8, 2, 0, 0);
     wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Filename:"));
     sizer2->Add(label1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(textFilename, 0, wxALL|wxEXPAND, 2);
@@ -127,22 +136,24 @@ void WContainerProperties::do_layout()
     wxStaticText* label7 = new wxStaticText(this, wxID_ANY, _("Default Encryption:"));
     sizer2->Add(label7, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer2->Add(choiceEncryption, 0, wxALL, 2);
+    sizer2->Add(4, 4, 0, wxALL|wxALIGN_RIGHT, 2);
+    sizer2->Add(checkboxRestoreView, 0, wxALL, 2);
     sizer2->AddGrowableCol(1);
     sizer1->Add(sizer2, 0, wxALL|wxEXPAND, 8);
     wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
-    wxStaticText* label8 = new wxStaticText(this, wxID_ANY, _("WARNING:"));
-    sizer3->Add(label8, 0, wxALL|wxALIGN_RIGHT, 2);
-    wxStaticText* label8b = new wxStaticText(this, wxID_ANY, _("The following properties are stored _unencrypted_.\nThey can be used to quickly determine the\ncontainer's contents e.g. in directory listings."));
-    sizer3->Add(label8b, 0, wxALL, 2);
-    wxStaticText* label9 = new wxStaticText(this, wxID_ANY, _("Author:"));
-    sizer3->Add(label9, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
-    sizer3->Add(textAuthor, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label10 = new wxStaticText(this, wxID_ANY, _("Subject:"));
+    wxStaticText* label9 = new wxStaticText(this, wxID_ANY, _("WARNING:"));
+    sizer3->Add(label9, 0, wxALL|wxALIGN_RIGHT, 2);
+    wxStaticText* label9b = new wxStaticText(this, wxID_ANY, _("The following properties are stored _unencrypted_.\nThey can be used to quickly determine the\ncontainer's contents e.g. in directory listings."));
+    sizer3->Add(label9b, 0, wxALL, 2);
+    wxStaticText* label10 = new wxStaticText(this, wxID_ANY, _("Author:"));
     sizer3->Add(label10, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
-    sizer3->Add(textSubject, 0, wxALL|wxEXPAND, 2);
-    wxStaticText* label11 = new wxStaticText(this, wxID_ANY, _("Description:"));
+    sizer3->Add(textAuthor, 0, wxALL|wxEXPAND, 2);
+    wxStaticText* label11 = new wxStaticText(this, wxID_ANY, _("Subject:"));
     sizer3->Add(label11, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
+    sizer3->Add(textSubject, 0, wxALL|wxEXPAND, 2);
+    wxStaticText* label12 = new wxStaticText(this, wxID_ANY, _("Description:"));
+    sizer3->Add(label12, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 2);
     sizer3->Add(textDescription, 0, wxALL|wxEXPAND, 2);
     sizer3->AddGrowableRow(3);
     sizer3->AddGrowableCol(1);
@@ -177,7 +188,11 @@ void WContainerProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
     enccomp = wxString::Format(_T("%u"), choiceEncryption->GetSelection());
     wmain->container->SetGlobalEncryptedProperty("DefaultEncryption", strWX2STL(enccomp));
 
+    wmain->container->SetGlobalEncryptedProperty("RestoreView", checkboxRestoreView->GetValue() ? "1" : "0");
+    wmain->copt_restoreview = checkboxRestoreView->GetValue();
+
     EndModal(wxID_OK);
 }
 
 // wxGlade: add WContainerProperties event handlers
+

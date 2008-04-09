@@ -154,6 +154,12 @@ public:
     /// Save the current container to a file.
     bool	ContainerSaveAs(const wxString& filename);
 
+    /// Save the list of currently opened subfiles in the global properties
+    void	SaveOpenSubFilelist();
+
+    /// Restore list of opened subfiles by calling OpenSubFile.
+    void	RestoreOpenSubFilelist();
+
     // *** Preference Variables ***
 
     /// Theme set using BitmapCatalog
@@ -181,6 +187,11 @@ public:
 
     /// Retrieve config settings from registry or config file
     void	LoadPreferences();
+
+    // *** Container Option Variables ***
+
+    /// Restore positions
+    bool	copt_restoreview;
 
     // *** Event Handlers ***
 

@@ -33,6 +33,8 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     lastuserevent = ::wxGetLocalTime();
     wpassgen = NULL;
 
+    copt_restoreview = true;
+
     LoadPreferences();
     BitmapCatalog::GetSingleton()->SetTheme(prefs_bitmaptheme);
 
@@ -639,6 +641,8 @@ void WCryptoTE::ContainerNew()
     container->SetSubFileCompression(sf1, (Enctain::compression_t)defcomp);
     container->SetSubFileEncryption(sf1, (Enctain::encryption_t)defencr);
 
+    copt_restoreview = true;
+
     filelistpane->ResetItems();
 
     OpenSubFile(sf1);
@@ -735,9 +739,10 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     filelistpane->LoadProperties();
     filelistpane->ResetItems();
 
+    RestoreOpenSubFilelist();
+
     if (container->CountSubFile() == 1)
     {
-	OpenSubFile(0);
 	ShowFilelistPane(false);
     }
     else
@@ -866,6 +871,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 
     container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
     filelistpane->SaveProperties();
+    SaveOpenSubFilelist();
 
     if (!container->Save(stream))
     {
@@ -886,6 +892,62 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     if (cpage) cpage->SetFocus();
 
     return true;
+}
+
+void WCryptoTE::SaveOpenSubFilelist()
+{
+    if (!copt_restoreview)
+    {
+	container->EraseGlobalEncryptedProperty("SubFilesOpened");
+	return;
+    }
+
+    const size_t pagenum = auinotebook->GetPageCount();
+
+    int sflist[pagenum];
+
+    for (unsigned int pi = 0; pi < pagenum; ++pi)
+    {
+	WNotePage* sel = wxDynamicCast(auinotebook->GetPage(pi), WNotePage);
+
+	if (sel)
+	{
+	    sflist[pi] = sel->subfileid;
+	}
+	else
+	{
+	    wxLogError(_T("Invalid notebook page found."));
+	    sflist[pi] = 0;
+	}
+    }
+    
+    container->SetGlobalEncryptedProperty("SubFilesOpened", std::string((char*)&sflist, pagenum * sizeof(int)));
+}
+
+void WCryptoTE::RestoreOpenSubFilelist()
+{
+    // retrieve value of restore view option
+    unsigned long restoreview;
+    if ( !strSTL2WX(container->GetGlobalEncryptedProperty("RestoreView")).ToULong(&restoreview) ) {
+	restoreview = 1;
+    }
+    copt_restoreview = restoreview;
+
+    if (!copt_restoreview) return;
+
+    std::string str = container->GetGlobalEncryptedProperty("SubFilesOpened");
+
+    if (str.size() % 4 != 0) {
+	wxLogError(_T("Invalid list of open subfiles."));
+	return;
+    }
+
+    const int* sflist = reinterpret_cast<const int*>(str.data());
+    
+    for (unsigned int pi = 0; pi < str.size() / 4; ++pi)
+    {
+	OpenSubFile(sflist[pi]);
+    }
 }
 
 static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
@@ -1913,7 +1975,9 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 
 void WCryptoTE::UpdateNotebookPageChanged(int pageid, WNotePage* page)
 {
-    if (cpageid == pageid) return;
+    // printf("Debug: UpdateNotebookPageChanged() event for %d page %p\n", pageid, page);
+
+    if (cpageid == pageid && cpage == page) return;
 
     if (cpage) cpage->PageBlurred();
 
