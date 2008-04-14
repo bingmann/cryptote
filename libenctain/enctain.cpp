@@ -2,10 +2,6 @@
 
 #include "enctain.h"
 
-#include <wx/log.h>
-#include <wx/intl.h>
-#include <wx/utils.h>
-
 #include "crc32.h"
 #include "bytebuff.h"
 #include "sha256.h"
@@ -70,16 +66,191 @@ void Container::SetSignature(const char* sign)
     }
 }
 
+const char* Container::GetErrorString(error_t e)
+{
+    switch(e)
+    {
+    case ERROR_SUCCESS:
+	return "Success.";
+
+    case ERROR_SAVE_NO_PASSWORD:
+	return "Error saving container: no encryption password set!";
+
+    case ERROR_LOAD_HEADER1:
+	return "Error loading container: could not read header.";
+
+    case ERROR_LOAD_HEADER1_SIGNATURE:
+	return "Error loading container: could not read header, invalid signature.";
+
+    case ERROR_LOAD_HEADER1_VERSION:
+	return "Error loading container: could not read header, invalid version.";
+
+    case ERROR_LOAD_HEADER1_METADATA:
+	return "Error loading container: could not read header, invalid metadata.";
+
+    case ERROR_LOAD_HEADER1_METADATA_PARSE:
+	return "Error loading container: could not read header, metadata parse failed.";
+
+    case ERROR_LOAD_HEADER2:
+	return "Error loading container: could not read secondary header.";
+
+    case ERROR_LOAD_HEADER2_ENCRYPTION:
+	return "Error loading container: could not read secondary header, check encryption key.";
+
+    case ERROR_LOAD_HEADER2_METADATA:
+	return "Error loading container: could not read secondary header, invalid metadata.";
+
+    case ERROR_LOAD_HEADER2_METADATA_CRC32:
+	return "Error loading container: could not read secondary header, metadata crc32 mismatch.";
+
+    case ERROR_LOAD_HEADER2_METADATA_PARSE:
+	return "Error loading container: could not read secondary header, metadata parse failed.";
+
+    case ERROR_LOAD_SUBFILE:
+	return "Error loading container: could not read encrypted subfile data.";
+
+    case ERROR_SUBFILE_COMPRESSION_INVALID:
+	return "Error in subfile: unknown compression algorithm.";
+
+    case ERROR_SUBFILE_ENCRYPTION_INVALID:
+	return "Error in subfile: unknown encryption cipher.";
+
+    case ERROR_SUBFILE_ENCRYPTION_LENGTH:
+	return "Error in subfile: invalid encrypted data length.";
+
+    case ERROR_SUBFILE_UNEXPECTED_EOF:
+	return "Error in subfile: read beyond end of stream.";
+
+    case ERROR_SUBFILE_CRC32:
+	return "Error in subfile: crc32 mismatch, data possibly corrupt.";
+
+    case ERROR_Z_UNKNOWN:
+	return "Error in zlib: unknown error.";
+
+    case ERROR_Z_OK:
+	return "Error in zlib: success.";
+
+    case ERROR_Z_NEED_DICT:
+	return "Error in zlib: need dictionary.";
+	
+    case ERROR_Z_STREAM_END:
+	return "Error in zlib: stream end.";
+
+    case ERROR_Z_ERRNO:
+	return "Error in zlib: file error.";
+
+    case ERROR_Z_STREAM_ERROR:
+	return "Error in zlib: stream error.";
+
+    case ERROR_Z_DATA_ERROR:
+	return "Error in zlib: data error.";
+
+    case ERROR_Z_MEM_ERROR:
+	return "Error in zlib: insufficient memory.";
+
+    case ERROR_Z_BUF_ERROR:
+	return "Error in zlib: buffer error.";
+
+    case ERROR_Z_VERSION_ERROR:
+	return "Error in zlib: incompatible version.";
+
+    case ERROR_BZ_UNKNOWN:
+	return "Error in bzip2: unknown error.";
+
+    case ERROR_BZ_OK:
+	return "Error in bzip2: success.";
+
+    case ERROR_BZ_RUN_OK:
+	return "Error in bzip2: successful run.";
+
+    case ERROR_BZ_FLUSH_OK:
+	return "Error in bzip2: successful flush.";
+
+    case ERROR_BZ_FINISH_OK:
+	return "Error in bzip2: successful finish.";
+
+    case ERROR_BZ_STREAM_END:
+	return "Error in bzip2: stream end.";
+
+    case ERROR_BZ_SEQUENCE_ERROR:
+	return "Error in bzip2: sequence error.";
+
+    case ERROR_BZ_PARAM_ERROR:
+	return "Error in bzip2: parameter error.";
+
+    case ERROR_BZ_MEM_ERROR:
+	return "Error in bzip2: insufficient memory.";
+
+    case ERROR_BZ_DATA_ERROR:
+	return "Error in bzip2: data error.";
+
+    case ERROR_BZ_DATA_ERROR_MAGIC:
+	return "Error in bzip2: magic header error.";
+
+    case ERROR_BZ_IO_ERROR:
+	return "Error in bzip2: file system error.";
+
+    case ERROR_BZ_UNEXPECTED_EOF:
+	return "Error in bzip2: unexpected end of file.";
+
+    case ERROR_BZ_OUTBUFF_FULL:
+	return "Error in bzip2: output buffer full.";
+
+    case ERROR_BZ_CONFIG_ERROR:
+	return "Error in bzip2: platform config error.";
+
+    default:
+	return "Unknown error code.";
+    }
+}
+
+static error_t ErrorFromZLibError(int ret)
+{
+    switch(ret)
+    {
+    default:			return ERROR_Z_UNKNOWN;
+    case Z_NEED_DICT:		return ERROR_Z_NEED_DICT;
+    case Z_STREAM_END:		return ERROR_Z_STREAM_END;
+    case Z_OK:			return ERROR_Z_OK;
+    case Z_ERRNO:		return ERROR_Z_ERRNO;
+    case Z_STREAM_ERROR:	return ERROR_Z_STREAM_ERROR;
+    case Z_DATA_ERROR:		return ERROR_Z_DATA_ERROR;
+    case Z_MEM_ERROR:		return ERROR_Z_MEM_ERROR;
+    case Z_BUF_ERROR:		return ERROR_Z_BUF_ERROR;
+    case Z_VERSION_ERROR:	return ERROR_Z_VERSION_ERROR;
+    }
+}
+
+static error_t ErrorFromBZLibError(int ret)
+{
+    switch (ret)
+    {
+    default:			return ERROR_BZ_UNKNOWN;
+    case BZ_OK:			return ERROR_BZ_OK;
+    case BZ_RUN_OK:		return ERROR_BZ_RUN_OK;
+    case BZ_FLUSH_OK:		return ERROR_BZ_FLUSH_OK;
+    case BZ_FINISH_OK:		return ERROR_BZ_FINISH_OK;
+    case BZ_STREAM_END:		return ERROR_BZ_STREAM_END;
+    case BZ_SEQUENCE_ERROR:	return ERROR_BZ_SEQUENCE_ERROR;
+    case BZ_PARAM_ERROR:	return ERROR_BZ_PARAM_ERROR;
+    case BZ_MEM_ERROR:		return ERROR_BZ_MEM_ERROR;
+    case BZ_DATA_ERROR:		return ERROR_BZ_DATA_ERROR;
+    case BZ_DATA_ERROR_MAGIC:	return ERROR_BZ_DATA_ERROR_MAGIC;
+    case BZ_IO_ERROR:		return ERROR_BZ_IO_ERROR;
+    case BZ_UNEXPECTED_EOF:	return ERROR_BZ_UNEXPECTED_EOF;
+    case BZ_OUTBUFF_FULL:	return ERROR_BZ_OUTBUFF_FULL;
+    case BZ_CONFIG_ERROR:	return ERROR_BZ_CONFIG_ERROR;
+    }
+}
+
 // *** Load/Save Operations ***
 
-bool Container::Save(DataOutput& dataout)
+error_t Container::Save(DataOutput& dataout)
 {
     written = 0;
 
-    if (!iskeyset) {
-	wxLogError( _("Error saving container: no encryption password set!") );
-	return false;
-    }
+    if (!iskeyset)
+	return ERROR_SAVE_NO_PASSWORD;
 
     srand(time(NULL));
 
@@ -170,10 +341,8 @@ bool Container::Save(DataOutput& dataout)
 
 	int ret = deflateInit(&zs, 9);
 	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromZLibError(ret);
 	}
 
 	zs.next_in = (Bytef*)metadata.data();
@@ -198,10 +367,8 @@ bool Container::Save(DataOutput& dataout)
 	deflateEnd(&zs);
 
 	if (ret != Z_STREAM_END) {
-	    wxLogError( wxString::Format(_("Exception during compression: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromZLibError(ret);
 	}
 
 	// append zeros to make output length a multiple of 16
@@ -248,10 +415,10 @@ bool Container::Save(DataOutput& dataout)
     opened = true;
 
     ProgressStop();
-    return true;
+    return ERROR_SUCCESS;
 }
 
-bool Container::Load(DataInput& datain, const std::string& filekey)
+error_t Container::Load(DataInput& datain, const std::string& filekey)
 {
     ProgressStart("Loading Container", 0, 1000);
 
@@ -261,30 +428,27 @@ bool Container::Load(DataInput& datain, const std::string& filekey)
     struct Header1 header1;
 
     if (datain.Input(&header1, sizeof(header1)) != sizeof(header1)) {
-	wxLogError(_("Error loading container: could not read header."));
 	ProgressStop();
-	return false;
+	return ERROR_LOAD_HEADER1;
     }
 
     if (memcmp(header1.signature, fsignature, 8) != 0) {
-	wxLogError(_("Error loading container: invalid signature."));
 	ProgressStop();
-	return false;
+	return ERROR_LOAD_HEADER1_SIGNATURE;
     }
 
     if (header1.version == 0x00010000) {
-	bool b = Loadv00010000(datain, filekey, header1);
+	error_t e = Loadv00010000(datain, filekey, header1);
 	ProgressStop();
-	return b;
+	return e;
     }
     else {
-	wxLogError(_("Error loading container: invalid file version."));
 	ProgressStop();
-	return false;
+	return ERROR_LOAD_HEADER1_VERSION;
     }
 }
 
-bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1)
+error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1)
 {
     unsigned int readbyte = sizeof(Header1);
 
@@ -293,10 +457,8 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 	ByteBuffer unc_metadata;
 	unc_metadata.alloc(header1.unc_metalen);
 
-	if (datain.Input(unc_metadata.data(), header1.unc_metalen) != header1.unc_metalen) {
-	    wxLogError(_("Error loading container: could not unencrypted metadata."));
-	    return false;
-	}
+	if (datain.Input(unc_metadata.data(), header1.unc_metalen) != header1.unc_metalen)
+	    return ERROR_LOAD_HEADER1_METADATA;
 
 	readbyte += header1.unc_metalen;
 	unc_metadata.set_size(header1.unc_metalen);
@@ -317,18 +479,16 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 	}
 	catch (std::underflow_error& e)
 	{
-	    wxLogError(_("Error loading container: could not parse unencrypted metadata buffer."));
-	    return false;
+	    return ERROR_LOAD_HEADER1_METADATA_PARSE;
 	}
     }
 
     // Read encrypted fixed Header2
     struct Header2 header2;
 
-    if (datain.Input(&header2, sizeof(header2)) != sizeof(header2)) {
-	wxLogError(_("Error loading container: could not read secondary header."));
-	return false;
-    }
+    if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
+	return ERROR_LOAD_HEADER1;
+
     readbyte += sizeof(header2);
 
     // decrypt header2
@@ -346,20 +506,16 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 
     decctx.decrypt(&header2, sizeof(header2));
 
-    if (header2.test123 != 0x12345678) {
-	wxLogError(_("Error loading container: could not decrypt header. Check the encryption key."));
-	return false;
-    }
+    if (header2.test123 != 0x12345678)
+	return ERROR_LOAD_HEADER2_ENCRYPTION;
 
     // Read compressed variable length metadata
 
     ByteBuffer metadata_compressed;
     metadata_compressed.alloc(header2.metacomplen);
 
-    if (datain.Input(metadata_compressed.data(), header2.metacomplen) != header2.metacomplen) {
-	wxLogError(_("Error loading container: could not decrypt metadata. Check the encryption key."));
-	return false;
-    }
+    if (datain.Input(metadata_compressed.data(), header2.metacomplen) != header2.metacomplen)
+	return ERROR_LOAD_HEADER2_METADATA;
 
     readbyte += header2.metacomplen;
     metadata_compressed.set_size(header2.metacomplen);
@@ -375,11 +531,8 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 	memset(&zs, 0, sizeof(zs));
 
 	int ret = inflateInit(&zs);
-	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
-	    return false;
-	}
+	if (ret != Z_OK)
+	    return ErrorFromZLibError(ret);
 
 	zs.next_in = (Bytef*)(metadata_compressed.data());
 	zs.avail_in = metadata_compressed.size();
@@ -398,20 +551,15 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 	    }
 	}
 
-	if (ret != Z_STREAM_END) {
-	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
-	    return false;
-	}
+	if (ret != Z_STREAM_END)
+	    return ErrorFromZLibError(ret);
 
 	inflateEnd(&zs);
 
 	uint32_t metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
 
-	if (metacrc32 != header2.metacrc32) {
-	    wxLogError( _("Error loading container: metadata crc32 does not match.") );
-	    return false;
-	}
+	if (metacrc32 != header2.metacrc32)
+	    return ERROR_LOAD_HEADER2_METADATA_CRC32;
     }
 
     try
@@ -457,8 +605,7 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
     }
     catch (std::underflow_error& e)
     {
-	wxLogError(_("Error loading container: could not parse metadata buffer."));
-	return false;
+	return ERROR_LOAD_HEADER2_METADATA_PARSE;
     }
 
     // Now we can say how large the file actually is.
@@ -483,10 +630,8 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 	unsigned int rb = datain.Input(subfile.data.data(), subfile.storagesize);
 	subfile.data.set_size(rb);
 
-	if (rb != subfile.storagesize) {
-	    wxLogError(_("Error loading container: could not read encrypted subfile data."));
-	    return false;
-	}
+	if (rb != subfile.storagesize)
+	    return ERROR_LOAD_SUBFILE;
 
 	readbyte += rb;
 	ProgressUpdate(readbyte);
@@ -498,7 +643,7 @@ bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, con
 
     decctx.wipe();
 
-    return true;
+    return ERROR_SUCCESS;
 }
 
 // *** Container Info Operations ***
@@ -550,7 +695,7 @@ void Container::SetKey(const std::string& keystr)
 
 	    for (size_t offset = 0; offset < subfile.data.size(); offset += batch)
 	    {
-		size_t len = wxMin(batch, subfile.data.size() - offset);
+		size_t len = std::min<size_t>(batch, subfile.data.size() - offset);
 
 		if (iskeyset)
 		    serpentctx.decrypt(subfile.data.data() + offset, len);
@@ -809,11 +954,15 @@ void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
     {
 	std::string data;
 
-	GetSubFileData(subfileindex, data);
+	error_t e1 = GetSubFileData(subfileindex, data);
+	if (e1 != ERROR_SUCCESS)
+	    throw(std::runtime_error(GetErrorString(e1)));
 
 	subfiles[subfileindex].encryption = c;
 
-	SetSubFileData(subfileindex, data.data(), data.size());
+	error_t e2 = SetSubFileData(subfileindex, data.data(), data.size());
+	if (e2 != ERROR_SUCCESS)
+	    throw(std::runtime_error(GetErrorString(e2)));
     }
 }
 
@@ -830,11 +979,15 @@ void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c
     {
 	std::string data;
 
-	GetSubFileData(subfileindex, data);
+	error_t e1 = GetSubFileData(subfileindex, data);
+	if (e1 != ERROR_SUCCESS)
+	    throw(std::runtime_error(GetErrorString(e1)));
 
 	subfiles[subfileindex].compression = c;
 
-	SetSubFileData(subfileindex, data.data(), data.size());
+	error_t e2 = SetSubFileData(subfileindex, data.data(), data.size());
+	if (e2 != ERROR_SUCCESS)
+	    throw(std::runtime_error(GetErrorString(e2)));
     }
 }
 
@@ -854,18 +1007,22 @@ void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compr
     {
 	std::string data;
 
-	GetSubFileData(subfileindex, data);
+	error_t e1 = GetSubFileData(subfileindex, data);
+	if (e1 != ERROR_SUCCESS)
+	    throw(std::runtime_error(GetErrorString(e1)));
 
 	subfiles[subfileindex].encryption = enc;
 	subfiles[subfileindex].compression = comp;
 
-	SetSubFileData(subfileindex, data.data(), data.size());
+	error_t e2 = SetSubFileData(subfileindex, data.data(), data.size());
+	if (e2 != ERROR_SUCCESS)
+	    throw(std::runtime_error(GetErrorString(e2)));
     }
 }
 
 // *** Container SubFiles - Subfile data operations ***
 
-bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
+error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -896,9 +1053,8 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
     }
     else
     {
-	wxLogError( _("Exception during encryption: unknown encryption cipher.") );
 	ProgressStop();
-	return false;
+	return ERROR_SUBFILE_ENCRYPTION_INVALID;
     }
 
     // Copy or compress data into the ByteBuffer
@@ -915,7 +1071,7 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	while(offset < datalen)
 	{
-	    size_t currlen = wxMin(batch, datalen - offset);
+	    size_t currlen = std::min<size_t>(batch, datalen - offset);
 
 	    subfile.data.append((char*)data + offset, currlen);
 
@@ -955,10 +1111,8 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	int ret = deflateInit(&zs, Z_BEST_COMPRESSION);
 	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromZLibError(ret);
 	}
 
 	zs.next_in = (Bytef*)(data);
@@ -1000,10 +1154,8 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	}
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during zlib compression: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromZLibError(ret);
 	}
 
 	deflateEnd(&zs);
@@ -1031,9 +1183,8 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	int ret = BZ2_bzCompressInit(&bz, 9, 0, 0);
 	if (ret != BZ_OK) {
-	    wxLogError( _("Exception during bzip2 initialization.") );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromBZLibError(ret);
 	}
 
 	bz.next_in = (char*)data;
@@ -1075,9 +1226,8 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	}
 
 	if (ret != BZ_STREAM_END) {
-	    wxLogError( wxString::Format(_("Exception during bzip2 compression: %d"), ret) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromBZLibError(ret);
 	}
 
 	BZ2_bzCompressEnd(&bz);
@@ -1100,16 +1250,16 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
     }
     else
     {
-	wxLogError( _("Exception during compression: unknown compression algorithm.") );
 	ProgressStop();
-	return false;
+	return ERROR_SUBFILE_COMPRESSION_INVALID;
     }
 
     subfile.crc32 = crc32run;
     subfile.storagesize = subfile.data.size();
 
     ProgressStop();
-    return true;
+
+    return ERROR_SUCCESS;
 }
 
 struct DataOutputString : public DataOutput
@@ -1127,7 +1277,7 @@ struct DataOutputString : public DataOutput
     }
 };
 
-bool Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
+error_t Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1142,14 +1292,14 @@ bool Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) c
     return GetSubFileData(subfileindex, dataout);
 }
 
-bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
+error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
 
     const SubFile& subfile = subfiles[subfileindex];
 
-    if (subfile.data.size() == 0) return true;
+    if (subfile.data.size() == 0) return ERROR_SUCCESS;
 
     assert(subfile.data.size() == subfile.storagesize);
 
@@ -1166,9 +1316,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 	{
 	    // Ensure that the data buffer has a length multiple of 16
 	    if (subfile.data.size() % 16 != 0) {
-		wxLogError( _("Exception during subfile decryption: invalid data length.") );
 		ProgressStop();
-		return false;
+		return ERROR_SUBFILE_ENCRYPTION_LENGTH;
 	    }
 
 	    // Prepare data block decryption
@@ -1177,9 +1326,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
     }
     else
     {
-	wxLogError( _("Exception during decryption: unknown encryption cipher.") );
 	ProgressStop();
-	return false;
+	return ERROR_SUBFILE_ENCRYPTION_INVALID;
     }
 
     // Copy or decompress subfile data and send output to DataOutput
@@ -1195,7 +1343,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 
 	while(offset < subfile.data.size())
 	{
-	    size_t currlen = wxMin(sizeof(buffer), subfile.data.size() - offset);
+	    size_t currlen = std::min<size_t>(sizeof(buffer), subfile.data.size() - offset);
 
 	    memcpy(buffer, subfile.data.data() + offset, currlen);
 
@@ -1228,10 +1376,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 
 	int ret = inflateInit(&zs);
 	if (ret != Z_OK) {
-	    wxLogError( wxString::Format(_("Exception during zlib initialization: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromZLibError(ret);
 	}
 
 	size_t inoffset = 0;
@@ -1246,13 +1392,12 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 	    {
 		if (inoffset >= subfile.data.size())
 		{
-		    wxLogError( _("Exception during decompression: reading beyond end of stream") );
 		    inflateEnd(&zs);
 		    ProgressStop();
-		    return false;
+		    return ERROR_SUBFILE_UNEXPECTED_EOF;
 		}
 
-		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.size() - inoffset);
+		size_t currlen = std::min<size_t>(sizeof(inbuffer), subfile.data.size() - inoffset);
 
 		memcpy(inbuffer, subfile.data.data() + inoffset, currlen);
 
@@ -1290,10 +1435,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 	}
 
 	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during decompression: (%d) %s"),
-					 ret, wxString(zs.msg, wxConvISO8859_1).c_str()) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromZLibError(ret);
 	}
 
 	inflateEnd(&zs);
@@ -1305,9 +1448,8 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 
 	int ret = BZ2_bzDecompressInit(&bz, 0, 0);
 	if (ret != BZ_OK) {
-	    wxLogError( _("Exception during bzip2 initialization.") );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromBZLibError(ret);
 	}
 
 	size_t inoffset = 0;
@@ -1322,13 +1464,12 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 	    {
 		if (inoffset >= subfile.data.size())
 		{
-		    wxLogError( _("Exception during decompression: reading beyond end of stream") );
 		    BZ2_bzDecompressEnd(&bz);
 		    ProgressStop();
-		    return false;
+		    return ERROR_SUBFILE_UNEXPECTED_EOF;
 		}
 
-		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.size() - inoffset);
+		size_t currlen = std::min<size_t>(sizeof(inbuffer), subfile.data.size() - inoffset);
 
 		memcpy(inbuffer, subfile.data.data() + inoffset, currlen);
 
@@ -1368,29 +1509,22 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& data
 	BZ2_bzDecompressEnd(&bz);
 
 	if (ret != BZ_STREAM_END) { // an error occurred that was not EOF
-	    wxLogError( wxString::Format(_("Exception during bzip2 decompression: %d"), ret) );
 	    ProgressStop();
-	    return false;
+	    return ErrorFromBZLibError(ret);
 	}
     }
     else
     {
-	wxLogError( _("Exception during decompression: unknown decompression algorithm.") );
 	ProgressStop();
-	return false;
-    }
-
-    if (crc32run != subfile.crc32)
-    {
-	wxLogError( _("Exception during subfile loading: crc32 mismatch - data possibly corrupt.") );
+	return ERROR_SUBFILE_COMPRESSION_INVALID;
     }
 
     ProgressStop();
-    return true;
-}
 
-ProgressIndicator::~ProgressIndicator()
-{
+    if (crc32run != subfile.crc32)
+	return ERROR_SUBFILE_CRC32;
+
+    return ERROR_SUCCESS;
 }
 
 } // namespace Enctain

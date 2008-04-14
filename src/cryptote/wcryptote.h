@@ -98,6 +98,9 @@ public:
 
     // *** Operations ***
 
+    /// Return a localized string for the given error code.
+    static const wxChar* EnctainErrorString(Enctain::error_t e);
+
     /// Temporarily set status bar to show given text.
     void	UpdateStatusBar(const wxString& str);
 

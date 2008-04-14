@@ -2,8 +2,8 @@
 
 #include "enctain.h"
 
-#include <wx/wfstream.h>
 #include <iostream>
+#include <fstream>
 
 static char testtext[2843] = {
     0x2f,0x2f,0x20,0x24,0x49,0x64,0x3a,0x20,0x74,0x65,0x73,0x74,0x5f,0x74,0x78,0x63,
@@ -188,35 +188,35 @@ static char testtext[2843] = {
 
 struct DataOutputStream : public Enctain::DataOutput
 {
-    wxOutputStream&	os;
+    std::ofstream&	os;
 
-    DataOutputStream(wxOutputStream& s)
+    DataOutputStream(std::ofstream& s)
 	: os(s)
     {
     }
 
     virtual void Output(const void* data, size_t datalen)
     {
-	os.Write(data, datalen);
+	os.write((const char*)data, datalen);
     }
 };
 
 struct DataInputStream : public Enctain::DataInput
 {
-    wxInputStream&	is;
+    std::ifstream&	is;
 
-    DataInputStream(wxInputStream& s)
+    DataInputStream(std::ifstream& s)
 	: is(s)
     {
     }
 
     virtual unsigned int Input(void* data, size_t maxlen)
     {
-	return is.Read(data, maxlen).LastRead();
+	return is.read((char*)data, maxlen).gcount();
     }
 };
 
-void test_enctain(const std::string& filedata, wxString filename)
+void test_enctain(const std::string& filedata, std::string filename)
 {
     {
 	Enctain::Container container;
@@ -286,7 +286,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	container.SetSubFileProperty(sf6, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf6, filedata.data(), filedata.size());
 
-	wxFileOutputStream outstream(filename);
+	std::ofstream outstream(filename.c_str());
 	DataOutputStream dataout(outstream);
 	container.Save(dataout);
     }
@@ -294,9 +294,9 @@ void test_enctain(const std::string& filedata, wxString filename)
     {
 	Enctain::Container container;
 
-	wxFileInputStream instream(filename);
+	std::ifstream instream(filename.c_str());
 	DataInputStream datain(instream);
-	assert( container.Load(datain, "ELO0Eia9") );
+	assert( container.Load(datain, "ELO0Eia9") == Enctain::ERROR_SUCCESS );
 	
 	std::string key, val;
 	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );
@@ -321,7 +321,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(0, 2, key, val) );
 
 	std::string mb;
-	container.GetSubFileData(0, mb);
+	assert( container.GetSubFileData(0, mb) == Enctain::ERROR_SUCCESS );
 	
 	assert( mb == filedata );
 
@@ -332,7 +332,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test2.txt" );
 	assert( !container.GetSubFilePropertyIndex(1, 2, key, val) );
 
-	container.GetSubFileData(1, mb);
+	assert( container.GetSubFileData(1, mb) == Enctain::ERROR_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 2
@@ -342,7 +342,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test3.txt" );
 	assert( !container.GetSubFilePropertyIndex(2, 2, key, val) );
 
-	container.GetSubFileData(2, mb);
+	assert( container.GetSubFileData(2, mb) == Enctain::ERROR_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 3
@@ -352,7 +352,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test4.txt" );
 	assert( !container.GetSubFilePropertyIndex(3, 2, key, val) );
 
-	container.GetSubFileData(3, mb);
+	assert( container.GetSubFileData(3, mb) == Enctain::ERROR_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 4
@@ -362,7 +362,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test5.txt" );
 	assert( !container.GetSubFilePropertyIndex(4, 2, key, val) );
 
-	container.GetSubFileData(4, mb);
+	assert( container.GetSubFileData(4, mb) == Enctain::ERROR_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 5
@@ -372,7 +372,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test6.txt" );
 	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
 
-	container.GetSubFileData(5, mb);
+	assert( container.GetSubFileData(5, mb) == Enctain::ERROR_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 5 (again)
@@ -382,7 +382,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test6.txt" );
 	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
 
-	container.GetSubFileData(5, mb);
+	assert( container.GetSubFileData(5, mb) == Enctain::ERROR_SUCCESS );
 	assert( mb == filedata );
     }
 }
@@ -397,7 +397,7 @@ int main()
     Enctain::Container::SetSignature("CryptoTE");
 
     // First test is with some real text (source code)
-    test_enctain( std::string(testtext, sizeof(testtext)), _T("test1.ect") );
+    test_enctain( std::string(testtext, sizeof(testtext)), "test1.ect" );
 
     // Second is a 1MB sized generated text
     std::string gen1000;
@@ -406,7 +406,7 @@ int main()
 	gen1000 += (unsigned char)(i*i);
     }
 
-    test_enctain( gen1000, _T("test2.ect") );
+    test_enctain( gen1000, "test2.ect" );
 
     // Second is a 1MB sized random text
     std::string rand1000;
@@ -415,7 +415,7 @@ int main()
 	rand1000 += (unsigned char)rand();
     }
 
-    test_enctain( rand1000, _T("test3.ect") );
+    test_enctain( rand1000, "test3.ect" );
 
     std::cout << "OK\n";
 

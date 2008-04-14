@@ -10,4 +10,4 @@ libenctain_a_SOURCES = bytebuff.h \
 	serpent.cpp serpent.h \
 	enctain.cpp enctain.h
 
-AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS) $(WX_CXXFLAGS) -O0 -fomit-frame-pointer
+AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)

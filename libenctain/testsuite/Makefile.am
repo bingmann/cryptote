@@ -8,9 +8,9 @@ test_ect1_SOURCES = test_ect1.cpp
 
 test_ect1_DEPENDENCIES = ../libenctain.a
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) $(WX_CXXFLAGS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
 
-LIBS = ../libenctain.a $(BZLIB_LIBS) $(ZLIB_LIBS) $(WX_LIBS)
+LIBS = ../libenctain.a $(BZLIB_LIBS) $(ZLIB_LIBS)
 
 if HAVE_LIBGCRYPT
 

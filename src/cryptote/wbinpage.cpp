@@ -58,7 +58,11 @@ bool WBinaryPage::LoadSubFile(unsigned int sfid)
     bindata.SetBufSize(wmain->container->GetSubFileSize(sfid));
     bindata.SetDataLen(0);
 
-    wmain->container->GetSubFileData(sfid, dataout);
+    Enctain::error_t e = wmain->container->GetSubFileData(sfid, dataout);
+    if (e != Enctain::ERROR_SUCCESS)
+    {
+	wxLogError(WCryptoTE::EnctainErrorString(e));
+    }
 
     subfileid = sfid;
     needsave = false;
@@ -117,7 +121,11 @@ void WBinaryPage::PageSaveData()
 {
     if (needsave)
     {
-	wmain->container->SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
+	Enctain::error_t e = wmain->container->SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
+	if (e != Enctain::ERROR_SUCCESS)
+	{
+	    wxLogError(WCryptoTE::EnctainErrorString(e));
+	}
 
 	wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
 

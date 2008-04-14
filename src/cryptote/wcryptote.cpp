@@ -166,6 +166,146 @@ WCryptoTE::~WCryptoTE()
     }
 }
 
+const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
+{
+    using namespace Enctain;
+
+    switch(e)
+    {
+    case ERROR_SUCCESS:
+	return _("Success.");
+
+    case ERROR_SAVE_NO_PASSWORD:
+	return _("Error saving container: no encryption password set!");
+
+    case ERROR_LOAD_HEADER1:
+	return _("Error loading container: could not read header.");
+
+    case ERROR_LOAD_HEADER1_SIGNATURE:
+	return _("Error loading container: could not read header, invalid signature.");
+
+    case ERROR_LOAD_HEADER1_VERSION:
+	return _("Error loading container: could not read header, invalid version.");
+
+    case ERROR_LOAD_HEADER1_METADATA:
+	return _("Error loading container: could not read header, invalid metadata.");
+
+    case ERROR_LOAD_HEADER1_METADATA_PARSE:
+	return _("Error loading container: could not read header, metadata parse failed.");
+
+    case ERROR_LOAD_HEADER2:
+	return _("Error loading container: could not read secondary header.");
+
+    case ERROR_LOAD_HEADER2_ENCRYPTION:
+	return _("Error loading container: could not read secondary header, check encryption key.");
+
+    case ERROR_LOAD_HEADER2_METADATA:
+	return _("Error loading container: could not read secondary header, invalid metadata.");
+
+    case ERROR_LOAD_HEADER2_METADATA_CRC32:
+	return _("Error loading container: could not read secondary header, metadata crc32 mismatch.");
+
+    case ERROR_LOAD_HEADER2_METADATA_PARSE:
+	return _("Error loading container: could not read secondary header, metadata parse failed.");
+
+    case ERROR_LOAD_SUBFILE:
+	return _("Error loading container: could not read encrypted subfile data.");
+
+    case ERROR_SUBFILE_COMPRESSION_INVALID:
+	return _("Error in subfile: unknown compression algorithm.");
+
+    case ERROR_SUBFILE_ENCRYPTION_INVALID:
+	return _("Error in subfile: unknown encryption cipher.");
+
+    case ERROR_SUBFILE_ENCRYPTION_LENGTH:
+	return _("Error in subfile: invalid encrypted data length.");
+
+    case ERROR_SUBFILE_UNEXPECTED_EOF:
+	return _("Error in subfile: read beyond end of stream.");
+
+    case ERROR_SUBFILE_CRC32:
+	return _("Error in subfile: crc32 mismatch, data possibly corrupt.");
+
+    case ERROR_Z_UNKNOWN:
+	return _("Error in zlib: unknown error.");
+
+    case ERROR_Z_OK:
+	return _("Error in zlib: success.");
+
+    case ERROR_Z_NEED_DICT:
+	return _("Error in zlib: need dictionary.");
+	
+    case ERROR_Z_STREAM_END:
+	return _("Error in zlib: stream end.");
+
+    case ERROR_Z_ERRNO:
+	return _("Error in zlib: file error.");
+
+    case ERROR_Z_STREAM_ERROR:
+	return _("Error in zlib: stream error.");
+
+    case ERROR_Z_DATA_ERROR:
+	return _("Error in zlib: data error.");
+
+    case ERROR_Z_MEM_ERROR:
+	return _("Error in zlib: insufficient memory.");
+
+    case ERROR_Z_BUF_ERROR:
+	return _("Error in zlib: buffer error.");
+
+    case ERROR_Z_VERSION_ERROR:
+	return _("Error in zlib: incompatible version.");
+
+    case ERROR_BZ_UNKNOWN:
+	return _("Error in bzip2: unknown error.");
+
+    case ERROR_BZ_OK:
+	return _("Error in bzip2: success.");
+
+    case ERROR_BZ_RUN_OK:
+	return _("Error in bzip2: successful run.");
+
+    case ERROR_BZ_FLUSH_OK:
+	return _("Error in bzip2: successful flush.");
+
+    case ERROR_BZ_FINISH_OK:
+	return _("Error in bzip2: successful finish.");
+
+    case ERROR_BZ_STREAM_END:
+	return _("Error in bzip2: stream end.");
+
+    case ERROR_BZ_SEQUENCE_ERROR:
+	return _("Error in bzip2: sequence error.");
+
+    case ERROR_BZ_PARAM_ERROR:
+	return _("Error in bzip2: parameter error.");
+
+    case ERROR_BZ_MEM_ERROR:
+	return _("Error in bzip2: insufficient memory.");
+
+    case ERROR_BZ_DATA_ERROR:
+	return _("Error in bzip2: data error.");
+
+    case ERROR_BZ_DATA_ERROR_MAGIC:
+	return _("Error in bzip2: magic header error.");
+
+    case ERROR_BZ_IO_ERROR:
+	return _("Error in bzip2: file system error.");
+
+    case ERROR_BZ_UNEXPECTED_EOF:
+	return _("Error in bzip2: unexpected end of file.");
+
+    case ERROR_BZ_OUTBUFF_FULL:
+	return _("Error in bzip2: output buffer full.");
+
+    case ERROR_BZ_CONFIG_ERROR:
+	return _("Error in bzip2: platform config error.");
+
+    default:
+	return _("Unknown error code.");
+    }
+}
+
 void WCryptoTE::UpdateStatusBar(const wxString& str)
 {
     statusbar->SetStatusText(str);
@@ -432,7 +572,13 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 		container->SetSubFileProperty(sfnew, "Filetype", "text");
 	    }
 
-	    container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
+	    Enctain::error_t e = container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
+	    if (e != Enctain::ERROR_SUCCESS)
+	    {
+		wxLogError(WCryptoTE::EnctainErrorString(e));
+	    }
+
+
 	    container->SetSubFileProperty(sfnew, "MTime", strTimeStampNow());
 
 	    importnum++;
@@ -454,13 +600,13 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 }
 
 /** Write the incoming file data into the export file. */
-class ExportAcceptor : public Enctain::DataOutput
+class DataOutputExport : public Enctain::DataOutput
 {
 public:
     class wxOutputStream&	outstream;
 
     /// Constructor get the file name to open
-    ExportAcceptor(wxOutputStream& os)
+    DataOutputExport(wxOutputStream& os)
 	: outstream(os)
     {
     }
@@ -486,8 +632,12 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
     {
 	// export directly from the container storage
 
-	ExportAcceptor acceptor(outstream);
-	container->GetSubFileData(sfid, acceptor);
+	DataOutputExport acceptor(outstream);
+	Enctain::error_t e = container->GetSubFileData(sfid, acceptor);
+	if (e != Enctain::ERROR_SUCCESS)
+	{
+	    wxLogError(EnctainErrorString(e));
+	}
     }
 }
 
@@ -724,8 +874,12 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     if (!stream.IsOk()) return false;
 
     DataInputStream datain(stream);
-    bool b = nc->Load(datain, strWX2STL(passdlg.GetPass()));
-    if (!b) return false;
+    Enctain::error_t e = nc->Load(datain, strWX2STL(passdlg.GetPass()));
+    if (e != Enctain::ERROR_SUCCESS)
+    {
+	wxLogError(EnctainErrorString(e));
+	return false;
+    }
 
     // Loading was successful
 
@@ -907,10 +1061,11 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     SaveOpenSubFilelist();
 
     DataOutputStream dataout(stream);
-    if (!container->Save(dataout))
+    Enctain::error_t e = container->Save(dataout);
+    if (e != Enctain::ERROR_SUCCESS)
     {
-	UpdateStatusBar(_("Error saving container!"));
-	wxLogError(_("Error saving container!"));
+	UpdateStatusBar(EnctainErrorString(e));
+	wxLogError(EnctainErrorString(e));
 	return false;
     }
 

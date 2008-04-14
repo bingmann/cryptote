@@ -12,6 +12,63 @@
 
 namespace Enctain {
 
+/// Enumeration of different error return codes. They can be resolved into
+/// English strings using GetErrorString().
+enum error_t {
+    ERROR_SUCCESS = 0,
+  
+    ERROR_SAVE_NO_PASSWORD,
+
+    ERROR_LOAD_HEADER1,
+    ERROR_LOAD_HEADER1_SIGNATURE,
+    ERROR_LOAD_HEADER1_VERSION,
+    ERROR_LOAD_HEADER1_METADATA,
+    ERROR_LOAD_HEADER1_METADATA_PARSE,
+
+    ERROR_LOAD_HEADER2,
+    ERROR_LOAD_HEADER2_ENCRYPTION,
+    ERROR_LOAD_HEADER2_METADATA,
+    ERROR_LOAD_HEADER2_METADATA_CRC32,
+    ERROR_LOAD_HEADER2_METADATA_PARSE,
+
+    ERROR_LOAD_SUBFILE,
+
+    ERROR_SUBFILE_COMPRESSION_INVALID,
+    ERROR_SUBFILE_ENCRYPTION_INVALID,
+    ERROR_SUBFILE_ENCRYPTION_LENGTH,    
+
+    ERROR_SUBFILE_UNEXPECTED_EOF,
+    ERROR_SUBFILE_CRC32,
+
+    ERROR_Z_UNKNOWN,
+    ERROR_Z_OK,
+    ERROR_Z_NEED_DICT,
+    ERROR_Z_STREAM_END,
+    ERROR_Z_ERRNO,
+    ERROR_Z_STREAM_ERROR,
+    ERROR_Z_DATA_ERROR,
+    ERROR_Z_MEM_ERROR,
+    ERROR_Z_BUF_ERROR,
+    ERROR_Z_VERSION_ERROR,
+
+    ERROR_BZ_UNKNOWN,
+    ERROR_BZ_OK,
+    ERROR_BZ_RUN_OK,
+    ERROR_BZ_FLUSH_OK,
+    ERROR_BZ_FINISH_OK,
+    ERROR_BZ_STREAM_END,
+    ERROR_BZ_SEQUENCE_ERROR,
+    ERROR_BZ_PARAM_ERROR,
+    ERROR_BZ_MEM_ERROR,
+    ERROR_BZ_DATA_ERROR,
+    ERROR_BZ_DATA_ERROR_MAGIC,
+    ERROR_BZ_IO_ERROR,
+    ERROR_BZ_UNEXPECTED_EOF,
+    ERROR_BZ_OUTBUFF_FULL,
+    ERROR_BZ_CONFIG_ERROR,
+
+};
+
 /// Enumeration of different supported encryption algorithms which can be
 /// applied to individual files.
 enum encryption_t {
@@ -69,7 +126,7 @@ class ProgressIndicator
 public:
 
     /// Required.
-    virtual ~ProgressIndicator();
+    virtual ~ProgressIndicator() {};
 
     /// Pure virtual function called when the progress indicator should
     /// start. The current value and range is given in this call. This call may
@@ -213,23 +270,26 @@ public:
 
     ~Container();
 
-    // *** Settings ***
+    // *** Settings and Error Strings ***
 
-    /// Change the signature used by Enctain which defaults to "enctain\0". The
+    /// Change the signature used by Enctain which defaults to "CryptoTE". The
     /// signature is always 8 characters long and will be truncated or padded
     /// with zeros. The signature is shared between all instances.
     static void		SetSignature(const char* sign);
 
+    /// Return a one-line English description of the error code.
+    static const char*	GetErrorString(error_t e);
+
     // *** Load/Save Operations ***
 
     /// Save the current container by outputting all data to the data sink.
-    bool		Save(DataOutput& dataout);
+    error_t		Save(DataOutput& dataout);
 
     /// Load a new container from an input stream and parse the subfile index.
-    bool		Load(DataInput& datain, const std::string& filekey);
+    error_t		Load(DataInput& datain, const std::string& filekey);
 
     /// Load a container version v1.0
-    bool		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1);
+    error_t		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1);
 
 
     // *** Container Info and Key Operations ***
@@ -361,15 +421,15 @@ public:
 
     /// Return the data of a subfile: decrypt and uncompress it. The data is
     /// sent block-wise to the DataOutput object.
-    bool		GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const;
+    error_t		GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const;
 
     /// Return the data of a subfile: decrypt and uncompress it. Return
     /// complete data in a memory string.
-    bool		GetSubFileData(unsigned int subfileindex, std::string& data) const;
+    error_t		GetSubFileData(unsigned int subfileindex, std::string& data) const;
 
     /// Set/change the data of a subfile, it will be compressed and encrypted
     /// but not written to disk, yet.
-    bool		SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen);
+    error_t		SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen);
 };
 
 } // namespace Enctain

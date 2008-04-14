@@ -98,7 +98,11 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
 
     TextPageAcceptor acceptor(*this);
 
-    wmain->container->GetSubFileData(sfid, acceptor);
+    Enctain::error_t e = wmain->container->GetSubFileData(sfid, acceptor);
+    if (e != Enctain::ERROR_SUCCESS)
+    {
+	wxLogError(WCryptoTE::EnctainErrorString(e));
+    }
 
     subfileid = sfid;
 
@@ -452,7 +456,11 @@ void WTextPage::PageSaveData()
     size_t buflen = editctrl->GetTextLength();
     wxCharBuffer buf = editctrl->GetTextRaw();
 
-    wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
+    Enctain::error_t e = wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
+    if (e != Enctain::ERROR_SUCCESS)
+    {
+	wxLogError(WCryptoTE::EnctainErrorString(e));
+    }
 
     wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
 
