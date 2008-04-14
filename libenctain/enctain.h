@@ -4,13 +4,13 @@
 #define ENCTAIN_H
 
 #include <wx/stream.h>
-#include <wx/buffer.h>
 
 #include <vector>
 #include <map>
 #include <string>
 
 #include "serpent.h"
+#include "bytebuff.h"
 
 namespace Enctain {
 
@@ -30,17 +30,18 @@ enum compression_t {
 };
 
 /**
- * Abstract interface class which receives data during loading operations.
+ * Abstract interface class which receives data during container saving or
+ * subfile decompression/decryption operations. It is a generic data receiver.
  */
-class DataAcceptor
+class DataOutput
 {
 public:
 
     /// Required.
-    virtual ~DataAcceptor();
+    virtual ~DataOutput() {};
 
     /// Pure virtual function which gets data block-wise.
-    virtual void	Append(const void* data, size_t datalen) = 0;
+    virtual void	Output(const void* data, size_t datalen) = 0;
 };
 
 /**
@@ -111,7 +112,7 @@ protected:
 	propertymap_type properties;
 
 	/// Compressed and encrypted data of subfile.
-	wxMemoryBuffer	data;
+	ByteBuffer	data;
 
 	/// Constructor initializing everything to zero.
 	SubFile()
@@ -160,7 +161,8 @@ protected:
     /// 256-bit raw encryption key.
     bool		iskeyset;
 
-    /// Serpent256 keybit encryption context
+    /// Serpent256 keybit encryption context. It is mutable because
+    /// GetSubFileData() is const and changes the CBC IV.
     mutable SerpentCBC	serpentctx;
 
     /// Unencrypted global properties, completely user-defined.
@@ -344,12 +346,12 @@ public:
     // * Subfile data operations *
 
     /// Return the data of a subfile: decrypt and uncompress it. The data is
-    /// sent block-wise to the DataAcceptor object.
-    bool		GetSubFileData(unsigned int subfileindex, class DataAcceptor& da) const;
+    /// sent block-wise to the DataOutput object.
+    bool		GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const;
 
     /// Return the data of a subfile: decrypt and uncompress it. Return
-    /// complete data in a memory buffer.
-    bool		GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& data) const;
+    /// complete data in a memory string.
+    bool		GetSubFileData(unsigned int subfileindex, std::string& data) const;
 
     /// Set/change the data of a subfile, it will be compressed and encrypted
     /// but not written to disk, yet.

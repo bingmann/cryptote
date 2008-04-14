@@ -288,11 +288,10 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( key == "Name" && val == "test1.txt" );
 	assert( !container.GetSubFilePropertyIndex(0, 2, key, val) );
 
-	wxMemoryBuffer mb;
+	std::string mb;
 	container.GetSubFileData(0, mb);
 	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
 
 	// subfile 1
 	assert( container.GetSubFilePropertyIndex(1, 0, key, val) );
@@ -302,9 +301,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(1, 2, key, val) );
 
 	container.GetSubFileData(1, mb);
-	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
 
 	// subfile 2
 	assert( container.GetSubFilePropertyIndex(2, 0, key, val) );
@@ -314,9 +311,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(2, 2, key, val) );
 
 	container.GetSubFileData(2, mb);
-	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
 
 	// subfile 3
 	assert( container.GetSubFilePropertyIndex(3, 0, key, val) );
@@ -326,9 +321,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(3, 2, key, val) );
 
 	container.GetSubFileData(3, mb);
-	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
 
 	// subfile 4
 	assert( container.GetSubFilePropertyIndex(4, 0, key, val) );
@@ -338,9 +331,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(4, 2, key, val) );
 
 	container.GetSubFileData(4, mb);
-	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
 
 	// subfile 5
 	assert( container.GetSubFilePropertyIndex(5, 0, key, val) );
@@ -350,9 +341,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
 
 	container.GetSubFileData(5, mb);
-	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
 
 	// subfile 5 (again)
 	assert( container.GetSubFilePropertyIndex(5, 0, key, val) );
@@ -362,9 +351,7 @@ void test_enctain(const std::string& filedata, wxString filename)
 	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
 
 	container.GetSubFileData(5, mb);
-	
-	assert( mb.GetDataLen() == filedata.size() );
-	assert( memcmp(mb.GetData(), filedata.data(), filedata.size()) == 0 );
+	assert( mb == filedata );
     }
 }
 

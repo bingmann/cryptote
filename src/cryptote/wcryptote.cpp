@@ -454,7 +454,7 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 }
 
 /** Write the incoming file data into the export file. */
-class ExportAcceptor : public Enctain::DataAcceptor
+class ExportAcceptor : public Enctain::DataOutput
 {
 public:
     class wxOutputStream&	outstream;
@@ -466,7 +466,7 @@ public:
     }
 
     /// Virtual callback function to save data.
-    virtual void Append(const void* data, size_t datalen)
+    virtual void Output(const void* data, size_t datalen)
     {
 	outstream.Write(data, datalen);
     }

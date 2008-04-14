@@ -92,14 +92,27 @@ public:
     {
 	if (buff_ < n)
 	{
+	    buff_ = n;
+	    data_ = static_cast<char*>(realloc(data_, buff_));
+	}
+    }
+
+    /// Dynamically allocate more memory. At least n bytes will be available,
+    /// probably more to compensate future growth.
+    inline void dynalloc(unsigned int n)
+    {
+	if (buff_ < n)
+	{
 	    // place to adapt the buffer growing algorithm as need.
-	    while(buff_ < n) {
-		if (buff_ < 256) buff_ = 512;
-		else if (buff_ < 1024*1024) buff_ = 2*buff_;
-		else buff_ += 1024*1024;
+	    unsigned int newsize = buff_;
+
+	    while(newsize < n) {
+		if (newsize < 256) newsize = 512;
+		else if (newsize < 1024*1024) newsize = 2*newsize;
+		else newsize += 1024*1024;
 	    }
 
-	    data_ = static_cast<char*>(realloc(data_, buff_));
+	    alloc(newsize);
 	}
     }
 
@@ -157,7 +170,7 @@ public:
     /// Append a memory range to the buffer
     inline void append(const void *indata, unsigned int inlen)
     {
-	if (size_ + inlen > buff_) alloc(size_ + inlen);
+	if (size_ + inlen > buff_) dynalloc(size_ + inlen);
 
 	memcpy(data_ + size_, indata, inlen);
 	size_ += inlen;
@@ -177,7 +190,7 @@ public:
     template <typename Tp>
     inline void put(const Tp item)
     {
-	if (size_ + sizeof(Tp) > buff_) alloc(size_ + sizeof(Tp));
+	if (size_ + sizeof(Tp) > buff_) dynalloc(size_ + sizeof(Tp));
 
 	*reinterpret_cast<Tp*>(data_ + size_) = item;
 	size_ += sizeof(Tp);
@@ -191,7 +204,7 @@ public:
 	if (rem != 0)
 	{
 	    unsigned int add = n - rem;
-	    if (size_ + add > buff_) alloc(size_ + add);
+	    if (size_ + add > buff_) dynalloc(size_ + add);
 	    memset(data_ + size_, 0, add);
 	    size_ += add;
 	}

@@ -32,9 +32,33 @@ wxString WBinaryPage::GetCaption()
     return strSTL2WX( wmain->container->GetSubFileProperty(subfileid, "Name") );
 }
 
+struct DataOutputMemoryBuffer : public Enctain::DataOutput
+{
+    wxMemoryBuffer&	buffer;
+
+    DataOutputMemoryBuffer(wxMemoryBuffer& out)
+	: buffer(out)
+    {
+    }
+
+    ~DataOutputMemoryBuffer()
+    {
+    }
+
+    virtual void Output(const void* data, size_t datalen)
+    {
+	buffer.AppendData(data, datalen);
+    }
+};
+
 bool WBinaryPage::LoadSubFile(unsigned int sfid)
 {
-    wmain->container->GetSubFileData(sfid, bindata);
+    DataOutputMemoryBuffer dataout(bindata);
+
+    bindata.SetBufSize(wmain->container->GetSubFileSize(sfid));
+    bindata.SetDataLen(0);
+
+    wmain->container->GetSubFileData(sfid, dataout);
 
     subfileid = sfid;
     needsave = false;

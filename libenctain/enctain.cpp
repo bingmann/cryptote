@@ -236,9 +236,9 @@ bool Container::Save(wxOutputStream& outstream)
 
     for (unsigned int si = 0; si < subfiles.size(); ++si)
     {
-	assert(subfiles[si].storagesize == subfiles[si].data.GetDataLen());
+	assert(subfiles[si].storagesize == subfiles[si].data.size());
 
-	outstream.Write(subfiles[si].data.GetData(), subfiles[si].storagesize);
+	outstream.Write(subfiles[si].data.data(), subfiles[si].storagesize);
 
 	ProgressUpdate(outstream.TellO() - streamoff);
     }
@@ -482,10 +482,10 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
     {
 	SubFile& subfile = subfiles[si];
 
-	subfile.data.SetBufSize( subfile.storagesize );
+	subfile.data.alloc( subfile.storagesize );
 
-	instream.Read(subfile.data.GetData(), subfile.storagesize);
-	subfile.data.SetDataLen(instream.LastRead());
+	instream.Read(subfile.data.data(), subfile.storagesize);
+	subfile.data.set_size(instream.LastRead());
 
 	if (instream.LastRead() != subfile.storagesize) {
 	    wxLogError(_("Error loading container: could not read encrypted subfile data."));
@@ -535,7 +535,7 @@ void Container::SetKey(const std::string& keystr)
     {
 	SubFile& subfile = subfiles[si];
 
-	assert(subfile.storagesize == subfile.data.GetDataLen());
+	assert(subfile.storagesize == subfile.data.size());
 
 	if (subfile.encryption == ENCRYPTION_NONE)
 	{
@@ -551,14 +551,14 @@ void Container::SetKey(const std::string& keystr)
 
 	    const size_t batch = 65536;
 
-	    for (size_t offset = 0; offset < subfile.data.GetDataLen(); offset += batch)
+	    for (size_t offset = 0; offset < subfile.data.size(); offset += batch)
 	    {
-		size_t len = wxMin(batch, subfile.data.GetDataLen() - offset);
+		size_t len = wxMin(batch, subfile.data.size() - offset);
 
 		if (iskeyset)
-		    serpentctx.decrypt((char*)subfile.data.GetData() + offset, len);
+		    serpentctx.decrypt(subfile.data.data() + offset, len);
 	
-		newctx.encrypt((char*)subfile.data.GetData() + offset, len);
+		newctx.encrypt(subfile.data.data() + offset, len);
 
 		totalsize += len;
 		ProgressUpdate(totalsize);
@@ -810,13 +810,13 @@ void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
     // reencrypt if necessary
     if (subfiles[subfileindex].encryption != c)
     {
-	wxMemoryBuffer data;
+	std::string data;
 
 	GetSubFileData(subfileindex, data);
 
 	subfiles[subfileindex].encryption = c;
 
-	SetSubFileData(subfileindex, data.GetData(), data.GetDataLen());
+	SetSubFileData(subfileindex, data.data(), data.size());
     }
 }
 
@@ -831,13 +831,13 @@ void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c
     // recompress if necessary
     if (subfiles[subfileindex].compression != c)
     {
-	wxMemoryBuffer data;
+	std::string data;
 
 	GetSubFileData(subfileindex, data);
 
 	subfiles[subfileindex].compression = c;
 
-	SetSubFileData(subfileindex, data.GetData(), data.GetDataLen());
+	SetSubFileData(subfileindex, data.data(), data.size());
     }
 }
 
@@ -855,14 +855,14 @@ void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compr
     // reencrypt and recompress if necessary
     if (subfiles[subfileindex].encryption != enc || subfiles[subfileindex].compression != comp)
     {
-	wxMemoryBuffer data;
+	std::string data;
 
 	GetSubFileData(subfileindex, data);
 
 	subfiles[subfileindex].encryption = enc;
 	subfiles[subfileindex].compression = comp;
 
-	SetSubFileData(subfileindex, data.GetData(), data.GetDataLen());
+	SetSubFileData(subfileindex, data.data(), data.size());
     }
 }
 
@@ -904,14 +904,14 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	return false;
     }
 
-    // Copy or compress data into the wxMemoryBuffer
+    // Copy or compress data into the ByteBuffer
 
     uint32_t crc32run = 0;
 
     if (subfile.compression == COMPRESSION_NONE)
     {
-	subfile.data.SetBufSize(datalen);
-	subfile.data.SetDataLen(0);
+	subfile.data.alloc(datalen);
+	subfile.data.set_size(0);
 
 	const size_t batch = 65536;
 	size_t offset = 0;
@@ -920,7 +920,7 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 	{
 	    size_t currlen = wxMin(batch, datalen - offset);
 
-	    subfile.data.AppendData((char*)data + offset, currlen);
+	    subfile.data.append((char*)data + offset, currlen);
 
 	    crc32run = update_crc32(crc32run, (uint8_t*)data + offset, currlen);
 
@@ -936,14 +936,14 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 		if (enclen % 16 != 0)
 		{
 		    while(enclen % 16 != 0) {
-			subfile.data.AppendByte(0);
+			subfile.data.put<char>(0);
 			++enclen;
 		    }
 		}
 
 		if (iskeyset)
 		{
-		    serpentctx.encrypt((char*)subfile.data.GetData() + offset, enclen);
+		    serpentctx.encrypt(subfile.data.data() + offset, enclen);
 		}
 	    }
 
@@ -975,10 +975,10 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	while (ret == Z_OK)
 	{
-	    subfile.data.SetBufSize(offset + batch); // extend output buffer
+	    subfile.data.alloc(offset + batch); // extend output buffer
 
-	    zs.next_out = (Bytef*)(subfile.data.GetData()) + offset;
-	    zs.avail_out = subfile.data.GetBufSize() - offset;
+	    zs.next_out = (Bytef*)(subfile.data.data()) + offset;
+	    zs.avail_out = subfile.data.buffsize() - offset;
 
 	    ret = deflate(&zs, Z_FINISH);
 
@@ -992,7 +992,7 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 		    size_t encsize = zs.total_out - encoffset;
 		    encsize -= (encsize % 16);
 
-		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+		    serpentctx.encrypt(subfile.data.data() + encoffset, encsize);
 
 		    encoffset += encsize;
 		}
@@ -1011,20 +1011,18 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	deflateEnd(&zs);
 
-	subfile.data.SetDataLen(offset);
+	subfile.data.set_size(offset);
 
 	if (subfile.encryption == ENCRYPTION_SERPENT256)
 	{
-	    if (encoffset < subfile.data.GetDataLen())
+	    if (encoffset < subfile.data.size())
 	    {
-		while(subfile.data.GetDataLen() % 16 != 0) {
-		    subfile.data.AppendByte(0);
-		}
+		subfile.data.align(16);
 
 		if (iskeyset)
 		{
-		    size_t encsize = subfile.data.GetDataLen() - encoffset;
-		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+		    size_t encsize = subfile.data.size() - encoffset;
+		    serpentctx.encrypt(subfile.data.data() + encoffset, encsize);
 		}
 	    }
 	}
@@ -1052,10 +1050,10 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	while (ret == BZ_OK || ret == BZ_FINISH_OK)
 	{
-	    subfile.data.SetBufSize(offset + batch); // extend output buffer
+	    subfile.data.alloc(offset + batch); // extend output buffer
 
-	    bz.next_out = (char*)(subfile.data.GetData()) + offset;
-	    bz.avail_out = subfile.data.GetBufSize() - offset;
+	    bz.next_out = subfile.data.data() + offset;
+	    bz.avail_out = subfile.data.buffsize() - offset;
 
 	    ret = BZ2_bzCompress(&bz, BZ_FINISH);
 
@@ -1069,7 +1067,7 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 		    size_t encsize = bz.total_out_lo32 - encoffset;
 		    encsize -= (encsize % 16);
 
-		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+		    serpentctx.encrypt(subfile.data.data() + encoffset, encsize);
 
 		    encoffset += encsize;
 		}
@@ -1087,20 +1085,18 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
 
 	BZ2_bzCompressEnd(&bz);
 
-	subfile.data.SetDataLen(offset);
+	subfile.data.set_size(offset);
 
 	if (subfile.encryption == ENCRYPTION_SERPENT256)
 	{
-	    if (encoffset < subfile.data.GetDataLen())
+	    if (encoffset < subfile.data.size())
 	    {
-		while(subfile.data.GetDataLen() % 16 != 0) {
-		    subfile.data.AppendByte(0);
-		}
+		subfile.data.align(16);
 
 		if (iskeyset)
 		{
-		    size_t encsize = subfile.data.GetDataLen() - encoffset;
-		    serpentctx.encrypt((char*)subfile.data.GetData() + encoffset, encsize);
+		    size_t encsize = subfile.data.size() - encoffset;
+		    serpentctx.encrypt(subfile.data.data() + encoffset, encsize);
 		}
 	    }
 	}
@@ -1113,56 +1109,56 @@ bool Container::SetSubFileData(unsigned int subfileindex, const void* data, unsi
     }
 
     subfile.crc32 = crc32run;
-    subfile.storagesize = subfile.data.GetDataLen();
+    subfile.storagesize = subfile.data.size();
 
     ProgressStop();
     return true;
 }
 
-struct GetSubFileDataAcceptor : public DataAcceptor
+struct DataOutputString : public DataOutput
 {
-    wxMemoryBuffer&	buffer;
+    std::string&	str;
 
-    GetSubFileDataAcceptor(wxMemoryBuffer& mb)
-	: buffer(mb)
+    DataOutputString(std::string& s)
+	: str(s)
     {
     }
 
-    ~GetSubFileDataAcceptor()
+    ~DataOutputString()
     {
     }
 
-    virtual void Append(const void* data, size_t datalen)
+    virtual void Output(const void* data, size_t datalen)
     {
-	buffer.AppendData(data, datalen);
+	str.append(static_cast<const char*>(data), datalen);
     }
 };
 
-bool Container::GetSubFileData(unsigned int subfileindex, wxMemoryBuffer& outdata) const
+bool Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
 
     const SubFile& subfile = subfiles[subfileindex];
 
-    outdata.SetBufSize(subfile.realsize);
-    outdata.SetDataLen(0);
+    outstr.clear();
+    outstr.reserve(subfile.realsize);
 
-    GetSubFileDataAcceptor da(outdata);
+    DataOutputString dataout(outstr);
 
-    return GetSubFileData(subfileindex, da);
+    return GetSubFileData(subfileindex, dataout);
 }
 
-bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& acceptor) const
+bool Container::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
 
     const SubFile& subfile = subfiles[subfileindex];
 
-    if (subfile.data.GetDataLen() == 0) return true;
+    if (subfile.data.size() == 0) return true;
 
-    assert(subfile.data.GetDataLen() == subfile.storagesize);
+    assert(subfile.data.size() == subfile.storagesize);
 
     ProgressStart("Loading SubFile", 0, subfile.storagesize);
 
@@ -1176,7 +1172,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	if (iskeyset)
 	{
 	    // Ensure that the data buffer has a length multiple of 16
-	    if (subfile.data.GetDataLen() % 16 != 0) {
+	    if (subfile.data.size() % 16 != 0) {
 		wxLogError( _("Exception during subfile decryption: invalid data length.") );
 		ProgressStop();
 		return false;
@@ -1193,7 +1189,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	return false;
     }
 
-    // Copy or decompress subfile data and send output to DataAcceptor
+    // Copy or decompress subfile data and send output to DataOutput
 
     uint32_t crc32run = 0;
 
@@ -1202,13 +1198,13 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	size_t offset = 0;
 	char buffer[65536];
 
-	assert(subfile.data.GetDataLen() >= subfile.realsize);
+	assert(subfile.data.size() >= subfile.realsize);
 
-	while(offset < subfile.data.GetDataLen())
+	while(offset < subfile.data.size())
 	{
-	    size_t currlen = wxMin(sizeof(buffer), subfile.data.GetDataLen() - offset);
+	    size_t currlen = wxMin(sizeof(buffer), subfile.data.size() - offset);
 
-	    memcpy(buffer, (char*)subfile.data.GetData() + offset, currlen);
+	    memcpy(buffer, subfile.data.data() + offset, currlen);
 
 	    if (subfile.encryption == ENCRYPTION_NONE)
 	    {
@@ -1224,7 +1220,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	    size_t reallen = currlen;
 	    if (offset + reallen > subfile.realsize) reallen = subfile.realsize - offset;
 
-	    acceptor.Append(buffer, reallen);
+	    dataout.Output(buffer, reallen);
 	    crc32run = update_crc32(crc32run, (uint8_t*)buffer, reallen);
 
 	    offset += currlen;
@@ -1255,7 +1251,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	{
 	    if (zs.avail_in == 0)
 	    {
-		if (inoffset >= subfile.data.GetDataLen())
+		if (inoffset >= subfile.data.size())
 		{
 		    wxLogError( _("Exception during decompression: reading beyond end of stream") );
 		    inflateEnd(&zs);
@@ -1263,9 +1259,9 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 		    return false;
 		}
 
-		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.GetDataLen() - inoffset);
+		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.size() - inoffset);
 
-		memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
+		memcpy(inbuffer, subfile.data.data() + inoffset, currlen);
 
 		if (subfile.encryption == ENCRYPTION_NONE)
 		{
@@ -1291,7 +1287,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 
 	    if (outoffset < zs.total_out)
 	    {
-		acceptor.Append(outbuffer, zs.total_out - outoffset);
+		dataout.Output(outbuffer, zs.total_out - outoffset);
 		crc32run = update_crc32(crc32run, (uint8_t*)outbuffer, zs.total_out - outoffset);
 
 		outoffset = zs.total_out;
@@ -1331,7 +1327,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 	{
 	    if (bz.avail_in == 0)
 	    {
-		if (inoffset >= subfile.data.GetDataLen())
+		if (inoffset >= subfile.data.size())
 		{
 		    wxLogError( _("Exception during decompression: reading beyond end of stream") );
 		    BZ2_bzDecompressEnd(&bz);
@@ -1339,9 +1335,9 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 		    return false;
 		}
 
-		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.GetDataLen() - inoffset);
+		size_t currlen = wxMin(sizeof(inbuffer), subfile.data.size() - inoffset);
 
-		memcpy(inbuffer, (char*)subfile.data.GetData() + inoffset, currlen);
+		memcpy(inbuffer, subfile.data.data() + inoffset, currlen);
 
 		if (subfile.encryption == ENCRYPTION_NONE)
 		{
@@ -1367,7 +1363,7 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 
 	    if (outoffset < bz.total_out_lo32)
 	    {
-		acceptor.Append(outbuffer, bz.total_out_lo32 - outoffset);
+		dataout.Output(outbuffer, bz.total_out_lo32 - outoffset);
 		crc32run = update_crc32(crc32run, (uint8_t*)outbuffer, bz.total_out_lo32 - outoffset);
 
 		outoffset = bz.total_out_lo32;
@@ -1398,10 +1394,6 @@ bool Container::GetSubFileData(unsigned int subfileindex, class DataAcceptor& ac
 
     ProgressStop();
     return true;
-}
-
-DataAcceptor::~DataAcceptor()
-{
 }
 
 ProgressIndicator::~ProgressIndicator()

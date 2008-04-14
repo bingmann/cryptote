@@ -71,8 +71,8 @@ wxString WTextPage::GetCaption()
     return strSTL2WX( wmain->container->GetSubFileProperty(subfileid, "Name") );
 }
 
-/** Appends the incoming text file into the Scintilla edit control. */
-class TextPageAcceptor : public Enctain::DataAcceptor
+/** Appends the incoming text file data into the Scintilla edit control. */
+class TextPageAcceptor : public Enctain::DataOutput
 {
 public:
     class WTextPage&	tpage;
@@ -84,7 +84,7 @@ public:
     }
 
     /// Virtual callback function to save data.
-    virtual void Append(const void* data, size_t datalen)
+    virtual void Output(const void* data, size_t datalen)
     {
 	tpage.editctrl->AddTextRaw((const char*)data, datalen);
     }
