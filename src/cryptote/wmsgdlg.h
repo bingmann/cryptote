@@ -34,4 +34,6 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
+extern void wxMessageDialogErrorOK(wxWindow *parent, const wxString& message);
+
 #endif // WMSGDLG_H

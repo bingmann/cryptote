@@ -17,7 +17,8 @@ class WSetPassword : public wxDialog
 public:
     // begin wxGlade: WSetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1000
+        myID_TEXTPASS = wxID_HIGHEST + 1000,
+        myID_TEXTVERIFY = wxID_HIGHEST + 1002
     };
     // end wxGlade
 
@@ -37,15 +38,24 @@ protected:
     wxStaticText* labelQuery;
     wxTextCtrl* textctrlPass;
     wxGauge* gaugeStrength;
+    wxTextCtrl* textctrlVerify;
     wxButton* buttonOK;
     wxButton* buttonCancel;
     // end wxGlade
+
+    int		state;
+    wxString	pass;
+
+    wxSizer*	sizerGauge;
+    wxSizer*	sizerVerify;
 
     DECLARE_EVENT_TABLE();
 
 public:
     virtual void OnTextPassEnter(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnTextPass(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnTextVerifyEnter(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 class WGetPassword : public wxDialog
@@ -53,7 +63,7 @@ class WGetPassword : public wxDialog
 public:
     // begin wxGlade: WGetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1002
+        myID_TEXTPASS = wxID_HIGHEST + 1004
     };
     // end wxGlade
 

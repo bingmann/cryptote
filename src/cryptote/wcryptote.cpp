@@ -575,9 +575,8 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	    Enctain::error_t e = container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
 	    if (e != Enctain::ERROR_SUCCESS)
 	    {
-		wxLogError(WCryptoTE::EnctainErrorString(e));
+		wxMessageDialogErrorOK(this, WCryptoTE::EnctainErrorString(e));
 	    }
-
 
 	    container->SetSubFileProperty(sfnew, "MTime", strTimeStampNow());
 
@@ -636,7 +635,7 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
 	Enctain::error_t e = container->GetSubFileData(sfid, acceptor);
 	if (e != Enctain::ERROR_SUCCESS)
 	{
-	    wxLogError(EnctainErrorString(e));
+	    wxMessageDialogErrorOK(this, EnctainErrorString(e));
 	}
     }
 }
@@ -864,22 +863,44 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     if (!fh->Open(filename.c_str(), wxFile::read)) return false;
 #endif
 
-    WGetPassword passdlg(this, filename);
-    if (passdlg.ShowModal() != wxID_OK) return false;
-
     std::auto_ptr<Enctain::Container> nc (new Enctain::Container);
     nc->SetProgressIndicator(statusbar);
-
-    wxFileInputStream stream(*fh.get());
-    if (!stream.IsOk()) return false;
-
-    DataInputStream datain(stream);
-    Enctain::error_t e = nc->Load(datain, strWX2STL(passdlg.GetPass()));
-    if (e != Enctain::ERROR_SUCCESS)
+    
+    Enctain::error_t e;
+    do
     {
-	wxLogError(EnctainErrorString(e));
-	return false;
-    }
+	WGetPassword passdlg(this, filename);
+	if (passdlg.ShowModal() != wxID_OK) return false;
+
+	fh->Seek(0, wxFromStart);
+	wxFileInputStream stream(*fh.get());
+	if (!stream.IsOk()) return false;
+
+	DataInputStream datain(stream);
+	e = nc->Load(datain, strWX2STL(passdlg.GetPass()));
+
+	if (e != Enctain::ERROR_SUCCESS)
+	{
+	    if (e == Enctain::ERROR_LOAD_HEADER2_ENCRYPTION)
+	    {
+		WMessageDialog dlg(this,
+				   _("Error loading container: could not read encrypted header.\nEncryption key probably invalid. Retry?"),
+				   _("CryptoTE"),
+				   wxICON_ERROR,
+				   wxID_YES, wxID_CANCEL);
+
+		int id = dlg.ShowModal();
+
+		if (id != wxID_YES)
+		    return false;
+	    }
+	    else
+	    {
+		wxMessageDialogErrorOK(this, EnctainErrorString(e));
+		return false;
+	    }
+	}
+    } while(e != Enctain::ERROR_SUCCESS);
 
     // Loading was successful
 
@@ -1065,7 +1086,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     if (e != Enctain::ERROR_SUCCESS)
     {
 	UpdateStatusBar(EnctainErrorString(e));
-	wxLogError(EnctainErrorString(e));
+	wxMessageDialogErrorOK(this, EnctainErrorString(e));
 	return false;
     }
 

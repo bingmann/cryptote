@@ -129,4 +129,12 @@ BEGIN_EVENT_TABLE(WMessageDialog, wxDialog)
     EVT_BUTTON	(wxID_IGNORE,	WMessageDialog::OnButton)
     EVT_BUTTON	(wxID_SAVE,	WMessageDialog::OnButton)
 
-END_EVENT_TABLE()
+END_EVENT_TABLE();
+
+void wxMessageDialogErrorOK(wxWindow *parent, const wxString& message)
+{
+    wxMessageDialog dlg(parent, message,
+			_("CryptoTE"), wxOK | wxICON_ERROR);
+
+    dlg.ShowModal();
+}

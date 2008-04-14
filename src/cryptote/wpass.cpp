@@ -3,6 +3,7 @@
 
 #include "wpass.h"
 #include "wcryptote.h"
+#include "wmsgdlg.h"
 #include "common/tools.h"
 
 #include <wx/filename.h>
@@ -17,12 +18,33 @@ WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int
     labelQuery = new wxStaticText(this, wxID_ANY, _("Set Password for \"abc.ect\":"));
     textctrlPass = new wxTextCtrl(this, myID_TEXTPASS, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PASSWORD);
     gaugeStrength = new wxGauge(this, wxID_ANY, 100, wxDefaultPosition, wxDefaultSize, wxGA_HORIZONTAL|wxGA_SMOOTH);
+    textctrlVerify = new wxTextCtrl(this, myID_TEXTVERIFY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PASSWORD);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
 
     set_properties();
     do_layout();
     // end wxGlade
+
+    Layout();
+
+    {
+	wxSize maxsize = sizerGauge->GetSize();
+
+	if (maxsize.GetWidth() < sizerVerify->GetSize().GetWidth())
+	    maxsize.SetWidth(sizerVerify->GetSize().GetWidth());
+	if (maxsize.GetHeight() < sizerVerify->GetSize().GetHeight())
+	    maxsize.SetHeight(sizerVerify->GetSize().GetHeight());
+
+	sizerGauge->SetMinSize(maxsize);
+	sizerVerify->SetMinSize(maxsize);
+    }
+
+    GetSizer()->Hide(sizerVerify, true);
+    Layout();
+    GetSizer()->Fit(this);
+
+    state = 0;
 
     wxFileName fn(filename);
     labelQuery->SetLabel( wxString::Format(_("Set Password for \"%s\":"), fn.GetFullName().c_str()) );
@@ -42,33 +64,46 @@ void WSetPassword::do_layout()
 {
     // begin wxGlade: WSetPassword::do_layout
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
-    wxGridSizer* sizer4 = new wxGridSizer(1, 2, 0, 0);
+    wxGridSizer* sizer5 = new wxGridSizer(1, 2, 0, 0);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer* sizer3 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer4 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer3 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer3_ = new wxBoxSizer(wxHORIZONTAL);
     sizer2->Add(labelQuery, 0, wxALL, 8);
     sizer2->Add(textctrlPass, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
-    sizer3->Add(20, 20, 1, 0, 0);
+    sizer3_->Add(20, 20, 1, 0, 0);
     wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Estimated Strength:"));
-    sizer3->Add(label1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 8);
-    sizer3->Add(gaugeStrength, 2, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL, 8);
-    sizer2->Add(sizer3, 0, wxEXPAND, 0);
+    sizer3_->Add(label1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 8);
+    sizer3_->Add(gaugeStrength, 2, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL, 8);
+    sizer3->Add(sizer3_, 0, wxEXPAND, 0);
+    sizer3->Add(0, 0, 1, 0, 0);
+    sizer2->Add(sizer3, 1, wxEXPAND, 0);
+    wxStaticText* labelVerify = new wxStaticText(this, wxID_ANY, _("Enter password again:"));
+    sizer4->Add(labelVerify, 0, wxALL, 8);
+    sizer4->Add(textctrlVerify, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    sizer2->Add(sizer4, 1, wxEXPAND, 0);
     sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 8);
     wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
-    sizer4->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer4->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
-    sizer1->Add(sizer4, 0, wxEXPAND, 0);
+    sizer5->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer5->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer1->Add(sizer5, 0, wxEXPAND, 0);
     SetSizer(sizer1);
     sizer1->Fit(this);
     Layout();
     Centre();
     // end wxGlade
+
+    sizerGauge = sizer3;
+    sizerVerify = sizer4;
 }
 
 BEGIN_EVENT_TABLE(WSetPassword, wxDialog)
     // begin wxGlade: WSetPassword::event_table
     EVT_TEXT_ENTER(myID_TEXTPASS, WSetPassword::OnTextPassEnter)
     EVT_TEXT(myID_TEXTPASS, WSetPassword::OnTextPass)
+    EVT_TEXT_ENTER(myID_TEXTVERIFY, WSetPassword::OnTextVerifyEnter)
+    EVT_BUTTON(wxID_OK, WSetPassword::OnButtonOK)
     // end wxGlade
 END_EVENT_TABLE();
 
@@ -216,15 +251,52 @@ void WSetPassword::OnTextPass(wxCommandEvent& WXUNUSED(event))
 #endif
 }
 
-void WSetPassword::OnTextPassEnter(wxCommandEvent& WXUNUSED(event))
+void WSetPassword::OnTextPassEnter(wxCommandEvent& event)
 {
     if (buttonOK->IsEnabled())
-	EndModal(wxID_OK);
+	OnButtonOK(event);
 }
 
 wxString WSetPassword::GetPass() const
 {
-    return textctrlPass->GetValue();
+    return pass;
+}
+
+void WSetPassword::OnTextVerifyEnter(wxCommandEvent& event)
+{
+    if (buttonOK->IsEnabled())
+	OnButtonOK(event);
+}
+
+void WSetPassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
+{
+    if (state == 0)
+    {
+	// Swap display panes
+	GetSizer()->Hide(sizerGauge, true);
+	GetSizer()->Show(sizerVerify, true, true);
+	Layout();
+
+	pass = textctrlPass->GetValue();
+	textctrlPass->ChangeValue(_T(""));
+	textctrlPass->Disable();
+	buttonOK->Enable();
+
+	textctrlVerify->SetFocus();
+
+	state = 1;
+    }
+    else
+    {
+	if (textctrlVerify->GetValue() != pass)
+	{
+	    wxMessageDialogErrorOK(this, _("Entered passwords no not match."));
+	}
+	else
+	{
+	    EndModal(wxID_OK);
+	}
+    }
 }
 
 // wxGlade: add WSetPassword event handlers
