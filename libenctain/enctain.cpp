@@ -72,10 +72,9 @@ void Container::SetSignature(const char* sign)
 
 // *** Load/Save Operations ***
 
-bool Container::Save(wxOutputStream& outstream)
+bool Container::Save(DataOutput& dataout)
 {
     written = 0;
-    off_t streamoff = outstream.TellO();
 
     if (!iskeyset) {
 	wxLogError( _("Error saving container: no encryption password set!") );
@@ -121,10 +120,11 @@ bool Container::Save(wxOutputStream& outstream)
 	header1.version = 0x00010000;
 	header1.unc_metalen = unc_metadata.size();
 
-	outstream.Write(&header1, sizeof(header1));
-	outstream.Write(unc_metadata.data(), unc_metadata.size());
+	dataout.Output(&header1, sizeof(header1));
+	dataout.Output(unc_metadata.data(), unc_metadata.size());
 
-	ProgressUpdate(outstream.TellO() - streamoff);
+	written += sizeof(header1) + unc_metadata.size();
+	ProgressUpdate(written);
     }
 
     // Prepare variable metadata header containing global properties and all
@@ -225,12 +225,13 @@ bool Container::Save(wxOutputStream& outstream)
     serpentctx.encrypt(&header2, sizeof(header2));
     serpentctx.encrypt(metadata_compressed.data(), metadata_compressed.size());
 
-    outstream.Write(&header2, sizeof(header2));
-    outstream.Write(metadata_compressed.data(), metadata_compressed.size());
+    dataout.Output(&header2, sizeof(header2));
+    dataout.Output(metadata_compressed.data(), metadata_compressed.size());
+    written += sizeof(header2) + metadata_compressed.size();
 
     // Refine file target size because it is now exactly known.
-    esttotal = (outstream.TellO() - streamoff) + subfiletotal;
-    ProgressStart("Saving Container", (outstream.TellO() - streamoff), esttotal);
+    esttotal = written + subfiletotal;
+    ProgressStart("Saving Container", written, esttotal);
 
     // Output data of all subfiles simply concatenated
 
@@ -238,19 +239,19 @@ bool Container::Save(wxOutputStream& outstream)
     {
 	assert(subfiles[si].storagesize == subfiles[si].data.size());
 
-	outstream.Write(subfiles[si].data.data(), subfiles[si].storagesize);
+	dataout.Output(subfiles[si].data.data(), subfiles[si].storagesize);
+	written += subfiles[si].storagesize;
 
-	ProgressUpdate(outstream.TellO() - streamoff);
+	ProgressUpdate(written);
     }
 
-    written = (outstream.TellO() - streamoff);
     opened = true;
 
     ProgressStop();
     return true;
 }
 
-bool Container::Load(wxInputStream& instream, const std::string& filekey)
+bool Container::Load(DataInput& datain, const std::string& filekey)
 {
     ProgressStart("Loading Container", 0, 1000);
 
@@ -259,9 +260,7 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
     // Read unencrypted fixed Header1
     struct Header1 header1;
 
-    instream.Read(&header1, sizeof(header1));
-
-    if (instream.LastRead() != sizeof(header1)) {
+    if (datain.Input(&header1, sizeof(header1)) != sizeof(header1)) {
 	wxLogError(_("Error loading container: could not read header."));
 	ProgressStop();
 	return false;
@@ -274,7 +273,7 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
     }
 
     if (header1.version == 0x00010000) {
-	bool b = Loadv00010000(instream, filekey, header1);
+	bool b = Loadv00010000(datain, filekey, header1);
 	ProgressStop();
 	return b;
     }
@@ -285,21 +284,21 @@ bool Container::Load(wxInputStream& instream, const std::string& filekey)
     }
 }
 
-bool Container::Loadv00010000(wxInputStream& instream, const std::string& filekey, const Header1& header1)
+bool Container::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1)
 {
-    size_t streamoff = instream.TellI() - sizeof(Header1);
+    unsigned int readbyte = sizeof(Header1);
 
     // Read unencrypted metadata length
     {
 	ByteBuffer unc_metadata;
 	unc_metadata.alloc(header1.unc_metalen);
 
-	instream.Read(unc_metadata.data(), header1.unc_metalen);
-	if (instream.LastRead() != header1.unc_metalen) {
+	if (datain.Input(unc_metadata.data(), header1.unc_metalen) != header1.unc_metalen) {
 	    wxLogError(_("Error loading container: could not unencrypted metadata."));
 	    return false;
 	}
 
+	readbyte += header1.unc_metalen;
 	unc_metadata.set_size(header1.unc_metalen);
 
 	try
@@ -326,12 +325,11 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
     // Read encrypted fixed Header2
     struct Header2 header2;
 
-    instream.Read(&header2, sizeof(header2));
-
-    if (instream.LastRead() != sizeof(header2)) {
+    if (datain.Input(&header2, sizeof(header2)) != sizeof(header2)) {
 	wxLogError(_("Error loading container: could not read secondary header."));
 	return false;
     }
+    readbyte += sizeof(header2);
 
     // decrypt header2
 
@@ -358,12 +356,12 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
     ByteBuffer metadata_compressed;
     metadata_compressed.alloc(header2.metacomplen);
 
-    instream.Read(metadata_compressed.data(), header2.metacomplen);
-    if (instream.LastRead() != header2.metacomplen) {
+    if (datain.Input(metadata_compressed.data(), header2.metacomplen) != header2.metacomplen) {
 	wxLogError(_("Error loading container: could not decrypt metadata. Check the encryption key."));
 	return false;
     }
 
+    readbyte += header2.metacomplen;
     metadata_compressed.set_size(header2.metacomplen);
 
     decctx.decrypt(metadata_compressed.data(), metadata_compressed.size());
@@ -472,9 +470,7 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 	subfiletotal += subfiles[si].storagesize;
     }
 
-    ProgressStart("Loading Container",
-		  (instream.TellI() - streamoff),
-		  (instream.TellI() - streamoff) + subfiletotal);
+    ProgressStart("Loading Container", readbyte, readbyte + subfiletotal);
 
     // load data of all subfiles which are simply concatenated
 
@@ -484,15 +480,16 @@ bool Container::Loadv00010000(wxInputStream& instream, const std::string& fileke
 
 	subfile.data.alloc( subfile.storagesize );
 
-	instream.Read(subfile.data.data(), subfile.storagesize);
-	subfile.data.set_size(instream.LastRead());
+	unsigned int rb = datain.Input(subfile.data.data(), subfile.storagesize);
+	subfile.data.set_size(rb);
 
-	if (instream.LastRead() != subfile.storagesize) {
+	if (rb != subfile.storagesize) {
 	    wxLogError(_("Error loading container: could not read encrypted subfile data."));
 	    return false;
 	}
 
-	ProgressUpdate(instream.TellI() - streamoff);
+	readbyte += rb;
+	ProgressUpdate(readbyte);
     }
 
     opened = true;
@@ -1121,10 +1118,6 @@ struct DataOutputString : public DataOutput
 
     DataOutputString(std::string& s)
 	: str(s)
-    {
-    }
-
-    ~DataOutputString()
     {
     }
 

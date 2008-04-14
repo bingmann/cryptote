@@ -3,8 +3,6 @@
 #ifndef ENCTAIN_H
 #define ENCTAIN_H
 
-#include <wx/stream.h>
-
 #include <vector>
 #include <map>
 #include <string>
@@ -42,6 +40,23 @@ public:
 
     /// Pure virtual function which gets data block-wise.
     virtual void	Output(const void* data, size_t datalen) = 0;
+};
+
+/**
+ * Abstract interface class which requests data during container loading. It is
+ * a generic stream interface and only have one function.
+ */
+class DataInput
+{
+public:
+
+    /// Required.
+    virtual ~DataInput() {};
+
+    /// Pure virtual function which requests data block-wise. The function must
+    /// return maxlen byte at once, if they are available. Must return the
+    /// number of bytes retrieved.
+    virtual unsigned int Input(void* data, size_t maxlen) = 0;
 };
 
 /**
@@ -207,15 +222,14 @@ public:
 
     // *** Load/Save Operations ***
 
-    /// Save the current container into the newly defined path and encryption
-    /// key.
-    bool		Save(wxOutputStream& outstream);
+    /// Save the current container by outputting all data to the data sink.
+    bool		Save(DataOutput& dataout);
 
-    /// Load a new container from a wxInputStream and parse the subfile index.
-    bool		Load(wxInputStream& instream, const std::string& filekey);
+    /// Load a new container from an input stream and parse the subfile index.
+    bool		Load(DataInput& datain, const std::string& filekey);
 
     /// Load a container version v1.0
-    bool		Loadv00010000(wxInputStream& instream, const std::string& filekey, const Header1& header1);
+    bool		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1);
 
 
     // *** Container Info and Key Operations ***
@@ -231,7 +245,7 @@ public:
     /// Checks whether a password key was set.
     bool		IsKeySet() const;
 
-    /// Return number of bytes written to output stream during last Save()
+    /// Return number of bytes written to data sink during last Save()
     /// operation.
     size_t		GetLastWritten() const;
 

@@ -186,6 +186,36 @@ static char testtext[2843] = {
     0x65,0x74,0x75,0x72,0x6e,0x20,0x30,0x3b,0x0a,0x7d,0x0a
 };
 
+struct DataOutputStream : public Enctain::DataOutput
+{
+    wxOutputStream&	os;
+
+    DataOutputStream(wxOutputStream& s)
+	: os(s)
+    {
+    }
+
+    virtual void Output(const void* data, size_t datalen)
+    {
+	os.Write(data, datalen);
+    }
+};
+
+struct DataInputStream : public Enctain::DataInput
+{
+    wxInputStream&	is;
+
+    DataInputStream(wxInputStream& s)
+	: is(s)
+    {
+    }
+
+    virtual unsigned int Input(void* data, size_t maxlen)
+    {
+	return is.Read(data, maxlen).LastRead();
+    }
+};
+
 void test_enctain(const std::string& filedata, wxString filename)
 {
     {
@@ -257,14 +287,16 @@ void test_enctain(const std::string& filedata, wxString filename)
 	container.SetSubFileData(sf6, filedata.data(), filedata.size());
 
 	wxFileOutputStream outstream(filename);
-	container.Save(outstream);
+	DataOutputStream dataout(outstream);
+	container.Save(dataout);
     }
 
     {
 	Enctain::Container container;
 
 	wxFileInputStream instream(filename);
-	assert( container.Load(instream, "ELO0Eia9") );
+	DataInputStream datain(instream);
+	assert( container.Load(datain, "ELO0Eia9") );
 	
 	std::string key, val;
 	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );

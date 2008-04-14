@@ -657,6 +657,21 @@ void WCryptoTE::ContainerNew()
     if (cpage) cpage->SetFocus();
 }
 
+struct DataInputStream : public Enctain::DataInput
+{
+    wxInputStream&	is;
+
+    DataInputStream(wxInputStream& s)
+	: is(s)
+    {
+    }
+
+    virtual unsigned int Input(void* data, size_t maxlen)
+    {
+	return is.Read(data, maxlen).LastRead();
+    }
+};
+
 bool WCryptoTE::ContainerOpen(const wxString& filename)
 {
     std::auto_ptr<wxFile> fh (new wxFile);
@@ -708,7 +723,8 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     wxFileInputStream stream(*fh.get());
     if (!stream.IsOk()) return false;
 
-    bool b = nc->Load(stream, strWX2STL(passdlg.GetPass()));
+    DataInputStream datain(stream);
+    bool b = nc->Load(datain, strWX2STL(passdlg.GetPass()));
     if (!b) return false;
 
     // Loading was successful
@@ -759,6 +775,21 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 
     return true;
 }
+
+struct DataOutputStream : public Enctain::DataOutput
+{
+    wxOutputStream&	os;
+
+    DataOutputStream(wxOutputStream& s)
+	: os(s)
+    {
+    }
+
+    virtual void Output(const void* data, size_t datalen)
+    {
+	os.Write(data, datalen);
+    }
+};
 
 bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 {
@@ -875,7 +906,8 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     filelistpane->SaveProperties();
     SaveOpenSubFilelist();
 
-    if (!container->Save(stream))
+    DataOutputStream dataout(stream);
+    if (!container->Save(dataout))
     {
 	UpdateStatusBar(_("Error saving container!"));
 	wxLogError(_("Error saving container!"));
