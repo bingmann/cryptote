@@ -11,3 +11,5 @@ libenctain_a_SOURCES = bytebuff.h \
 	enctain.cpp enctain.h
 
 AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
+
+EXTRA_DIST = format.html

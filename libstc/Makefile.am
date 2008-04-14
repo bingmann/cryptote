@@ -146,7 +146,7 @@ libstc_a_SOURCES = \
 	stc.h
 
 EXTRA_DIST = README.txt \
-	scintilla/README.txt \
+	scintilla/README \
 	scintilla/License.txt \
 	scintilla/doc/*
 
