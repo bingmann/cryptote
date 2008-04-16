@@ -7,6 +7,7 @@
 #include <wx/filename.h>
 #include <wx/hyperlink.h>
 #include <wx/aui/aui.h>
+#include <wx/wfstream.h>
 
 #include "enctain.h"
 
@@ -483,6 +484,40 @@ public:
     virtual bool	DoQuickGoto(const wxString& gototext) = 0;
 
     DECLARE_ABSTRACT_CLASS(WNotePage);
+};
+
+struct DataInputStream : public Enctain::DataInput
+{
+    wxInputStream&	is;
+
+    DataInputStream(wxInputStream& s)
+	: is(s)
+    {
+    }
+
+    virtual unsigned int Input(void* data, size_t maxlen)
+    {
+	return is.Read(data, maxlen).LastRead();
+    }
+};
+
+/** Write the incoming file data into the output file. */
+class DataOutputStream : public Enctain::DataOutput
+{
+public:
+    class wxOutputStream&	outstream;
+
+    /// Constructor get the file name to open
+    DataOutputStream(wxOutputStream& os)
+	: outstream(os)
+    {
+    }
+
+    /// Virtual callback function to save data.
+    virtual void Output(const void* data, size_t datalen)
+    {
+	outstream.Write(data, datalen);
+    }
 };
 
 #endif // WCRYPTOTE_H

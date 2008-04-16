@@ -72,13 +72,13 @@ wxString WTextPage::GetCaption()
 }
 
 /** Appends the incoming text file data into the Scintilla edit control. */
-class TextPageAcceptor : public Enctain::DataOutput
+class DataOutputTextPage : public Enctain::DataOutput
 {
 public:
     class WTextPage&	tpage;
 
     /// Constructor is given all information
-    TextPageAcceptor(WTextPage& _tpage)
+    DataOutputTextPage(WTextPage& _tpage)
 	: tpage(_tpage)
     {
     }
@@ -96,9 +96,9 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
     editctrl->Allocate(wmain->container->GetSubFileSize(sfid));
     editctrl->SetUndoCollection(false);
 
-    TextPageAcceptor acceptor(*this);
+    DataOutputTextPage dataout(*this);
 
-    Enctain::error_t e = wmain->container->GetSubFileData(sfid, acceptor);
+    Enctain::error_t e = wmain->container->GetSubFileData(sfid, dataout);
     if (e != Enctain::ERROR_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));

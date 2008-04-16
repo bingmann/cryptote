@@ -13,7 +13,6 @@
 #include "wprefs.h"
 #include "pwgen/wpassgen.h"
 
-#include <wx/wfstream.h>
 #include <wx/config.h>
 #include "common/tools.h"
 
@@ -598,25 +597,6 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
     }
 }
 
-/** Write the incoming file data into the export file. */
-class DataOutputExport : public Enctain::DataOutput
-{
-public:
-    class wxOutputStream&	outstream;
-
-    /// Constructor get the file name to open
-    DataOutputExport(wxOutputStream& os)
-	: outstream(os)
-    {
-    }
-
-    /// Virtual callback function to save data.
-    virtual void Output(const void* data, size_t datalen)
-    {
-	outstream.Write(data, datalen);
-    }
-};
-
 void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
 {
     WNotePage* page = FindSubFilePage(sfid);
@@ -631,8 +611,8 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
     {
 	// export directly from the container storage
 
-	DataOutputExport acceptor(outstream);
-	Enctain::error_t e = container->GetSubFileData(sfid, acceptor);
+	DataOutputStream dataout(outstream);
+	Enctain::error_t e = container->GetSubFileData(sfid, dataout);
 	if (e != Enctain::ERROR_SUCCESS)
 	{
 	    wxMessageDialogErrorOK(this, EnctainErrorString(e));
@@ -806,21 +786,6 @@ void WCryptoTE::ContainerNew()
     if (cpage) cpage->SetFocus();
 }
 
-struct DataInputStream : public Enctain::DataInput
-{
-    wxInputStream&	is;
-
-    DataInputStream(wxInputStream& s)
-	: is(s)
-    {
-    }
-
-    virtual unsigned int Input(void* data, size_t maxlen)
-    {
-	return is.Read(data, maxlen).LastRead();
-    }
-};
-
 bool WCryptoTE::ContainerOpen(const wxString& filename)
 {
     std::auto_ptr<wxFile> fh (new wxFile);
@@ -950,21 +915,6 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 
     return true;
 }
-
-struct DataOutputStream : public Enctain::DataOutput
-{
-    wxOutputStream&	os;
-
-    DataOutputStream(wxOutputStream& s)
-	: os(s)
-    {
-    }
-
-    virtual void Output(const void* data, size_t datalen)
-    {
-	os.Write(data, datalen);
-    }
-};
 
 bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 {
