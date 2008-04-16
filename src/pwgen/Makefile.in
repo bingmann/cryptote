@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = pwgen$(EXEEXT)
+bin_PROGRAMS = cryptote-pwgen$(EXEEXT)
 subdir = src/pwgen
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -46,12 +46,12 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_pwgen_OBJECTS = main.$(OBJEXT) wpassgen.$(OBJEXT) prng.$(OBJEXT) \
-	fips181.$(OBJEXT) myintl.$(OBJEXT)
-pwgen_OBJECTS = $(am_pwgen_OBJECTS)
-pwgen_LDADD = $(LDADD)
-pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwgen_LDFLAGS) \
-	$(LDFLAGS) -o $@
+am_cryptote_pwgen_OBJECTS = main.$(OBJEXT) wpassgen.$(OBJEXT) \
+	prng.$(OBJEXT) fips181.$(OBJEXT) myintl.$(OBJEXT)
+cryptote_pwgen_OBJECTS = $(am_cryptote_pwgen_OBJECTS)
+cryptote_pwgen_LDADD = $(LDADD)
+cryptote_pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(cryptote_pwgen_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
 am__depfiles_maybe = depfiles
@@ -64,8 +64,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(pwgen_SOURCES)
-DIST_SOURCES = $(pwgen_SOURCES)
+SOURCES = $(cryptote_pwgen_SOURCES)
+DIST_SOURCES = $(cryptote_pwgen_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -187,7 +187,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pwgen_SOURCES = main.cpp \
+cryptote_pwgen_SOURCES = main.cpp \
 	../common/tools.h \
 	wpassgen.cpp wpassgen.h \
 	prng.cpp prng.h \
@@ -196,7 +196,7 @@ pwgen_SOURCES = main.cpp \
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS) $(ZLIB_CFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o
-@GOT_RESCOMP_TRUE@pwgen_LDFLAGS = pwgen-rc.o
+@GOT_RESCOMP_TRUE@cryptote_pwgen_LDFLAGS = pwgen-rc.o
 EXTRA_DIST = pwgen.rc pwgen.xml \
 	wpassgen.wxg
 
@@ -257,9 +257,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-pwgen$(EXEEXT): $(pwgen_OBJECTS) $(pwgen_DEPENDENCIES) 
-	@rm -f pwgen$(EXEEXT)
-	$(pwgen_LINK) $(pwgen_OBJECTS) $(pwgen_LDADD) $(LIBS)
+cryptote-pwgen$(EXEEXT): $(cryptote_pwgen_OBJECTS) $(cryptote_pwgen_DEPENDENCIES) 
+	@rm -f cryptote-pwgen$(EXEEXT)
+	$(cryptote_pwgen_LINK) $(cryptote_pwgen_OBJECTS) $(cryptote_pwgen_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

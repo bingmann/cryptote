@@ -1,8 +1,8 @@
 # $Id$
 
-bin_PROGRAMS = pwgen
+bin_PROGRAMS = cryptote-pwgen
 
-pwgen_SOURCES = main.cpp \
+cryptote_pwgen_SOURCES = main.cpp \
 	../common/tools.h \
 	wpassgen.cpp wpassgen.h \
 	prng.cpp prng.h \
@@ -19,7 +19,7 @@ BUILT_SOURCES = pwgen-rc.o
 pwgen-rc.o: pwgen.rc
 	$(RESCOMP) -I$(srcdir) $< $@
 
-pwgen_LDFLAGS = pwgen-rc.o
+cryptote_pwgen_LDFLAGS = pwgen-rc.o
 
 endif
 

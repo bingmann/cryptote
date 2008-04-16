@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = pwtutor$(EXEEXT)
+noinst_PROGRAMS = cryptote-pwtutor$(EXEEXT)
 subdir = src/pwtutor
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -43,16 +43,14 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(bin_PROGRAMS)
-am_pwtutor_OBJECTS = main.$(OBJEXT) wpwtutor.$(OBJEXT) \
+PROGRAMS = $(noinst_PROGRAMS)
+am_cryptote_pwtutor_OBJECTS = main.$(OBJEXT) wpwtutor.$(OBJEXT) \
 	wnewpass.$(OBJEXT) wquery.$(OBJEXT) wstats.$(OBJEXT) \
 	wpassgen.$(OBJEXT) prng.$(OBJEXT) fips181.$(OBJEXT)
-pwtutor_OBJECTS = $(am_pwtutor_OBJECTS)
-pwtutor_LDADD = $(LDADD)
-pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(pwtutor_LDFLAGS) \
-	$(LDFLAGS) -o $@
+cryptote_pwtutor_OBJECTS = $(am_cryptote_pwtutor_OBJECTS)
+cryptote_pwtutor_LDADD = $(LDADD)
+cryptote_pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(cryptote_pwtutor_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
 am__depfiles_maybe = depfiles
@@ -65,8 +63,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(pwtutor_SOURCES)
-DIST_SOURCES = $(pwtutor_SOURCES)
+SOURCES = $(cryptote_pwtutor_SOURCES)
+DIST_SOURCES = $(cryptote_pwtutor_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -188,7 +186,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pwtutor_SOURCES = main.cpp \
+cryptote_pwtutor_SOURCES = main.cpp \
 	../common/tools.h \
 	wpwtutor.cpp wpwtutor.h \
 	wnewpass.cpp wnewpass.h \
@@ -200,7 +198,7 @@ pwtutor_SOURCES = main.cpp \
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwtutor-rc.o
-@GOT_RESCOMP_TRUE@pwtutor_LDFLAGS = pwtutor-rc.o
+@GOT_RESCOMP_TRUE@cryptote_pwtutor_LDFLAGS = pwtutor-rc.o
 EXTRA_DIST = pwtutor.rc pwtutor.xml \
 	wnewpass.wxg wpwtutor.wxg wquery.wxg \
 	wstats.wxg
@@ -239,32 +237,12 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  if test -f $$p \
-	  ; then \
-	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(bindir)/$$f'"; \
-	   $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(bindir)/$$f" || exit 1; \
-	  else :; fi; \
-	done
 
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
-	done
-
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-pwtutor$(EXEEXT): $(pwtutor_OBJECTS) $(pwtutor_DEPENDENCIES) 
-	@rm -f pwtutor$(EXEEXT)
-	$(pwtutor_LINK) $(pwtutor_OBJECTS) $(pwtutor_LDADD) $(LIBS)
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+cryptote-pwtutor$(EXEEXT): $(cryptote_pwtutor_OBJECTS) $(cryptote_pwtutor_DEPENDENCIES) 
+	@rm -f cryptote-pwtutor$(EXEEXT)
+	$(cryptote_pwtutor_LINK) $(cryptote_pwtutor_OBJECTS) $(cryptote_pwtutor_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -415,9 +393,6 @@ check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
@@ -446,7 +421,7 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -468,7 +443,7 @@ install-data-am:
 
 install-dvi: install-dvi-am
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -499,22 +474,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic ctags distclean distclean-compile \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-noinstPROGRAMS ctags distclean distclean-compile \
 	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	uninstall-am
 
 
 @GOT_RESCOMP_TRUE@pwtutor-rc.o: pwtutor.rc

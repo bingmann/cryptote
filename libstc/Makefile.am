@@ -1,6 +1,6 @@
 # $Id$
 
-lib_LIBRARIES = libstc.a
+noinst_LIBRARIES = libstc.a
 
 libstc_a_SOURCES = \
 	scintilla/include/Accessor.h \

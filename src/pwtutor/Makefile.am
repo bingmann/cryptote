@@ -1,8 +1,8 @@
 # $Id$
 
-bin_PROGRAMS = pwtutor
+noinst_PROGRAMS = cryptote-pwtutor
 
-pwtutor_SOURCES = main.cpp \
+cryptote_pwtutor_SOURCES = main.cpp \
 	../common/tools.h \
 	wpwtutor.cpp wpwtutor.h \
 	wnewpass.cpp wnewpass.h \
@@ -22,7 +22,7 @@ BUILT_SOURCES = pwtutor-rc.o
 pwtutor-rc.o: pwtutor.rc
 	$(RESCOMP) -I$(srcdir) $< $@
 
-pwtutor_LDFLAGS = pwtutor-rc.o
+cryptote_pwtutor_LDFLAGS = pwtutor-rc.o
 
 endif
 
