@@ -36,19 +36,15 @@ Name: german; MessagesFile: compiler:Languages\German.isl
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
 
 [Files]
-Source: src\cryptote\cryptote.exe; DestDir: {app}; Flags: ignoreversion 32bit; Components: CryptoTE
-Source: src\pwtutor\pwtutor.exe; DestDir: {app}; Flags: ignoreversion 32bit; Components: PWTutor
-Source: src\pwgen\pwgen.exe; DestDir: {app}; Flags: ignoreversion 32bit; Components: PWGen
-Source: \msys\MinGW\bin\mingwm10.dll; DestDir: {app}; Flags: ignoreversion 32bit; Components: CryptoTE PWTutor PWGen
+Source: src\cryptote\cryptote.exe; DestDir: {app}; Flags: ignoreversion 32bit
 
 [Icons]
-Name: {group}\CryptoTE; Filename: {app}\cryptote.exe; Components: CryptoTE
-Name: {group}\Password Tutor; Filename: {app}\pwtutor.exe; Components: PWTutor
-Name: {group}\Password Generator; Filename: {app}\pwgen.exe; Components: PWGen
-Name: {commondesktop}\CryptoTE; Filename: {app}\cryptote.exe; Tasks: desktopicon; Components: CryptoTE
+Name: {group}\CryptoTE; Filename: {app}\cryptote.exe
+Name: {group}\Password Generator; Filename: {app}\cryptote.exe; Parameters: -pwgen; IconIndex: 2
+Name: {commondesktop}\CryptoTE; Filename: {app}\cryptote.exe; Tasks: desktopicon
 
 [Run]
-Filename: {app}\cryptote.exe; Description: "{cm:LaunchProgram,""CryptoTE""}"; Flags: nowait postinstall skipifsilent; Components: CryptoTE
+Filename: {app}\cryptote.exe; Description: "{cm:LaunchProgram,""CryptoTE""}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKCR; SubKey: .ect; ValueType: string; ValueData: Encrypted Container; Flags: uninsdeletekey
@@ -57,14 +53,3 @@ Root: HKCR; SubKey: Encrypted Container\Shell\Open\Command; ValueType: string; V
 Root: HKCR; Subkey: Encrypted Container\DefaultIcon; ValueType: string; ValueData: {app}\cryptote.exe,1; Flags: uninsdeletevalue
 Root: HKCU; Subkey: Software\idlebox.net\CryptoTE; Flags: dontcreatekey uninsdeletekey
 Root: HKCU; Subkey: Software\idlebox.net; Flags: dontcreatekey uninsdeletekeyifempty
-
-[Types]
-Name: Standard; Description: Standard Installation
-Name: Complete; Description: Complete Suite
-Name: Custom; Description: Custom Installation; Flags: iscustom
-Name: PWGen; Description: Password Generator only
-
-[Components]
-Name: CryptoTE; Description: CryptoTE Editor; Types: Custom Complete Standard
-Name: PWTutor; Description: Password Tutor; Types: Complete Standard
-Name: PWGen; Description: Password Generator stand-alone; Types: Complete PWGen
