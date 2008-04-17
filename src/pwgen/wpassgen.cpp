@@ -321,16 +321,12 @@ void WPassGen::SaveSettings()
 
 void WPassGen::OnClose(wxCloseEvent& WXUNUSED(event))
 {
-    if (standalone)
-    {
-	SaveSettings();
-	Destroy();
-    }
-    else
-    {
-	SaveSettings();
+    SaveSettings();
+
+    if (IsModal())
 	EndModal(wxID_CANCEL);
-    }
+    else
+	Destroy();
 }
 
 void WPassGen::OnChoicePreset(wxCommandEvent& WXUNUSED(event))
@@ -434,6 +430,8 @@ void WPassGen::OnPasslistActivated(wxListEvent& event)
 
 void WPassGen::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
+    if (!IsModal()) return;
+
     int sel = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
     if (sel < 0) return;
 
@@ -445,6 +443,8 @@ void WPassGen::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
 void WPassGen::OnButtonCancel(wxCommandEvent& WXUNUSED(event))
 {
+    if (!IsModal()) return;
+
     SaveSettings();
     EndModal(wxID_CANCEL);
 }

@@ -1,6 +1,6 @@
 # $Id$
 
-bin_PROGRAMS = cryptote-pwgen
+noinst_PROGRAMS = cryptote-pwgen
 
 cryptote_pwgen_SOURCES = main.cpp \
 	../common/tools.h \

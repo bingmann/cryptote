@@ -27,40 +27,44 @@ private:
     class WPassGen*	wmain;
 
     /// Locale object holding translations
-    MyLocale		locale;
+    MyLocale*		locale;
 
 public:
     /// This function is called during application start-up.
     virtual bool	OnInit()
     {
-	if (!wxApp::OnInit()) return false;
-
-	wxImage::AddHandler(new wxPNGHandler());
+	wxLog::SetActiveTarget(new wxLogStderr);
 
 	SetAppName(_T("CryptoTE"));
 	SetVendorName(_T("idlebox.net"));
 
-	// Load and initialize the catalog
-	if (!locale.AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs))
-	{
-	    wxLogError(_T("Could not load message catalog for defined language."));
-	    return false;
-	}
+	// Setup locale to system default
 
-	// Load and initialize the catalog
-	if (!locale.AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
-	{
-	    wxLogError(_T("Could not load message catalog for defined language."));
-	    return false;
-	}
+	locale = new MyLocale(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
 
-#ifdef __LINUX__
-	{   // Something from the wxWidgets example: load fileutils catalog for
-	    // further messages
-	    wxLogNull noLog;
-	    locale.AddCatalog(_T("fileutils"));
-	}
-#endif
+        // Load and initialize the catalog
+	if (!locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
+	    !locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
+        {
+	    // Could not load message catalog for system language, falling back
+	    // to English.
+
+	    delete locale;
+	    locale = new MyLocale(wxLANGUAGE_ENGLISH, wxLOCALE_CONV_ENCODING);
+	    
+	    if (!locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
+		!locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
+	    {
+		wxLogError(_T("Could not load message catalog for system or English language."));
+		return false;
+	    }
+        }
+
+	if (!wxApp::OnInit()) return false;
+
+	wxImage::AddHandler(new wxPNGHandler());
+
+	wxLog::SetActiveTarget(NULL);
 
 	// Create main window frame
 	wmain = new WPassGen(NULL, true);
@@ -76,7 +80,7 @@ public:
 			 _T("Display help for the command line parameters."),
 			 wxCMD_LINE_OPTION_HELP);
 
-        parser.AddOption(_T("l"), _T("lang"),
+        parser.AddOption(_T("L"), _T("lang"),
 			 _T("Set language for messages. Example: de or de_DE."),
 			 wxCMD_LINE_VAL_STRING, 0);
     }
@@ -85,24 +89,38 @@ public:
     {
 	wxLog::SetActiveTarget(new wxLogStderr);
 
+	// First thing to do: set up language and locale
 	wxString langtext;
-	if ( parser.Found(_T("l"), &langtext) )
+	if ( parser.Found(_T("L"), &langtext) )
 	{
 	    const wxLanguageInfo* langinfo = wxLocale::FindLanguageInfo(langtext);
 
 	    if (!langinfo) {
-		wxLogError(_T("Invalid language identifier specified with --lang."));
+		wxLogError(_("Invalid language identifier specified with --lang."));
 		return false;
 	    }
 
-	    if (!locale.Init(langinfo->Language, wxLOCALE_CONV_ENCODING)) {
-		wxLogError(_T("This language is not supported by the program."));
+	    if (locale) delete locale;
+	    locale = new MyLocale;
+
+	    if (!locale->Init(langinfo->Language, wxLOCALE_CONV_ENCODING)) {
+		wxLogError(_("This language is not supported by the program."));
 		return false;
 	    }
-	}
-	else
-	{
-	    locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+
+	    // Load and initialize the catalog
+	    if (!locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs))
+	    {
+		wxLogError(_("This language is not supported by the program."));
+		return false;
+	    }
+
+	    // Load and initialize the catalog
+	    if (!locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
+	    {
+		wxLogError(_("This language is not supported by the program."));
+		return false;
+	    }
 	}
 
 	wxLog::SetActiveTarget(NULL);

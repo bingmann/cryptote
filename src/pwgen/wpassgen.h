@@ -40,7 +40,7 @@ public:
 
     WPassGen(wxWindow* parent, bool standalone, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
-    /// Set if running as stand-alone program.
+    /// Set if running as stand-alone program: show passwords in text control.
     bool	standalone;
 
     /// Return password selected by the user

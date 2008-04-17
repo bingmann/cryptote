@@ -4,6 +4,7 @@
 #include <wx/cmdline.h>
 
 #include "wcryptote.h"
+#include "pwgen/wpassgen.h"
 #include "common/myintl.h"
 #include "common/tools.h"
 #include "locale/de.h"
@@ -65,10 +66,13 @@ class App : public wxApp
 {
 private:
     /// CryptoTE main dialog
-    class WCryptoTE*	wmain;
+    class WCryptoTE*	wcryptote;
 
     /// File path to load initially
     wxString		cmdlinefile;
+
+    /// True if to show stand-alone password generator
+    bool		run_pwgen;
 
     /// Locale object holding translations
     MyLocale*		locale;
@@ -76,7 +80,9 @@ private:
 public:
 
     App()
-	: wxApp(), wmain(NULL), locale(NULL)
+	: wxApp(), wcryptote(NULL),
+	  run_pwgen(false),
+	  locale(NULL)
     {
     }
 
@@ -117,14 +123,24 @@ public:
 
 	wxLog::SetActiveTarget(NULL);
 
-	// Create main window frame
-	wmain = new WCryptoTE(NULL);
-	SetTopWindow(wmain);
-	wmain->Show();
-
-	if (!cmdlinefile.IsEmpty())
+	if (run_pwgen)
 	{
-	    wmain->ContainerOpen(cmdlinefile);
+	    // Create password generator's main window frame
+	    WPassGen* wmain = new WPassGen(NULL, true);
+	    SetTopWindow(wmain);
+	    wmain->Show();
+	}
+	else
+	{
+	    // Create editor's main window frame
+	    wcryptote = new WCryptoTE(NULL);
+	    SetTopWindow(wcryptote);
+	    wcryptote->Show();
+
+	    if (!cmdlinefile.IsEmpty())
+	    {
+		wcryptote->ContainerOpen(cmdlinefile);
+	    }
 	}
 
 	return true;
@@ -139,6 +155,10 @@ public:
         parser.AddOption(_T("L"), _T("lang"),
 			 _("Set language for messages. Example: de or de_DE."),
 			 wxCMD_LINE_VAL_STRING, 0);
+
+        parser.AddSwitch(_T("pwgen"), wxEmptyString,
+			 _("Start stand-alone password generator dialog instead of the editor."),
+			 0);
 
         parser.AddOption(_T("p"), _T("password"),
 			 _("Use the given password to decrypt the initially loaded container."),
@@ -200,6 +220,11 @@ public:
 		wxLogError(_("This language is not supported by the program."));
 		return false;
 	    }
+	}
+
+	if (parser.Found(_T("pwgen")))
+	{
+	    run_pwgen = true;
 	}
 
 	int exclusiveparam = (parser.Found(_T("l")) ? 1 : 0)
@@ -546,10 +571,10 @@ public:
     /// resets the idle-timer in the main window.
     virtual int FilterEvent(wxEvent& event)
     {
-	if (wmain)
+	if (wcryptote)
 	{
 	    if (IsUserEvent(event))
-		wmain->ResetIdleTimer();
+		wcryptote->ResetIdleTimer();
 	}
 
 	return -1;
