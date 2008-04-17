@@ -70,133 +70,133 @@ const char* Container::GetErrorString(error_t e)
 {
     switch(e)
     {
-    case ERROR_SUCCESS:
+    case ETE_SUCCESS:
 	return "Success.";
 
-    case ERROR_SAVE_NO_PASSWORD:
+    case ETE_SAVE_NO_PASSWORD:
 	return "Error saving container: no encryption password set!";
 
-    case ERROR_LOAD_HEADER1:
+    case ETE_LOAD_HEADER1:
 	return "Error loading container: could not read header.";
 
-    case ERROR_LOAD_HEADER1_SIGNATURE:
+    case ETE_LOAD_HEADER1_SIGNATURE:
 	return "Error loading container: could not read header, invalid signature.";
 
-    case ERROR_LOAD_HEADER1_VERSION:
+    case ETE_LOAD_HEADER1_VERSION:
 	return "Error loading container: could not read header, invalid version.";
 
-    case ERROR_LOAD_HEADER1_METADATA:
+    case ETE_LOAD_HEADER1_METADATA:
 	return "Error loading container: could not read header, invalid metadata.";
 
-    case ERROR_LOAD_HEADER1_METADATA_PARSE:
+    case ETE_LOAD_HEADER1_METADATA_PARSE:
 	return "Error loading container: could not read header, metadata parse failed.";
 
-    case ERROR_LOAD_HEADER2:
+    case ETE_LOAD_HEADER2:
 	return "Error loading container: could not read secondary header.";
 
-    case ERROR_LOAD_HEADER2_ENCRYPTION:
+    case ETE_LOAD_HEADER2_ENCRYPTION:
 	return "Error loading container: could not read secondary header, check encryption key.";
 
-    case ERROR_LOAD_HEADER2_METADATA:
+    case ETE_LOAD_HEADER2_METADATA:
 	return "Error loading container: could not read secondary header, invalid metadata.";
 
-    case ERROR_LOAD_HEADER2_METADATA_CRC32:
+    case ETE_LOAD_HEADER2_METADATA_CRC32:
 	return "Error loading container: could not read secondary header, metadata crc32 mismatch.";
 
-    case ERROR_LOAD_HEADER2_METADATA_PARSE:
+    case ETE_LOAD_HEADER2_METADATA_PARSE:
 	return "Error loading container: could not read secondary header, metadata parse failed.";
 
-    case ERROR_LOAD_SUBFILE:
+    case ETE_LOAD_SUBFILE:
 	return "Error loading container: could not read encrypted subfile data.";
 
-    case ERROR_SUBFILE_COMPRESSION_INVALID:
+    case ETE_SUBFILE_COMPRESSION_INVALID:
 	return "Error in subfile: unknown compression algorithm.";
 
-    case ERROR_SUBFILE_ENCRYPTION_INVALID:
+    case ETE_SUBFILE_ENCRYPTION_INVALID:
 	return "Error in subfile: unknown encryption cipher.";
 
-    case ERROR_SUBFILE_ENCRYPTION_LENGTH:
+    case ETE_SUBFILE_ENCRYPTION_LENGTH:
 	return "Error in subfile: invalid encrypted data length.";
 
-    case ERROR_SUBFILE_UNEXPECTED_EOF:
+    case ETE_SUBFILE_UNEXPECTED_EOF:
 	return "Error in subfile: read beyond end of stream.";
 
-    case ERROR_SUBFILE_CRC32:
+    case ETE_SUBFILE_CRC32:
 	return "Error in subfile: crc32 mismatch, data possibly corrupt.";
 
-    case ERROR_Z_UNKNOWN:
+    case ETE_Z_UNKNOWN:
 	return "Error in zlib: unknown error.";
 
-    case ERROR_Z_OK:
+    case ETE_Z_OK:
 	return "Error in zlib: success.";
 
-    case ERROR_Z_NEED_DICT:
+    case ETE_Z_NEED_DICT:
 	return "Error in zlib: need dictionary.";
 	
-    case ERROR_Z_STREAM_END:
+    case ETE_Z_STREAM_END:
 	return "Error in zlib: stream end.";
 
-    case ERROR_Z_ERRNO:
+    case ETE_Z_ERRNO:
 	return "Error in zlib: file error.";
 
-    case ERROR_Z_STREAM_ERROR:
+    case ETE_Z_STREAM_ERROR:
 	return "Error in zlib: stream error.";
 
-    case ERROR_Z_DATA_ERROR:
+    case ETE_Z_DATA_ERROR:
 	return "Error in zlib: data error.";
 
-    case ERROR_Z_MEM_ERROR:
+    case ETE_Z_MEM_ERROR:
 	return "Error in zlib: insufficient memory.";
 
-    case ERROR_Z_BUF_ERROR:
+    case ETE_Z_BUF_ERROR:
 	return "Error in zlib: buffer error.";
 
-    case ERROR_Z_VERSION_ERROR:
+    case ETE_Z_VERSION_ERROR:
 	return "Error in zlib: incompatible version.";
 
-    case ERROR_BZ_UNKNOWN:
+    case ETE_BZ_UNKNOWN:
 	return "Error in bzip2: unknown error.";
 
-    case ERROR_BZ_OK:
+    case ETE_BZ_OK:
 	return "Error in bzip2: success.";
 
-    case ERROR_BZ_RUN_OK:
+    case ETE_BZ_RUN_OK:
 	return "Error in bzip2: successful run.";
 
-    case ERROR_BZ_FLUSH_OK:
+    case ETE_BZ_FLUSH_OK:
 	return "Error in bzip2: successful flush.";
 
-    case ERROR_BZ_FINISH_OK:
+    case ETE_BZ_FINISH_OK:
 	return "Error in bzip2: successful finish.";
 
-    case ERROR_BZ_STREAM_END:
+    case ETE_BZ_STREAM_END:
 	return "Error in bzip2: stream end.";
 
-    case ERROR_BZ_SEQUENCE_ERROR:
+    case ETE_BZ_SEQUENCE_ERROR:
 	return "Error in bzip2: sequence error.";
 
-    case ERROR_BZ_PARAM_ERROR:
+    case ETE_BZ_PARAM_ERROR:
 	return "Error in bzip2: parameter error.";
 
-    case ERROR_BZ_MEM_ERROR:
+    case ETE_BZ_MEM_ERROR:
 	return "Error in bzip2: insufficient memory.";
 
-    case ERROR_BZ_DATA_ERROR:
+    case ETE_BZ_DATA_ERROR:
 	return "Error in bzip2: data error.";
 
-    case ERROR_BZ_DATA_ERROR_MAGIC:
+    case ETE_BZ_DATA_ERROR_MAGIC:
 	return "Error in bzip2: magic header error.";
 
-    case ERROR_BZ_IO_ERROR:
+    case ETE_BZ_IO_ERROR:
 	return "Error in bzip2: file system error.";
 
-    case ERROR_BZ_UNEXPECTED_EOF:
+    case ETE_BZ_UNEXPECTED_EOF:
 	return "Error in bzip2: unexpected end of file.";
 
-    case ERROR_BZ_OUTBUFF_FULL:
+    case ETE_BZ_OUTBUFF_FULL:
 	return "Error in bzip2: output buffer full.";
 
-    case ERROR_BZ_CONFIG_ERROR:
+    case ETE_BZ_CONFIG_ERROR:
 	return "Error in bzip2: platform config error.";
 
     default:
@@ -208,16 +208,16 @@ static error_t ErrorFromZLibError(int ret)
 {
     switch(ret)
     {
-    default:			return ERROR_Z_UNKNOWN;
-    case Z_NEED_DICT:		return ERROR_Z_NEED_DICT;
-    case Z_STREAM_END:		return ERROR_Z_STREAM_END;
-    case Z_OK:			return ERROR_Z_OK;
-    case Z_ERRNO:		return ERROR_Z_ERRNO;
-    case Z_STREAM_ERROR:	return ERROR_Z_STREAM_ERROR;
-    case Z_DATA_ERROR:		return ERROR_Z_DATA_ERROR;
-    case Z_MEM_ERROR:		return ERROR_Z_MEM_ERROR;
-    case Z_BUF_ERROR:		return ERROR_Z_BUF_ERROR;
-    case Z_VERSION_ERROR:	return ERROR_Z_VERSION_ERROR;
+    default:			return ETE_Z_UNKNOWN;
+    case Z_NEED_DICT:		return ETE_Z_NEED_DICT;
+    case Z_STREAM_END:		return ETE_Z_STREAM_END;
+    case Z_OK:			return ETE_Z_OK;
+    case Z_ERRNO:		return ETE_Z_ERRNO;
+    case Z_STREAM_ERROR:	return ETE_Z_STREAM_ERROR;
+    case Z_DATA_ERROR:		return ETE_Z_DATA_ERROR;
+    case Z_MEM_ERROR:		return ETE_Z_MEM_ERROR;
+    case Z_BUF_ERROR:		return ETE_Z_BUF_ERROR;
+    case Z_VERSION_ERROR:	return ETE_Z_VERSION_ERROR;
     }
 }
 
@@ -225,21 +225,21 @@ static error_t ErrorFromBZLibError(int ret)
 {
     switch (ret)
     {
-    default:			return ERROR_BZ_UNKNOWN;
-    case BZ_OK:			return ERROR_BZ_OK;
-    case BZ_RUN_OK:		return ERROR_BZ_RUN_OK;
-    case BZ_FLUSH_OK:		return ERROR_BZ_FLUSH_OK;
-    case BZ_FINISH_OK:		return ERROR_BZ_FINISH_OK;
-    case BZ_STREAM_END:		return ERROR_BZ_STREAM_END;
-    case BZ_SEQUENCE_ERROR:	return ERROR_BZ_SEQUENCE_ERROR;
-    case BZ_PARAM_ERROR:	return ERROR_BZ_PARAM_ERROR;
-    case BZ_MEM_ERROR:		return ERROR_BZ_MEM_ERROR;
-    case BZ_DATA_ERROR:		return ERROR_BZ_DATA_ERROR;
-    case BZ_DATA_ERROR_MAGIC:	return ERROR_BZ_DATA_ERROR_MAGIC;
-    case BZ_IO_ERROR:		return ERROR_BZ_IO_ERROR;
-    case BZ_UNEXPECTED_EOF:	return ERROR_BZ_UNEXPECTED_EOF;
-    case BZ_OUTBUFF_FULL:	return ERROR_BZ_OUTBUFF_FULL;
-    case BZ_CONFIG_ERROR:	return ERROR_BZ_CONFIG_ERROR;
+    default:			return ETE_BZ_UNKNOWN;
+    case BZ_OK:			return ETE_BZ_OK;
+    case BZ_RUN_OK:		return ETE_BZ_RUN_OK;
+    case BZ_FLUSH_OK:		return ETE_BZ_FLUSH_OK;
+    case BZ_FINISH_OK:		return ETE_BZ_FINISH_OK;
+    case BZ_STREAM_END:		return ETE_BZ_STREAM_END;
+    case BZ_SEQUENCE_ERROR:	return ETE_BZ_SEQUENCE_ERROR;
+    case BZ_PARAM_ERROR:	return ETE_BZ_PARAM_ERROR;
+    case BZ_MEM_ERROR:		return ETE_BZ_MEM_ERROR;
+    case BZ_DATA_ERROR:		return ETE_BZ_DATA_ERROR;
+    case BZ_DATA_ERROR_MAGIC:	return ETE_BZ_DATA_ERROR_MAGIC;
+    case BZ_IO_ERROR:		return ETE_BZ_IO_ERROR;
+    case BZ_UNEXPECTED_EOF:	return ETE_BZ_UNEXPECTED_EOF;
+    case BZ_OUTBUFF_FULL:	return ETE_BZ_OUTBUFF_FULL;
+    case BZ_CONFIG_ERROR:	return ETE_BZ_CONFIG_ERROR;
     }
 }
 
@@ -250,7 +250,7 @@ error_t Container::Save(DataOutput& dataout)
     written = 0;
 
     if (!iskeyset)
-	return ERROR_SAVE_NO_PASSWORD;
+	return ETE_SAVE_NO_PASSWORD;
 
     srand(time(NULL));
 
@@ -415,7 +415,7 @@ error_t Container::Save(DataOutput& dataout)
     opened = true;
 
     ProgressStop();
-    return ERROR_SUCCESS;
+    return ETE_SUCCESS;
 }
 
 error_t Container::Load(DataInput& datain, const std::string& filekey)
@@ -429,12 +429,12 @@ error_t Container::Load(DataInput& datain, const std::string& filekey)
 
     if (datain.Input(&header1, sizeof(header1)) != sizeof(header1)) {
 	ProgressStop();
-	return ERROR_LOAD_HEADER1;
+	return ETE_LOAD_HEADER1;
     }
 
     if (memcmp(header1.signature, fsignature, 8) != 0) {
 	ProgressStop();
-	return ERROR_LOAD_HEADER1_SIGNATURE;
+	return ETE_LOAD_HEADER1_SIGNATURE;
     }
 
     if (header1.version == 0x00010000) {
@@ -444,7 +444,7 @@ error_t Container::Load(DataInput& datain, const std::string& filekey)
     }
     else {
 	ProgressStop();
-	return ERROR_LOAD_HEADER1_VERSION;
+	return ETE_LOAD_HEADER1_VERSION;
     }
 }
 
@@ -458,7 +458,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	unc_metadata.alloc(header1.unc_metalen);
 
 	if (datain.Input(unc_metadata.data(), header1.unc_metalen) != header1.unc_metalen)
-	    return ERROR_LOAD_HEADER1_METADATA;
+	    return ETE_LOAD_HEADER1_METADATA;
 
 	readbyte += header1.unc_metalen;
 	unc_metadata.set_size(header1.unc_metalen);
@@ -479,7 +479,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	}
 	catch (std::underflow_error& e)
 	{
-	    return ERROR_LOAD_HEADER1_METADATA_PARSE;
+	    return ETE_LOAD_HEADER1_METADATA_PARSE;
 	}
     }
 
@@ -487,7 +487,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
     struct Header2 header2;
 
     if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
-	return ERROR_LOAD_HEADER1;
+	return ETE_LOAD_HEADER1;
 
     readbyte += sizeof(header2);
 
@@ -507,7 +507,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
     decctx.decrypt(&header2, sizeof(header2));
 
     if (header2.test123 != 0x12345678)
-	return ERROR_LOAD_HEADER2_ENCRYPTION;
+	return ETE_LOAD_HEADER2_ENCRYPTION;
 
     // Read compressed variable length metadata
 
@@ -515,7 +515,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
     metadata_compressed.alloc(header2.metacomplen);
 
     if (datain.Input(metadata_compressed.data(), header2.metacomplen) != header2.metacomplen)
-	return ERROR_LOAD_HEADER2_METADATA;
+	return ETE_LOAD_HEADER2_METADATA;
 
     readbyte += header2.metacomplen;
     metadata_compressed.set_size(header2.metacomplen);
@@ -559,7 +559,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	uint32_t metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
 
 	if (metacrc32 != header2.metacrc32)
-	    return ERROR_LOAD_HEADER2_METADATA_CRC32;
+	    return ETE_LOAD_HEADER2_METADATA_CRC32;
     }
 
     try
@@ -605,7 +605,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
     }
     catch (std::underflow_error& e)
     {
-	return ERROR_LOAD_HEADER2_METADATA_PARSE;
+	return ETE_LOAD_HEADER2_METADATA_PARSE;
     }
 
     // Now we can say how large the file actually is.
@@ -631,7 +631,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	subfile.data.set_size(rb);
 
 	if (rb != subfile.storagesize)
-	    return ERROR_LOAD_SUBFILE;
+	    return ETE_LOAD_SUBFILE;
 
 	readbyte += rb;
 	ProgressUpdate(readbyte);
@@ -643,7 +643,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 
     decctx.wipe();
 
-    return ERROR_SUCCESS;
+    return ETE_SUCCESS;
 }
 
 // *** Container Info Operations ***
@@ -955,13 +955,13 @@ void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
 	std::string data;
 
 	error_t e1 = GetSubFileData(subfileindex, data);
-	if (e1 != ERROR_SUCCESS)
+	if (e1 != ETE_SUCCESS)
 	    throw(std::runtime_error(GetErrorString(e1)));
 
 	subfiles[subfileindex].encryption = c;
 
 	error_t e2 = SetSubFileData(subfileindex, data.data(), data.size());
-	if (e2 != ERROR_SUCCESS)
+	if (e2 != ETE_SUCCESS)
 	    throw(std::runtime_error(GetErrorString(e2)));
     }
 }
@@ -980,13 +980,13 @@ void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c
 	std::string data;
 
 	error_t e1 = GetSubFileData(subfileindex, data);
-	if (e1 != ERROR_SUCCESS)
+	if (e1 != ETE_SUCCESS)
 	    throw(std::runtime_error(GetErrorString(e1)));
 
 	subfiles[subfileindex].compression = c;
 
 	error_t e2 = SetSubFileData(subfileindex, data.data(), data.size());
-	if (e2 != ERROR_SUCCESS)
+	if (e2 != ETE_SUCCESS)
 	    throw(std::runtime_error(GetErrorString(e2)));
     }
 }
@@ -1008,14 +1008,14 @@ void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compr
 	std::string data;
 
 	error_t e1 = GetSubFileData(subfileindex, data);
-	if (e1 != ERROR_SUCCESS)
+	if (e1 != ETE_SUCCESS)
 	    throw(std::runtime_error(GetErrorString(e1)));
 
 	subfiles[subfileindex].encryption = enc;
 	subfiles[subfileindex].compression = comp;
 
 	error_t e2 = SetSubFileData(subfileindex, data.data(), data.size());
-	if (e2 != ERROR_SUCCESS)
+	if (e2 != ETE_SUCCESS)
 	    throw(std::runtime_error(GetErrorString(e2)));
     }
 }
@@ -1054,7 +1054,7 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
     else
     {
 	ProgressStop();
-	return ERROR_SUBFILE_ENCRYPTION_INVALID;
+	return ETE_SUBFILE_ENCRYPTION_INVALID;
     }
 
     // Copy or compress data into the ByteBuffer
@@ -1251,7 +1251,7 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
     else
     {
 	ProgressStop();
-	return ERROR_SUBFILE_COMPRESSION_INVALID;
+	return ETE_SUBFILE_COMPRESSION_INVALID;
     }
 
     subfile.crc32 = crc32run;
@@ -1259,7 +1259,7 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 
     ProgressStop();
 
-    return ERROR_SUCCESS;
+    return ETE_SUCCESS;
 }
 
 struct DataOutputString : public DataOutput
@@ -1299,7 +1299,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 
     const SubFile& subfile = subfiles[subfileindex];
 
-    if (subfile.data.size() == 0) return ERROR_SUCCESS;
+    if (subfile.data.size() == 0) return ETE_SUCCESS;
 
     assert(subfile.data.size() == subfile.storagesize);
 
@@ -1317,7 +1317,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 	    // Ensure that the data buffer has a length multiple of 16
 	    if (subfile.data.size() % 16 != 0) {
 		ProgressStop();
-		return ERROR_SUBFILE_ENCRYPTION_LENGTH;
+		return ETE_SUBFILE_ENCRYPTION_LENGTH;
 	    }
 
 	    // Prepare data block decryption
@@ -1327,7 +1327,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
     else
     {
 	ProgressStop();
-	return ERROR_SUBFILE_ENCRYPTION_INVALID;
+	return ETE_SUBFILE_ENCRYPTION_INVALID;
     }
 
     // Copy or decompress subfile data and send output to DataOutput
@@ -1394,7 +1394,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 		{
 		    inflateEnd(&zs);
 		    ProgressStop();
-		    return ERROR_SUBFILE_UNEXPECTED_EOF;
+		    return ETE_SUBFILE_UNEXPECTED_EOF;
 		}
 
 		size_t currlen = std::min<size_t>(sizeof(inbuffer), subfile.data.size() - inoffset);
@@ -1466,7 +1466,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 		{
 		    BZ2_bzDecompressEnd(&bz);
 		    ProgressStop();
-		    return ERROR_SUBFILE_UNEXPECTED_EOF;
+		    return ETE_SUBFILE_UNEXPECTED_EOF;
 		}
 
 		size_t currlen = std::min<size_t>(sizeof(inbuffer), subfile.data.size() - inoffset);
@@ -1516,15 +1516,15 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
     else
     {
 	ProgressStop();
-	return ERROR_SUBFILE_COMPRESSION_INVALID;
+	return ETE_SUBFILE_COMPRESSION_INVALID;
     }
 
     ProgressStop();
 
     if (crc32run != subfile.crc32)
-	return ERROR_SUBFILE_CRC32;
+	return ETE_SUBFILE_CRC32;
 
-    return ERROR_SUCCESS;
+    return ETE_SUCCESS;
 }
 
 } // namespace Enctain

@@ -171,133 +171,133 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
 
     switch(e)
     {
-    case ERROR_SUCCESS:
+    case ETE_SUCCESS:
 	return _("Success.");
 
-    case ERROR_SAVE_NO_PASSWORD:
+    case ETE_SAVE_NO_PASSWORD:
 	return _("Error saving container: no encryption password set!");
 
-    case ERROR_LOAD_HEADER1:
+    case ETE_LOAD_HEADER1:
 	return _("Error loading container: could not read header.");
 
-    case ERROR_LOAD_HEADER1_SIGNATURE:
+    case ETE_LOAD_HEADER1_SIGNATURE:
 	return _("Error loading container: could not read header, invalid signature.");
 
-    case ERROR_LOAD_HEADER1_VERSION:
+    case ETE_LOAD_HEADER1_VERSION:
 	return _("Error loading container: could not read header, invalid version.");
 
-    case ERROR_LOAD_HEADER1_METADATA:
+    case ETE_LOAD_HEADER1_METADATA:
 	return _("Error loading container: could not read header, invalid metadata.");
 
-    case ERROR_LOAD_HEADER1_METADATA_PARSE:
+    case ETE_LOAD_HEADER1_METADATA_PARSE:
 	return _("Error loading container: could not read header, metadata parse failed.");
 
-    case ERROR_LOAD_HEADER2:
+    case ETE_LOAD_HEADER2:
 	return _("Error loading container: could not read secondary header.");
 
-    case ERROR_LOAD_HEADER2_ENCRYPTION:
+    case ETE_LOAD_HEADER2_ENCRYPTION:
 	return _("Error loading container: could not read secondary header, check encryption key.");
 
-    case ERROR_LOAD_HEADER2_METADATA:
+    case ETE_LOAD_HEADER2_METADATA:
 	return _("Error loading container: could not read secondary header, invalid metadata.");
 
-    case ERROR_LOAD_HEADER2_METADATA_CRC32:
+    case ETE_LOAD_HEADER2_METADATA_CRC32:
 	return _("Error loading container: could not read secondary header, metadata crc32 mismatch.");
 
-    case ERROR_LOAD_HEADER2_METADATA_PARSE:
+    case ETE_LOAD_HEADER2_METADATA_PARSE:
 	return _("Error loading container: could not read secondary header, metadata parse failed.");
 
-    case ERROR_LOAD_SUBFILE:
+    case ETE_LOAD_SUBFILE:
 	return _("Error loading container: could not read encrypted subfile data.");
 
-    case ERROR_SUBFILE_COMPRESSION_INVALID:
+    case ETE_SUBFILE_COMPRESSION_INVALID:
 	return _("Error in subfile: unknown compression algorithm.");
 
-    case ERROR_SUBFILE_ENCRYPTION_INVALID:
+    case ETE_SUBFILE_ENCRYPTION_INVALID:
 	return _("Error in subfile: unknown encryption cipher.");
 
-    case ERROR_SUBFILE_ENCRYPTION_LENGTH:
+    case ETE_SUBFILE_ENCRYPTION_LENGTH:
 	return _("Error in subfile: invalid encrypted data length.");
 
-    case ERROR_SUBFILE_UNEXPECTED_EOF:
+    case ETE_SUBFILE_UNEXPECTED_EOF:
 	return _("Error in subfile: read beyond end of stream.");
 
-    case ERROR_SUBFILE_CRC32:
+    case ETE_SUBFILE_CRC32:
 	return _("Error in subfile: crc32 mismatch, data possibly corrupt.");
 
-    case ERROR_Z_UNKNOWN:
+    case ETE_Z_UNKNOWN:
 	return _("Error in zlib: unknown error.");
 
-    case ERROR_Z_OK:
+    case ETE_Z_OK:
 	return _("Error in zlib: success.");
 
-    case ERROR_Z_NEED_DICT:
+    case ETE_Z_NEED_DICT:
 	return _("Error in zlib: need dictionary.");
 	
-    case ERROR_Z_STREAM_END:
+    case ETE_Z_STREAM_END:
 	return _("Error in zlib: stream end.");
 
-    case ERROR_Z_ERRNO:
+    case ETE_Z_ERRNO:
 	return _("Error in zlib: file error.");
 
-    case ERROR_Z_STREAM_ERROR:
+    case ETE_Z_STREAM_ERROR:
 	return _("Error in zlib: stream error.");
 
-    case ERROR_Z_DATA_ERROR:
+    case ETE_Z_DATA_ERROR:
 	return _("Error in zlib: data error.");
 
-    case ERROR_Z_MEM_ERROR:
+    case ETE_Z_MEM_ERROR:
 	return _("Error in zlib: insufficient memory.");
 
-    case ERROR_Z_BUF_ERROR:
+    case ETE_Z_BUF_ERROR:
 	return _("Error in zlib: buffer error.");
 
-    case ERROR_Z_VERSION_ERROR:
+    case ETE_Z_VERSION_ERROR:
 	return _("Error in zlib: incompatible version.");
 
-    case ERROR_BZ_UNKNOWN:
+    case ETE_BZ_UNKNOWN:
 	return _("Error in bzip2: unknown error.");
 
-    case ERROR_BZ_OK:
+    case ETE_BZ_OK:
 	return _("Error in bzip2: success.");
 
-    case ERROR_BZ_RUN_OK:
+    case ETE_BZ_RUN_OK:
 	return _("Error in bzip2: successful run.");
 
-    case ERROR_BZ_FLUSH_OK:
+    case ETE_BZ_FLUSH_OK:
 	return _("Error in bzip2: successful flush.");
 
-    case ERROR_BZ_FINISH_OK:
+    case ETE_BZ_FINISH_OK:
 	return _("Error in bzip2: successful finish.");
 
-    case ERROR_BZ_STREAM_END:
+    case ETE_BZ_STREAM_END:
 	return _("Error in bzip2: stream end.");
 
-    case ERROR_BZ_SEQUENCE_ERROR:
+    case ETE_BZ_SEQUENCE_ERROR:
 	return _("Error in bzip2: sequence error.");
 
-    case ERROR_BZ_PARAM_ERROR:
+    case ETE_BZ_PARAM_ERROR:
 	return _("Error in bzip2: parameter error.");
 
-    case ERROR_BZ_MEM_ERROR:
+    case ETE_BZ_MEM_ERROR:
 	return _("Error in bzip2: insufficient memory.");
 
-    case ERROR_BZ_DATA_ERROR:
+    case ETE_BZ_DATA_ERROR:
 	return _("Error in bzip2: data error.");
 
-    case ERROR_BZ_DATA_ERROR_MAGIC:
+    case ETE_BZ_DATA_ERROR_MAGIC:
 	return _("Error in bzip2: magic header error.");
 
-    case ERROR_BZ_IO_ERROR:
+    case ETE_BZ_IO_ERROR:
 	return _("Error in bzip2: file system error.");
 
-    case ERROR_BZ_UNEXPECTED_EOF:
+    case ETE_BZ_UNEXPECTED_EOF:
 	return _("Error in bzip2: unexpected end of file.");
 
-    case ERROR_BZ_OUTBUFF_FULL:
+    case ETE_BZ_OUTBUFF_FULL:
 	return _("Error in bzip2: output buffer full.");
 
-    case ERROR_BZ_CONFIG_ERROR:
+    case ETE_BZ_CONFIG_ERROR:
 	return _("Error in bzip2: platform config error.");
 
     default:
@@ -572,7 +572,7 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	    }
 
 	    Enctain::error_t e = container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
-	    if (e != Enctain::ERROR_SUCCESS)
+	    if (e != Enctain::ETE_SUCCESS)
 	    {
 		wxMessageDialogErrorOK(this, WCryptoTE::EnctainErrorString(e));
 	    }
@@ -613,7 +613,7 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
 
 	DataOutputStream dataout(outstream);
 	Enctain::error_t e = container->GetSubFileData(sfid, dataout);
-	if (e != Enctain::ERROR_SUCCESS)
+	if (e != Enctain::ETE_SUCCESS)
 	{
 	    wxMessageDialogErrorOK(this, EnctainErrorString(e));
 	}
@@ -844,9 +844,9 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 	DataInputStream datain(stream);
 	e = nc->Load(datain, strWX2STL(passdlg.GetPass()));
 
-	if (e != Enctain::ERROR_SUCCESS)
+	if (e != Enctain::ETE_SUCCESS)
 	{
-	    if (e == Enctain::ERROR_LOAD_HEADER2_ENCRYPTION)
+	    if (e == Enctain::ETE_LOAD_HEADER2_ENCRYPTION)
 	    {
 		WMessageDialog dlg(this,
 				   _("Error loading container: could not read encrypted header.\nEncryption key probably invalid. Retry?"),
@@ -865,7 +865,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
 		return false;
 	    }
 	}
-    } while(e != Enctain::ERROR_SUCCESS);
+    } while(e != Enctain::ETE_SUCCESS);
 
     // Loading was successful
 
@@ -1033,7 +1033,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 
     DataOutputStream dataout(stream);
     Enctain::error_t e = container->Save(dataout);
-    if (e != Enctain::ERROR_SUCCESS)
+    if (e != Enctain::ETE_SUCCESS)
     {
 	UpdateStatusBar(EnctainErrorString(e));
 	wxMessageDialogErrorOK(this, EnctainErrorString(e));

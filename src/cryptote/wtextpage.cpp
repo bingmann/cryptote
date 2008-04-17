@@ -99,7 +99,7 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
     DataOutputTextPage dataout(*this);
 
     Enctain::error_t e = wmain->container->GetSubFileData(sfid, dataout);
-    if (e != Enctain::ERROR_SUCCESS)
+    if (e != Enctain::ETE_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));
     }
@@ -457,7 +457,7 @@ void WTextPage::PageSaveData()
     wxCharBuffer buf = editctrl->GetTextRaw();
 
     Enctain::error_t e = wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
-    if (e != Enctain::ERROR_SUCCESS)
+    if (e != Enctain::ETE_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));
     }

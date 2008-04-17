@@ -296,7 +296,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 
 	std::ifstream instream(filename.c_str());
 	DataInputStream datain(instream);
-	assert( container.Load(datain, "ELO0Eia9") == Enctain::ERROR_SUCCESS );
+	assert( container.Load(datain, "ELO0Eia9") == Enctain::ETE_SUCCESS );
 	
 	std::string key, val;
 	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );
@@ -321,7 +321,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( !container.GetSubFilePropertyIndex(0, 2, key, val) );
 
 	std::string mb;
-	assert( container.GetSubFileData(0, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(0, mb) == Enctain::ETE_SUCCESS );
 	
 	assert( mb == filedata );
 
@@ -332,7 +332,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( key == "Name" && val == "test2.txt" );
 	assert( !container.GetSubFilePropertyIndex(1, 2, key, val) );
 
-	assert( container.GetSubFileData(1, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(1, mb) == Enctain::ETE_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 2
@@ -342,7 +342,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( key == "Name" && val == "test3.txt" );
 	assert( !container.GetSubFilePropertyIndex(2, 2, key, val) );
 
-	assert( container.GetSubFileData(2, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(2, mb) == Enctain::ETE_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 3
@@ -352,7 +352,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( key == "Name" && val == "test4.txt" );
 	assert( !container.GetSubFilePropertyIndex(3, 2, key, val) );
 
-	assert( container.GetSubFileData(3, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(3, mb) == Enctain::ETE_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 4
@@ -362,7 +362,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( key == "Name" && val == "test5.txt" );
 	assert( !container.GetSubFilePropertyIndex(4, 2, key, val) );
 
-	assert( container.GetSubFileData(4, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(4, mb) == Enctain::ETE_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 5
@@ -372,7 +372,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( key == "Name" && val == "test6.txt" );
 	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
 
-	assert( container.GetSubFileData(5, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(5, mb) == Enctain::ETE_SUCCESS );
 	assert( mb == filedata );
 
 	// subfile 5 (again)
@@ -382,7 +382,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	assert( key == "Name" && val == "test6.txt" );
 	assert( !container.GetSubFilePropertyIndex(5, 2, key, val) );
 
-	assert( container.GetSubFileData(5, mb) == Enctain::ERROR_SUCCESS );
+	assert( container.GetSubFileData(5, mb) == Enctain::ETE_SUCCESS );
 	assert( mb == filedata );
     }
 }

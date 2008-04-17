@@ -59,7 +59,7 @@ bool WBinaryPage::LoadSubFile(unsigned int sfid)
     bindata.SetDataLen(0);
 
     Enctain::error_t e = wmain->container->GetSubFileData(sfid, dataout);
-    if (e != Enctain::ERROR_SUCCESS)
+    if (e != Enctain::ETE_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));
     }
@@ -122,7 +122,7 @@ void WBinaryPage::PageSaveData()
     if (needsave)
     {
 	Enctain::error_t e = wmain->container->SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
-	if (e != Enctain::ERROR_SUCCESS)
+	if (e != Enctain::ETE_SUCCESS)
 	{
 	    wxLogError(WCryptoTE::EnctainErrorString(e));
 	}

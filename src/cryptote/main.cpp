@@ -271,7 +271,7 @@ public:
 		DataInputStream datain(stream);
 		Enctain::error_t e = container->Load(datain, strWX2STL(cmdlinepass));
 
-		if (e != Enctain::ERROR_SUCCESS)
+		if (e != Enctain::ETE_SUCCESS)
 		{
 		    wxPuts(WCryptoTE::EnctainErrorString(e));
 		    return false;
@@ -331,9 +331,9 @@ public:
 		    DataInputStream datain(stream);
 		    e = container->Load(datain, strWX2STL(linepassstr));
 
-		    if (e != Enctain::ERROR_SUCCESS)
+		    if (e != Enctain::ETE_SUCCESS)
 		    {
-			if (e == Enctain::ERROR_LOAD_HEADER2_ENCRYPTION)
+			if (e == Enctain::ETE_LOAD_HEADER2_ENCRYPTION)
 			{
 			    wxPuts(_("Error loading container: cannot decrypt header. Possibly wrong password."));
 			    wxPuts(_("Try again? Abort with an empty line."));
@@ -344,7 +344,7 @@ public:
 			    return false;
 			}
 		    }
-		} while(e != Enctain::ERROR_SUCCESS);
+		} while(e != Enctain::ETE_SUCCESS);
 	    }
 
 	    long subfileindex;
@@ -370,7 +370,7 @@ public:
 		    DataOutputStdout dataout;
 
 		    Enctain::error_t e = container->GetSubFileData(subfileindex, dataout);
-		    if (e != Enctain::ERROR_SUCCESS)
+		    if (e != Enctain::ETE_SUCCESS)
 		    {
 			wxPuts(WCryptoTE::EnctainErrorString(e));
 		    }
@@ -412,7 +412,7 @@ public:
 		return;
 
 	    Enctain::error_t e = container->GetSubFileData(subfileindex, dataout);
-	    if (e != Enctain::ERROR_SUCCESS)
+	    if (e != Enctain::ETE_SUCCESS)
 	    {
 		wxPuts(WCryptoTE::EnctainErrorString(e));
 		return;
@@ -498,7 +498,7 @@ public:
 	    wxPrintf(_("Saving changed data of subfile %d into container: %+d bytes\n"), subfileindex, (after_size - before_size).GetLo());
 
 	    Enctain::error_t e = container->SetSubFileData(subfileindex, fdata.GetData(), fsize);
-	    if (e != Enctain::ERROR_SUCCESS)
+	    if (e != Enctain::ETE_SUCCESS)
 	    {
 		wxLogError(WCryptoTE::EnctainErrorString(e));
 
@@ -530,7 +530,7 @@ public:
 
 	    DataOutputStream dataout(stream);
 	    Enctain::error_t e = container->Save(dataout);
-	    if (e != Enctain::ERROR_SUCCESS)
+	    if (e != Enctain::ETE_SUCCESS)
 	    {
 		wxPuts(WCryptoTE::EnctainErrorString(e));
 		return;
