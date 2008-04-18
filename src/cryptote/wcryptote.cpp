@@ -786,7 +786,7 @@ void WCryptoTE::ContainerNew()
     if (cpage) cpage->SetFocus();
 }
 
-bool WCryptoTE::ContainerOpen(const wxString& filename)
+bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 {
     std::auto_ptr<wxFile> fh (new wxFile);
 
@@ -831,18 +831,28 @@ bool WCryptoTE::ContainerOpen(const wxString& filename)
     std::auto_ptr<Enctain::Container> nc (new Enctain::Container);
     nc->SetProgressIndicator(statusbar);
     
-    Enctain::error_t e;
+    Enctain::error_t e = Enctain::ETE_SUCCESS;
     do
     {
-	WGetPassword passdlg(this, filename);
-	if (passdlg.ShowModal() != wxID_OK) return false;
+	wxString passstr;
+
+	if (e == Enctain::ETE_SUCCESS)
+	{
+	    passstr = defpass;
+	}
+	else
+	{
+	    WGetPassword passdlg(this, filename);
+	    if (passdlg.ShowModal() != wxID_OK) return false;
+	    passstr = passdlg.GetPass();
+	}
 
 	fh->Seek(0, wxFromStart);
 	wxFileInputStream stream(*fh.get());
 	if (!stream.IsOk()) return false;
 
 	DataInputStream datain(stream);
-	e = nc->Load(datain, strWX2STL(passdlg.GetPass()));
+	e = nc->Load(datain, strWX2STL(passstr));
 
 	if (e != Enctain::ETE_SUCCESS)
 	{

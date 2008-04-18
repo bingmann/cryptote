@@ -153,7 +153,7 @@ public:
     void	ContainerNew();
 
     /// Load a container file into the editor, discard any current container.
-    bool	ContainerOpen(const wxString& filename);
+    bool	ContainerOpen(const wxString& filename, const wxString& defpass=wxEmptyString);
 
     /// Save the current container to a file.
     bool	ContainerSaveAs(const wxString& filename);

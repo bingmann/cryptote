@@ -1,0 +1,65 @@
+." $Id$
+.TH cryptote 1  "April 18, 2008" "version 0.1" "USER COMMANDS"
+.SH NAME
+cryptote \- Text editor with built-in strong cryptographic functions.
+.SH SYNOPSIS
+.TP 4
+\fBcryptote\fR \fI[OPTIONS]\fR \fI[container]\fR
+Launch graphical text editor interface.
+.TP 4
+\fBcryptote\fR \fI[OPTIONS]\fR \fI<OPERATION>\fR \fI<container>\fR
+Console-based editing operations on a container file.
+.TP 4
+\fBcryptote\fR \fI[OPTIONS]\fR -pwgen
+Launch graphical password generator dialog.
+.SH DESCRIPTION
+.B CryptoTE
+is a text editor based on the popular Scintilla editing widget. It can
+save sensitive text data in container files using strong encryption.  This way
+private data cannot be read by other possibly malicious programs on a
+system. The editor uses the wxWidgets cross-platform user-interface library.
+.SH OPTIONS
+.TP 4
+\fB\-h\fR, \fB\--help\fR
+Display a short help text on the command line parameters.
+.TP 4
+\fB\-L \fI<str>\fR, \fB\--lang\fR=\fI<str>\fR
+Set language for messages and locale. Example: de or en_GB.
+.TP 4
+\fB\-p \fI<str>\fR, \fB\--pass\fR=\fI<str>\fR
+Use the given password to decrypt the initially loaded container. Note that the
+password will be visible to other users through \fBps\fR. If this parameter is
+not given, the password will be queried interactively.
+.TP 4
+\fB\-pwgen\fR
+Start stand-alone password generator dialog instead of the editor.
+.SH OPERATIONS
+.TP 4
+\fB\-l\fR, \fB\--list\fR
+List subfiles in container.
+.TP 4
+\fB\-d \fI<num>\fR, \fB\--decrypt\fR=\fI<num>\fR
+Decrypt subfile <num> and output it to stdout.
+.TP 4
+\fB\-e \fI<num>\fR, \fB\--edit\fR=\fI<num>\fR
+Edit subfile <num> using the default (console) editor. The editor is defined by
+the environment variable $EDITOR, which is set by the distribution. Note that
+the contents of the subfile is first written to a temporary file. Other
+applications can also read this temporary file while it is edited. Use the
+built-in graphical editor for higher security.
+.SH EXAMPLES
+.TP 4
+Launch wxWidgets text editor interface:
+\fBcryptote\fR
+.TP 4
+Open the container \fItest.ect\fR with password \fI"abcde"\fR and edit the second subfile:
+\fBcryptote\fR -p "abcde" -e 2 test.ect
+.SH AUTHOR
+Timo Bingmann (tb (at) idlebox <dot> net)
+.SH COPYRIGHT
+Copyright \(co 2008 Timo Bingmann.
+.br
+Released under the GPLv2+: GNU General Public License Version 2 or later
+<http://gnu.org/licenses/gpl.html>
+.SH SEE ALSO
+<http://idlebox.net/2008/cryptote>

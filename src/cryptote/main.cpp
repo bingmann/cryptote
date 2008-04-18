@@ -71,6 +71,9 @@ private:
     /// File path to load initially
     wxString		cmdlinefile;
 
+    /// Password string given on command line
+    wxString		cmdlinepass;
+
     /// True if to show stand-alone password generator
     bool		run_pwgen;
 
@@ -139,7 +142,8 @@ public:
 
 	    if (!cmdlinefile.IsEmpty())
 	    {
-		wcryptote->ContainerOpen(cmdlinefile);
+		wcryptote->ContainerOpen(cmdlinefile, cmdlinepass);
+		cmdlinepass.Clear();
 	    }
 	}
 
@@ -187,6 +191,8 @@ public:
     {
 	if (parser.GetParamCount() > 0)
 	    cmdlinefile = parser.GetParam(0);
+
+	parser.Found(_T("p"), &cmdlinepass);
 
 	// First thing to do: set up language and locale
 	wxString langtext;
@@ -262,8 +268,7 @@ public:
 		return false;
 	    }
 
-	    wxString cmdlinepass;
-	    if (parser.Found(_T("p"), &cmdlinepass))
+	    if (!cmdlinepass.IsEmpty())
 	    {
 		wxFileInputStream stream(*fh.get());
 		if (!stream.IsOk()) return false;
