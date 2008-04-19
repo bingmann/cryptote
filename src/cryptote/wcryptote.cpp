@@ -1189,7 +1189,7 @@ void WCryptoTE::WebUpdateCheck()
 
     wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
     if (!httpconn) {
-	UpdateStatusBar(_("Error in WebUpdateCheck: could not create http connection."));
+	UpdateStatusBar(_("Error in WebUpdateCheck: could not create HTTP connection."));
 	webupdatecheck_running = false;
 	return;
     }
@@ -2598,11 +2598,11 @@ void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
 	}
     }
 
-    if (timedelta > 10)
+    if (timedelta > 60)
     {
 	// Toggle automatic WebUpdateCheck if enabled.
 
-	if (prefs_webupdatecheck && timenow >= prefs_webupdatecheck_time + 24)
+	if (prefs_webupdatecheck && timenow >= prefs_webupdatecheck_time + 24*3600)
 	{
 	    // Always update check time, regardless of webcheck's result.
 	    prefs_webupdatecheck_time = timenow;
@@ -2928,7 +2928,7 @@ void WWebUpdateCheck::do_layout()
     // begin wxGlade: WWebUpdateCheck::do_layout
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("A newer version is available:"));
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("A newer program version is available:"));
     sizer1->Add(label1, 0, wxALL|wxEXPAND, 8);
     sizer1->Add(labelNewVersion, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("can be downloaded from the web page:"));
@@ -2985,4 +2985,3 @@ void WNotePage::SetModified(bool modified)
 }
 
 IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);
-
