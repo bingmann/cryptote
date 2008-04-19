@@ -39,6 +39,7 @@ private:
 
 protected:
     // begin wxGlade: WPreferences::attributes
+    wxStaticBox* sizerC2_staticbox;
     wxStaticBox* sizerB2_staticbox;
     wxStaticBox* sizerA6_staticbox;
     wxStaticBox* sizerA4_staticbox;
@@ -56,6 +57,8 @@ protected:
     wxPanel* notebook_pane1;
     wxListCtrl* listctrlTheme;
     wxPanel* notebook_pane2;
+    wxCheckBox* checkboxWebUpdateCheck;
+    wxPanel* notebook_pane3;
     wxNotebook* notebook;
     wxButton* buttonOK;
     wxButton* buttonCancel;

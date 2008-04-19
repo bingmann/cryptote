@@ -14,8 +14,10 @@
 #include "pwgen/wpassgen.h"
 
 #include <wx/config.h>
+#include <wx/tokenzr.h>
 #include <wx/url.h>
 #include <wx/protocol/http.h>
+
 #include "common/tools.h"
 
 #if defined(__WINDOWS__)
@@ -1122,6 +1124,196 @@ void WCryptoTE::RestoreOpenSubFilelist()
     }
 }
 
+static int CompareVersionStrings(const wxString& a, const wxString& b)
+{
+    unsigned int ai = 0, bi = 0;
+
+    while(ai < a.Len() && bi < b.Len())
+    {
+	// find next non-number letter in both strings
+	unsigned int aj = ai, bj = bi;
+
+	while (aj < a.Len() && wxIsdigit(a[aj])) ++aj;
+	while (bj < b.Len() && wxIsdigit(b[bj])) ++bj;
+
+	if (aj != ai && bj != bi)
+	{
+	    // compare two numbers
+	    long av = 0, bv = 0;
+	    a.Mid(ai, aj - ai).ToLong(&av);
+	    b.Mid(bi, bj - bi).ToLong(&bv);
+
+	    if (av > bv) return -1;
+	    if (av < bv) return +1;
+	}
+	else if (aj == ai)
+	{
+	    // first string has no number but second one does.
+	    return +1;
+	}
+	else if (bj == bi)
+	{
+	    // second string has no number but first one does.
+	    return -1;
+	}
+
+	// check all non-number letters match in both strings
+	while (aj < a.Len() && bj < b.Len() && 
+	       !wxIsdigit(a[aj]) && !wxIsdigit(b[bj]))
+	{
+	    if (a[aj] > b[bj]) return -1;
+	    if (a[aj] < b[bj]) return +1;
+
+	    ++aj, ++bj;
+	}
+
+	ai = aj, bi = bj;
+    }
+
+    // longer string wins
+    if (a.Len() > b.Len()) return -1;
+    if (a.Len() < b.Len()) return +1;
+
+    return 0;
+}
+
+void WCryptoTE::WebUpdateCheck()
+{
+    UpdateStatusBar(_("Opening HTTP connection to idlebox.net..."));
+
+    wxURL url(_T("http://idlebox.net/2008/cryptote/updatecheck"));
+
+    wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
+    if (!httpconn) {
+	UpdateStatusBar(_("Error in WebUpdateCheck: could not create http connection."));
+	return;
+    }
+    httpconn->SetHeader(_T("User-Agent"),
+			wxString::Format(_T("CryptoTE/%s WebUpdateCheck/0.1"), _T(VERSION)));
+    httpconn->SetTimeout(60);
+
+    wxInputStream* is = url.GetInputStream();
+    if (!is)
+    {
+	switch(url.GetProtocol().GetError())
+	{
+	default:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: unknown error while opening connection."));
+	    break;
+	case wxPROTO_NOERR:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: no error while opening connection."));
+	    break;
+	case wxPROTO_NETERR:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: a generic network error occurred while opening connection."));
+	    break;
+	case wxPROTO_PROTERR:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: an error occurred during connection negotiation."));
+	    break;
+	case wxPROTO_CONNERR:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: failed to connect the server."));
+	    break;
+	case wxPROTO_INVVAL:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: invalid value while opening connection."));
+	    break;
+	case wxPROTO_NOHNDLR:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: no protocol handler found while opening connection."));
+	    break;
+	case wxPROTO_NOFILE:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: remote file not found."));
+	    break;
+	case wxPROTO_ABRT:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: action aborted."));
+	    break;
+	case wxPROTO_RCNCT:
+	    UpdateStatusBar(_("Error in WebUpdateCheck: an error occurred during reconnection."));
+	    break;
+	}
+	return;
+    }
+
+    wxString filedata;
+    char input[1024];
+
+    while (is->Read(input, sizeof(input)).LastRead() > 0)
+    {
+	filedata.Append( wxString(input, wxConvISO8859_1, is->LastRead()) );
+
+	if (filedata.Len() > 1048576) {
+	    UpdateStatusBar(_("Error in WebUpdateCheck: file is too large."));
+	    delete is;
+	    return;
+	}
+    }
+
+    delete is;
+
+    // Extract first line from data
+    wxString firstline = filedata.BeforeFirst(_T('\n'));
+    filedata = filedata.AfterFirst(_T('\n'));
+
+    // Tokenize the first line
+    wxStringTokenizer firstwords(firstline, _T(" "));
+
+    wxString progname = firstwords.GetNextToken();
+    if (progname != _T("CryptoTE")) {
+	UpdateStatusBar(_("Error in WebUpdateCheck: invalid version file."));
+	return;
+    }
+
+    wxString prognewversion = firstwords.GetNextToken();
+
+    // Newest version is checked against the last one confirmed by the user or
+    // by the current one itself.
+    wxString progoldversion = prefs_webupdatecheck_version;
+
+    if (progoldversion.IsEmpty()) progoldversion = _T(VERSION);
+
+    int cmp = CompareVersionStrings(progoldversion, prognewversion);
+
+    if (cmp == 0)
+    {
+	UpdateStatusBar(_("WebUpdateCheck: No new version available."));
+	return;
+    }
+    else if (cmp < 0)
+    {
+	UpdateStatusBar(_("WebUpdateCheck: Your version is never than the publicly available one."));
+	return;
+    }
+    // else (cmp > 0)
+
+    UpdateStatusBar(_("WebUpdateCheck: OK. New version is available!"));
+
+    WWebUpdateCheck dlg(this, firstline, filedata);
+    int id = dlg.ShowModal();
+
+    wxConfigBase* cfg = wxConfigBase::Get();
+    cfg->SetPath(_T("/cryptote"));
+
+    if (id == wxID_OK) // "OK"
+    {
+	// Write newly seen version into config.
+	prefs_webupdatecheck_version = prognewversion;
+
+	cfg->Write(_T("webupdatecheck_version"), prognewversion);
+    }
+    else if (id == wxID_NO) // "Disable WebUpdateCheck"
+    {
+	// Disable automatic check and confirm the new version.
+	prefs_webupdatecheck = false;
+	prefs_webupdatecheck_version = prognewversion;
+
+	cfg->Write(_T("webupdatecheck"), false);
+	cfg->Write(_T("webupdatecheck_version"), prognewversion);
+    }
+    else if (id == wxID_CANCEL) // "Remind me again"
+    {
+	// Do nothing.
+    }
+
+    cfg->Flush();
+}
+
 static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
 					 const wxString& text, const wxString& helpString)
 {
@@ -1376,7 +1568,7 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 
     wxMenu *menuHelp = new wxMenu;
 
-    appendMenuItem(menuHelp, myID_MENU_HELP_CHECKUPDATE,
+    appendMenuItem(menuHelp, myID_MENU_HELP_WEBUPDATECHECK,
 		   _("&Check for Update ..."),
 		   _("Check online web page for updates to CryptoTE."));
 
@@ -1510,6 +1702,10 @@ void WCryptoTE::LoadPreferences()
 #endif
 
     cfg->Read(_T("sharelock"), &prefs_sharelock, default_sharelock);
+
+    cfg->Read(_T("webupdatecheck"), &prefs_webupdatecheck, true);
+    cfg->Read(_T("webupdatecheck_time"), &prefs_webupdatecheck_time, 0);
+    cfg->Read(_T("webupdatecheck_version"), &prefs_webupdatecheck_version);
 }
 
 // *** Generic Events ***
@@ -2088,38 +2284,9 @@ void WCryptoTE::OnMenuViewZoomReset(wxCommandEvent& WXUNUSED(event))
     ctext->SetZoom(0);
 }
 
-void WCryptoTE::OnMenuHelpCheckUpdate(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuHelpWebUpdateCheck(wxCommandEvent& WXUNUSED(event))
 {
-    UpdateStatusBar(_("Opening HTTP connection to idlebox.net..."));
-
-    wxURL url(_T("http://idlebox.net/2008/cryptote/checkupdate"));
-
-    wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
-    if (!httpconn) {
-	UpdateStatusBar(_("Error in Check-Update: could not create http connection."));
-	return;
-    }
-    httpconn->SetHeader(_T("User-Agent"), _T("CryptoTE/0.1 CheckUpdate/0.1"));
-
-    wxInputStream* is = url.GetInputStream();
-    if (!is) {
-	UpdateStatusBar(_("Error in Check-Update: could not open connection."));
-	return;
-    }
-
-    wxString filedata;
-    char input[1024];
-
-    while (is->Read(input, sizeof(input)).LastRead() > 0)
-    {
-	filedata.Append( wxString(input, wxConvISO8859_1, is->LastRead()) );
-    }
-
-    delete is;
-
-    UpdateStatusBar(_("Done."));
-
-    wxMessageDialogErrorOK(this, filedata);
+    WebUpdateCheck();
 }
 
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
@@ -2376,44 +2543,67 @@ void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
     if (lastuserevent == 0) return;
 
     long timenow = ::wxGetLocalTime();
+    long timedelta = timenow - lastuserevent;
 
     if (prefs_autoclose)
     {
-	long timedelta = timenow - lastuserevent;
-
 	if (timedelta >= prefs_autoclosetime * 60)
 	{
 	    lastuserevent = 0; // disable timer before processing, only one
 			       // idle-timeout per user-event.
 
 	    // cannot auto-close if the filename is unset.
-	    if (!container_filename.IsOk()) {
+	    if (!container_filename.IsOk())
+	    {
 		UpdateStatusBar(_("Inactivity time elapsed. But could not auto-save container: no default file name set."));
-		return;
 	    }
+	    else
+	    {
+		if (IsModified()) {
+		    // error during save?
+		    if (!UserContainerSave()) return;
+		}
+		else {
+		    UpdateStatusBar(_("Inactivity time elapsed. No modifications to save."));
+		}
 
-	    if (IsModified()) {
-		// error during save?
-		if (!UserContainerSave()) return;
-	    }
-	    else {
-		UpdateStatusBar(_("Inactivity time elapsed. No modifications to save."));
-	    }
-
-	    if (prefs_autocloseexit) {
-		Close();
-	    }
-	    else {
-		ContainerNew();
+		if (prefs_autocloseexit) {
+		    Close();
+		}
+		else {
+		    ContainerNew();
+		}
 	    }
 	}
-	else if (timedelta > 60)
+
+	if (timedelta > 50)
 	{
 	    if (idletimestatusbar.IsEmpty())
 		idletimestatusbar = statusbar->GetStatusText(1);
 
 	    wxString sb = wxString::Format(_("Auto-close in %ds"), prefs_autoclosetime * 60 - timedelta);
 	    statusbar->SetStatusText(sb, 1);
+	}
+    }
+
+    printf("Ping\n");
+    if (timedelta > 10)
+    {
+	printf("Ping2\n");
+
+	// Toggle automatic WebUpdateCheck if enabled.
+
+	if (prefs_webupdatecheck && timenow >= prefs_webupdatecheck_time + 24)
+	{
+	    // Always update check time, regardless of webcheck's result.
+	    prefs_webupdatecheck_time = timenow;
+
+	    wxConfigBase* cfg = wxConfigBase::Get();
+	    cfg->SetPath(_T("/cryptote"));
+	    cfg->Write(_T("webupdatecheck_time"), timenow);
+	    cfg->Flush();
+
+	    WebUpdateCheck();
 	}
     }
 }
@@ -2497,7 +2687,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_VIEW_ZOOM_RESET,	WCryptoTE::OnMenuViewZoomReset)
 
     // Help
-    EVT_MENU	(myID_MENU_HELP_CHECKUPDATE,	WCryptoTE::OnMenuHelpCheckUpdate)
+    EVT_MENU	(myID_MENU_HELP_WEBUPDATECHECK,	WCryptoTE::OnMenuHelpWebUpdateCheck)
     EVT_MENU	(wxID_ABOUT,			WCryptoTE::OnMenuHelpAbout)
 
     // *** Accelerators
@@ -2694,6 +2884,76 @@ void WAbout::do_layout()
     // end wxGlade
 }
 
+// *** WWebUpdateCheck ***
+
+WWebUpdateCheck::WWebUpdateCheck(wxWindow* parent, const wxString& newversion, const wxString& changes, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+{
+    // begin wxGlade: WWebUpdateCheck::WWebUpdateCheck
+    labelNewVersion = new wxStaticText(this, wxID_ANY, _("CryptoTE 0.1.2"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_CENTRE);
+    textctrlChanges = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
+    buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
+    buttonDisable = new wxButton(this, wxID_NO, _("Disable WebUpdateCheck"));
+    buttonClose = new wxButton(this, wxID_CANCEL, _("Remind me again"));
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+
+    labelNewVersion->SetLabel(newversion);
+    textctrlChanges->SetValue(changes);
+}
+
+void WWebUpdateCheck::set_properties()
+{
+    // begin wxGlade: WWebUpdateCheck::set_properties
+    SetTitle(_("CryptoTE WebUpdateCheck"));
+    labelNewVersion->SetFont(wxFont(12, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
+    textctrlChanges->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
+    // end wxGlade
+}
+
+void WWebUpdateCheck::do_layout()
+{
+    // begin wxGlade: WWebUpdateCheck::do_layout
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("A newer version is available:"));
+    sizer1->Add(label1, 0, wxALL|wxEXPAND, 8);
+    sizer1->Add(labelNewVersion, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("can be downloaded from the web page:"));
+    sizer1->Add(label2, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    sizer1->Add(hyperlink1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
+    sizer1->Add(staticline1, 0, wxEXPAND, 0);
+    wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("Summary of changes to the new version:"));
+    sizer1->Add(label3, 0, wxALL, 8);
+    sizer1->Add(textctrlChanges, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    wxStaticLine* staticline2 = new wxStaticLine(this, wxID_ANY);
+    sizer1->Add(staticline2, 0, wxEXPAND, 0);
+    sizer2->Add(buttonOK, 2, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 4);
+    sizer2->Add(buttonDisable, 3, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 4);
+    sizer2->Add(buttonClose, 2, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 4);
+    sizer1->Add(sizer2, 0, wxEXPAND, 0);
+    SetSizer(sizer1);
+    sizer1->Fit(this);
+    Layout();
+    Centre();
+    // end wxGlade
+}
+
+BEGIN_EVENT_TABLE(WWebUpdateCheck, wxDialog)
+    // begin wxGlade: WWebUpdateCheck::event_table
+    EVT_BUTTON(wxID_NO, WWebUpdateCheck::OnButtonDisableWebUpdateCheck)
+    // end wxGlade
+END_EVENT_TABLE();
+
+void WWebUpdateCheck::OnButtonDisableWebUpdateCheck(wxCommandEvent& WXUNUSED(event))
+{
+    EndModal(wxID_NO);
+}
+
 // *** WNotePage ***
 
 WNotePage::WNotePage(class WCryptoTE* _wmain)
@@ -2716,3 +2976,4 @@ void WNotePage::SetModified(bool modified)
 }
 
 IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);
+

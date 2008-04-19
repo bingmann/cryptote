@@ -18,11 +18,13 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
 {
     // begin wxGlade: WPreferences::WPreferences
     notebook = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    notebook_pane3 = new wxPanel(notebook, wxID_ANY);
     notebook_pane2 = new wxPanel(notebook, wxID_ANY);
     notebook_pane1 = new wxPanel(notebook, wxID_ANY);
     sizerA4_staticbox = new wxStaticBox(notebook_pane1, -1, _("Automatic Closing"));
     sizerA6_staticbox = new wxStaticBox(notebook_pane1, -1, _("Share Locks"));
     sizerB2_staticbox = new wxStaticBox(notebook_pane2, -1, _("Icon Theme"));
+    sizerC2_staticbox = new wxStaticBox(notebook_pane3, -1, _("Update Check"));
     sizerA2_staticbox = new wxStaticBox(notebook_pane1, -1, _("Backup Files"));
     checkboxBackups = new wxCheckBox(notebook_pane1, myID_CHECK_BACKUPS, _("Keep backups of container during saving."));
     labelBackup1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Number of backups to keep: "));
@@ -35,6 +37,7 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     checkboxShareLock = new wxCheckBox(notebook_pane1, wxID_ANY, _("Keep exclusive Share-Lock on container file."));
     labelShareLock1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Other users cannot open it while loaded."));
     listctrlTheme = new wxListCtrl(notebook_pane2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
+    checkboxWebUpdateCheck = new wxCheckBox(notebook_pane3, wxID_ANY, _("Automatically check for updated versions."));
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
 
@@ -67,6 +70,8 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     checkboxAutoCloseExit->SetValue(wmain->prefs_autocloseexit);
 
     checkboxShareLock->SetValue(wmain->prefs_sharelock);
+
+    checkboxWebUpdateCheck->SetValue(wmain->prefs_webupdatecheck);
 
     wxCommandEvent event;
     OnCheckboxBackups(event);
@@ -132,6 +137,8 @@ void WPreferences::do_layout()
     // begin wxGlade: WPreferences::do_layout
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizerC1 = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer* sizerC2 = new wxStaticBoxSizer(sizerC2_staticbox, wxVERTICAL);
     wxBoxSizer* sizerB1 = new wxBoxSizer(wxVERTICAL);
     wxStaticBoxSizer* sizerB2 = new wxStaticBoxSizer(sizerB2_staticbox, wxVERTICAL);
     wxBoxSizer* sizerA1 = new wxBoxSizer(wxVERTICAL);
@@ -160,8 +167,14 @@ void WPreferences::do_layout()
     sizerB2->Add(listctrlTheme, 1, wxALL|wxEXPAND, 4);
     sizerB1->Add(sizerB2, 1, wxALL|wxEXPAND, 8);
     notebook_pane2->SetSizer(sizerB1);
+    sizerC2->Add(checkboxWebUpdateCheck, 0, wxALL, 4);
+    wxStaticText* labelWebUpdateCheck1 = new wxStaticText(notebook_pane3, wxID_ANY, _("Checks for updated versions of CryptoTE by\nquerying the web. Checks once every 24h,\nand only during program idle time. No data\nother than the current version of CryptoTE\nis sent. No automatic download is started."));
+    sizerC2->Add(labelWebUpdateCheck1, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4);
+    sizerC1->Add(sizerC2, 0, wxALL|wxEXPAND, 8);
+    notebook_pane3->SetSizer(sizerC1);
     notebook->AddPage(notebook_pane1, _("Containers"));
     notebook->AddPage(notebook_pane2, _("Icons"));
+    notebook->AddPage(notebook_pane3, _("WebUpdate"));
     sizer1->Add(notebook, 1, wxALL|wxEXPAND, 8);
     sizer2->Add(5, 5, 1, 0, 0);
     sizer2->Add(buttonOK, 0, wxLEFT|wxTOP|wxBOTTOM, 4);
@@ -215,6 +228,8 @@ void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
     cfg->Write(_T("autocloseexit"), checkboxAutoCloseExit->GetValue());
 
     cfg->Write(_T("sharelock"), checkboxShareLock->GetValue());
+
+    cfg->Write(_T("webupdatecheck"), checkboxWebUpdateCheck->GetValue());
 
     cfg->Flush();
 

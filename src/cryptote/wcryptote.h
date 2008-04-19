@@ -57,7 +57,7 @@ enum {
     myID_MENU_VIEW_LIST,
     myID_MENU_VIEW_REPORT,
 
-    myID_MENU_HELP_CHECKUPDATE,
+    myID_MENU_HELP_WEBUPDATECHECK,
 
     // (Other) Main Window Accelerators
 
@@ -166,6 +166,10 @@ public:
     /// Restore list of opened subfiles by calling OpenSubFile.
     void	RestoreOpenSubFilelist();
 
+    /// Query the web page for the newest version and check if the current
+    /// should be updated.
+    void	WebUpdateCheck();
+
     // *** Preference Variables ***
 
     /// Theme set using BitmapCatalog
@@ -190,6 +194,15 @@ public:
     /// Flag to keep the current file open on Win32 and thus locking it. On
     /// Linux the opened file is flock()-ed
     bool	prefs_sharelock;
+
+    /// Flag is allow auto checking for updates online.
+    bool	prefs_webupdatecheck;
+
+    /// Time value when the last update check was performed successfully.
+    time_t	prefs_webupdatecheck_time;
+
+    /// Highest updated version confirmed by the user.
+    wxString	prefs_webupdatecheck_version;
 
     /// Retrieve config settings from registry or config file
     void	LoadPreferences();
@@ -254,7 +267,7 @@ public:
     void	OnMenuViewZoomDecrease(wxCommandEvent& event);
     void	OnMenuViewZoomReset(wxCommandEvent& event);
 
-    void	OnMenuHelpCheckUpdate(wxCommandEvent& event);
+    void	OnMenuHelpWebUpdateCheck(wxCommandEvent& event);
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
     // Accelerator Events
@@ -434,6 +447,36 @@ protected:
     wxHyperlinkCtrl* hyperlink1;
     wxButton* buttonOK;
     // end wxGlade
+}; // wxGlade: end class
+
+class WWebUpdateCheck : public wxDialog
+{
+public:
+    // begin wxGlade: WWebUpdateCheck::ids
+    // end wxGlade
+
+    WWebUpdateCheck(wxWindow* parent, const wxString& newversion, const wxString& changes, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+private:
+    // begin wxGlade: WWebUpdateCheck::methods
+    void set_properties();
+    void do_layout();
+    // end wxGlade
+
+protected:
+    // begin wxGlade: WWebUpdateCheck::attributes
+    wxStaticText* labelNewVersion;
+    wxHyperlinkCtrl* hyperlink1;
+    wxTextCtrl* textctrlChanges;
+    wxButton* buttonOK;
+    wxButton* buttonDisable;
+    wxButton* buttonClose;
+    // end wxGlade
+
+    virtual void OnButtonDisableWebUpdateCheck(wxCommandEvent &event); // wxGlade: <event_handler>
+
+protected:
+    DECLARE_EVENT_TABLE()
 }; // wxGlade: end class
 
 class WNotePage : public wxPanel

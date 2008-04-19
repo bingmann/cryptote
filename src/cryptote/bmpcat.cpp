@@ -200,6 +200,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { myID_MENU_VIEW_ZOOM_DECREASE,	BU_MENU, _T("view-zoom-decrease"), wxNullBitmap },
     { myID_MENU_VIEW_ZOOM_RESET,	BU_MENU, _T("view-zoom-reset"), wxNullBitmap },
 
+    { myID_MENU_HELP_WEBUPDATECHECK,	BU_MENU, _T("application-webupdatecheck"), wxNullBitmap },
     { wxID_ABOUT,			BU_MENU, _T("application-about"), wxNullBitmap },
 
     { myID_MENU_VIEW_BIGICONS,		BU_MENU, _T("view-bigicons"), wxNullBitmap },
