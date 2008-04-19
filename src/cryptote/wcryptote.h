@@ -57,6 +57,8 @@ enum {
     myID_MENU_VIEW_LIST,
     myID_MENU_VIEW_REPORT,
 
+    myID_MENU_HELP_CHECKUPDATE,
+
     // (Other) Main Window Accelerators
 
     myID_ACCEL_ESCAPE,
@@ -252,6 +254,7 @@ public:
     void	OnMenuViewZoomDecrease(wxCommandEvent& event);
     void	OnMenuViewZoomReset(wxCommandEvent& event);
 
+    void	OnMenuHelpCheckUpdate(wxCommandEvent& event);
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
     // Accelerator Events

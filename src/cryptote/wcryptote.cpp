@@ -14,6 +14,8 @@
 #include "pwgen/wpassgen.h"
 
 #include <wx/config.h>
+#include <wx/url.h>
+#include <wx/protocol/http.h>
 #include "common/tools.h"
 
 #if defined(__WINDOWS__)
@@ -1374,6 +1376,10 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 
     wxMenu *menuHelp = new wxMenu;
 
+    appendMenuItem(menuHelp, myID_MENU_HELP_CHECKUPDATE,
+		   _("&Check for Update ..."),
+		   _("Check online web page for updates to CryptoTE."));
+
     appendMenuItem(menuHelp, wxID_ABOUT,
 		   _("&About ...\tShift+F1"),
 		   _("Show some information about CryptoTE."));
@@ -2082,6 +2088,40 @@ void WCryptoTE::OnMenuViewZoomReset(wxCommandEvent& WXUNUSED(event))
     ctext->SetZoom(0);
 }
 
+void WCryptoTE::OnMenuHelpCheckUpdate(wxCommandEvent& WXUNUSED(event))
+{
+    UpdateStatusBar(_("Opening HTTP connection to idlebox.net..."));
+
+    wxURL url(_T("http://idlebox.net/2008/cryptote/checkupdate"));
+
+    wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
+    if (!httpconn) {
+	UpdateStatusBar(_("Error in Check-Update: could not create http connection."));
+	return;
+    }
+    httpconn->SetHeader(_T("User-Agent"), _T("CryptoTE/0.1 CheckUpdate/0.1"));
+
+    wxInputStream* is = url.GetInputStream();
+    if (!is) {
+	UpdateStatusBar(_("Error in Check-Update: could not open connection."));
+	return;
+    }
+
+    wxString filedata;
+    char input[1024];
+
+    while (is->Read(input, sizeof(input)).LastRead() > 0)
+    {
+	filedata.Append( wxString(input, wxConvISO8859_1, is->LastRead()) );
+    }
+
+    delete is;
+
+    UpdateStatusBar(_("Done."));
+
+    wxMessageDialogErrorOK(this, filedata);
+}
+
 void WCryptoTE::OnMenuHelpAbout(wxCommandEvent& WXUNUSED(event))
 {
     WAbout dlg(this);
@@ -2457,7 +2497,8 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_VIEW_ZOOM_RESET,	WCryptoTE::OnMenuViewZoomReset)
 
     // Help
-    EVT_MENU	(wxID_ABOUT,		WCryptoTE::OnMenuHelpAbout)
+    EVT_MENU	(myID_MENU_HELP_CHECKUPDATE,	WCryptoTE::OnMenuHelpCheckUpdate)
+    EVT_MENU	(wxID_ABOUT,			WCryptoTE::OnMenuHelpAbout)
 
     // *** Accelerators
 
