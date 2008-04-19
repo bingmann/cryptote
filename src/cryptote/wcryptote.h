@@ -370,6 +370,9 @@ public:
     /// Password Generator Dialog Box
     class WPassGen*	wpassgen;
 
+    /// Reentry flag for WebUpdateCheck
+    bool		webupdatecheck_running;
+
 public:
 
     // *** Idle-Timer ***

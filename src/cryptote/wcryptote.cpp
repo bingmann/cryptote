@@ -35,6 +35,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     main_modified = false;
     lastuserevent = ::wxGetLocalTime();
     wpassgen = NULL;
+    webupdatecheck_running = false;
 
     copt_restoreview = true;
 
@@ -1179,6 +1180,9 @@ static int CompareVersionStrings(const wxString& a, const wxString& b)
 
 void WCryptoTE::WebUpdateCheck()
 {
+    if (webupdatecheck_running) return;
+    webupdatecheck_running = true;
+
     UpdateStatusBar(_("Opening HTTP connection to idlebox.net..."));
 
     wxURL url(_T("http://idlebox.net/2008/cryptote/updatecheck"));
@@ -1186,6 +1190,7 @@ void WCryptoTE::WebUpdateCheck()
     wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
     if (!httpconn) {
 	UpdateStatusBar(_("Error in WebUpdateCheck: could not create http connection."));
+	webupdatecheck_running = false;
 	return;
     }
     httpconn->SetHeader(_T("User-Agent"),
@@ -1228,6 +1233,7 @@ void WCryptoTE::WebUpdateCheck()
 	    UpdateStatusBar(_("Error in WebUpdateCheck: an error occurred during reconnection."));
 	    break;
 	}
+	webupdatecheck_running = false;
 	return;
     }
 
@@ -1241,6 +1247,7 @@ void WCryptoTE::WebUpdateCheck()
 	if (filedata.Len() > 1048576) {
 	    UpdateStatusBar(_("Error in WebUpdateCheck: file is too large."));
 	    delete is;
+	    webupdatecheck_running = false;
 	    return;
 	}
     }
@@ -1257,6 +1264,7 @@ void WCryptoTE::WebUpdateCheck()
     wxString progname = firstwords.GetNextToken();
     if (progname != _T("CryptoTE")) {
 	UpdateStatusBar(_("Error in WebUpdateCheck: invalid version file."));
+	webupdatecheck_running = false;
 	return;
     }
 
@@ -1273,11 +1281,13 @@ void WCryptoTE::WebUpdateCheck()
     if (cmp == 0)
     {
 	UpdateStatusBar(_("WebUpdateCheck: No new version available."));
+	webupdatecheck_running = false;
 	return;
     }
     else if (cmp < 0)
     {
 	UpdateStatusBar(_("WebUpdateCheck: Your version is never than the publicly available one."));
+	webupdatecheck_running = false;
 	return;
     }
     // else (cmp > 0)
@@ -1312,6 +1322,8 @@ void WCryptoTE::WebUpdateCheck()
     }
 
     cfg->Flush();
+
+    webupdatecheck_running = false;
 }
 
 static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
@@ -2586,11 +2598,8 @@ void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
 	}
     }
 
-    printf("Ping\n");
     if (timedelta > 10)
     {
-	printf("Ping2\n");
-
 	// Toggle automatic WebUpdateCheck if enabled.
 
 	if (prefs_webupdatecheck && timenow >= prefs_webupdatecheck_time + 24)
