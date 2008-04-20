@@ -84,9 +84,10 @@ public:
     }
 
     /// Virtual callback function to save data.
-    virtual void Output(const void* data, size_t datalen)
+    virtual bool Output(const void* data, size_t datalen)
     {
 	tpage.editctrl->AddTextRaw((const char*)data, datalen);
+	return true;
     }
 };
 

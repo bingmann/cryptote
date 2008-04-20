@@ -30,7 +30,7 @@ static MyLocaleMemoryCatalog wxstd_catalogs[] =
 class DataOutputStdout : public Enctain::DataOutput
 {
 public:
-    wxFile	fstdout;
+    wxFileOutputStream	fstdout;
 
     DataOutputStdout()
 	: fstdout(wxFile::fd_stdout)
@@ -38,9 +38,9 @@ public:
     }
 
     /// Virtual callback function.
-    virtual void Output(const void* data, size_t datalen)
+    virtual bool Output(const void* data, size_t datalen)
     {
-	fstdout.Write(data, datalen);
+	return fstdout.Write(data, datalen).IsOk();
     }
 };
 
@@ -48,17 +48,17 @@ public:
 class DataOutputTempFile : public Enctain::DataOutput
 {
 public:
-    wxFile	file;
+    wxFileOutputStream	filestream;
 
     DataOutputTempFile(const wxString& filename)
-	: file(filename, wxFile::write)
+	: filestream(filename)
     {
     }
 
     /// Virtual callback function.
-    virtual void Output(const void* data, size_t datalen)
+    virtual bool Output(const void* data, size_t datalen)
     {
-	file.Write(data, datalen);
+	return filestream.Write(data, datalen).IsOk();
     }
 };
 
@@ -413,7 +413,7 @@ public:
 
 	{
 	    DataOutputTempFile dataout(tempname);
-	    if (!dataout.file.IsOpened())
+	    if (!dataout.filestream.IsOk())
 		return;
 
 	    Enctain::error_t e = container->GetSubFileData(subfileindex, dataout);

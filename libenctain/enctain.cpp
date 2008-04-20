@@ -30,23 +30,41 @@ Container::~Container()
 
 // *** Progress Indicator Wrappers ***
 
-void Container::ProgressStart(const char* text, size_t value, size_t limit) const
+/**
+ * Little class which starts a progress by calling ProgressStart() on it's
+ * references container object. When it gets destroyed the progress ends.
+ */
+class ProgressTicker
 {
-    if (progressindicator)
-	progressindicator->ProgressStart(text, value, limit);
-}
+private:
+    const Container& 	cnt;
 
-void Container::ProgressUpdate(size_t value) const
-{
-    if (progressindicator)
-	progressindicator->ProgressUpdate(value);
-}
+public:
+    ProgressTicker(const Container& c, const char* text, size_t value, size_t limit)
+	: cnt(c)
+    {
+	if (cnt.progressindicator)
+	    cnt.progressindicator->ProgressStart(text, value, limit);
+    }
 
-void Container::ProgressStop() const
-{
-    if (progressindicator)
-	progressindicator->ProgressStop();
-}
+    void Restart(const char* text, size_t value, size_t limit)
+    {
+	if (cnt.progressindicator)
+	    cnt.progressindicator->ProgressStart(text, value, limit);
+    }
+
+    void Update(size_t value)
+    {
+	if (cnt.progressindicator)
+	    cnt.progressindicator->ProgressUpdate(value);
+    }
+
+    ~ProgressTicker()
+    {
+	if (cnt.progressindicator)
+	    cnt.progressindicator->ProgressStop();
+    }
+};
 
 // *** Settings ***
 
@@ -75,6 +93,9 @@ const char* Container::GetErrorString(error_t e)
 
     case ETE_SAVE_NO_PASSWORD:
 	return "Error saving container: no encryption password set!";
+
+    case ETE_SAVE_OUTPUT_ERROR:
+	return "Error saving container: output stream error.";
 
     case ETE_LOAD_HEADER1:
 	return "Error loading container: could not read header.";
@@ -123,6 +144,9 @@ const char* Container::GetErrorString(error_t e)
 
     case ETE_SUBFILE_CRC32:
 	return "Error in subfile: crc32 mismatch, data possibly corrupt.";
+
+    case ETE_SUBFILE_OUTPUT_ERROR:
+	return "Error in subfile: output stream error.";
 
     case ETE_Z_UNKNOWN:
 	return "Error in zlib: unknown error.";
@@ -198,10 +222,9 @@ const char* Container::GetErrorString(error_t e)
 
     case ETE_BZ_CONFIG_ERROR:
 	return "Error in bzip2: platform config error.";
-
-    default:
-	return "Unknown error code.";
     }
+
+    return "Unknown error code.";
 }
 
 static error_t ErrorFromZLibError(int ret)
@@ -269,7 +292,7 @@ error_t Container::Save(DataOutput& dataout)
 	+ subfiles.size() * 50 // estimate for encrypted metadata
 	+ subfiletotal;
 
-    ProgressStart("Saving Container", 0, esttotal);
+    ProgressTicker progress(*this, "Saving Container", 0, esttotal);
 
     // Write out unencrypted fixed Header1 and unencrypted metadata
     {
@@ -291,11 +314,14 @@ error_t Container::Save(DataOutput& dataout)
 	header1.version = 0x00010000;
 	header1.unc_metalen = unc_metadata.size();
 
-	dataout.Output(&header1, sizeof(header1));
-	dataout.Output(unc_metadata.data(), unc_metadata.size());
+	if (!dataout.Output(&header1, sizeof(header1)))
+	    return ETE_SAVE_OUTPUT_ERROR;
+
+	if (!dataout.Output(unc_metadata.data(), unc_metadata.size()))
+	    return ETE_SAVE_OUTPUT_ERROR;
 
 	written += sizeof(header1) + unc_metadata.size();
-	ProgressUpdate(written);
+	progress.Update(written);
     }
 
     // Prepare variable metadata header containing global properties and all
@@ -340,10 +366,8 @@ error_t Container::Save(DataOutput& dataout)
 	memset(&zs, 0, sizeof(zs));
 
 	int ret = deflateInit(&zs, 9);
-	if (ret != Z_OK) {
-	    ProgressStop();
+	if (ret != Z_OK)
 	    return ErrorFromZLibError(ret);
-	}
 
 	zs.next_in = (Bytef*)metadata.data();
 	zs.avail_in = metadata.size();
@@ -366,10 +390,8 @@ error_t Container::Save(DataOutput& dataout)
 
 	deflateEnd(&zs);
 
-	if (ret != Z_STREAM_END) {
-	    ProgressStop();
+	if (ret != Z_STREAM_END)
 	    return ErrorFromZLibError(ret);
-	}
 
 	// append zeros to make output length a multiple of 16
 	metadata_compressed.align(16);
@@ -392,13 +414,17 @@ error_t Container::Save(DataOutput& dataout)
     serpentctx.encrypt(&header2, sizeof(header2));
     serpentctx.encrypt(metadata_compressed.data(), metadata_compressed.size());
 
-    dataout.Output(&header2, sizeof(header2));
-    dataout.Output(metadata_compressed.data(), metadata_compressed.size());
+    if (!dataout.Output(&header2, sizeof(header2)))
+	return ETE_SAVE_OUTPUT_ERROR;
+
+    if (!dataout.Output(metadata_compressed.data(), metadata_compressed.size()))
+	return ETE_SAVE_OUTPUT_ERROR;
+
     written += sizeof(header2) + metadata_compressed.size();
 
     // Refine file target size because it is now exactly known.
     esttotal = written + subfiletotal;
-    ProgressStart("Saving Container", written, esttotal);
+    progress.Restart("Saving Container", written, esttotal);
 
     // Output data of all subfiles simply concatenated
 
@@ -406,49 +432,44 @@ error_t Container::Save(DataOutput& dataout)
     {
 	assert(subfiles[si].storagesize == subfiles[si].data.size());
 
-	dataout.Output(subfiles[si].data.data(), subfiles[si].storagesize);
+	if (!dataout.Output(subfiles[si].data.data(), subfiles[si].storagesize))
+	    return ETE_SAVE_OUTPUT_ERROR;
+
 	written += subfiles[si].storagesize;
 
-	ProgressUpdate(written);
+	progress.Update(written);
     }
 
     opened = true;
 
-    ProgressStop();
     return ETE_SUCCESS;
 }
 
 error_t Container::Load(DataInput& datain, const std::string& filekey)
 {
-    ProgressStart("Loading Container", 0, 1000);
+    ProgressTicker progress(*this, "Loading Container", 0, 1000);
 
     opened = false;
 
     // Read unencrypted fixed Header1
     struct Header1 header1;
 
-    if (datain.Input(&header1, sizeof(header1)) != sizeof(header1)) {
-	ProgressStop();
+    if (datain.Input(&header1, sizeof(header1)) != sizeof(header1))
 	return ETE_LOAD_HEADER1;
-    }
 
-    if (memcmp(header1.signature, fsignature, 8) != 0) {
-	ProgressStop();
+    if (memcmp(header1.signature, fsignature, 8) != 0)
 	return ETE_LOAD_HEADER1_SIGNATURE;
-    }
 
     if (header1.version == 0x00010000) {
-	error_t e = Loadv00010000(datain, filekey, header1);
-	ProgressStop();
+	error_t e = Loadv00010000(datain, filekey, header1, progress);
 	return e;
     }
     else {
-	ProgressStop();
 	return ETE_LOAD_HEADER1_VERSION;
     }
 }
 
-error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1)
+error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress)
 {
     unsigned int readbyte = sizeof(Header1);
 
@@ -617,7 +638,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	subfiletotal += subfiles[si].storagesize;
     }
 
-    ProgressStart("Loading Container", readbyte, readbyte + subfiletotal);
+    progress.Restart("Loading Container", readbyte, readbyte + subfiletotal);
 
     // load data of all subfiles which are simply concatenated
 
@@ -634,7 +655,7 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	    return ETE_LOAD_SUBFILE;
 
 	readbyte += rb;
-	ProgressUpdate(readbyte);
+	progress.Update(readbyte);
     }
 
     opened = true;
@@ -668,7 +689,7 @@ void Container::SetKey(const std::string& keystr)
 	totalsize += subfile.storagesize;
     }
 
-    ProgressStart("Reencrypting", 0, totalsize);
+    ProgressTicker progress(*this, "Reencrypting", 0, totalsize);
 
     // reencrypt all subfile data
 
@@ -682,7 +703,7 @@ void Container::SetKey(const std::string& keystr)
 	if (subfile.encryption == ENCRYPTION_NONE)
 	{
 	    totalsize += subfile.storagesize;
-	    ProgressUpdate(totalsize);
+	    progress.Update(totalsize);
 	}
 	else if (subfile.encryption == ENCRYPTION_SERPENT256)
 	{
@@ -703,12 +724,10 @@ void Container::SetKey(const std::string& keystr)
 		newctx.encrypt(subfile.data.data() + offset, len);
 
 		totalsize += len;
-		ProgressUpdate(totalsize);
+		progress.Update(totalsize);
 	    }
 	}
     }
-
-    ProgressStop();
 
     serpentctx = newctx;
     iskeyset = true;
@@ -1031,7 +1050,7 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 
     subfile.realsize = datalen;
 
-    ProgressStart("Saving SubFile", 0, datalen);
+    ProgressTicker progress(*this, "Saving SubFile", 0, datalen);
 
     // Setup encryption context if requested
 
@@ -1053,7 +1072,6 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
     }
     else
     {
-	ProgressStop();
 	return ETE_SUBFILE_ENCRYPTION_INVALID;
     }
 
@@ -1101,7 +1119,7 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 	    }
 
 	    offset += currlen;
-	    ProgressUpdate(offset);
+	    progress.Update(offset);
 	}
     }
     else if (subfile.compression == COMPRESSION_ZLIB)
@@ -1110,10 +1128,8 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 	memset(&zs, 0, sizeof(zs));
 
 	int ret = deflateInit(&zs, Z_BEST_COMPRESSION);
-	if (ret != Z_OK) {
-	    ProgressStop();
+	if (ret != Z_OK)
 	    return ErrorFromZLibError(ret);
-	}
 
 	zs.next_in = (Bytef*)(data);
 	zs.avail_in = datalen;
@@ -1149,14 +1165,12 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 		}
 
 		offset = zs.total_out;
-		ProgressUpdate(datalen - zs.avail_in);
+		progress.Update(datalen - zs.avail_in);
 	    }
 	}
 
-	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    ProgressStop();
+	if (ret != Z_STREAM_END) // an error occurred that was not EOF
 	    return ErrorFromZLibError(ret);
-	}
 
 	deflateEnd(&zs);
 
@@ -1182,10 +1196,8 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 	memset(&bz, 0, sizeof(bz));
 
 	int ret = BZ2_bzCompressInit(&bz, 9, 0, 0);
-	if (ret != BZ_OK) {
-	    ProgressStop();
+	if (ret != BZ_OK)
 	    return ErrorFromBZLibError(ret);
-	}
 
 	bz.next_in = (char*)data;
 	bz.avail_in = datalen;
@@ -1221,14 +1233,12 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 		}
 
 		offset = bz.total_out_lo32;
-		ProgressUpdate(datalen - bz.avail_in);
+		progress.Update(datalen - bz.avail_in);
 	    }
 	}
 
-	if (ret != BZ_STREAM_END) {
-	    ProgressStop();
+	if (ret != BZ_STREAM_END)
 	    return ErrorFromBZLibError(ret);
-	}
 
 	BZ2_bzCompressEnd(&bz);
 
@@ -1250,14 +1260,11 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
     }
     else
     {
-	ProgressStop();
 	return ETE_SUBFILE_COMPRESSION_INVALID;
     }
 
     subfile.crc32 = crc32run;
     subfile.storagesize = subfile.data.size();
-
-    ProgressStop();
 
     return ETE_SUCCESS;
 }
@@ -1271,9 +1278,10 @@ struct DataOutputString : public DataOutput
     {
     }
 
-    virtual void Output(const void* data, size_t datalen)
+    virtual bool Output(const void* data, size_t datalen)
     {
 	str.append(static_cast<const char*>(data), datalen);
+	return true;
     }
 };
 
@@ -1303,7 +1311,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 
     assert(subfile.data.size() == subfile.storagesize);
 
-    ProgressStart("Loading SubFile", 0, subfile.storagesize);
+    ProgressTicker progress(*this, "Loading SubFile", 0, subfile.storagesize);
 
     // Setup decryption context if requested
 
@@ -1315,10 +1323,8 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 	if (iskeyset)
 	{
 	    // Ensure that the data buffer has a length multiple of 16
-	    if (subfile.data.size() % 16 != 0) {
-		ProgressStop();
+	    if (subfile.data.size() % 16 != 0)
 		return ETE_SUBFILE_ENCRYPTION_LENGTH;
-	    }
 
 	    // Prepare data block decryption
 	    serpentctx.set_cbciv(subfile.cbciv);
@@ -1326,7 +1332,6 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
     }
     else
     {
-	ProgressStop();
 	return ETE_SUBFILE_ENCRYPTION_INVALID;
     }
 
@@ -1361,11 +1366,13 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 	    size_t reallen = currlen;
 	    if (offset + reallen > subfile.realsize) reallen = subfile.realsize - offset;
 
-	    dataout.Output(buffer, reallen);
+	    if (!dataout.Output(buffer, reallen))
+		return ETE_SUBFILE_OUTPUT_ERROR;
+
 	    crc32run = update_crc32(crc32run, (uint8_t*)buffer, reallen);
 
 	    offset += currlen;
-	    ProgressUpdate(offset);
+	    progress.Update(offset);
 	}
     }
     else if (subfile.compression == COMPRESSION_ZLIB)
@@ -1375,10 +1382,8 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 	memset(&zs, 0, sizeof(zs));
 
 	int ret = inflateInit(&zs);
-	if (ret != Z_OK) {
-	    ProgressStop();
+	if (ret != Z_OK)
 	    return ErrorFromZLibError(ret);
-	}
 
 	size_t inoffset = 0;
 	char inbuffer[65536];
@@ -1393,7 +1398,6 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 		if (inoffset >= subfile.data.size())
 		{
 		    inflateEnd(&zs);
-		    ProgressStop();
 		    return ETE_SUBFILE_UNEXPECTED_EOF;
 		}
 
@@ -1425,19 +1429,19 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 
 	    if (outoffset < zs.total_out)
 	    {
-		dataout.Output(outbuffer, zs.total_out - outoffset);
+		if (!dataout.Output(outbuffer, zs.total_out - outoffset))
+		    return ETE_SUBFILE_OUTPUT_ERROR;
+
 		crc32run = update_crc32(crc32run, (uint8_t*)outbuffer, zs.total_out - outoffset);
 
 		outoffset = zs.total_out;
 	    }
 
-	    ProgressUpdate(inoffset);
+	    progress.Update(inoffset);
 	}
 
-	if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-	    ProgressStop();
+	if (ret != Z_STREAM_END) // an error occurred that was not EOF
 	    return ErrorFromZLibError(ret);
-	}
 
 	inflateEnd(&zs);
    }
@@ -1447,10 +1451,8 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 	memset(&bz, 0, sizeof(bz));
 
 	int ret = BZ2_bzDecompressInit(&bz, 0, 0);
-	if (ret != BZ_OK) {
-	    ProgressStop();
+	if (ret != BZ_OK)
 	    return ErrorFromBZLibError(ret);
-	}
 
 	size_t inoffset = 0;
 	char inbuffer[65536];
@@ -1465,7 +1467,6 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 		if (inoffset >= subfile.data.size())
 		{
 		    BZ2_bzDecompressEnd(&bz);
-		    ProgressStop();
 		    return ETE_SUBFILE_UNEXPECTED_EOF;
 		}
 
@@ -1497,29 +1498,26 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 
 	    if (outoffset < bz.total_out_lo32)
 	    {
-		dataout.Output(outbuffer, bz.total_out_lo32 - outoffset);
+		if (!dataout.Output(outbuffer, bz.total_out_lo32 - outoffset))
+		    return ETE_SUBFILE_OUTPUT_ERROR;
+
 		crc32run = update_crc32(crc32run, (uint8_t*)outbuffer, bz.total_out_lo32 - outoffset);
 
 		outoffset = bz.total_out_lo32;
 	    }
 
-	    ProgressUpdate(inoffset);
+	    progress.Update(inoffset);
 	}
 
 	BZ2_bzDecompressEnd(&bz);
 
-	if (ret != BZ_STREAM_END) { // an error occurred that was not EOF
-	    ProgressStop();
+	if (ret != BZ_STREAM_END) // an error occurred that was not EOF
 	    return ErrorFromBZLibError(ret);
-	}
     }
     else
     {
-	ProgressStop();
 	return ETE_SUBFILE_COMPRESSION_INVALID;
     }
-
-    ProgressStop();
 
     if (crc32run != subfile.crc32)
 	return ETE_SUBFILE_CRC32;

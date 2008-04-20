@@ -182,6 +182,9 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
     case ETE_SAVE_NO_PASSWORD:
 	return _("Error saving container: no encryption password set!");
 
+    case ETE_SAVE_OUTPUT_ERROR:
+	return _("Error saving container: file output error.");
+
     case ETE_LOAD_HEADER1:
 	return _("Error loading container: could not read header.");
 
@@ -229,6 +232,9 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
 
     case ETE_SUBFILE_CRC32:
 	return _("Error in subfile: crc32 mismatch, data possibly corrupt.");
+
+    case ETE_SUBFILE_OUTPUT_ERROR:
+	return _("Error in subfile: file output error.");
 
     case ETE_Z_UNKNOWN:
 	return _("Error in zlib: unknown error.");
@@ -304,10 +310,9 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
 
     case ETE_BZ_CONFIG_ERROR:
 	return _("Error in bzip2: platform config error.");
-
-    default:
-	return _("Unknown error code.");
     }
+
+    return _("Unknown error code.");
 }
 
 void WCryptoTE::UpdateStatusBar(const wxString& str)
@@ -841,7 +846,8 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
     {
 	wxString passstr;
 
-	if (e == Enctain::ETE_SUCCESS)
+	// Only try defpass given on commandline once
+	if (e == Enctain::ETE_SUCCESS && !defpass.IsEmpty())
 	{
 	    passstr = defpass;
 	}

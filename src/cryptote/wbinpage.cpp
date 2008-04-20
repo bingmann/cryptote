@@ -45,9 +45,10 @@ struct DataOutputMemoryBuffer : public Enctain::DataOutput
     {
     }
 
-    virtual void Output(const void* data, size_t datalen)
+    virtual bool Output(const void* data, size_t datalen)
     {
 	buffer.AppendData(data, datalen);
+	return true;
     }
 };
 

@@ -18,6 +18,7 @@ enum error_t {
     ETE_SUCCESS = 0,
   
     ETE_SAVE_NO_PASSWORD,
+    ETE_SAVE_OUTPUT_ERROR,
 
     ETE_LOAD_HEADER1,
     ETE_LOAD_HEADER1_SIGNATURE,
@@ -39,6 +40,7 @@ enum error_t {
 
     ETE_SUBFILE_UNEXPECTED_EOF,
     ETE_SUBFILE_CRC32,
+    ETE_SUBFILE_OUTPUT_ERROR,
 
     ETE_Z_UNKNOWN,
     ETE_Z_OK,
@@ -95,8 +97,9 @@ public:
     /// Required.
     virtual ~DataOutput() {};
 
-    /// Pure virtual function which gets data block-wise.
-    virtual void	Output(const void* data, size_t datalen) = 0;
+    /// Pure virtual function which gets data block-wise. If it returns true
+    /// the output process continues, on false it will abort.
+    virtual bool	Output(const void* data, size_t datalen) = 0;
 };
 
 /**
@@ -111,8 +114,8 @@ public:
     virtual ~DataInput() {};
 
     /// Pure virtual function which requests data block-wise. The function must
-    /// return maxlen byte at once, if they are available. Must return the
-    /// number of bytes retrieved.
+    /// return maxlen byte at once, if they are available (this is different
+    /// from read()'s semantics). Must return the number of bytes retrieved.
     virtual unsigned int Input(void* data, size_t maxlen) = 0;
 };
 
@@ -252,16 +255,8 @@ protected:
     /// Progress indicator object receiving notifications.
     ProgressIndicator*	progressindicator;
 
-    // *** Progress Indicator Wrappers ***
-
-    /// Indicate start of longer process.
-    void	ProgressStart(const char* text, size_t value, size_t limit) const;
-
-    /// Update status of progress indicator.
-    void	ProgressUpdate(size_t value) const;
-
-    /// Indicate end of longer process.
-    void	ProgressStop() const;
+    /// Friend class to access the progressindicator variable
+    friend class ProgressTicker;
 
 public:
     // *** Constructor and Destructor ***
@@ -289,7 +284,7 @@ public:
     error_t		Load(DataInput& datain, const std::string& filekey);
 
     /// Load a container version v1.0
-    error_t		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1);
+    error_t		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress);
 
 
     // *** Container Info and Key Operations ***

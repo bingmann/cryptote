@@ -556,16 +556,16 @@ class DataOutputStream : public Enctain::DataOutput
 public:
     class wxOutputStream&	outstream;
 
-    /// Constructor get the file name to open
+    /// Constructor using a reference to an already open stream.
     DataOutputStream(wxOutputStream& os)
 	: outstream(os)
     {
     }
 
     /// Virtual callback function to save data.
-    virtual void Output(const void* data, size_t datalen)
+    virtual bool Output(const void* data, size_t datalen)
     {
-	outstream.Write(data, datalen);
+	return outstream.Write(data, datalen).IsOk();
     }
 };
 
