@@ -40,17 +40,20 @@ private:
     const Container& 	cnt;
 
 public:
-    ProgressTicker(const Container& c, const char* text, size_t value, size_t limit)
+    ProgressTicker(const Container& c,
+		   const char* pitext, progress_indicator_type pitype,
+		   size_t value, size_t limit)
 	: cnt(c)
     {
 	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressStart(text, value, limit);
+	    cnt.progressindicator->ProgressStart(pitext, pitype, value, limit);
     }
 
-    void Restart(const char* text, size_t value, size_t limit)
+    void Restart(const char* pitext, progress_indicator_type pitype,
+		 size_t value, size_t limit)
     {
 	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressStart(text, value, limit);
+	    cnt.progressindicator->ProgressStart(pitext, pitype, value, limit);
     }
 
     void Update(size_t value)
@@ -292,7 +295,9 @@ error_t Container::Save(DataOutput& dataout)
 	+ subfiles.size() * 50 // estimate for encrypted metadata
 	+ subfiletotal;
 
-    ProgressTicker progress(*this, "Saving Container", 0, esttotal);
+    ProgressTicker progress(*this,
+			    "Saving Container", PI_SAVE_CONTAINER,
+			    0, esttotal);
 
     // Write out unencrypted fixed Header1 and unencrypted metadata
     {
@@ -424,7 +429,7 @@ error_t Container::Save(DataOutput& dataout)
 
     // Refine file target size because it is now exactly known.
     esttotal = written + subfiletotal;
-    progress.Restart("Saving Container", written, esttotal);
+    progress.Restart("Saving Container", PI_SAVE_CONTAINER, written, esttotal);
 
     // Output data of all subfiles simply concatenated
 
@@ -447,7 +452,9 @@ error_t Container::Save(DataOutput& dataout)
 
 error_t Container::Load(DataInput& datain, const std::string& filekey)
 {
-    ProgressTicker progress(*this, "Loading Container", 0, 1000);
+    ProgressTicker progress(*this,
+			    "Loading Container", PI_LOAD_CONTAINER,
+			    0, 1000);
 
     opened = false;
 
@@ -638,7 +645,8 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	subfiletotal += subfiles[si].storagesize;
     }
 
-    progress.Restart("Loading Container", readbyte, readbyte + subfiletotal);
+    progress.Restart("Loading Container", PI_LOAD_CONTAINER,
+		     readbyte, readbyte + subfiletotal);
 
     // load data of all subfiles which are simply concatenated
 
@@ -689,7 +697,9 @@ void Container::SetKey(const std::string& keystr)
 	totalsize += subfile.storagesize;
     }
 
-    ProgressTicker progress(*this, "Reencrypting", 0, totalsize);
+    ProgressTicker progress(*this,
+			    "Reencrypting", PI_REENCRYPT,
+			    0, totalsize);
 
     // reencrypt all subfile data
 
@@ -1050,7 +1060,9 @@ error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, u
 
     subfile.realsize = datalen;
 
-    ProgressTicker progress(*this, "Saving SubFile", 0, datalen);
+    ProgressTicker progress(*this,
+			    "Saving SubFile", PI_SAVE_SUBFILE,
+			    0, datalen);
 
     // Setup encryption context if requested
 
@@ -1311,7 +1323,9 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 
     assert(subfile.data.size() == subfile.storagesize);
 
-    ProgressTicker progress(*this, "Loading SubFile", 0, subfile.storagesize);
+    ProgressTicker progress(*this,
+			    "Loading SubFile", PI_LOAD_SUBFILE,
+			    0, subfile.storagesize);
 
     // Setup decryption context if requested
 

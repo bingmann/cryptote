@@ -77,7 +77,8 @@ size_t WBinaryPage::ImportFile(wxFile& file)
 {
     wxFileOffset filesize = file.Length();
 
-    wmain->statusbar->ProgressStart("Importing", 0, filesize);
+    wmain->statusbar->ProgressStart(wxString(_("Importing")).mb_str(), Enctain::PI_GENERIC,
+				    0, filesize);
 
     bindata.SetBufSize(filesize);
 

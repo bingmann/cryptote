@@ -540,7 +540,8 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 
 	    {
 		wxFileOffset filesize = filehandle.Length();
-		statusbar->ProgressStart("Importing", 0, filesize);
+		statusbar->ProgressStart(wxString(_("Importing")).mb_str(), Enctain::PI_GENERIC,
+					 0, filesize);
 
 		filedata.SetBufSize(filesize);
 		size_t offset = 0;
@@ -2801,12 +2802,38 @@ void WStatusBar::SetModified(bool on)
     }
 }
 
-void WStatusBar::ProgressStart(const char* text, size_t value, size_t limit)
+void WStatusBar::ProgressStart(const char* text, Enctain::progress_indicator_type pitype,
+			       size_t value, size_t limit)
 {
     panelProgress->Show();
     parent->Disable();
 
-    labelProgress->SetLabel( wxString(text, wxConvUTF8) );
+    {
+	wxString label = _("Unknown Progress");
+	switch(pitype)
+	{
+	case Enctain::PI_GENERIC:
+	    label = wxString(text, wxConvUTF8);
+	    break;
+	case Enctain::PI_SAVE_CONTAINER:
+	    label = _("Saving Container");
+	    break;
+	case Enctain::PI_LOAD_CONTAINER:
+	    label = _("Loading Container");
+	    break;
+	case Enctain::PI_REENCRYPT:
+	    label = _("Reencrypting");
+	    break;
+	case Enctain::PI_SAVE_SUBFILE:
+	    label = _("Saving SubFile");
+	    break;
+	case Enctain::PI_LOAD_SUBFILE:
+	    label = _("Loading SubFile");
+	    break;
+	}
+	labelProgress->SetLabel(label);
+    }
+
     panelProgress->Layout();
 
     gaugeProgress->SetRange(limit);

@@ -415,7 +415,8 @@ public:
 
     /// Pure virtual function called when the progress indicator should
     /// start. The range is given in this call.
-    virtual void	ProgressStart(const char* text, size_t value, size_t limit);
+    virtual void	ProgressStart(const char* text, Enctain::progress_indicator_type pitype,
+				      size_t value, size_t limit);
 
     /// Pure virtual function called when the progress indicator should be
     /// updated.

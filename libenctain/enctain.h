@@ -119,6 +119,17 @@ public:
     virtual unsigned int Input(void* data, size_t maxlen) = 0;
 };
 
+/// Enumeration of progress indicator (text) descriptions. Used instead of the
+/// text string for localization.
+enum progress_indicator_type {
+    PI_GENERIC = 0,
+    PI_SAVE_CONTAINER,
+    PI_LOAD_CONTAINER,
+    PI_REENCRYPT,
+    PI_SAVE_SUBFILE,
+    PI_LOAD_SUBFILE
+};
+
 /**
  * Abstract interface class which can be used to accept progress information
  * during longer operations.
@@ -134,7 +145,8 @@ public:
     /// Pure virtual function called when the progress indicator should
     /// start. The current value and range is given in this call. This call may
     /// be repeated to adjust the text or range during a running process.
-    virtual void	ProgressStart(const char* text, size_t value, size_t limit) = 0;
+    virtual void	ProgressStart(const char* pitext, progress_indicator_type pitype,
+				      size_t value, size_t limit) = 0;
 
     /// Pure virtual function called when the progress indicator should be
     /// updated.
