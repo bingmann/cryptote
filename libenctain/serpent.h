@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 namespace Enctain {
+namespace internal {
 
 /**
  * Serpent encryption cipher state context to encrypt or decrypt data blocks in
@@ -97,6 +98,7 @@ public:
     void wipe();
 };
 
+} // namespace internal
 } // namespace Enctain
 
 #endif // SERPENT_H

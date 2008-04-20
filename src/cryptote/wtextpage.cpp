@@ -66,9 +66,7 @@ WTextPage::WTextPage(class WCryptoTE* parent)
 
 wxString WTextPage::GetCaption()
 {
-    if (!wmain->container) return _T("Unknown");
-
-    return strSTL2WX( wmain->container->GetSubFileProperty(subfileid, "Name") );
+    return strSTL2WX( wmain->container.GetSubFileProperty(subfileid, "Name") );
 }
 
 /** Appends the incoming text file data into the Scintilla edit control. */
@@ -94,12 +92,12 @@ public:
 bool WTextPage::LoadSubFile(unsigned int sfid)
 {
     editctrl->ClearAll();
-    editctrl->Allocate(wmain->container->GetSubFileSize(sfid));
+    editctrl->Allocate(wmain->container.GetSubFileSize(sfid));
     editctrl->SetUndoCollection(false);
 
     DataOutputTextPage dataout(*this);
 
-    Enctain::error_t e = wmain->container->GetSubFileData(sfid, dataout);
+    Enctain::error_t e = wmain->container.GetSubFileData(sfid, dataout);
     if (e != Enctain::ETE_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));
@@ -123,7 +121,7 @@ bool WTextPage::LoadSubFileMetaSettings()
 {
     if (!wmain->copt_restoreview) return false;
 
-    std::string ms_str = wmain->container->GetSubFileProperty(subfileid, "WTextPageSettings");
+    std::string ms_str = wmain->container.GetSubFileProperty(subfileid, "WTextPageSettings");
     if (ms_str.size() < 4) return false;
 
     uint32_t version = *(uint32_t*)(ms_str.data());
@@ -161,7 +159,7 @@ void WTextPage::SaveSubFileMetaSettings()
 {
     if (!wmain->copt_restoreview)
     {
-	wmain->container->EraseSubFileProperty(subfileid, "WTextPageSettings");
+	wmain->container.EraseSubFileProperty(subfileid, "WTextPageSettings");
 	return;
     }
 
@@ -182,7 +180,7 @@ void WTextPage::SaveSubFileMetaSettings()
     ms.cursor_xoffset = editctrl->GetXOffset();
     ms.cursor_currentpos = editctrl->GetCurrentPos();
 
-    wmain->container->SetSubFileProperty(subfileid, "WTextPageSettings", std::string((char*)&ms, sizeof(ms)));
+    wmain->container.SetSubFileProperty(subfileid, "WTextPageSettings", std::string((char*)&ms, sizeof(ms)));
 }
 
 size_t WTextPage::ImportFile(wxFile& file)
@@ -458,17 +456,17 @@ void WTextPage::PageSaveData()
     size_t buflen = editctrl->GetTextLength();
     wxCharBuffer buf = editctrl->GetTextRaw();
 
-    Enctain::error_t e = wmain->container->SetSubFileData(subfileid, buf.data(), buflen);
+    Enctain::error_t e = wmain->container.SetSubFileData(subfileid, buf.data(), buflen);
     if (e != Enctain::ETE_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));
     }
 
-    wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
+    wmain->container.SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
 
     editctrl->SetSavePoint();
 
-    size_t savelen = wmain->container->GetSubFileStorageSize(subfileid);
+    size_t savelen = wmain->container.GetSubFileStorageSize(subfileid);
 
     if (savelen != buflen)
     {

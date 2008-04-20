@@ -333,8 +333,8 @@ public:
 
     // *** Container Loaded ***
 
-    /// Container object used.
-    Enctain::Container*	container;
+    /// Container object used. This class is a reference-counter pimpl;
+    Enctain::Container	container;
 
     /// Associated file name
     wxFileName		container_filename;

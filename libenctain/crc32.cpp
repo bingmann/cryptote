@@ -4,6 +4,7 @@
 #include "crc32.h"
 
 namespace Enctain {
+namespace internal {
 
 /* Table of CRCs of all 8-bit messages. Computed using the function:
 
@@ -103,4 +104,5 @@ uint32_t crc32(const unsigned char *buf, unsigned int len)
     return update_crc32(0L, buf, len);
 }
 
+} // namespace internal
 } // namespace Enctain

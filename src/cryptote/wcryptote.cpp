@@ -30,7 +30,6 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 {
     cpage = NULL;
     cpageid = -1;
-    container = NULL;
     container_filehandle = NULL;
     main_modified = false;
     lastuserevent = ::wxGetLocalTime();
@@ -160,10 +159,6 @@ WCryptoTE::~WCryptoTE()
 {
     auimgr.UnInit();
 
-    if (container) {
-	delete container;
-	container = NULL;
-    }
     if (container_filehandle) {
 	delete container_filehandle;
 	container_filehandle = NULL;
@@ -395,7 +390,7 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	return;
     }
 
-    const std::string& filetype = container->GetSubFileProperty(sfid, "Filetype");
+    const std::string& filetype = container.GetSubFileProperty(sfid, "Filetype");
 
     if (filetype == "text")
     {
@@ -489,24 +484,24 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	if (!filehandle.IsOpened()) continue;
 
 	// Create new file in the container
-	unsigned int sfnew = container->AppendSubFile();
+	unsigned int sfnew = container.AppendSubFile();
     
 	// use defaults from global properties
 	long defcomp = 0;
-	if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
+	if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
 	    defcomp = Enctain::COMPRESSION_ZLIB;
 
 	long defencr = 0;
-	if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
+	if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
 	    defencr = Enctain::ENCRYPTION_SERPENT256;
 
-	container->SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
-	container->SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
+	container.SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
+	container.SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
 
 	wxFileName fname (importlist[fi]);
-	container->SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
-	container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
-	container->SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
+	container.SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
+	container.SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
+	container.SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
 
 	std::string filetype = importtype;
 	if (filetype.empty())
@@ -517,7 +512,7 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	    else
 		filetype = "";
 	}
-	container->SetSubFileProperty(sfnew, "Filetype", filetype);
+	container.SetSubFileProperty(sfnew, "Filetype", filetype);
 
 	if (openpage)
 	{
@@ -579,16 +574,16 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 
 	    if (istextfile && importtype.empty())
 	    {
-		container->SetSubFileProperty(sfnew, "Filetype", "text");
+		container.SetSubFileProperty(sfnew, "Filetype", "text");
 	    }
 
-	    Enctain::error_t e = container->SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
+	    Enctain::error_t e = container.SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
 	    if (e != Enctain::ETE_SUCCESS)
 	    {
 		wxMessageDialogErrorOK(this, WCryptoTE::EnctainErrorString(e));
 	    }
 
-	    container->SetSubFileProperty(sfnew, "MTime", strTimeStampNow());
+	    container.SetSubFileProperty(sfnew, "MTime", strTimeStampNow());
 
 	    importnum++;
 	    importsize += filedata.GetDataLen();
@@ -623,7 +618,7 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
 	// export directly from the container storage
 
 	DataOutputStream dataout(outstream);
-	Enctain::error_t e = container->GetSubFileData(sfid, dataout);
+	Enctain::error_t e = container.GetSubFileData(sfid, dataout);
 	if (e != Enctain::ETE_SUCCESS)
 	{
 	    wxMessageDialogErrorOK(this, EnctainErrorString(e));
@@ -633,8 +628,6 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
 
 void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
 {
-    if (!container) return;
-
     WNotePage* page = FindSubFilePage(sfid);
     if (page)
     {
@@ -652,7 +645,7 @@ void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
 	auinotebook->DeletePage(pi);
     }
 
-    container->DeleteSubFile(sfid);
+    container.DeleteSubFile(sfid);
 
     // fix-up subfileid's of all notepages
 
@@ -732,14 +725,17 @@ void WCryptoTE::UpdateTitle()
 
 void WCryptoTE::ContainerNew()
 {
-    if (container) {
-	delete container;
-	container = NULL;
-    }
+    container.Clear();
+    container.SetProgressIndicator(statusbar);
+
     if (container_filehandle) {
 	delete container_filehandle;
 	container_filehandle = NULL;
     }
+
+    container_filename.Clear();
+
+    main_modified = false;
 
     HideQuickBars();
 
@@ -753,35 +749,30 @@ void WCryptoTE::ContainerNew()
     cpage = NULL;
     cpageid = -1;
 
-    container = new Enctain::Container();
-    container->SetProgressIndicator(statusbar);
-    container_filename.Clear();
-    main_modified = false;
-
     // Set up new container properties
-    container->SetGlobalUnencryptedProperty("Author", strWX2STL(wxGetUserId()));
+    container.SetGlobalUnencryptedProperty("Author", strWX2STL(wxGetUserId()));
 
-    container->SetGlobalEncryptedProperty("CTime", strTimeStampNow());
+    container.SetGlobalEncryptedProperty("CTime", strTimeStampNow());
 
     // Set up one empty text file in the container
-    unsigned int sf1 = container->AppendSubFile();
+    unsigned int sf1 = container.AppendSubFile();
 
-    container->SetSubFileProperty(sf1, "Name", strWX2STL(_("Untitled.txt")));
-    container->SetSubFileProperty(sf1, "Filetype", "text");
-    container->SetSubFileProperty(sf1, "Author", strWX2STL(wxGetUserId()));
-    container->SetSubFileProperty(sf1, "CTime", strTimeStampNow());
+    container.SetSubFileProperty(sf1, "Name", strWX2STL(_("Untitled.txt")));
+    container.SetSubFileProperty(sf1, "Filetype", "text");
+    container.SetSubFileProperty(sf1, "Author", strWX2STL(wxGetUserId()));
+    container.SetSubFileProperty(sf1, "CTime", strTimeStampNow());
 
     // use defaults from global properties
     long defcomp = 0;
-    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
+    if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
 	defcomp = Enctain::COMPRESSION_ZLIB;
 
     long defencr = 0;
-    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
+    if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
 	defencr = Enctain::ENCRYPTION_SERPENT256;
 
-    container->SetSubFileCompression(sf1, (Enctain::compression_t)defcomp);
-    container->SetSubFileEncryption(sf1, (Enctain::encryption_t)defencr);
+    container.SetSubFileCompression(sf1, (Enctain::compression_t)defcomp);
+    container.SetSubFileEncryption(sf1, (Enctain::encryption_t)defencr);
 
     copt_restoreview = true;
 
@@ -839,8 +830,8 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
     if (!fh->Open(filename.c_str(), wxFile::read)) return false;
 #endif
 
-    std::auto_ptr<Enctain::Container> nc (new Enctain::Container);
-    nc->SetProgressIndicator(statusbar);
+    Enctain::Container newcontainer;
+    newcontainer.SetProgressIndicator(statusbar);
     
     Enctain::error_t e = Enctain::ETE_SUCCESS;
     do
@@ -864,7 +855,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 	if (!stream.IsOk()) return false;
 
 	DataInputStream datain(stream);
-	e = nc->Load(datain, strWX2STL(passstr));
+	e = newcontainer.Load(datain, strWX2STL(passstr));
 
 	if (e != Enctain::ETE_SUCCESS)
 	{
@@ -891,10 +882,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 
     // Loading was successful
 
-    if (container) {
-	delete container;
-    }
-    container = nc.release();
+    container = newcontainer;
 
     if (container_filehandle) {
 	delete container_filehandle;
@@ -921,7 +909,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 
     RestoreOpenSubFilelist();
 
-    if (container->CountSubFile() == 1)
+    if (container.CountSubFile() == 1)
     {
 	ShowFilelistPane(false);
     }
@@ -931,7 +919,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
     }
 
     UpdateStatusBar(wxString::Format(_("Loaded container with %u subfiles from %s"),
-				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
+				     container.CountSubFile(), container_filename.GetFullPath().c_str()));
     UpdateTitle();
     UpdateModified();
 
@@ -940,8 +928,6 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 
 bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 {
-    if (!container) return false;
-
     // save all notebook pages
     for(unsigned int pi = 0; pi < auinotebook->GetPageCount(); ++pi)
     {
@@ -953,12 +939,12 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     }
 
     // check that an encryption key is set
-    if (!container->IsKeySet())
+    if (!container.IsKeySet())
     {
 	WSetPassword passdlg(this, filename);
 	if (passdlg.ShowModal() != wxID_OK) return false;
 
-	container->SetKey( strWX2STL(passdlg.GetPass()) );
+	container.SetKey( strWX2STL(passdlg.GetPass()) );
     }
 
     // release share lock
@@ -1049,12 +1035,12 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     wxFileOutputStream stream(*fh.get());
     if (!stream.IsOk()) return false;
 
-    container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
+    container.SetGlobalEncryptedProperty("MTime", strTimeStampNow());
     filelistpane->SaveProperties();
     SaveOpenSubFilelist();
 
     DataOutputStream dataout(stream);
-    Enctain::error_t e = container->Save(dataout);
+    Enctain::error_t e = container.Save(dataout);
     if (e != Enctain::ETE_SUCCESS)
     {
 	UpdateStatusBar(EnctainErrorString(e));
@@ -1067,7 +1053,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     main_modified = false;
 
     UpdateStatusBar(wxString::Format(_("Saved container with %u subfiles to %s"),
-				     container->CountSubFile(), container_filename.GetFullPath().c_str()));
+				     container.CountSubFile(), container_filename.GetFullPath().c_str()));
     UpdateTitle();
     UpdateModified();
 
@@ -1080,7 +1066,7 @@ void WCryptoTE::SaveOpenSubFilelist()
 {
     if (!copt_restoreview)
     {
-	container->EraseGlobalEncryptedProperty("SubFilesOpened");
+	container.EraseGlobalEncryptedProperty("SubFilesOpened");
 	return;
     }
 
@@ -1103,21 +1089,21 @@ void WCryptoTE::SaveOpenSubFilelist()
 	}
     }
     
-    container->SetGlobalEncryptedProperty("SubFilesOpened", std::string((char*)&sflist, pagenum * sizeof(int)));
+    container.SetGlobalEncryptedProperty("SubFilesOpened", std::string((char*)&sflist, pagenum * sizeof(int)));
 }
 
 void WCryptoTE::RestoreOpenSubFilelist()
 {
     // retrieve value of restore view option
     unsigned long restoreview;
-    if ( !strSTL2WX(container->GetGlobalEncryptedProperty("RestoreView")).ToULong(&restoreview) ) {
+    if ( !strSTL2WX(container.GetGlobalEncryptedProperty("RestoreView")).ToULong(&restoreview) ) {
 	restoreview = 1;
     }
     copt_restoreview = restoreview;
 
     if (!copt_restoreview) return;
 
-    std::string str = container->GetGlobalEncryptedProperty("SubFilesOpened");
+    std::string str = container.GetGlobalEncryptedProperty("SubFilesOpened");
 
     if (str.size() % 4 != 0) {
 	wxLogError(_T("Invalid list of open subfiles."));
@@ -1732,7 +1718,6 @@ void WCryptoTE::LoadPreferences()
 bool WCryptoTE::AllowCloseModified()
 {
     if (!IsModified()) return true;
-    if (!container) return true;
 
     while(1)
     {
@@ -1820,8 +1805,6 @@ void WCryptoTE::OnMenuContainerSaveAs(wxCommandEvent& WXUNUSED(event))
 
 bool WCryptoTE::UserContainerSaveAs()
 {
-    if (!container) return false;
-
     wxFileDialog dlg(this,
 		     _("Save Container"), wxEmptyString, container_filename.GetFullName(),
 		     _("Encrypted Container (*.ect)|*.ect"),
@@ -1865,8 +1848,6 @@ void WCryptoTE::OnMenuContainerShowList(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuContainerProperties(wxCommandEvent& WXUNUSED(event))
 {
-    if (!container) return;
-
     WContainerProperties dlg(this);
     if (dlg.ShowModal() == wxID_OK)
     {
@@ -1881,7 +1862,7 @@ void WCryptoTE::OnMenuContainerSetPassword(wxCommandEvent& WXUNUSED(event))
     WSetPassword passdlg(this, filename);
     if (passdlg.ShowModal() != wxID_OK) return;
 
-    container->SetKey( strWX2STL(passdlg.GetPass()) );
+    container.SetKey( strWX2STL(passdlg.GetPass()) );
 
     SetModified();
 }
@@ -1921,7 +1902,7 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
 	    }
 
 	    SetMenuBar(menubar_active);
-
+	    
 	    CreateToolBar();
 
 	    // Force page and others to update their menu item status
@@ -1964,28 +1945,26 @@ void WCryptoTE::OnMenuContainerQuit(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
 {
-    if (!container) return;
-
     // Set up an empty text file in the container
-    unsigned int sfnew = container->AppendSubFile();
+    unsigned int sfnew = container.AppendSubFile();
     
-    container->SetSubFileProperty(sfnew, "Name", strWX2STL(_("Untitled.txt")));
-    container->SetSubFileProperty(sfnew, "Filetype", "text");
-    container->SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
-    container->SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
+    container.SetSubFileProperty(sfnew, "Name", strWX2STL(_("Untitled.txt")));
+    container.SetSubFileProperty(sfnew, "Filetype", "text");
+    container.SetSubFileProperty(sfnew, "Author", strWX2STL(wxGetUserId()));
+    container.SetSubFileProperty(sfnew, "CTime", strTimeStampNow());
 
     // use defaults from global properties
 
     long defcomp = 0;
-    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
+    if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultCompression")).ToLong(&defcomp))
 	defcomp = Enctain::COMPRESSION_ZLIB;
 
     long defencr = 0;
-    if (!strSTL2WX(container->GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
+    if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
 	defencr = Enctain::ENCRYPTION_SERPENT256;
 
-    container->SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
-    container->SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
+    container.SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
+    container.SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
 
     filelistpane->ResetItems();
 
@@ -2019,10 +1998,9 @@ void WCryptoTE::OnMenuSubFileImport(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuSubFileExport(wxCommandEvent& WXUNUSED(event))
 {
-    if (!container) return;
     if (!cpage || cpage->subfileid < 0) return;
 
-    wxString suggestname = strSTL2WX(container->GetSubFileProperty(cpage->subfileid, "Name"));
+    wxString suggestname = strSTL2WX(container.GetSubFileProperty(cpage->subfileid, "Name"));
 
     wxFileDialog dlg(this,
 		     _("Save SubFile"), wxEmptyString, suggestname,

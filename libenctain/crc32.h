@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 namespace Enctain {
+namespace internal {
 
 /// Return the CRC32 of the bytes buf[0..len-1].
 uint32_t crc32(const unsigned char *buf, unsigned int len);
@@ -14,6 +15,7 @@ uint32_t crc32(const unsigned char *buf, unsigned int len);
 /// crc32.
 uint32_t update_crc32(uint32_t crc, const unsigned char *buf, unsigned int len);
 
+} // namespace internal
 } // namespace Enctain
 
 #endif // CRC32_H

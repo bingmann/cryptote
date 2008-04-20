@@ -17,7 +17,7 @@ int main()
 
     // Create SHA256 context
 
-    Enctain::SHA256 ctx1;
+    Enctain::internal::SHA256 ctx1;
 
     // Create libgcrypt SHA256 context
 

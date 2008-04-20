@@ -78,7 +78,7 @@ void test_libgcrypt_serpent_cbc()
 void test_custom_serpent_ecb()
 {
     {
-	Enctain::SerpentECB encctx;
+	Enctain::internal::SerpentECB encctx;
 
 	encctx.set_key((uint8_t*)enckey, 256);
 
@@ -86,7 +86,7 @@ void test_custom_serpent_ecb()
     }
 
     {
-	Enctain::SerpentECB decctx;
+	Enctain::internal::SerpentECB decctx;
 
 	decctx.set_key((uint8_t*)enckey, 256);
 
@@ -97,7 +97,7 @@ void test_custom_serpent_ecb()
 void test_custom_serpent_cbc()
 {
     {
-	Enctain::SerpentCBC encctx;
+	Enctain::internal::SerpentCBC encctx;
 
 	encctx.set_key((uint8_t*)enckey, 256);
 	encctx.set_cbciv((uint8_t*)enciv);
@@ -106,7 +106,7 @@ void test_custom_serpent_cbc()
     }
 
     {
-	Enctain::SerpentCBC decctx;
+	Enctain::internal::SerpentCBC decctx;
 
 	decctx.set_key((uint8_t*)enckey, 256);
 	decctx.set_cbciv((uint8_t*)enciv);

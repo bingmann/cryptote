@@ -44,7 +44,7 @@ WContainerProperties::WContainerProperties(WCryptoTE* parent, int id, const wxSt
     if (wmain->container_filename.IsOk())
     {
 	textFilename->SetValue( wmain->container_filename.GetFullPath() );
-	textSize->SetValue( wxString::Format(_T("%u"), wmain->container->CountSubFile()) );
+	textSize->SetValue( wxString::Format(_T("%u"), wmain->container.CountSubFile()) );
     }
     else
     {
@@ -52,29 +52,29 @@ WContainerProperties::WContainerProperties(WCryptoTE* parent, int id, const wxSt
 	textSize->SetValue( _("<unsaved>") );
     }
 
-    textSubFileNum->SetValue( wxString::Format(_T("%u"), wmain->container->CountSubFile()) );
+    textSubFileNum->SetValue( wxString::Format(_T("%u"), wmain->container.CountSubFile()) );
 
-    std::string timestr = wmain->container->GetGlobalEncryptedProperty("CTime");
+    std::string timestr = wmain->container.GetGlobalEncryptedProperty("CTime");
     if (timestr.size() == sizeof(time_t)) {
 	wxDateTime ctime (*(time_t*)timestr.data());
 	textCTime->SetValue( ctime.Format(_("%c")) );
     }
 
-    timestr = wmain->container->GetGlobalEncryptedProperty("MTime");
+    timestr = wmain->container.GetGlobalEncryptedProperty("MTime");
     if (timestr.size() == sizeof(time_t)) {
 	wxDateTime mtime (*(time_t*)timestr.data());
 	textMTime->SetValue( mtime.Format(_("%c")) );
     }
 
     unsigned long enccomp;
-    if ( strSTL2WX(wmain->container->GetGlobalEncryptedProperty("DefaultCompression")).ToULong(&enccomp) ) {
+    if ( strSTL2WX(wmain->container.GetGlobalEncryptedProperty("DefaultCompression")).ToULong(&enccomp) ) {
 	choiceCompression->SetSelection(enccomp);
     }
     else {
 	choiceCompression->SetSelection(1);
     }
 
-    if ( strSTL2WX(wmain->container->GetGlobalEncryptedProperty("DefaultEncryption")).ToULong(&enccomp) ) {
+    if ( strSTL2WX(wmain->container.GetGlobalEncryptedProperty("DefaultEncryption")).ToULong(&enccomp) ) {
 	choiceEncryption->SetSelection(enccomp);
     }
     else {
@@ -82,16 +82,16 @@ WContainerProperties::WContainerProperties(WCryptoTE* parent, int id, const wxSt
     }
 
     unsigned long restoreview;
-    if ( strSTL2WX(wmain->container->GetGlobalEncryptedProperty("RestoreView")).ToULong(&restoreview) ) {
+    if ( strSTL2WX(wmain->container.GetGlobalEncryptedProperty("RestoreView")).ToULong(&restoreview) ) {
 	checkboxRestoreView->SetValue(restoreview != 0);
     }
     else {
 	checkboxRestoreView->SetValue(true);
     }
 
-    textAuthor->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("Author")) );
-    textSubject->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("Subject")) );
-    textDescription->SetValue( strSTL2WX(wmain->container->GetGlobalUnencryptedProperty("Description")) );
+    textAuthor->SetValue( strSTL2WX(wmain->container.GetGlobalUnencryptedProperty("Author")) );
+    textSubject->SetValue( strSTL2WX(wmain->container.GetGlobalUnencryptedProperty("Subject")) );
+    textDescription->SetValue( strSTL2WX(wmain->container.GetGlobalUnencryptedProperty("Description")) );
 }
 
 void WContainerProperties::set_properties()
@@ -178,17 +178,17 @@ END_EVENT_TABLE();
 
 void WContainerProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
-    wmain->container->SetGlobalUnencryptedProperty("Author", strWX2STL( textAuthor->GetValue() ));
-    wmain->container->SetGlobalUnencryptedProperty("Subject", strWX2STL( textSubject->GetValue() ));
-    wmain->container->SetGlobalUnencryptedProperty("Description", strWX2STL( textDescription->GetValue() ));
+    wmain->container.SetGlobalUnencryptedProperty("Author", strWX2STL( textAuthor->GetValue() ));
+    wmain->container.SetGlobalUnencryptedProperty("Subject", strWX2STL( textSubject->GetValue() ));
+    wmain->container.SetGlobalUnencryptedProperty("Description", strWX2STL( textDescription->GetValue() ));
 
     wxString enccomp = wxString::Format(_T("%u"), choiceCompression->GetSelection());
-    wmain->container->SetGlobalEncryptedProperty("DefaultCompression", strWX2STL(enccomp));
+    wmain->container.SetGlobalEncryptedProperty("DefaultCompression", strWX2STL(enccomp));
 
     enccomp = wxString::Format(_T("%u"), choiceEncryption->GetSelection());
-    wmain->container->SetGlobalEncryptedProperty("DefaultEncryption", strWX2STL(enccomp));
+    wmain->container.SetGlobalEncryptedProperty("DefaultEncryption", strWX2STL(enccomp));
 
-    wmain->container->SetGlobalEncryptedProperty("RestoreView", checkboxRestoreView->GetValue() ? "1" : "0");
+    wmain->container.SetGlobalEncryptedProperty("RestoreView", checkboxRestoreView->GetValue() ? "1" : "0");
     wmain->copt_restoreview = checkboxRestoreView->GetValue();
 
     EndModal(wxID_OK);

@@ -10,11 +10,15 @@
 #include "serpent.h"
 #include "bytebuff.h"
 
+/// Holds all public declarations and classes of Enctain.
 namespace Enctain {
 
-/// Enumeration of different error return codes. They can be resolved into
-/// English strings using GetErrorString().
-enum error_t {
+/**
+ * Enumeration of different error return codes. They can be resolved into
+ * English strings using GetErrorString().
+ */
+enum error_t
+{
     ETE_SUCCESS = 0,
   
     ETE_SAVE_NO_PASSWORD,
@@ -71,19 +75,38 @@ enum error_t {
 
 };
 
-/// Enumeration of different supported encryption algorithms which can be
-/// applied to individual files.
-enum encryption_t {
+/**
+ * Enumeration of different supported encryption algorithms which can be
+ * applied to individual files.
+ */
+enum encryption_t
+{
     ENCRYPTION_NONE = 0,
     ENCRYPTION_SERPENT256 = 1
 };
 
-/// Enumeration of different supported compression algorithms which can be
-/// applied to individual files.
-enum compression_t {
+/**
+ * Enumeration of different supported compression algorithms which can be
+ * applied to individual files.
+ */
+enum compression_t
+{
     COMPRESSION_NONE = 0,
     COMPRESSION_ZLIB = 1,
     COMPRESSION_BZIP2 = 2
+};
+
+/**
+ * Enumeration of progress indicator (text) descriptions. Used instead of the
+ * text string for localization.
+ */
+enum progress_indicator_type {
+    PI_GENERIC = 0,
+    PI_SAVE_CONTAINER,
+    PI_LOAD_CONTAINER,
+    PI_REENCRYPT,
+    PI_SAVE_SUBFILE,
+    PI_LOAD_SUBFILE
 };
 
 /**
@@ -119,17 +142,6 @@ public:
     virtual unsigned int Input(void* data, size_t maxlen) = 0;
 };
 
-/// Enumeration of progress indicator (text) descriptions. Used instead of the
-/// text string for localization.
-enum progress_indicator_type {
-    PI_GENERIC = 0,
-    PI_SAVE_CONTAINER,
-    PI_LOAD_CONTAINER,
-    PI_REENCRYPT,
-    PI_SAVE_SUBFILE,
-    PI_LOAD_SUBFILE
-};
-
 /**
  * Abstract interface class which can be used to accept progress information
  * during longer operations.
@@ -157,125 +169,40 @@ public:
     virtual void	ProgressStop() = 0;
 };
 
+/// Hold internal declarations implementing the encrypted container class.
+namespace internal {
+// Forward declaration for internal implementation class.
+class ContainerImpl;
+}
+
 /**
- * Class holding all data loaded from an encrypted container.
+ * Class holding all data loaded from an encrypted container. The classes uses
+ * a reference-counted pointer implementation. This means you can safely assign
+ * and copy objects, where a copy does not create a new object.
  */
 class Container
 {
 protected:
 
-    typedef std::map<std::string, std::string> propertymap_type;
-
-    // *** Structures ***
-
-    /// Memory structure used to represent a subfile of the container, not
-    /// directly used for disk storage.
-    class SubFile
-    {
-    public:
-	/// Size of subfile when saved.
-	uint32_t	storagesize;
-
-	/// Size of subfile when read by user program.
-	uint32_t	realsize;
-
-	/// CRC32 of subfile after decryption and decompression.
-	uint32_t	crc32;
-
-	union {
-	    uint32_t	flags;
-	    struct {
-		uint8_t	compression;
-		uint8_t	encryption;
-		uint8_t	reserved1;
-		uint8_t	reserved2;
-	    };
-	};
-
-	/// Encryption CBC initialization vector, if needed.
-	unsigned char	cbciv[16];
-    
-	/// User-defined properties of the subfile.
-	propertymap_type properties;
-
-	/// Compressed and encrypted data of subfile.
-	ByteBuffer	data;
-
-	/// Constructor initializing everything to zero.
-	SubFile()
-	    : storagesize(0), realsize(0), crc32(0), flags(0)
-	{
-	}
-    };
-
-    /// Structure of the disk file's header
-    struct Header1
-    {
-	char    	signature[8];	// "CryptoTE"
-	uint32_t	version;	// Currently 0x00010000 = v1.0
-	uint32_t	unc_metalen;	// Unencrypted Metadata Length
-
-    } __attribute__((packed));
-
-    /// Structure of the encrypted part of the header
-    struct Header2
-    {
-	uint32_t	test123;	// = 0x12345678 to quick-test if
-					// decryption worked.
-	uint32_t	metacomplen;	// Length of following compressed
-					// variable header holding all subfile
-					// metadata.
-	uint32_t	metacrc32;	// CRC32 of the following variable
-					// subfile metadata header
-	uint32_t	subfilenum;	// Number of subfiles in the container
-					// excluding the structure for
-					// globalproperties.
-
-    } __attribute__((packed));
-
-    // *** Status and Container Contents Variables ***
-
-    /// Signature possibly changed by SetSignature()
-    static char		fsignature[8];
-
-    /// True if a container is loaded correctly.
-    bool		opened;
-
-    /// True if one of the subfiles was changed using saveSubFile() and the
-    /// container file was not saved yet.
-    bool		modified;
-
-    /// 256-bit raw encryption key.
-    bool		iskeyset;
-
-    /// Serpent256 keybit encryption context. It is mutable because
-    /// GetSubFileData() is const and changes the CBC IV.
-    mutable SerpentCBC	serpentctx;
-
-    /// Unencrypted global properties, completely user-defined.
-    propertymap_type	unc_properties;
-
-    /// Encrypted global properties, completely user-defined.
-    propertymap_type	enc_properties;
-
-    /// Vector of subfiles
-    std::vector<SubFile> subfiles;
-
-    /// Bytes written to file during last Save() operation
-    size_t		written;
-
-    /// Progress indicator object receiving notifications.
-    ProgressIndicator*	progressindicator;
-
-    /// Friend class to access the progressindicator variable
-    friend class ProgressTicker;
+    class internal::ContainerImpl*	pimpl;
 
 public:
-    // *** Constructor and Destructor ***
+    // *** Constructors, Destructor, Assignment ***
 
+    /// Default construction: creates a new empty container object and holds a
+    /// reference to it.
     Container();
 
+    /// Decreases the reference counter and eventually deletes the container
+    /// object.
     ~Container();
+
+    /// Copy-Constructor: create another reference to the same container
+    /// object.
+    Container(const Container &cnt);
+
+    /// Assignment-Operator: copy reference to the same container object.
+    Container& operator=(const Container &cnt);
 
     // *** Settings and Error Strings ***
 
@@ -287,7 +214,7 @@ public:
     /// Return a one-line English description of the error code.
     static const char*	GetErrorString(error_t e);
 
-    // *** Load/Save Operations ***
+    // *** Load/Save/Clear Operations ***
 
     /// Save the current container by outputting all data to the data sink.
     error_t		Save(DataOutput& dataout);
@@ -295,15 +222,12 @@ public:
     /// Load a new container from an input stream and parse the subfile index.
     error_t		Load(DataInput& datain, const std::string& filekey);
 
-    /// Load a container version v1.0
-    error_t		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress);
+    /// Reset all structures in the container
+    void		Clear();
 
 
     // *** Container Info and Key Operations ***
 
-    /// Returns true if the object contains a correctly opened container.
-    bool		IsOpen() const;
-    
     /// Set a new password string. The string will be hashed and transformed
     /// into an encryption context. This is a very expensive operation as all
     /// subfiles need to be reencrypted.

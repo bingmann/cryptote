@@ -38,6 +38,7 @@
 #include "sha256.h"
 
 namespace Enctain {
+namespace internal {
 
 #define SHFR(x, n)    (x >> n)
 #define ROTR(x, n)   ((x >> n) | (x << ((sizeof(x) << 3) - n)))
@@ -202,7 +203,7 @@ void SHA256::process(const uint8_t block[64])
     h[6] += wv[6]; h[7] += wv[7];
 }
 
-void SHA256::update(const unsigned char *message, unsigned int msglen)
+void SHA256::update(const uint8_t *message, size_t msglen)
 {
     if (msglen == 0) return;
 
@@ -379,4 +380,5 @@ int main()
 
 #endif /* TEST_VECTORS */
 
+} // namespace internal
 } // namespace Enctain

@@ -58,8 +58,7 @@ void WFileList::BuildImageList()
 
 void WFileList::UpdateItemColumns(unsigned int fi)
 {
-    if (!wmain->container) return;
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     if (displaymode == 2)
     {
@@ -133,13 +132,12 @@ void WFileList::UpdateItemColumns(unsigned int fi)
 void WFileList::ResetItems()
 {
     DeleteAllItems();
-    if (!wmain->container) return;
 
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     for(unsigned int fi = 0; fi < cnt.CountSubFile(); ++fi)
     {
-	const std::string& filetype = wmain->container->GetSubFileProperty(fi, "Filetype");
+	const std::string& filetype = cnt.GetSubFileProperty(fi, "Filetype");
 	int filetypeimage = 0;
 	if (filetype == "text") {
 	    filetypeimage = 1;
@@ -153,8 +151,7 @@ void WFileList::ResetItems()
 
 void WFileList::UpdateItem(unsigned int sfid)
 {
-    if (!wmain->container) return;
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     const std::string& filetype = cnt.GetSubFileProperty(sfid, "Filetype");
     int filetypeimage = 0;
@@ -227,8 +224,7 @@ void WFileList::UpdateDisplayMode(int newmode)
 
 void WFileList::SaveProperties()
 {
-    if (!wmain->container) return;
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     cnt.SetGlobalEncryptedProperty("FileListColumns",
 				   std::string((char*)&metasettings, sizeof(metasettings)));
@@ -239,8 +235,7 @@ void WFileList::SaveProperties()
 
 void WFileList::LoadProperties()
 {
-    if (!wmain->container) return;
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     std::string strmetasettings = cnt.GetGlobalEncryptedProperty("FileListColumns"); 
     if (strmetasettings.size() == sizeof(metasettings))
@@ -427,7 +422,7 @@ void WFileList::OnBeginLabelEdit(wxListEvent& WXUNUSED(event))
 
 void WFileList::OnEndLabelEdit(wxListEvent& event)
 {
-    wmain->container->SetSubFileProperty( event.GetIndex(), "Name", strWX2STL(event.GetLabel()) );
+    wmain->container.SetSubFileProperty( event.GetIndex(), "Name", strWX2STL(event.GetLabel()) );
     
     wmain->UpdateSubFileCaption( event.GetIndex() );
     wmain->SetModified();
@@ -455,7 +450,7 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
     {
 	long sfid = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 
-	wxString suggestname = strSTL2WX(wmain->container->GetSubFileProperty(sfid, "Name"));
+	wxString suggestname = strSTL2WX(wmain->container.GetSubFileProperty(sfid, "Name"));
 
 	wxFileDialog dlg(this,
 			 _("Save SubFile"), wxEmptyString, suggestname,
@@ -492,7 +487,7 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
 	    sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 	    if (sfid == -1) break;
 
-	    wxString name = strSTL2WX(wmain->container->GetSubFileProperty(sfid, "Name"));
+	    wxString name = strSTL2WX(wmain->container.GetSubFileProperty(sfid, "Name"));
 
 	    wxFileName filename(dlg.GetPath(), name);
 
@@ -541,7 +536,7 @@ void WFileList::OnMenuFileDelete(wxCommandEvent& WXUNUSED(event))
     if (subfilelist.empty()) return;
     else if (subfilelist.size() == 1)
     {
-	wxString filelist = strSTL2WX( wmain->container->GetSubFileProperty(subfilelist[0], "Name") );
+	wxString filelist = strSTL2WX( wmain->container.GetSubFileProperty(subfilelist[0], "Name") );
 	surestr = wxString::Format(_("Going to permanently delete \"%s\". This cannot be undone, are you sure?"), filelist.c_str());
     }
     else {

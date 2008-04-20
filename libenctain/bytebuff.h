@@ -11,6 +11,7 @@
 #include <stdexcept>
 
 namespace Enctain {
+namespace internal {
 
 /**
  * ByteBuffer is a byte-oriented memory buffer which is very useful to flexibly
@@ -283,6 +284,7 @@ inline std::string ByteBuffer::get<std::string>()
     return ret;
 }
 
+} // namespace internal
 } // namespace Enctain
 
 #endif // BYTEBUFF_H

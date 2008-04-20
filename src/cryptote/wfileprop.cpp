@@ -49,8 +49,7 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
     do_layout();
     // end wxGlade
 
-    if (!wmain->container) return;
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     if (subfileid < 0) return;
 
@@ -75,7 +74,7 @@ WFileProperties::WFileProperties(WCryptoTE* parent, int _subfileid, int id, cons
 	textMTime->SetValue( mtime.Format(_("%c")) );
     }
 
-    const std::string& filetype = wmain->container->GetSubFileProperty(subfileid, "Filetype");
+    const std::string& filetype = cnt.GetSubFileProperty(subfileid, "Filetype");
     if (filetype == "text") {
 	choiceType->SetSelection(1);
     }
@@ -174,22 +173,17 @@ END_EVENT_TABLE();
 
 void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
-    if (!wmain->container) { 
-	EndModal(wxID_OK);
-	return;
-    }
-
-    Enctain::Container &cnt = *wmain->container;
+    Enctain::Container cnt = wmain->container;
 
     cnt.SetSubFileProperty(subfileid, "Name", strWX2STL( textFilename->GetValue() ));
     cnt.SetSubFileProperty(subfileid, "Author", strWX2STL( textAuthor->GetValue() ));
 
     int ifiletype = choiceType->GetSelection();
     if (ifiletype == 1) {
-	wmain->container->SetSubFileProperty(subfileid, "Filetype", "text");
+	cnt.SetSubFileProperty(subfileid, "Filetype", "text");
     }
     else {
-	wmain->container->SetSubFileProperty(subfileid, "Filetype", "");
+	cnt.SetSubFileProperty(subfileid, "Filetype", "");
     }
 
     Enctain::compression_t newcomp = (Enctain::compression_t)choiceCompression->GetSelection();

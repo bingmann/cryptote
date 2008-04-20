@@ -50,7 +50,7 @@ int main()
 	gcry_md_final(gctx);
 
 	// get results
-	const uint32_t result1 = Enctain::crc32(data, len);
+	const uint32_t result1 = Enctain::internal::crc32(data, len);
 	const uint8_t* result2 = gcry_md_read(gctx, 0);
 
 	// compare digests, for some reason libgcrypt's digest is swapped.

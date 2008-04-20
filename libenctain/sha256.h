@@ -40,6 +40,7 @@
 #include <string>
 
 namespace Enctain {
+namespace internal {
 
 /**
  * SHA 256 bit state context to hash input data bytes.
@@ -93,6 +94,7 @@ public:
     static std::string	digest(const std::string& data);
 };
 
+} // namespace internal
 } // namespace Enctain
 
 #endif // SHA256_H

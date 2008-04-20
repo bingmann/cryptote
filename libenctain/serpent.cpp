@@ -11,6 +11,7 @@
 #include <assert.h>
 
 namespace Enctain {
+namespace internal {
 
 /*** Bits and Pieces from other Botan sources ***/
 
@@ -706,4 +707,5 @@ void SerpentCBC::wipe()
     memset(round_key, 0x00, sizeof(l_cbciv));
 }
 
+} // namespace internal
 } // namespace Enctain

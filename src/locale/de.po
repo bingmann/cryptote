@@ -1,6 +1,5 @@
 # translation of de.po to German
-# Timo Bingmann <tb@idlebox.net>, 2008.
-# Timo Bingmann <timo@tbingmann.de>, 2008.
+# Timo Bingmann <tbx@idlebox.net>, 2008.
 # $Id$
 msgid ""
 msgstr ""

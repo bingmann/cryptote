@@ -18,11 +18,11 @@ int main()
 
     // Create contexts
 
-    Enctain::SerpentECB encctx1;
+    Enctain::internal::SerpentECB encctx1;
 
     encctx1.set_key((uint8_t*)key, 256);
 
-    Enctain::SerpentECB decctx1;
+    Enctain::internal::SerpentECB decctx1;
 
     decctx1.set_key((uint8_t*)key, 256);
 

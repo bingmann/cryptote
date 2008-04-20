@@ -27,9 +27,7 @@ WBinaryPage::WBinaryPage(class WCryptoTE* parent)
 
 wxString WBinaryPage::GetCaption()
 {
-    if (!wmain->container) return _T("Unknown");
-
-    return strSTL2WX( wmain->container->GetSubFileProperty(subfileid, "Name") );
+    return strSTL2WX( wmain->container.GetSubFileProperty(subfileid, "Name") );
 }
 
 struct DataOutputMemoryBuffer : public Enctain::DataOutput
@@ -56,10 +54,10 @@ bool WBinaryPage::LoadSubFile(unsigned int sfid)
 {
     DataOutputMemoryBuffer dataout(bindata);
 
-    bindata.SetBufSize(wmain->container->GetSubFileSize(sfid));
+    bindata.SetBufSize(wmain->container.GetSubFileSize(sfid));
     bindata.SetDataLen(0);
 
-    Enctain::error_t e = wmain->container->GetSubFileData(sfid, dataout);
+    Enctain::error_t e = wmain->container.GetSubFileData(sfid, dataout);
     if (e != Enctain::ETE_SUCCESS)
     {
 	wxLogError(WCryptoTE::EnctainErrorString(e));
@@ -123,15 +121,15 @@ void WBinaryPage::PageSaveData()
 {
     if (needsave)
     {
-	Enctain::error_t e = wmain->container->SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
+	Enctain::error_t e = wmain->container.SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
 	if (e != Enctain::ETE_SUCCESS)
 	{
 	    wxLogError(WCryptoTE::EnctainErrorString(e));
 	}
 
-	wmain->container->SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
+	wmain->container.SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
 
-	size_t savelen = wmain->container->GetSubFileStorageSize(subfileid);
+	size_t savelen = wmain->container.GetSubFileStorageSize(subfileid);
 
 	if (savelen != bindata.GetDataLen())
 	{

@@ -13,19 +13,318 @@
 #include <bzlib.h>
 
 namespace Enctain {
+namespace internal {
 
-// *** Constructor and Destructor ***
+// *** ContainerImpl ***
 
-Container::Container()
-    : opened(false), modified(false),
+class ContainerImpl
+{
+protected:
+
+    typedef std::map<std::string, std::string> propertymap_type;
+
+    // *** Structures ***
+
+    /// Memory structure used to represent a subfile of the container, not
+    /// directly used for disk storage.
+    class SubFile
+    {
+    public:
+	/// Size of subfile when saved.
+	uint32_t	storagesize;
+
+	/// Size of subfile when read by user program.
+	uint32_t	realsize;
+
+	/// CRC32 of subfile after decryption and decompression.
+	uint32_t	crc32;
+
+	union {
+	    uint32_t	flags;
+	    struct {
+		uint8_t	compression;
+		uint8_t	encryption;
+		uint8_t	reserved1;
+		uint8_t	reserved2;
+	    };
+	};
+
+	/// Encryption CBC initialization vector, if needed.
+	unsigned char	cbciv[16];
+    
+	/// User-defined properties of the subfile.
+	propertymap_type properties;
+
+	/// Compressed and encrypted data of subfile.
+	ByteBuffer	data;
+
+	/// Constructor initializing everything to zero.
+	SubFile()
+	    : storagesize(0), realsize(0), crc32(0), flags(0)
+	{
+	}
+    };
+
+    /// Structure of the disk file's header
+    struct Header1
+    {
+	char    	signature[8];	// "CryptoTE"
+	uint32_t	version;	// Currently 0x00010000 = v1.0
+	uint32_t	unc_metalen;	// Unencrypted Metadata Length
+
+    } __attribute__((packed));
+
+    /// Structure of the encrypted part of the header
+    struct Header2
+    {
+	uint32_t	test123;	// = 0x12345678 to quick-test if
+					// decryption worked.
+	uint32_t	metacomplen;	// Length of following compressed
+					// variable header holding all subfile
+					// metadata.
+	uint32_t	metacrc32;	// CRC32 of the following variable
+					// subfile metadata header
+	uint32_t	subfilenum;	// Number of subfiles in the container
+					// excluding the structure for
+					// globalproperties.
+
+    } __attribute__((packed));
+
+    // *** Status and Container Contents Variables ***
+
+    /// Signature possibly changed by SetSignature()
+    static char		fsignature[8];
+
+    /// Number of references to this object
+    unsigned int	references;
+
+    /// True if one of the subfiles was changed using saveSubFile() and the
+    /// container file was not saved yet.
+    bool		modified;
+
+    /// Whether the 256-bit encryption context is initialized;
+    bool		iskeyset;
+
+    /// Serpent256 keybit encryption context. It is mutable because
+    /// GetSubFileData() is const and changes the CBC IV.
+    mutable SerpentCBC	serpentctx;
+
+    /// Unencrypted global properties, completely user-defined.
+    propertymap_type	unc_properties;
+
+    /// Encrypted global properties, completely user-defined.
+    propertymap_type	enc_properties;
+
+    /// Vector of subfiles
+    std::vector<SubFile> subfiles;
+
+    /// Bytes written to file during last Save() operation
+    size_t		written;
+
+    /// Progress indicator object receiving notifications.
+    ProgressIndicator*	progressindicator;
+
+    /// Friend class to access the progressindicator variable
+    friend class ProgressTicker;
+
+public:
+    // *** Constructor, Destructor and Reference Counter  ***
+
+    ContainerImpl();
+
+    ~ContainerImpl();
+
+    /// Increase reference counter by one.
+    void		IncReference();
+
+    /// Decrease reference counter by one and return the new value.
+    unsigned int 	DecReference();
+
+    // *** Settings and Error Strings ***
+
+    /// Change the signature used by Enctain which defaults to "CryptoTE". The
+    /// signature is always 8 characters long and will be truncated or padded
+    /// with zeros. The signature is shared between all instances.
+    static void		SetSignature(const char* sign);
+
+    /// Return a one-line English description of the error code.
+    static const char*	GetErrorString(error_t e);
+
+    // *** Load/Save Operations ***
+
+    /// Save the current container by outputting all data to the data sink.
+    error_t		Save(DataOutput& dataout);
+
+    /// Load a new container from an input stream and parse the subfile index.
+    error_t		Load(DataInput& datain, const std::string& filekey);
+
+    /// Load a container version v1.0
+    error_t		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress);
+
+    /// Reset all structures in the container
+    void		Clear();
+
+
+    // *** Container Info and Key Operations ***
+
+    /// Set a new password string. The string will be hashed and transformed
+    /// into an encryption context. This is a very expensive operation as all
+    /// subfiles need to be reencrypted.
+    void		SetKey(const std::string& keystr);
+
+    /// Checks whether a password key was set.
+    bool		IsKeySet() const;
+
+    /// Return number of bytes written to data sink during last Save()
+    /// operation.
+    size_t		GetLastWritten() const;
+
+    /// Set the Progress Indicator object which receives progress notifications
+    void		SetProgressIndicator(ProgressIndicator* pi);
+
+
+    // *** Container Unencrypted Global Properties ***
+
+    /// Set (overwrite) an unencrypted global property.
+    void		SetGlobalUnencryptedProperty(const std::string& key, const std::string& value);
+    
+    /// Get an unencrypted  global property by key.
+    const std::string&	GetGlobalUnencryptedProperty(const std::string& key) const;
+
+    /// Erase an unencrypted  global property key.
+    bool		EraseGlobalUnencryptedProperty(const std::string& key);
+    
+    /// Get an unencrypted global property (key and value) by index. Returns
+    /// false if the index is beyond the last property
+    bool		GetGlobalUnencryptedPropertyIndex(unsigned int propindex,
+							  std::string& key, std::string& value) const;
+
+
+    // *** Container Encrypted Global Properties ***
+
+    /// Set (overwrite) an encrypted global property.
+    void		SetGlobalEncryptedProperty(const std::string& key, const std::string& value);
+    
+    /// Get an encrypted global property by key.
+    const std::string&	GetGlobalEncryptedProperty(const std::string& key) const;
+
+    /// Erase an encrypted global property key.
+    bool		EraseGlobalEncryptedProperty(const std::string& key);
+    
+    /// Get an encrypted global property (key and value) by index. Returns
+    /// false if the index is beyond the last property
+    bool		GetGlobalEncryptedPropertyIndex(unsigned int propindex,
+							std::string& key, std::string& value) const;
+
+
+    // *** Container SubFiles ***
+
+
+    // * Subfile array management *
+
+    /// Return number of subfiles in the container.
+    unsigned int 	CountSubFile() const;
+
+    /// Append an empty uninitialized subfile at the end of the list. Returns
+    /// the new subfile's index.
+    unsigned int 	AppendSubFile();
+
+    /// Insert an empty uninitialized subfile at the given position in the
+    /// list. Returns the new subfile's index.
+    unsigned int 	InsertSubFile(unsigned int subfileindex);
+
+    /// Delete a subfile in the array. Returns true if it existed.
+    bool		DeleteSubFile(unsigned int subfileindex);
+
+
+    // * Subfile user-defined properties *
+
+    /// Set (overwrite) a subfile's property.
+    void		SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value);
+
+    /// Get a subfile's property by key. Returns an empty string if it is not set.
+    const std::string&	GetSubFileProperty(unsigned int subfileindex, const std::string& key) const;
+
+    /// Erase a subfile's property key.
+    bool		EraseSubFileProperty(unsigned int subfileindex, const std::string& key);
+    
+    /// Get a subfile's property (key and value) by index. Returns false if the
+    /// index is beyond the last property
+    bool		GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex,
+						std::string& key, std::string& value) const;
+
+
+    // * Get operations of subfile header fields *
+    
+    /// Return number of bytes the subfile requires on disk, after compression
+    /// and encryption.
+    uint32_t		GetSubFileStorageSize(unsigned int subfileindex) const;
+
+    /// Return number of bytes the subfile requires when decrypted and
+    /// decompressed.
+    uint32_t		GetSubFileSize(unsigned int subfileindex) const;
+
+    /// Return encryption cipher of the subfile.
+    encryption_t	GetSubFileEncryption(unsigned int subfileindex) const;
+
+    /// Return compression method of the subfile.
+    compression_t	GetSubFileCompression(unsigned int subfileindex) const;
+
+
+    // * Set operations of subfile header fields *
+
+    /// Set data encryption flag of a subfile. This can be an expensive
+    /// operation as the memory buffer may need to be decrypted/encrypted.
+    void		SetSubFileEncryption(unsigned int subfileindex, encryption_t c);
+
+    /// Set data compression flag of a subfile. This can be an expensive
+    /// operation as the memory buffer may need to be decompressed/compressed.
+    void		SetSubFileCompression(unsigned int subfileindex, compression_t c);
+
+    /// Set both data compression and encryption flags of a subfile. This can
+    /// be an expensive operation as the memory buffer may need to be
+    /// decompressed/compressed and reencrypted.
+    void		SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc);
+
+
+    // * Subfile data operations *
+
+    /// Return the data of a subfile: decrypt and uncompress it. The data is
+    /// sent block-wise to the DataOutput object.
+    error_t		GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const;
+
+    /// Return the data of a subfile: decrypt and uncompress it. Return
+    /// complete data in a memory string.
+    error_t		GetSubFileData(unsigned int subfileindex, std::string& data) const;
+
+    /// Set/change the data of a subfile, it will be compressed and encrypted
+    /// but not written to disk, yet.
+    error_t		SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen);
+};
+
+// *** Constructor, Destructor and Reference Counter  ***
+
+ContainerImpl::ContainerImpl()
+    : references(1),
+      modified(false),
       iskeyset(false), written(0),
       progressindicator(NULL)
 {
 }
 
-Container::~Container()
+ContainerImpl::~ContainerImpl()
 {
     serpentctx.wipe();
+}
+
+void ContainerImpl::IncReference()
+{
+    ++references;
+}
+
+unsigned int ContainerImpl::DecReference()
+{
+    return --references;
 }
 
 // *** Progress Indicator Wrappers ***
@@ -37,10 +336,10 @@ Container::~Container()
 class ProgressTicker
 {
 private:
-    const Container& 	cnt;
+    const ContainerImpl& 	cnt;
 
 public:
-    ProgressTicker(const Container& c,
+    ProgressTicker(const ContainerImpl& c,
 		   const char* pitext, progress_indicator_type pitype,
 		   size_t value, size_t limit)
 	: cnt(c)
@@ -71,10 +370,10 @@ public:
 
 // *** Settings ***
 
-char Container::fsignature[8] =
+char ContainerImpl::fsignature[8] =
 { 'C', 'r', 'y', 'p', 't', 'o', 'T', 'E' };
 
-void Container::SetSignature(const char* sign)
+/* static */ void ContainerImpl::SetSignature(const char* sign)
 {
     unsigned int i = 0;
     while(sign[i] != 0 && i < 8) {
@@ -87,7 +386,7 @@ void Container::SetSignature(const char* sign)
     }
 }
 
-const char* Container::GetErrorString(error_t e)
+/* static */ const char* ContainerImpl::GetErrorString(error_t e)
 {
     switch(e)
     {
@@ -271,7 +570,7 @@ static error_t ErrorFromBZLibError(int ret)
 
 // *** Load/Save Operations ***
 
-error_t Container::Save(DataOutput& dataout)
+error_t ContainerImpl::Save(DataOutput& dataout)
 {
     written = 0;
 
@@ -445,18 +744,14 @@ error_t Container::Save(DataOutput& dataout)
 	progress.Update(written);
     }
 
-    opened = true;
-
     return ETE_SUCCESS;
 }
 
-error_t Container::Load(DataInput& datain, const std::string& filekey)
+error_t ContainerImpl::Load(DataInput& datain, const std::string& filekey)
 {
     ProgressTicker progress(*this,
 			    "Loading Container", PI_LOAD_CONTAINER,
 			    0, 1000);
-
-    opened = false;
 
     // Read unencrypted fixed Header1
     struct Header1 header1;
@@ -476,7 +771,7 @@ error_t Container::Load(DataInput& datain, const std::string& filekey)
     }
 }
 
-error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress)
+error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress)
 {
     unsigned int readbyte = sizeof(Header1);
 
@@ -666,7 +961,6 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
 	progress.Update(readbyte);
     }
 
-    opened = true;
     iskeyset = true;
     serpentctx = decctx;
 
@@ -675,14 +969,21 @@ error_t Container::Loadv00010000(DataInput& datain, const std::string& filekey, 
     return ETE_SUCCESS;
 }
 
-// *** Container Info Operations ***
-
-bool Container::IsOpen() const
+/// Reset all structures in the container
+void ContainerImpl::Clear()
 {
-    return opened;
+    modified = false;
+    iskeyset = false;
+    serpentctx.wipe();
+    unc_properties.clear();
+    enc_properties.clear();
+    subfiles.clear();
+    written = 0;
 }
 
-void Container::SetKey(const std::string& keystr)
+// *** Container Info Operations ***
+
+void ContainerImpl::SetKey(const std::string& keystr)
 {
     std::string enckey = SHA256::digest( std::string(fsignature, 8) + keystr );
 
@@ -745,29 +1046,29 @@ void Container::SetKey(const std::string& keystr)
     newctx.wipe();
 }
 
-bool Container::IsKeySet() const
+bool ContainerImpl::IsKeySet() const
 {
     return iskeyset;
 }
 
-size_t Container::GetLastWritten() const
+size_t ContainerImpl::GetLastWritten() const
 {
     return written;
 }
 
-void Container::SetProgressIndicator(ProgressIndicator* pi)
+void ContainerImpl::SetProgressIndicator(ProgressIndicator* pi)
 {
     progressindicator = pi;
 }
 
 // *** Container Global Unencrypted Properties ***
 
-void Container::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
+void ContainerImpl::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
 {
     unc_properties[key] = value;
 }
 
-const std::string& Container::GetGlobalUnencryptedProperty(const std::string& key) const
+const std::string& ContainerImpl::GetGlobalUnencryptedProperty(const std::string& key) const
 {
     propertymap_type::const_iterator pi = unc_properties.find(key);
 
@@ -780,12 +1081,12 @@ const std::string& Container::GetGlobalUnencryptedProperty(const std::string& ke
     }
 }
 
-bool Container::EraseGlobalUnencryptedProperty(const std::string& key)
+bool ContainerImpl::EraseGlobalUnencryptedProperty(const std::string& key)
 {
     return (unc_properties.erase(key) > 0);
 }
 
-bool Container::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
+bool ContainerImpl::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
     if (propindex >= unc_properties.size()) return false;
 
@@ -801,12 +1102,12 @@ bool Container::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::s
 
 // *** Container Global Encrypted Properties ***
 
-void Container::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
+void ContainerImpl::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
 {
     enc_properties[key] = value;
 }
 
-const std::string& Container::GetGlobalEncryptedProperty(const std::string& key) const
+const std::string& ContainerImpl::GetGlobalEncryptedProperty(const std::string& key) const
 {
     propertymap_type::const_iterator pi = enc_properties.find(key);
 
@@ -819,12 +1120,12 @@ const std::string& Container::GetGlobalEncryptedProperty(const std::string& key)
     }
 }
 
-bool Container::EraseGlobalEncryptedProperty(const std::string& key)
+bool ContainerImpl::EraseGlobalEncryptedProperty(const std::string& key)
 {
     return (enc_properties.erase(key) > 0);
 }
 
-bool Container::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
+bool ContainerImpl::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
     if (propindex >= enc_properties.size()) return false;
 
@@ -840,19 +1141,19 @@ bool Container::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::str
 
 // *** Container SubFiles - Subfile array management ***
 
-unsigned int Container::CountSubFile() const
+unsigned int ContainerImpl::CountSubFile() const
 {
     return subfiles.size();
 }
 
-unsigned int Container::AppendSubFile()
+unsigned int ContainerImpl::AppendSubFile()
 {
     unsigned int si = subfiles.size();
     subfiles.push_back( SubFile() );
     return si;
 }
 
-unsigned int Container::InsertSubFile(unsigned int subfileindex)
+unsigned int ContainerImpl::InsertSubFile(unsigned int subfileindex)
 {
     if (subfileindex < subfiles.size())
     {
@@ -865,7 +1166,7 @@ unsigned int Container::InsertSubFile(unsigned int subfileindex)
     }
 }
 
-bool Container::DeleteSubFile(unsigned int subfileindex)
+bool ContainerImpl::DeleteSubFile(unsigned int subfileindex)
 {
     if (subfileindex < subfiles.size())
     {
@@ -880,7 +1181,7 @@ bool Container::DeleteSubFile(unsigned int subfileindex)
 
 // *** Container SubFiles - Subfile user-defined properties ***
 
-void Container::SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value)
+void ContainerImpl::SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -889,7 +1190,7 @@ void Container::SetSubFileProperty(unsigned int subfileindex, const std::string&
     subfile.properties[ key ] = value;
 }
 
-const std::string& Container::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
+const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -906,7 +1207,7 @@ const std::string& Container::GetSubFileProperty(unsigned int subfileindex, cons
     }
 }
 
-bool Container::EraseSubFileProperty(unsigned int subfileindex, const std::string& key)
+bool ContainerImpl::EraseSubFileProperty(unsigned int subfileindex, const std::string& key)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -915,7 +1216,7 @@ bool Container::EraseSubFileProperty(unsigned int subfileindex, const std::strin
     return (subfile.properties.erase(key) > 0);
 }
 
-bool Container::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const
+bool ContainerImpl::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -936,7 +1237,7 @@ bool Container::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int 
 
 // *** Container SubFiles - Get operations of subfile header fields ***
 
-uint32_t Container::GetSubFileStorageSize(unsigned int subfileindex) const
+uint32_t ContainerImpl::GetSubFileStorageSize(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -944,7 +1245,7 @@ uint32_t Container::GetSubFileStorageSize(unsigned int subfileindex) const
     return subfiles[subfileindex].storagesize;
 }
 
-uint32_t Container::GetSubFileSize(unsigned int subfileindex) const
+uint32_t ContainerImpl::GetSubFileSize(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -952,7 +1253,7 @@ uint32_t Container::GetSubFileSize(unsigned int subfileindex) const
     return subfiles[subfileindex].realsize;
 }
 
-encryption_t Container::GetSubFileEncryption(unsigned int subfileindex) const
+encryption_t ContainerImpl::GetSubFileEncryption(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -960,7 +1261,7 @@ encryption_t Container::GetSubFileEncryption(unsigned int subfileindex) const
     return (encryption_t)subfiles[subfileindex].encryption;
 }
 
-compression_t Container::GetSubFileCompression(unsigned int subfileindex) const
+compression_t ContainerImpl::GetSubFileCompression(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -970,7 +1271,7 @@ compression_t Container::GetSubFileCompression(unsigned int subfileindex) const
 
 // *** Container SubFiles - Set operations of subfile header fields ***
 
-void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
+void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -995,7 +1296,7 @@ void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
     }
 }
 
-void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c)
+void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression_t c)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1020,7 +1321,7 @@ void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c
     }
 }
 
-void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc)
+void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1051,7 +1352,7 @@ void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compr
 
 // *** Container SubFiles - Subfile data operations ***
 
-error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
+error_t ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1297,7 +1598,7 @@ struct DataOutputString : public DataOutput
     }
 };
 
-error_t Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
+error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1312,7 +1613,7 @@ error_t Container::GetSubFileData(unsigned int subfileindex, std::string& outstr
     return GetSubFileData(subfileindex, dataout);
 }
 
-error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
+error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1537,6 +1838,215 @@ error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& d
 	return ETE_SUBFILE_CRC32;
 
     return ETE_SUCCESS;
+}
+
+} // namespace internal
+
+// *** Pimpl Stubs for Container ***
+
+Container::Container()
+{
+    pimpl = new internal::ContainerImpl();
+}
+
+Container::~Container()
+{
+    if (pimpl->DecReference() == 0)
+	delete pimpl;
+}
+
+Container::Container(const Container &cnt)
+{
+    pimpl = cnt.pimpl;
+    pimpl->IncReference();
+}
+
+Container& Container::operator=(const Container &cnt)
+{
+    if (&cnt == this) return *this;
+
+    if (pimpl->DecReference() == 0)
+	delete pimpl;
+    
+    pimpl = cnt.pimpl;
+    pimpl->IncReference();
+
+    return *this;
+}
+
+/* static */ void Container::SetSignature(const char* sign)
+{
+    internal::ContainerImpl::SetSignature(sign);
+}
+
+/* static */ const char* Container::GetErrorString(error_t e)
+{
+    return internal::ContainerImpl::GetErrorString(e);
+}
+
+error_t Container::Save(DataOutput& dataout)
+{
+    return pimpl->Save(dataout);
+}
+
+error_t Container::Load(DataInput& datain, const std::string& filekey)
+{
+    return pimpl->Load(datain, filekey);
+}
+
+void Container::Clear()
+{
+    return pimpl->Clear();
+}
+
+void Container::SetKey(const std::string& keystr)
+{
+    return pimpl->SetKey(keystr);
+}
+
+bool Container::IsKeySet() const
+{
+    return pimpl->IsKeySet();
+}
+
+size_t Container::GetLastWritten() const
+{
+    return pimpl->GetLastWritten();
+}
+
+void Container::SetProgressIndicator(ProgressIndicator* pi)
+{
+    return pimpl->SetProgressIndicator(pi);
+}
+
+void Container::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
+{
+    return pimpl->SetGlobalUnencryptedProperty(key, value);
+}
+
+const std::string& Container::GetGlobalUnencryptedProperty(const std::string& key) const
+{
+    return pimpl->GetGlobalUnencryptedProperty(key);
+}
+
+bool Container::EraseGlobalUnencryptedProperty(const std::string& key)
+{
+    return pimpl->EraseGlobalUnencryptedProperty(key);
+}
+
+bool Container::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
+{
+    return pimpl->GetGlobalUnencryptedPropertyIndex(propindex, key, value);
+}
+
+void Container::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
+{
+    return pimpl->SetGlobalEncryptedProperty(key, value);
+}
+
+const std::string& Container::GetGlobalEncryptedProperty(const std::string& key) const
+{
+    return pimpl->GetGlobalEncryptedProperty(key);
+}
+
+bool Container::EraseGlobalEncryptedProperty(const std::string& key)
+{
+    return pimpl->EraseGlobalEncryptedProperty(key);
+}
+
+bool Container::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
+{
+    return pimpl->GetGlobalEncryptedPropertyIndex(propindex, key, value);
+}
+
+unsigned int Container::CountSubFile() const
+{
+    return pimpl->CountSubFile();
+}
+
+unsigned int Container::AppendSubFile()
+{
+    return pimpl->AppendSubFile();
+}
+
+unsigned int Container::InsertSubFile(unsigned int subfileindex)
+{
+    return pimpl->InsertSubFile(subfileindex);
+}
+
+bool Container::DeleteSubFile(unsigned int subfileindex)
+{
+    return pimpl->DeleteSubFile(subfileindex);
+}
+
+void Container::SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value)
+{
+    return pimpl->SetSubFileProperty(subfileindex, key, value);
+}
+
+const std::string& Container::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
+{
+    return pimpl->GetSubFileProperty(subfileindex, key);
+}
+
+bool Container::EraseSubFileProperty(unsigned int subfileindex, const std::string& key)
+{
+    return pimpl->EraseSubFileProperty(subfileindex, key);
+}
+
+bool Container::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const
+{
+    return pimpl->GetSubFilePropertyIndex(subfileindex, propindex, key, value);
+}
+
+uint32_t Container::GetSubFileStorageSize(unsigned int subfileindex) const
+{
+    return pimpl->GetSubFileStorageSize(subfileindex);
+}
+
+uint32_t Container::GetSubFileSize(unsigned int subfileindex) const
+{
+    return pimpl->GetSubFileSize(subfileindex);
+}
+
+encryption_t Container::GetSubFileEncryption(unsigned int subfileindex) const
+{
+    return pimpl->GetSubFileEncryption(subfileindex);
+}
+
+compression_t Container::GetSubFileCompression(unsigned int subfileindex) const
+{
+    return pimpl->GetSubFileCompression(subfileindex);
+}
+
+void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
+{
+    return pimpl->SetSubFileEncryption(subfileindex, c);
+}
+
+void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c)
+{
+    return pimpl->SetSubFileCompression(subfileindex, c);
+}
+
+void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc)
+{
+    return pimpl->SetSubFileCompressionEncryption(subfileindex, comp, enc);
+}
+
+error_t Container::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
+{
+    return pimpl->SetSubFileData(subfileindex, data, datalen);
+}
+
+error_t Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
+{
+    return pimpl->GetSubFileData(subfileindex, outstr);
+}
+
+error_t Container::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
+{
+    return pimpl->GetSubFileData(subfileindex, dataout);
 }
 
 } // namespace Enctain
