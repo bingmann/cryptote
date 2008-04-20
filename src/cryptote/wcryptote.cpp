@@ -57,7 +57,7 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 	SetIcons(progicon);
     }
 
-    SetTitle(_("CryptoTE v0.1"));
+    SetTitle(wxString::Format(_("CryptoTE %s"), _(VERSION)));
 
     menubar_plain = CreateMenuBar(NULL);
     menubar_textpage = CreateMenuBar(CLASSINFO(WTextPage));
@@ -718,7 +718,7 @@ void WCryptoTE::UpdateTitle()
 	title += _T(" - ");
     }
 
-    title += _("CryptoTE v0.1");
+    title += wxString::Format(_("CryptoTE %s"), _(VERSION));
 
     SetTitle(title);
 }
@@ -2882,7 +2882,7 @@ void WAbout::do_layout()
     wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer5 = new wxBoxSizer(wxVERTICAL);
     sizer2->Add(bitmapIcon, 0, wxALL, 8);
-    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE v0.1"));
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE"));
     label1->SetFont(wxFont(18, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
     sizer3->Add(label1, 0, wxALL, 6);
     wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("CryptoTE is a text editor built upon the popular\nScintilla editing widget. Text is saved encrypted\nand compressed to secure sensitive data."));
@@ -2902,6 +2902,8 @@ void WAbout::do_layout()
     sizer1->Fit(this);
     Layout();
     // end wxGlade
+
+    label1->SetLabel(wxString::Format(_("CryptoTE %s"), _(VERSION)));
 }
 
 // *** WWebUpdateCheck ***

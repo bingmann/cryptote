@@ -1,7 +1,7 @@
 # $Id$ -*- mode: autoconf -*-
 
 AC_PREREQ(2.59)
-AC_INIT(cryptote, 0.1)
+AC_INIT(cryptote, 0.0.20080420)
 AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 AC_CANONICAL_HOST
@@ -223,5 +223,7 @@ AC_CONFIG_FILES([Makefile
 		 src/cryptote/Makefile
 		 src/locale/Makefile
 		 src/locale/wxstd/Makefile
-		 desktop/Makefile])
+		 desktop/Makefile
+		 cryptote-win32.iss
+		 cryptote-pwgen-win32.iss])
 AC_OUTPUT

@@ -938,7 +938,7 @@ void PGWAbout::do_layout()
     wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer5 = new wxBoxSizer(wxVERTICAL);
     sizer2->Add(bitmapIcon, 0, wxALL, 8);
-    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE\nPassword Generator v0.1"));
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE\nPassword Generator"));
     label1->SetFont(wxFont(18, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
     sizer_3->Add(label1, 0, wxALL, 6);
     wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("This is a stand-alone program containing only the\nrandom password generator found in CryptoTE\ntext editor and CryptoTE password tutor components."));
@@ -960,4 +960,6 @@ void PGWAbout::do_layout()
     sizer1->Fit(this);
     Layout();
     // end wxGlade
+
+    label1->SetLabel(wxString::Format(_("CryptoTE\nPassword Generator %s"), _(VERSION)));
 }
