@@ -11,7 +11,7 @@
 
 int main()
 {
-    char* key = "BVksLhOTmqxETMvfnbhE3xxx2RLRI52H";
+    const char* key = "BVksLhOTmqxETMvfnbhE3xxx2RLRI52H";
 
     std::cout << "Testing Serpent ECB implementation against libgcrypt...";
     std::cout.flush();
@@ -33,7 +33,7 @@ int main()
     gcry_error_t gcryerr = gcry_cipher_open(&encctx2, GCRY_CIPHER_SERPENT256, GCRY_CIPHER_MODE_ECB, 0);
     if (gcryerr != 0) return -1;
 
-    gcryerr = gcry_cipher_setkey(encctx2, (uint8_t*)key, 32);
+    gcryerr = gcry_cipher_setkey(encctx2, (const uint8_t*)key, 32);
     if (gcryerr != 0) return -1;
 
     gcry_cipher_hd_t decctx2;
@@ -41,7 +41,7 @@ int main()
     gcryerr = gcry_cipher_open(&decctx2, GCRY_CIPHER_SERPENT256, GCRY_CIPHER_MODE_ECB, 0);
     if (gcryerr != 0) return -1;
 
-    gcryerr = gcry_cipher_setkey(decctx2, (uint8_t*)key, 32);
+    gcryerr = gcry_cipher_setkey(decctx2, (const uint8_t*)key, 32);
     if (gcryerr != 0) return -1;
 
     // Encrypt and Decrypt random data using both contexts.
