@@ -1,7 +1,7 @@
 # $Id$ -*- mode: autoconf -*-
 
 AC_PREREQ(2.59)
-AC_INIT(cryptote, 0.0.20080420)
+AC_INIT(cryptote, 0.0.20080425)
 AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 AC_CANONICAL_HOST
@@ -71,7 +71,7 @@ AC_LANG([C++])
 
 AM_OPTIONS_WXCONFIG
 
-AM_PATH_WXCONFIG(2.8.0, wxWin=1)
+AM_PATH_WXCONFIG(2.8.0, [wxWin=1], [wxWin=0], [aui,adv,net,core])
 
 if test "$wxWin" != 1; then
     AC_MSG_ERROR([
