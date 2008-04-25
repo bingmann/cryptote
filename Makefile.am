@@ -2,7 +2,7 @@
 
 SUBDIRS = libstc libenctain src desktop
 
-EXTRA_DIST = cryptote-win32.iss
+EXTRA_DIST = cryptote-win32.iss.in cryptote-pwgen-win32.iss.in
 
 if GCOV
 

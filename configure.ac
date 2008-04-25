@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(foreign)
+AM_INIT_AUTOMAKE
 # AM_MAINTAINER_MODE
 
 # enable full optimization by configure switch
