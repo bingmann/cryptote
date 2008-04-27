@@ -1,0 +1,37 @@
+			       --- CryptoTE ---
+
+Summary
+
+CryptoTE is a text editor with integrated strong cryptography. It is based on
+the popular Scintilla widget and automatically stores text data in secure
+encrypted container files. Compared to other "Password Keeper" programs,
+CryptoTE does not force any structure upon your data: it works with plain ascii
+text and does not require you to fill in grids, key-value attributes,
+descriptions etc.
+
+Key Features
+
+  * User-friendly Scintilla text editing widget. The same as used by Notepad++.
+
+  * Edits secure container files holding multiple text or binary files.
+
+  * Highly-secure Serpent (256 keybits) encryption of sensitive data.
+
+  * Automatic compression using zlib or bzip2 to reduce container size.
+
+  * Fast user-interface: Quick-Find and Quick-Goto bars like Firefox's find. I
+    use the program myself almost every day.
+
+  * Auto-Close the container after a user-defined period of inactivity.
+
+  * Built-in password generator to insert new passwords in the text.
+
+  * Sleek wxAui tabbed interface from the newest wxWidgets version.
+
+  * Modularized and well-tested container processing library.
+
+  * Translated into German, (volunteers for more languages wanted).
+
+Website
+
+http://idlebox.net/2008/cryptote/
