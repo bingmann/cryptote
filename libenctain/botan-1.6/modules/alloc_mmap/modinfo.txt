@@ -1,0 +1,22 @@
+realname "Disk Based Allocation System"
+
+define ALLOC_MMAP
+
+<add>
+mmap_mem.cpp
+mmap_mem.h
+</add>
+
+<os>
+linux
+freebsd
+openbsd
+netbsd
+solaris
+qnx
+darwin
+tru64
+
+# Only without -ansi, otherwise can't get mkstemp
+#cygwin
+</os>

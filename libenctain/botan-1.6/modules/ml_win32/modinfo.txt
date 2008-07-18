@@ -1,0 +1,10 @@
+realname "Memory Locking for Win32"
+
+<replace>
+mlock.cpp
+</replace>
+
+<os>
+windows
+cygwin
+</os>

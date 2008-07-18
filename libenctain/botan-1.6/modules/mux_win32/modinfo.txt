@@ -1,0 +1,13 @@
+realname "Win32 Mutex"
+
+define MUTEX_WIN32
+
+<add>
+mux_win32.cpp
+mux_win32.h
+</add>
+
+<os>
+cygwin
+windows
+</os>

@@ -1,0 +1,28 @@
+realname "EGD Entropy Source"
+
+define ENTROPY_SRC_EGD
+
+<add>
+es_egd.h
+es_egd.cpp
+</add>
+
+<libs>
+solaris -> socket
+qnx -> socket
+</libs>
+
+<os>
+aix
+cygwin
+darwin
+freebsd
+hpux
+irix
+linux
+netbsd
+openbsd
+qnx
+solaris
+tru64
+</os>
