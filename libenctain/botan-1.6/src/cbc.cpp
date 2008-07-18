@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/cbc.h>
-#include <botan/lookup.h>
-#include <botan/bit_ops.h>
+#include "botan-1.6/include/cbc.h"
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/bit_ops.h"
 #include <algorithm>
 
 namespace Enctain {

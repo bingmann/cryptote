@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/def_char.h>
-#include <botan/exceptn.h>
-#include <botan/parsing.h>
+#include "botan-1.6/include/def_char.h"
+#include "botan-1.6/include/exceptn.h"
+#include "botan-1.6/include/parsing.h"
 
 namespace Enctain {
 namespace Botan {

@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/init.h>
-#include <botan/parsing.h>
-#include <botan/stl_util.h>
-#include <botan/exceptn.h>
+#include "botan-1.6/include/init.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/stl_util.h"
+#include "botan-1.6/include/exceptn.h"
 
 namespace Enctain {
 namespace Botan {

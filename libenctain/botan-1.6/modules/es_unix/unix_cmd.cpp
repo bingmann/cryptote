@@ -11,8 +11,8 @@
   #define _XOPEN_SOURCE_EXTENDED 1
 #endif
 
-#include <botan/unix_cmd.h>
-#include <botan/parsing.h>
+#include "botan-1.6/include/unix_cmd.h"
+#include "botan-1.6/include/parsing.h"
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>

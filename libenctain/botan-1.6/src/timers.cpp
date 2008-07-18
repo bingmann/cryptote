@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/timers.h>
-#include <botan/libstate.h>
-#include <botan/util.h>
+#include "botan-1.6/include/timers.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/util.h"
 #include <ctime>
 
 namespace Enctain {

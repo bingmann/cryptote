@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/buf_es.h>
-#include <botan/bit_ops.h>
-#include <botan/util.h>
+#include "botan-1.6/include/buf_es.h"
+#include "botan-1.6/include/bit_ops.h"
+#include "botan-1.6/include/util.h"
 #include <algorithm>
 
 namespace Enctain {

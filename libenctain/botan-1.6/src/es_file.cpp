@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/es_file.h>
-#include <botan/config.h>
+#include "botan-1.6/include/es_file.h"
+#include "botan-1.6/include/config.h"
 #include <fstream>
 
 namespace Enctain {

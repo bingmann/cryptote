@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/es_capi.h>
-#include <botan/parsing.h>
-#include <botan/config.h>
+#include "botan-1.6/include/es_capi.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/config.h"
 #include <windows.h>
 #include <wincrypt.h>
 

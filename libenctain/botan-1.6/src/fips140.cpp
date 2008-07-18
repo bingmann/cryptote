@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/fips140.h>
-#include <botan/lookup.h>
+#include "botan-1.6/include/fips140.h"
+#include "botan-1.6/include/lookup.h"
 
 namespace Enctain {
 namespace Botan {

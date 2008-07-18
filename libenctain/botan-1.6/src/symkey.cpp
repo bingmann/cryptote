@@ -3,11 +3,11 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/symkey.h>
-#include <botan/bit_ops.h>
-#include <botan/pipe.h>
-#include <botan/hex.h>
-#include <botan/rng.h>
+#include "botan-1.6/include/symkey.h"
+#include "botan-1.6/include/bit_ops.h"
+#include "botan-1.6/include/pipe.h"
+#include "botan-1.6/include/hex.h"
+#include "botan-1.6/include/rng.h"
 #include <algorithm>
 
 namespace Enctain {

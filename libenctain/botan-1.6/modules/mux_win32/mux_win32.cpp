@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/mux_win32.h>
-#include <botan/exceptn.h>
+#include "botan-1.6/include/mux_win32.h"
+#include "botan-1.6/include/exceptn.h"
 #include <windows.h>
 
 namespace Enctain {

@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/pipe.h>
-#include <botan/out_buf.h>
-#include <botan/secqueue.h>
+#include "botan-1.6/include/pipe.h"
+#include "botan-1.6/include/out_buf.h"
+#include "botan-1.6/include/secqueue.h"
 
 namespace Enctain {
 namespace Botan {

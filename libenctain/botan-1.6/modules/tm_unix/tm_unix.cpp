@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/tm_unix.h>
-#include <botan/util.h>
+#include "botan-1.6/include/tm_unix.h"
+#include "botan-1.6/include/util.h"
 #include <sys/time.h>
 
 namespace Enctain {

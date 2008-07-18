@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/es_egd.h>
-#include <botan/config.h>
-#include <botan/bit_ops.h>
-#include <botan/parsing.h>
+#include "botan-1.6/include/es_egd.h"
+#include "botan-1.6/include/config.h"
+#include "botan-1.6/include/bit_ops.h"
+#include "botan-1.6/include/parsing.h"
 #include <cstring>
 
 #include <sys/types.h>

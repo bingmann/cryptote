@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/engine.h>
-#include <botan/libstate.h>
-#include <botan/eng_def.h>
+#include "botan-1.6/include/engine.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/eng_def.h"
 
 namespace Enctain {
 namespace Botan {

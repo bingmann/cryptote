@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/mutex.h>
-#include <botan/libstate.h>
+#include "botan-1.6/include/mutex.h"
+#include "botan-1.6/include/libstate.h"
 
 namespace Enctain {
 namespace Botan {

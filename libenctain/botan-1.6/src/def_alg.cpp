@@ -3,62 +3,62 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/eng_def.h>
-#include <botan/lookup.h>
-#include <botan/parsing.h>
+#include "botan-1.6/include/eng_def.h"
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/parsing.h"
 
-#include <botan/aes.h>
-// #include <botan/blowfish.h>
-// #include <botan/cast128.h>
-// #include <botan/cast256.h>
-#include <botan/des.h>
-// #include <botan/gost.h>
-// #include <botan/idea.h>
-// #include <botan/kasumi.h>
-// #include <botan/lion.h>
-// #include <botan/lubyrack.h>
-// #include <botan/mars.h>
-// #include <botan/misty1.h>
-// #include <botan/rc2.h>
-// #include <botan/rc5.h>
-// #include <botan/rc6.h>
-// #include <botan/safer_sk.h>
-// #include <botan/seed.h>
-#include <botan/serpent.h>
-// #include <botan/skipjack.h>
-// #include <botan/square.h>
-// #include <botan/tea.h>
-#include <botan/twofish.h>
-// #include <botan/xtea.h>
+#include "botan-1.6/include/aes.h"
+// #include "botan-1.6/include/blowfish.h"
+// #include "botan-1.6/include/cast128.h"
+// #include "botan-1.6/include/cast256.h"
+#include "botan-1.6/include/des.h"
+// #include "botan-1.6/include/gost.h"
+// #include "botan-1.6/include/idea.h"
+// #include "botan-1.6/include/kasumi.h"
+// #include "botan-1.6/include/lion.h"
+// #include "botan-1.6/include/lubyrack.h"
+// #include "botan-1.6/include/mars.h"
+// #include "botan-1.6/include/misty1.h"
+// #include "botan-1.6/include/rc2.h"
+// #include "botan-1.6/include/rc5.h"
+// #include "botan-1.6/include/rc6.h"
+// #include "botan-1.6/include/safer_sk.h"
+// #include "botan-1.6/include/seed.h"
+#include "botan-1.6/include/serpent.h"
+// #include "botan-1.6/include/skipjack.h"
+// #include "botan-1.6/include/square.h"
+// #include "botan-1.6/include/tea.h"
+#include "botan-1.6/include/twofish.h"
+// #include "botan-1.6/include/xtea.h"
 
-// #include <botan/arc4.h>
-// #include <botan/turing.h>
-// #include <botan/wid_wake.h>
+// #include "botan-1.6/include/arc4.h"
+// #include "botan-1.6/include/turing.h"
+// #include "botan-1.6/include/wid_wake.h"
 
-// #include <botan/adler32.h>
-// #include <botan/crc24.h>
-#include <botan/crc32.h>
-// #include <botan/fork256.h>
-// #include <botan/has160.h>
-// #include <botan/md2.h>
-// #include <botan/md4.h>
-#include <botan/md5.h>
-// #include <botan/rmd128.h>
-// #include <botan/rmd160.h>
-#include <botan/sha160.h>
-#include <botan/sha256.h>
-#include <botan/sha_64.h>
-// #include <botan/tiger.h>
-// #include <botan/whrlpool.h>
-// #include <botan/par_hash.h>
+// #include "botan-1.6/include/adler32.h"
+// #include "botan-1.6/include/crc24.h"
+#include "botan-1.6/include/crc32.h"
+// #include "botan-1.6/include/fork256.h"
+// #include "botan-1.6/include/has160.h"
+// #include "botan-1.6/include/md2.h"
+// #include "botan-1.6/include/md4.h"
+#include "botan-1.6/include/md5.h"
+// #include "botan-1.6/include/rmd128.h"
+// #include "botan-1.6/include/rmd160.h"
+#include "botan-1.6/include/sha160.h"
+#include "botan-1.6/include/sha256.h"
+#include "botan-1.6/include/sha_64.h"
+// #include "botan-1.6/include/tiger.h"
+// #include "botan-1.6/include/whrlpool.h"
+// #include "botan-1.6/include/par_hash.h"
 
-// #include <botan/cmac.h>
-#include <botan/hmac.h>
-// #include <botan/x919_mac.h>
+// #include "botan-1.6/include/cmac.h"
+#include "botan-1.6/include/hmac.h"
+// #include "botan-1.6/include/x919_mac.h"
 
-#include <botan/mode_pad.h>
-// #include <botan/pgp_s2k.h>
-#include <botan/pkcs5.h>
+#include "botan-1.6/include/mode_pad.h"
+// #include "botan-1.6/include/pgp_s2k.h"
+#include "botan-1.6/include/pkcs5.h"
 
 namespace Enctain {
 namespace Botan {

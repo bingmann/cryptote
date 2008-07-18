@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/es_win32.h>
+#include "botan-1.6/include/es_win32.h"
 #include <windows.h>
 #include <tlhelp32.h>
 

@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/buf_filt.h>
+#include "botan-1.6/include/buf_filt.h"
 #include <algorithm>
 
 namespace Enctain {

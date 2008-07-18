@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/ecb.h>
-#include <botan/lookup.h>
+#include "botan-1.6/include/ecb.h"
+#include "botan-1.6/include/lookup.h"
 
 namespace Enctain {
 namespace Botan {

@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/filter.h>
-#include <botan/secqueue.h>
-#include <botan/libstate.h>
+#include "botan-1.6/include/filter.h"
+#include "botan-1.6/include/secqueue.h"
+#include "botan-1.6/include/libstate.h"
 
 namespace Enctain {
 namespace Botan {

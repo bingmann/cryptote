@@ -3,13 +3,13 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/config.h>
-#include <botan/libstate.h>
-#include <botan/lookup.h>
-#include <botan/charset.h>
-#include <botan/parsing.h>
-#include <botan/stl_util.h>
-#include <botan/mutex.h>
+#include "botan-1.6/include/config.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/charset.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/stl_util.h"
+#include "botan-1.6/include/mutex.h"
 #include <string>
 
 namespace Enctain {

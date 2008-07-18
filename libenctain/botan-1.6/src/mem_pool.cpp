@@ -3,11 +3,11 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/mem_pool.h>
-#include <botan/libstate.h>
-#include <botan/config.h>
-#include <botan/bit_ops.h>
-#include <botan/util.h>
+#include "botan-1.6/include/mem_pool.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/config.h"
+#include "botan-1.6/include/bit_ops.h"
+#include "botan-1.6/include/util.h"
 #include <algorithm>
 
 namespace Enctain {

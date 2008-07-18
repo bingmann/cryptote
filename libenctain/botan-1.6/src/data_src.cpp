@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/data_src.h>
+#include "botan-1.6/include/data_src.h"
 #include <fstream>
 #include <algorithm>
 

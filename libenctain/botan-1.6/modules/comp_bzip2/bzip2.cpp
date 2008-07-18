@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/bzip2.h>
+#include "botan-1.6/include/bzip2.h"
 #include <map>
 #include <cstring>
 #define BZ_NO_STDIO

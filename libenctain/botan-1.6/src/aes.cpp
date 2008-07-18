@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/aes.h>
-#include <botan/bit_ops.h>
+#include "botan-1.6/include/aes.h"
+#include "botan-1.6/include/bit_ops.h"
 
 namespace Enctain {
 namespace Botan {

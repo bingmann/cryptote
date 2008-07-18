@@ -3,73 +3,73 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/modules.h>
-#include <botan/defalloc.h>
-#include <botan/def_char.h>
-#include <botan/eng_def.h>
-#include <botan/es_file.h>
-#include <botan/timers.h>
+#include "botan-1.6/include/modules.h"
+#include "botan-1.6/include/defalloc.h"
+#include "botan-1.6/include/def_char.h"
+#include "botan-1.6/include/eng_def.h"
+#include "botan-1.6/include/es_file.h"
+#include "botan-1.6/include/timers.h"
 
 #if defined(BOTAN_EXT_MUTEX_PTHREAD)
-  #include <botan/mux_pthr.h>
+  #include "botan-1.6/include/mux_pthr.h"
 #elif defined(BOTAN_EXT_MUTEX_WIN32)
-  #include <botan/mux_win32.h>
+  #include "botan-1.6/include/mux_win32.h"
 #elif defined(BOTAN_EXT_MUTEX_QT)
-  #include <botan/mux_qt.h>
+  #include "botan-1.6/include/mux_qt.h"
 #endif
 
 #if defined(BOTAN_EXT_ALLOC_MMAP)
-  #include <botan/mmap_mem.h>
+  #include "botan-1.6/include/mmap_mem.h"
 #endif
 
 #if defined(BOTAN_EXT_TIMER_HARDWARE)
-  #include <botan/tm_hard.h>
+  #include "botan-1.6/include/tm_hard.h"
 #elif defined(BOTAN_EXT_TIMER_POSIX)
-  #include <botan/tm_posix.h>
+  #include "botan-1.6/include/tm_posix.h"
 #elif defined(BOTAN_EXT_TIMER_UNIX)
-  #include <botan/tm_unix.h>
+  #include "botan-1.6/include/tm_unix.h"
 #elif defined(BOTAN_EXT_TIMER_WIN32)
-  #include <botan/tm_win32.h>
+  #include "botan-1.6/include/tm_win32.h"
 #endif
 
 #if defined(BOTAN_EXT_ENGINE_AEP)
-  #include <botan/eng_aep.h>
+  #include "botan-1.6/include/eng_aep.h"
 #endif
 
 #if defined(BOTAN_EXT_ENGINE_GNU_MP)
-  #include <botan/eng_gmp.h>
+  #include "botan-1.6/include/eng_gmp.h"
 #endif
 
 #if defined(BOTAN_EXT_ENGINE_OPENSSL)
-  #include <botan/eng_ossl.h>
+  #include "botan-1.6/include/eng_ossl.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_AEP)
-  #include <botan/es_aep.h>
+  #include "botan-1.6/include/es_aep.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_EGD)
-  #include <botan/es_egd.h>
+  #include "botan-1.6/include/es_egd.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_UNIX)
-  #include <botan/es_unix.h>
+  #include "botan-1.6/include/es_unix.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_BEOS)
-  #include <botan/es_beos.h>
+  #include "botan-1.6/include/es_beos.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_CAPI)
-  #include <botan/es_capi.h>
+  #include "botan-1.6/include/es_capi.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_WIN32)
-  #include <botan/es_win32.h>
+  #include "botan-1.6/include/es_win32.h"
 #endif
 
 #if defined(BOTAN_EXT_ENTROPY_SRC_FTW)
-  #include <botan/es_ftw.h>
+  #include "botan-1.6/include/es_ftw.h"
 #endif
 
 namespace Enctain {

@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/randpool.h>
-#include <botan/lookup.h>
-#include <botan/bit_ops.h>
-#include <botan/util.h>
+#include "botan-1.6/include/randpool.h"
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/bit_ops.h"
+#include "botan-1.6/include/util.h"
 #include <algorithm>
 
 namespace Enctain {

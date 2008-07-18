@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/des.h>
+#include "botan-1.6/include/des.h"
 
 namespace Enctain {
 namespace Botan {

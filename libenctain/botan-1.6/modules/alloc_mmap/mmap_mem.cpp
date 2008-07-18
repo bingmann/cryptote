@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/mmap_mem.h>
+#include "botan-1.6/include/mmap_mem.h"
 #include <cstring>
 
 #ifndef _XOPEN_SOURCE

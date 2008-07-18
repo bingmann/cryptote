@@ -3,14 +3,14 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/init.h>
-#include <botan/libstate.h>
-#include <botan/modules.h>
-#include <botan/config.h>
-#include <botan/defalloc.h>
-#include <botan/fips140.h>
-#include <botan/x931_rng.h>
-#include <botan/def_char.h>
+#include "botan-1.6/include/init.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/modules.h"
+#include "botan-1.6/include/config.h"
+#include "botan-1.6/include/defalloc.h"
+#include "botan-1.6/include/fips140.h"
+#include "botan-1.6/include/x931_rng.h"
+#include "botan-1.6/include/def_char.h"
 
 namespace Enctain {
 namespace Botan {

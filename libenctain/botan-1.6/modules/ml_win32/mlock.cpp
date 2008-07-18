@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/util.h>
+#include "botan-1.6/include/util.h"
 #include <windows.h>
 
 namespace Enctain {

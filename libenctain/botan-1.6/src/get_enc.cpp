@@ -3,13 +3,13 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/lookup.h>
-#include <botan/parsing.h>
-// #include <botan/emsa.h>
-// #include <botan/eme.h>
-// #include <botan/kdf.h>
-// #include <botan/mgf1.h>
-#include <botan/util.h>
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/parsing.h"
+// #include "botan-1.6/include/emsa.h"
+// #include "botan-1.6/include/eme.h"
+// #include "botan-1.6/include/kdf.h"
+// #include "botan-1.6/include/mgf1.h"
+#include "botan-1.6/include/util.h"
 
 namespace Enctain {
 namespace Botan {

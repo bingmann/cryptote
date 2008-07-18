@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/config.h>
-#include <botan/charset.h>
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
+#include "botan-1.6/include/config.h"
+#include "botan-1.6/include/charset.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/exceptn.h"
 #include <fstream>
 #include <map>
 

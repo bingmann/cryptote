@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/es_unix.h>
-#include <botan/unix_cmd.h>
-#include <botan/parsing.h>
-#include <botan/config.h>
+#include "botan-1.6/include/es_unix.h"
+#include "botan-1.6/include/unix_cmd.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/config.h"
 #include <algorithm>
 
 namespace Enctain {

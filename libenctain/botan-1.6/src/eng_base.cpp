@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/engine.h>
-#include <botan/libstate.h>
-#include <botan/stl_util.h>
-#include <botan/lookup.h>
+#include "botan-1.6/include/engine.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/stl_util.h"
+#include "botan-1.6/include/lookup.h"
 
 namespace Enctain {
 namespace Botan {

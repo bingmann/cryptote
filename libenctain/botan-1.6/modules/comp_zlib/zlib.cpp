@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/zlib.h>
+#include "botan-1.6/include/zlib.h"
 #include <cstring>
 #include <map>
 #include <zlib.h>

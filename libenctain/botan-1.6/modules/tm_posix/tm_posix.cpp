@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/tm_posix.h>
-#include <botan/util.h>
+#include "botan-1.6/include/tm_posix.h"
+#include "botan-1.6/include/util.h"
 
 #ifndef _POSIX_C_SOURCE
   #define _POSIX_C_SOURCE 199309

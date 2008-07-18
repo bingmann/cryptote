@@ -376,7 +376,7 @@ libenctain_a_SOURCES = bytebuff.h \
 	botan-1.6/modules/comp_bzip2/bzip2.cpp \
 	botan-1.6/modules/comp_zlib/zlib.cpp
 
-AM_CXXFLAGS = -W -Wall -I$(srcdir)/botan-1.6/ $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
+AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
 EXTRA_DIST = format.html
 all: all-recursive
 

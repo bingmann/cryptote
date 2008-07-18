@@ -3,10 +3,10 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/hex.h>
-#include <botan/bit_ops.h>
-#include <botan/parsing.h>
-#include <botan/charset.h>
+#include "botan-1.6/include/hex.h"
+#include "botan-1.6/include/bit_ops.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/charset.h"
 #include <algorithm>
 
 namespace Enctain {

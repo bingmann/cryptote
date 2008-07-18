@@ -3,9 +3,9 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/defalloc.h>
-#include <botan/libstate.h>
-#include <botan/util.h>
+#include "botan-1.6/include/defalloc.h"
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/util.h"
 #include <cstdlib>
 #include <cstring>
 

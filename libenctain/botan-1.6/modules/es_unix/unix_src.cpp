@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/es_unix.h>
+#include "botan-1.6/include/es_unix.h"
 
 namespace Enctain {
 namespace Botan {

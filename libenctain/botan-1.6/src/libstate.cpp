@@ -3,15 +3,15 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/libstate.h>
-#include <botan/config.h>
-#include <botan/modules.h>
-#include <botan/engine.h>
-// #include <botan/x509stat.h>
-#include <botan/stl_util.h>
-#include <botan/mutex.h>
-#include <botan/timers.h>
-#include <botan/charset.h>
+#include "botan-1.6/include/libstate.h"
+#include "botan-1.6/include/config.h"
+#include "botan-1.6/include/modules.h"
+#include "botan-1.6/include/engine.h"
+// #include "botan-1.6/include/x509stat.h"
+#include "botan-1.6/include/stl_util.h"
+#include "botan-1.6/include/mutex.h"
+#include "botan-1.6/include/timers.h"
+#include "botan-1.6/include/charset.h"
 #include <algorithm>
 
 namespace Enctain {

@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/s2k.h>
-#include <botan/rng.h>
+#include "botan-1.6/include/s2k.h"
+#include "botan-1.6/include/rng.h"
 
 namespace Enctain {
 namespace Botan {

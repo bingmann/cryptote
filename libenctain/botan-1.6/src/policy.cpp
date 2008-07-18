@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/config.h>
+#include "botan-1.6/include/config.h"
 
 namespace Enctain {
 namespace Botan {

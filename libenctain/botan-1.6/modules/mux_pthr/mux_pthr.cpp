@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/mux_pthr.h>
-#include <botan/exceptn.h>
+#include "botan-1.6/include/mux_pthr.h"
+#include "botan-1.6/include/exceptn.h"
 
 #ifndef _POSIX_C_SOURCE
   #define _POSIX_C_SOURCE 199506

@@ -3,7 +3,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/pipe.h>
+#include "botan-1.6/include/pipe.h"
 #include <iostream>
 
 namespace Enctain {

@@ -3,8 +3,8 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/filters.h>
-#include <botan/lookup.h>
+#include "botan-1.6/include/filters.h"
+#include "botan-1.6/include/lookup.h"
 #include <algorithm>
 
 namespace Enctain {

@@ -3,17 +3,17 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include <botan/eng_def.h>
-#include <botan/parsing.h>
-#include <botan/filters.h>
-#include <botan/lookup.h>
-#include <botan/ecb.h>
-#include <botan/cbc.h>
-// #include <botan/cts.h>
-// #include <botan/cfb.h>
-// #include <botan/ofb.h>
-// #include <botan/ctr.h>
-// #include <botan/eax.h>
+#include "botan-1.6/include/eng_def.h"
+#include "botan-1.6/include/parsing.h"
+#include "botan-1.6/include/filters.h"
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/ecb.h"
+#include "botan-1.6/include/cbc.h"
+// #include "botan-1.6/include/cts.h"
+// #include "botan-1.6/include/cfb.h"
+// #include "botan-1.6/include/ofb.h"
+// #include "botan-1.6/include/ctr.h"
+// #include "botan-1.6/include/eax.h"
 
 namespace Enctain {
 namespace Botan {
