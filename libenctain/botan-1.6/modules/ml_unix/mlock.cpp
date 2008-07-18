@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -30,4 +31,5 @@ void unlock_mem(void* ptr, u32bit bytes)
    munlock(ptr, bytes);
    }
 
+}
 }

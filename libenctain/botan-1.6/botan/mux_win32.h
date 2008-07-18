@@ -8,6 +8,7 @@
 
 #include <botan/mutex.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -18,6 +19,7 @@ class Win32_Mutex_Factory : public Mutex_Factory
    public:
       Mutex* make();
    };
+}
 }
 
 #endif

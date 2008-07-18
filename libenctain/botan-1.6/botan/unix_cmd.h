@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -51,6 +52,7 @@ class DataSource_Command : public DataSource
       struct pipe_wrapper* pipe;
    };
 
+}
 }
 
 #endif

@@ -6,6 +6,7 @@
 #include <botan/twofish.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -224,4 +225,5 @@ void Twofish::clear() throw()
    round_key.clear();
    }
 
+}
 }

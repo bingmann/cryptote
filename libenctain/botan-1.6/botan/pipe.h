@@ -10,6 +10,7 @@
 #include <botan/filter.h>
 #include <iosfwd>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -82,6 +83,7 @@ class Pipe : public DataSource
 std::ostream& operator<<(std::ostream&, Pipe&);
 std::istream& operator>>(std::istream&, Pipe&);
 
+}
 }
 
 #endif

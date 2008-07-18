@@ -6,6 +6,7 @@
 #include <botan/sha160.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -128,4 +129,5 @@ SHA_160::SHA_160() : MDx_HashFunction(20, 64, true, true), W(80)
    clear();
    }
 
+}
 }

@@ -6,6 +6,7 @@
 #include <botan/mdx_hash.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -97,4 +98,5 @@ void MDx_HashFunction::write_count(byte out[])
       }
    }
 
+}
 }

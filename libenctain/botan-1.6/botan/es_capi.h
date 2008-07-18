@@ -9,6 +9,7 @@
 #include <botan/base.h>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -23,6 +24,7 @@ class Win32_CAPI_EntropySource : public EntropySource
       std::vector<u64bit> prov_types;
    };
 
+}
 }
 
 #endif

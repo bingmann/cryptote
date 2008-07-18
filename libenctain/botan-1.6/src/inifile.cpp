@@ -10,6 +10,7 @@
 #include <fstream>
 #include <map>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -135,4 +136,5 @@ void Config::load_inifile(const std::string& fsname)
       }
    }
 
+}
 }

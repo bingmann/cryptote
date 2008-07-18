@@ -8,6 +8,7 @@
 
 #include <botan/types.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -20,6 +21,7 @@ class Timer
       virtual ~Timer() {}
    };
 
+}
 }
 
 #endif

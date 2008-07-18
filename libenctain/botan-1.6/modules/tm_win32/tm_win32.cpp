@@ -6,6 +6,7 @@
 #include <botan/tm_win32.h>
 #include <windows.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -18,4 +19,5 @@ u64bit Win32_Timer::clock() const
    return tv.QuadPart;
    }
 
+}
 }

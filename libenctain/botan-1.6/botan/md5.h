@@ -8,6 +8,7 @@
 
 #include <botan/mdx_hash.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -28,6 +29,7 @@ class MD5 : public MDx_HashFunction
       SecureBuffer<u32bit, 4> digest;
    };
 
+}
 }
 
 #endif

@@ -72,6 +72,7 @@
   #include <botan/es_ftw.h>
 #endif
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -226,4 +227,5 @@ Builtin_Modules::Builtin_Modules(const InitializerOptions& args) :
    {
    }
 
+}
 }

@@ -6,6 +6,7 @@
 #include <botan/data_snk.h>
 #include <fstream>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -53,4 +54,5 @@ DataSink_Stream::~DataSink_Stream()
    sink = 0;
    }
 
+}
 }

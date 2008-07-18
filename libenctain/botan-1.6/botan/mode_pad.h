@@ -9,6 +9,7 @@
 #include <botan/base.h>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -74,6 +75,7 @@ class Null_Padding : public BlockCipherModePaddingMethod
       std::string name() const { return "NoPadding"; }
    };
 
+}
 }
 
 #endif

@@ -6,6 +6,7 @@
 #include <botan/serpent.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -372,4 +373,5 @@ void Serpent::key(const byte key[], u32bit length)
    round_key.copy(W + 8, 132);
    }
 
+}
 }

@@ -9,6 +9,7 @@
 #include <botan/types.h>
 #include <deque>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -35,6 +36,7 @@ class Output_Buffers
       u32bit offset;
    };
 
+}
 }
 
 #endif

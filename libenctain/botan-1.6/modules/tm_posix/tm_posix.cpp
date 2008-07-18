@@ -16,6 +16,7 @@
   #define CLOCK_REALTIME 0
 #endif
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -28,4 +29,5 @@ u64bit POSIX_Timer::clock() const
    return combine_timers(tv.tv_sec, tv.tv_nsec, 1000000000);
    }
 
+}
 }

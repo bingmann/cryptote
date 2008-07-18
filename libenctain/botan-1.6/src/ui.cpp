@@ -6,6 +6,7 @@
 #include <botan/ui.h>
 #include <botan/libstate.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -32,4 +33,5 @@ User_Interface::User_Interface(const std::string& preset) :
    first_try = true;
    }
 
+}
 }

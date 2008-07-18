@@ -6,6 +6,7 @@
 #include <botan/des.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -271,4 +272,5 @@ void DESX::key(const byte key[], u32bit)
    K2.copy(key + 16, 8);
    }
 
+}
 }

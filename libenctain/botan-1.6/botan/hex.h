@@ -9,6 +9,7 @@
 #include <botan/filter.h>
 #include <botan/enums.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -59,6 +60,7 @@ class Hex_Decoder : public Filter
       u32bit position;
    };
 
+}
 }
 
 #endif

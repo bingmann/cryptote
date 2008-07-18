@@ -15,6 +15,7 @@
 // #include <botan/ctr.h>
 // #include <botan/eax.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -120,4 +121,5 @@ Keyed_Filter* Default_Engine::get_cipher(const std::string& algo_spec,
    return 0;
    }
 
+}
 }

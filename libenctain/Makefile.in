@@ -70,7 +70,8 @@ am_libenctain_a_OBJECTS = mycrc32.$(OBJEXT) mysha256.$(OBJEXT) \
 	serpent.$(OBJEXT) sha160.$(OBJEXT) sha256.$(OBJEXT) \
 	sha_64.$(OBJEXT) symkey.$(OBJEXT) timers.$(OBJEXT) \
 	two_tab.$(OBJEXT) twofish.$(OBJEXT) ui.$(OBJEXT) \
-	util.$(OBJEXT) x931_rng.$(OBJEXT)
+	util.$(OBJEXT) x931_rng.$(OBJEXT) bzip2.$(OBJEXT) \
+	zlib.$(OBJEXT)
 libenctain_a_OBJECTS = $(am_libenctain_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
@@ -370,7 +371,10 @@ libenctain_a_SOURCES = bytebuff.h \
 	botan-1.6/src/twofish.cpp \
 	botan-1.6/src/ui.cpp \
 	botan-1.6/src/util.cpp \
-	botan-1.6/src/x931_rng.cpp
+	botan-1.6/src/x931_rng.cpp \
+	\
+	botan-1.6/modules/comp_bzip2/bzip2.cpp \
+	botan-1.6/modules/comp_zlib/zlib.cpp
 
 AM_CXXFLAGS = -W -Wall -I$(srcdir)/botan-1.6/ $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
 EXTRA_DIST = format.html
@@ -429,6 +433,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bit_ops.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buf_es.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buf_filt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bzip2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cbc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/charset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
@@ -491,6 +496,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x931_rng.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zlib.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1429,6 +1435,34 @@ x931_rng.obj: botan-1.6/src/x931_rng.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/src/x931_rng.cpp' object='x931_rng.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o x931_rng.obj `if test -f 'botan-1.6/src/x931_rng.cpp'; then $(CYGPATH_W) 'botan-1.6/src/x931_rng.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/src/x931_rng.cpp'; fi`
+
+bzip2.o: botan-1.6/modules/comp_bzip2/bzip2.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bzip2.o -MD -MP -MF $(DEPDIR)/bzip2.Tpo -c -o bzip2.o `test -f 'botan-1.6/modules/comp_bzip2/bzip2.cpp' || echo '$(srcdir)/'`botan-1.6/modules/comp_bzip2/bzip2.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/bzip2.Tpo $(DEPDIR)/bzip2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/comp_bzip2/bzip2.cpp' object='bzip2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bzip2.o `test -f 'botan-1.6/modules/comp_bzip2/bzip2.cpp' || echo '$(srcdir)/'`botan-1.6/modules/comp_bzip2/bzip2.cpp
+
+bzip2.obj: botan-1.6/modules/comp_bzip2/bzip2.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bzip2.obj -MD -MP -MF $(DEPDIR)/bzip2.Tpo -c -o bzip2.obj `if test -f 'botan-1.6/modules/comp_bzip2/bzip2.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/comp_bzip2/bzip2.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/comp_bzip2/bzip2.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/bzip2.Tpo $(DEPDIR)/bzip2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/comp_bzip2/bzip2.cpp' object='bzip2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bzip2.obj `if test -f 'botan-1.6/modules/comp_bzip2/bzip2.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/comp_bzip2/bzip2.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/comp_bzip2/bzip2.cpp'; fi`
+
+zlib.o: botan-1.6/modules/comp_zlib/zlib.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT zlib.o -MD -MP -MF $(DEPDIR)/zlib.Tpo -c -o zlib.o `test -f 'botan-1.6/modules/comp_zlib/zlib.cpp' || echo '$(srcdir)/'`botan-1.6/modules/comp_zlib/zlib.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/zlib.Tpo $(DEPDIR)/zlib.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/comp_zlib/zlib.cpp' object='zlib.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o zlib.o `test -f 'botan-1.6/modules/comp_zlib/zlib.cpp' || echo '$(srcdir)/'`botan-1.6/modules/comp_zlib/zlib.cpp
+
+zlib.obj: botan-1.6/modules/comp_zlib/zlib.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT zlib.obj -MD -MP -MF $(DEPDIR)/zlib.Tpo -c -o zlib.obj `if test -f 'botan-1.6/modules/comp_zlib/zlib.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/comp_zlib/zlib.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/comp_zlib/zlib.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/zlib.Tpo $(DEPDIR)/zlib.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/comp_zlib/zlib.cpp' object='zlib.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o zlib.obj `if test -f 'botan-1.6/modules/comp_zlib/zlib.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/comp_zlib/zlib.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/comp_zlib/zlib.cpp'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.

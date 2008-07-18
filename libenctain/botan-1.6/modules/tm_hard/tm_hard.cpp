@@ -6,6 +6,7 @@
 #include <botan/tm_hard.h>
 #include <botan/config.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -34,4 +35,5 @@ u64bit Hardware_Timer::clock() const
    return rtc;
    }
 
+}
 }

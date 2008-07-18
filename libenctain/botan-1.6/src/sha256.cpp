@@ -6,6 +6,7 @@
 #include <botan/sha256.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -120,4 +121,5 @@ void SHA_256::clear() throw()
    digest[7] = 0x5BE0CD19;
    }
 
+}
 }

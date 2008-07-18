@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -27,6 +28,7 @@ u32bit parse_expr(const std::string&);
 std::string to_string(u64bit, u32bit = 0);
 u32bit to_u32bit(const std::string&);
 
+}
 }
 
 #endif

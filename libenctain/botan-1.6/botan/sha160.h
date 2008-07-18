@@ -8,6 +8,7 @@
 
 #include <botan/mdx_hash.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -28,6 +29,7 @@ class SHA_160 : public MDx_HashFunction
       SecureVector<u32bit> W;
    };
 
+}
 }
 
 #endif

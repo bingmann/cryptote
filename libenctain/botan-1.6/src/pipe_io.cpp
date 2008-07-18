@@ -6,6 +6,7 @@
 #include <botan/pipe.h>
 #include <iostream>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -40,4 +41,5 @@ std::istream& operator>>(std::istream& stream, Pipe& pipe)
    return stream;
    }
 
+}
 }

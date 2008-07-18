@@ -12,6 +12,7 @@
 #include <botan/mutex.h>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -200,4 +201,5 @@ std::string deref_alias(const std::string& name)
    return global_config().deref_alias(name);
    }
 
+}
 }

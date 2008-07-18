@@ -14,6 +14,7 @@
 #include <botan/charset.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -398,4 +399,5 @@ Library_State::~Library_State()
    delete mutex_factory;
    }
 
+}
 }

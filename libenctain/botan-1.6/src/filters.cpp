@@ -7,6 +7,7 @@
 #include <botan/lookup.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -104,4 +105,5 @@ void MAC_Filter::end_msg()
       send(output);
    }
 
+}
 }

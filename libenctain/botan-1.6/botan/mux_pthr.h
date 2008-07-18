@@ -8,6 +8,7 @@
 
 #include <botan/mutex.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -19,6 +20,7 @@ class Pthread_Mutex_Factory : public Mutex_Factory
       Mutex* make();
    };
 
+}
 }
 
 #endif

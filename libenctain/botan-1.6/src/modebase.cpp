@@ -6,6 +6,7 @@
 #include <botan/modebase.h>
 #include <botan/lookup.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -50,4 +51,5 @@ void BlockCipherMode::set_iv(const InitializationVector& new_iv)
       cipher->encrypt(state);
    }
 
+}
 }

@@ -6,6 +6,7 @@
 #include <botan/exceptn.h>
 #include <botan/parsing.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -67,4 +68,5 @@ Config_Error::Config_Error(const std::string& err, u32bit line)
    set_msg("Config error at line " + to_string(line) + ": " + err);
    }
 
+}
 }

@@ -6,6 +6,7 @@
 #include <botan/out_buf.h>
 #include <botan/secqueue.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -112,4 +113,5 @@ Output_Buffers::~Output_Buffers()
       delete buffers[j];
    }
 
+}
 }

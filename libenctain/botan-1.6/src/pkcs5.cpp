@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -121,4 +122,5 @@ PKCS5_PBKDF2::PKCS5_PBKDF2(const std::string& h_name) : hash_name(h_name)
       throw Algorithm_Not_Found(hash_name);
    }
 
+}
 }

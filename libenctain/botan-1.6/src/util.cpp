@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -78,4 +79,5 @@ u32bit entropy_estimate(const byte buffer[], u32bit length)
    return (estimate / 2);
    }
 
+}
 }

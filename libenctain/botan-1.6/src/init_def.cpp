@@ -12,6 +12,7 @@
 #include <botan/x931_rng.h>
 #include <botan/def_char.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -89,4 +90,5 @@ void LibraryInitializer::deinitialize()
    set_global_state(0);
    }
 
+}
 }

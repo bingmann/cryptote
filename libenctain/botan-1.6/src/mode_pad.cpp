@@ -6,6 +6,7 @@
 #include <botan/mode_pad.h>
 #include <botan/util.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -122,4 +123,5 @@ bool OneAndZeros_Padding::valid_blocksize(u32bit size) const
    else     return false;
    }
 
+}
 }

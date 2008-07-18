@@ -9,6 +9,7 @@
 #include <botan/util.h>
 #include <botan/config.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -260,4 +261,5 @@ u32bit version_major() { return BOTAN_VERSION_MAJOR; }
 u32bit version_minor() { return BOTAN_VERSION_MINOR; }
 u32bit version_patch() { return BOTAN_VERSION_PATCH; }
 
+}
 }

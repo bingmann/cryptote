@@ -9,6 +9,7 @@
 #include <botan/data_src.h>
 #include <botan/filter.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -36,6 +37,7 @@ class SecureQueue : public Fanout_Filter, public DataSource
       class SecureQueueNode* tail;
    };
 
+}
 }
 
 #endif

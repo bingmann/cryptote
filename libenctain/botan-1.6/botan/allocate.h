@@ -9,6 +9,7 @@
 #include <botan/types.h>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -34,6 +35,7 @@ class Allocator
 * Get an allocator                               *
 *************************************************/
 
+}
 }
 
 #endif

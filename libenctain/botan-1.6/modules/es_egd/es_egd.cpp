@@ -18,6 +18,7 @@
   #define PF_LOCAL PF_UNIX
 #endif
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -89,4 +90,5 @@ u32bit EGD_EntropySource::slow_poll(byte output[], u32bit length)
    return 0;
    }
 
+}
 }

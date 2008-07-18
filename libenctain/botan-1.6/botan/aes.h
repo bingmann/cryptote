@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -66,6 +67,7 @@ class AES_256 : public AES
       AES_256() : AES(32) {}
    };
 
+}
 }
 
 #endif

@@ -7,6 +7,7 @@
 #include <botan/exceptn.h>
 #include <botan/parsing.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -118,4 +119,5 @@ std::string Default_Charset_Transcoder::transcode(const std::string& str,
                           to_string(from) + " to " + to_string(to));
    }
 
+}
 }

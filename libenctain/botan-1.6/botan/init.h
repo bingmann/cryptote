@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -47,6 +48,7 @@ class LibraryInitializer
       ~LibraryInitializer() { deinitialize(); }
    };
 
+}
 }
 
 #endif

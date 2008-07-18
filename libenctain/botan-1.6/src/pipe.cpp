@@ -7,6 +7,7 @@
 #include <botan/out_buf.h>
 #include <botan/secqueue.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -287,4 +288,5 @@ u32bit Pipe::message_count() const
 const u32bit Pipe::LAST_MESSAGE    = 0xFFFFFFFE;
 const u32bit Pipe::DEFAULT_MESSAGE = 0xFFFFFFFF;
 
+}
 }

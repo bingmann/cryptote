@@ -9,6 +9,7 @@
 #include <botan/allocate.h>
 #include <botan/mem_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -208,6 +209,7 @@ class SecureBuffer : public MemoryRegion<T>
          { if(this != &in) set(in); return (*this); }
    };
 
+}
 }
 
 #endif

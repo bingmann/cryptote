@@ -9,6 +9,7 @@
 #include <botan/base.h>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -65,6 +66,7 @@ class Fanout_Filter : public Filter
       void attach(Filter* f) { Filter::attach(f); }
    };
 
+}
 }
 
 #endif

@@ -8,6 +8,7 @@
 
 #include <botan/s2k.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -40,6 +41,7 @@ class PKCS5_PBKDF2 : public S2K
       const std::string hash_name;
    };
 
+}
 }
 
 #endif

@@ -7,6 +7,7 @@
 #include <botan/lookup.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -87,4 +88,5 @@ HMAC::HMAC(const std::string& hash_name) :
    o_key.create(hash->HASH_BLOCK_SIZE);
    }
 
+}
 }

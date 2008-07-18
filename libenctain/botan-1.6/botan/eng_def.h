@@ -8,6 +8,7 @@
 
 #include <botan/engine.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -43,6 +44,7 @@ class Default_Engine : public Engine
          find_bc_pad(const std::string&) const;
    };
 
+}
 }
 
 #endif

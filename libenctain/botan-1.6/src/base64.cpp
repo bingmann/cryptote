@@ -7,6 +7,7 @@
 #include <botan/charset.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -221,4 +222,5 @@ void Base64_Decoder::end_msg()
    position = 0;
    }
 
+}
 }

@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace FIPS140 {
@@ -19,6 +20,7 @@ bool passes_self_tests();
 
 }
 
+}
 }
 
 #endif

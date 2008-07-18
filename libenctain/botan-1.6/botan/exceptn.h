@@ -10,6 +10,7 @@
 #include <exception>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -207,6 +208,7 @@ struct Memory_Exhaustion : public Exception
       Exception("Ran out of memory, allocation failed") {}
    };
 
+}
 }
 
 #endif

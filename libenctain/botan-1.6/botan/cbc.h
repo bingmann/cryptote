@@ -9,6 +9,7 @@
 #include <botan/modebase.h>
 #include <botan/mode_pad.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -44,6 +45,7 @@ class CBC_Decryption : public BlockCipherMode
       SecureVector<byte> temp;
    };
 
+}
 }
 
 #endif

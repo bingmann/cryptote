@@ -9,6 +9,7 @@
 #include <botan/filter.h>
 #include <iosfwd>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -41,6 +42,7 @@ class DataSink_Stream : public DataSink
       bool owns;
    };
 
+}
 }
 
 #endif

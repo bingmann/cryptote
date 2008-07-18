@@ -6,6 +6,7 @@
 #include <botan/buf_filt.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -65,4 +66,5 @@ void Buffering_Filter::write(const byte input[], u32bit length)
    block_pos += length;
    }
 
+}
 }

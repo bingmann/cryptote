@@ -8,6 +8,7 @@
 
 #include <map>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -79,6 +80,7 @@ void multimap_insert(std::multimap<K, V>& multimap,
    multimap.insert(std::make_pair(key, value));
    }
 
+}
 }
 
 #endif

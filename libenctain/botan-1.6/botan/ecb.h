@@ -9,6 +9,7 @@
 #include <botan/modebase.h>
 #include <botan/mode_pad.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -52,6 +53,7 @@ class ECB_Decryption : public ECB
       void end_msg();
    };
 
+}
 }
 
 #endif

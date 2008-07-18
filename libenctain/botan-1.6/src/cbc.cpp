@@ -8,6 +8,7 @@
 #include <botan/bit_ops.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -154,4 +155,5 @@ std::string CBC_Decryption::name() const
    return (cipher->name() + "/" + mode_name + "/" + padder->name());
    }
 
+}
 }

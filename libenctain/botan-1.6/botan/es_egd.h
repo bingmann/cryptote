@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -25,6 +26,7 @@ class EGD_EntropySource : public EntropySource
       std::vector<std::string> paths;
    };
 
+}
 }
 
 #endif

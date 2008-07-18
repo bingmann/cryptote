@@ -12,6 +12,7 @@
 // #include <botan/pk_util.h>
 #include <botan/s2k.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -76,6 +77,7 @@ u32bit min_keylength_of(const std::string&);
 u32bit max_keylength_of(const std::string&);
 u32bit keylength_multiple_of(const std::string&);
 
+}
 }
 
 #endif

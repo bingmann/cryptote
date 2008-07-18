@@ -5,6 +5,7 @@
 
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -95,4 +96,5 @@ u32bit hamming_weight(u64bit n)
    return weight;
    }
 
+}
 }

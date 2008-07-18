@@ -10,6 +10,7 @@
 #include <botan/unix_cmd.h>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -30,6 +31,7 @@ class Unix_EntropySource : public Buffered_EntropySource
       std::vector<Unix_Program> sources;
    };
 
+}
 }
 
 #endif

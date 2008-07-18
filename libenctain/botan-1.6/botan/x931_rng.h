@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -33,6 +34,7 @@ class ANSI_X931_RNG : public RandomNumberGenerator
       u32bit position;
    };
 
+}
 }
 
 #endif

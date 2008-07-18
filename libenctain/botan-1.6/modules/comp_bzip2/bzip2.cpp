@@ -9,6 +9,7 @@
 #define BZ_NO_STDIO
 #include <bzlib.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -255,4 +256,5 @@ void Bzip_Decompression::clear()
    bz = 0;
    }
 
+}
 }

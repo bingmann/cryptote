@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -51,6 +52,7 @@ class Config
 *************************************************/
 Config& global_config();
 
+}
 }
 
 #endif

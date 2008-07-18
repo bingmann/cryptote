@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -27,6 +28,7 @@ class CRC32 : public HashFunction
       u32bit crc;
    };
 
+}
 }
 
 #endif

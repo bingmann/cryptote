@@ -5,6 +5,7 @@
 
 #include <botan/lookup.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -233,4 +234,5 @@ u32bit keylength_multiple_of(const std::string& name)
    throw Algorithm_Not_Found(name);
    }
 
+}
 }

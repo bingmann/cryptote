@@ -8,6 +8,7 @@
 
 #include <botan/basefilt.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -30,6 +31,7 @@ class BlockCipherMode : public Keyed_Filter
       u32bit position;
    };
 
+}
 }
 
 #endif

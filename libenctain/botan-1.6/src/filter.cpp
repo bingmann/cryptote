@@ -7,6 +7,7 @@
 #include <botan/secqueue.h>
 #include <botan/libstate.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -124,4 +125,5 @@ u32bit Filter::total_ports() const
    return next.size();
    }
 
+}
 }

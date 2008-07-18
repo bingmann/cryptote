@@ -6,6 +6,7 @@
 #include <botan/rng.h>
 #include <botan/libstate.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace Global_RNG {
@@ -62,4 +63,5 @@ u32bit seed(bool slow_poll, u32bit bits_to_get)
 
 }
 
+}
 }

@@ -8,6 +8,7 @@
 #include <botan/util.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -92,4 +93,5 @@ u32bit Buffered_EntropySource::copy_out(byte out[], u32bit length,
    return copied;
    }
 
+}
 }

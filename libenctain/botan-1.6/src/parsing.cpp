@@ -7,6 +7,7 @@
 #include <botan/exceptn.h>
 #include <botan/charset.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -238,4 +239,5 @@ u32bit parse_expr(const std::string& expr)
       return to_u32bit(expr);
    }
 
+}
 }

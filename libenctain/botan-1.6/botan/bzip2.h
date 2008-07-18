@@ -8,6 +8,7 @@
 
 #include <botan/filter.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -53,6 +54,7 @@ class Bzip_Decompression : public Filter
       bool no_writes;
    };
 
+}
 }
 
 #endif

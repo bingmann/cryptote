@@ -8,6 +8,7 @@
 #include <map>
 #include <zlib.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -263,4 +264,5 @@ void Zlib_Decompression::clear()
    buffer.clear();
    }
 
+}
 }

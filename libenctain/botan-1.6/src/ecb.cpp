@@ -6,6 +6,7 @@
 #include <botan/ecb.h>
 #include <botan/lookup.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -149,4 +150,5 @@ void ECB_Decryption::end_msg()
    position = 0;
    }
 
+}
 }

@@ -8,6 +8,7 @@
 
 #include <botan/exceptn.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -64,6 +65,7 @@ class Named_Mutex_Holder
       const std::string mutex_name;
    };
 
+}
 }
 
 #endif

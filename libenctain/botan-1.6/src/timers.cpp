@@ -8,6 +8,7 @@
 #include <botan/util.h>
 #include <ctime>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -41,4 +42,5 @@ u64bit combine_timers(u32bit seconds, u32bit parts, u32bit parts_hz)
    return ((seconds * NANOSECONDS_UNITS) + parts);
    }
 
+}
 }

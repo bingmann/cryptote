@@ -6,6 +6,7 @@
 #include <botan/crc32.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -98,4 +99,5 @@ void CRC32::final_result(byte output[])
    clear();
    }
 
+}
 }

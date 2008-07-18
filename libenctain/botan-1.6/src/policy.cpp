@@ -5,6 +5,7 @@
 
 #include <botan/config.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -372,4 +373,5 @@ void Config::load_defaults()
 //   set_default_dl_groups(*this);
    }
 
+}
 }

@@ -6,6 +6,7 @@
 #include <botan/sha_64.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -194,4 +195,5 @@ void SHA_512::clear() throw()
    digest[7] = 0x5BE0CD19137E2179LLU;
    }
 
+}
 }

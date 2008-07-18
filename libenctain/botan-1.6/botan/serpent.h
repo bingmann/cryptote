@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -28,6 +29,7 @@ class Serpent : public BlockCipher
       SecureBuffer<u32bit, 132> round_key;
    };
 
+}
 }
 
 #endif

@@ -8,6 +8,7 @@
 
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -28,6 +29,7 @@ class User_Interface
       mutable bool first_try;
    };
 
+}
 }
 
 #endif

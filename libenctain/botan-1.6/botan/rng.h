@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -27,6 +28,7 @@ void add_es(EntropySource*, bool = true);
 
 }
 
+}
 }
 
 #endif

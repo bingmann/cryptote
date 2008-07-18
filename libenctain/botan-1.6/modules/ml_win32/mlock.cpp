@@ -6,6 +6,7 @@
 #include <botan/util.h>
 #include <windows.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -24,4 +25,5 @@ void unlock_mem(void* ptr, u32bit bytes)
    VirtualUnlock(ptr, bytes);
    }
 
+}
 }

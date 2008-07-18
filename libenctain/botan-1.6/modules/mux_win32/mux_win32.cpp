@@ -7,6 +7,7 @@
 #include <botan/exceptn.h>
 #include <windows.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -29,4 +30,5 @@ Mutex* Win32_Mutex_Factory::make()
    return new Win32_Mutex();
    }
 
+}
 }

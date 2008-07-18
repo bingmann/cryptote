@@ -6,6 +6,7 @@
 #include <botan/s2k.h>
 #include <botan/rng.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -50,4 +51,5 @@ void S2K::new_random_salt(u32bit length)
    Global_RNG::randomize(salt, length);
    }
 
+}
 }

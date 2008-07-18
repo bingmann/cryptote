@@ -5,6 +5,7 @@
 
 #include <botan/util.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -21,4 +22,5 @@ void unlock_mem(void*, u32bit)
    {
    }
 
+}
 }

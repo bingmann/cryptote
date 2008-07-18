@@ -155,7 +155,10 @@ libenctain_a_SOURCES = bytebuff.h \
 	botan-1.6/src/twofish.cpp \
 	botan-1.6/src/ui.cpp \
 	botan-1.6/src/util.cpp \
-	botan-1.6/src/x931_rng.cpp
+	botan-1.6/src/x931_rng.cpp \
+	\
+	botan-1.6/modules/comp_bzip2/bzip2.cpp \
+	botan-1.6/modules/comp_zlib/zlib.cpp
 
 AM_CXXFLAGS = -W -Wall -I$(srcdir)/botan-1.6/ $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
 

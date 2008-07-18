@@ -9,6 +9,7 @@
 #include <botan/base.h>
 #include <iosfwd>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -70,6 +71,7 @@ class DataSource_Stream : public DataSource
       u32bit total_read;
    };
 
+}
 }
 
 #endif

@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -29,6 +30,7 @@ class HMAC : public MessageAuthenticationCode
       SecureVector<byte> i_key, o_key;
    };
 
+}
 }
 
 #endif

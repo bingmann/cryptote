@@ -19,6 +19,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -107,4 +108,5 @@ void FTW_EntropySource::gather_from_file(const std::string& filename)
       }
    }
 
+}
 }

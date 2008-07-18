@@ -9,6 +9,7 @@
 #include <botan/exceptn.h>
 #include <botan/symkey.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -167,6 +168,7 @@ class RandomNumberGenerator
       virtual void add_randomness(const byte[], u32bit) = 0;
    };
 
+}
 }
 
 #endif

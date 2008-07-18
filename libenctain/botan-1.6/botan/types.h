@@ -8,6 +8,7 @@
 
 #include <botan/build.h>
 
+namespace Enctain {
 namespace Botan {
 
 typedef unsigned char byte;
@@ -27,12 +28,15 @@ typedef signed int s32bit;
 #endif
 
 }
+}
 
+namespace Enctain {
 namespace Botan_types {
 
 typedef Botan::byte byte;
 typedef Botan::u32bit u32bit;
 
+}
 }
 
 #endif

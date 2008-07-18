@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -106,6 +107,7 @@ Library_State& global_state();
 void set_global_state(Library_State*);
 Library_State* swap_global_state(Library_State*);
 
+}
 }
 
 #endif

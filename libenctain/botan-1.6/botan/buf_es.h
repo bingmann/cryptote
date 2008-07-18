@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -34,6 +35,7 @@ class Buffered_EntropySource : public EntropySource
       bool done_slow_poll;
    };
 
+}
 }
 
 #endif

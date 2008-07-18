@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -52,6 +53,7 @@ class Builtin_Modules : public Modules
       const bool should_lock, use_engines;
    };
 
+}
 }
 
 #endif

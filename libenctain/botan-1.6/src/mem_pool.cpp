@@ -10,6 +10,7 @@
 #include <botan/util.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -264,4 +265,5 @@ void Pooling_Allocator::get_more_core(u32bit in_bytes)
                                 Memory_Block(ptr));
    }
 
+}
 }

@@ -60,6 +60,7 @@
 // #include <botan/pgp_s2k.h>
 #include <botan/pkcs5.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -264,4 +265,5 @@ Default_Engine::find_bc_pad(const std::string& algo_spec) const
    return 0;
    }
 
+}
 }

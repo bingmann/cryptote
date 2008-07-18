@@ -6,6 +6,7 @@
 #include <botan/md5.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -123,4 +124,5 @@ void MD5::clear() throw()
    digest[3] = 0x10325476;
    }
 
+}
 }

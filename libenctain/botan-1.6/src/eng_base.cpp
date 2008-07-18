@@ -8,6 +8,7 @@
 #include <botan/stl_util.h>
 #include <botan/lookup.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -305,4 +306,5 @@ Keyed_Filter* Engine::get_cipher(const std::string&, Cipher_Dir)
    return 0;
    }
 
+}
 }

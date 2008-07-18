@@ -11,6 +11,7 @@
 // #include <botan/mgf1.h>
 #include <botan/util.h>
 
+namespace Enctain {
 namespace Botan {
 
 #if 0
@@ -131,4 +132,5 @@ MGF* get_mgf(const std::string& algo_spec)
    throw Invalid_Algorithm_Name(algo_spec);
    }
 #endif
+}
 }

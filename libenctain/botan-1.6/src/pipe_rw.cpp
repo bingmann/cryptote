@@ -7,6 +7,7 @@
 #include <botan/out_buf.h>
 #include <botan/secqueue.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -161,4 +162,5 @@ u32bit Pipe::peek(byte& out, u32bit offset, u32bit msg) const
    return peek(&out, 1, offset, msg);
    }
 
+}
 }

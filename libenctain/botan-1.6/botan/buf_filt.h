@@ -8,6 +8,7 @@
 
 #include <botan/filter.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -30,6 +31,7 @@ class Buffering_Filter : public Filter
       u32bit initial_block_pos, block_pos;
    };
 
+}
 }
 
 #endif

@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -35,6 +36,7 @@ class MDx_HashFunction : public HashFunction
       const u32bit COUNT_SIZE;
    };
 
+}
 }
 
 #endif

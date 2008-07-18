@@ -8,6 +8,7 @@
 
 #include <botan/timers.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -19,6 +20,7 @@ class POSIX_Timer : public Timer
       u64bit clock() const;
    };
 
+}
 }
 
 #endif

@@ -9,6 +9,7 @@
 #include <botan/types.h>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -28,6 +29,7 @@ u32bit version_patch();
                                                   BOTAN_VERSION_MINOR, \
                                                   BOTAN_VERSION_PATCH)
 
+}
 }
 
 #endif

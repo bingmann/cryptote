@@ -15,6 +15,7 @@
 #include <utility>
 #include <map>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -122,6 +123,7 @@ DH_Operation* dh_op(const DL_Group&, const BigInt&);
 
 }
 
+}
 }
 
 #endif

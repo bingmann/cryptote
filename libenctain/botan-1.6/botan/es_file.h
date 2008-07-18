@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -19,6 +20,7 @@ class File_EntropySource : public EntropySource
       u32bit slow_poll(byte[], u32bit);
    };
 
+}
 }
 
 #endif

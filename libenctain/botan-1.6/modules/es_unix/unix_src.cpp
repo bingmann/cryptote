@@ -5,6 +5,7 @@
 
 #include <botan/es_unix.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -56,4 +57,5 @@ void Unix_EntropySource::add_default_sources(std::vector<Unix_Program>& srcs)
    srcs.push_back(Unix_Program("lsof",                  6));
    }
 
+}
 }

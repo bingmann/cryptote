@@ -12,6 +12,7 @@
 
 #include <pthread.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -53,4 +54,5 @@ Mutex* Pthread_Mutex_Factory::make()
    return new Pthread_Mutex();
    }
 
+}
 }

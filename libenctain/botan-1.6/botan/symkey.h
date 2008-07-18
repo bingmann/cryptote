@@ -9,6 +9,7 @@
 #include <botan/secmem.h>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -56,6 +57,7 @@ OctetString operator^(const OctetString&, const OctetString&);
 typedef OctetString SymmetricKey;
 typedef OctetString InitializationVector;
 
+}
 }
 
 #endif

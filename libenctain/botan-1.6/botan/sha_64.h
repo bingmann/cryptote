@@ -8,6 +8,7 @@
 
 #include <botan/mdx_hash.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -50,6 +51,7 @@ class SHA_512 : public SHA_64_BASE
       SHA_512() : SHA_64_BASE(64) { clear(); }
    };
 
+}
 }
 
 #endif

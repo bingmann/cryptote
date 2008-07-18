@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <tlhelp32.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -102,4 +103,5 @@ void Win32_EntropySource::do_fast_poll()
    add_bytes(&point, sizeof(point));
    }
 
+}
 }

@@ -10,6 +10,7 @@
 #include <botan/enums.h>
 #include <string>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -40,6 +41,7 @@ char digit2char(byte);
 
 }
 
+}
 }
 
 #endif

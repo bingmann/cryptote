@@ -7,6 +7,7 @@
 #include <fstream>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -185,4 +186,5 @@ DataSource_Stream::~DataSource_Stream()
    delete source;
    }
 
+}
 }

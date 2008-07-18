@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -39,6 +40,7 @@ class S2K
       u32bit iter;
    };
 
+}
 }
 
 #endif

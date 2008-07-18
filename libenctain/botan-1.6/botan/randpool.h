@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -36,6 +37,7 @@ class Randpool : public RandomNumberGenerator
       u32bit entropy;
    };
 
+}
 }
 
 #endif

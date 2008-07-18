@@ -8,6 +8,7 @@
 
 #include <botan/buf_es.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -20,6 +21,7 @@ class Win32_EntropySource : public Buffered_EntropySource
       void do_slow_poll();
    };
 
+}
 }
 
 #endif

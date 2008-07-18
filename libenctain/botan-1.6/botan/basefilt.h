@@ -8,6 +8,7 @@
 
 #include <botan/filter.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -50,6 +51,7 @@ class Keyed_Filter : public Filter
       SymmetricAlgorithm* base_ptr;
    };
 
+}
 }
 
 #endif

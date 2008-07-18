@@ -6,6 +6,7 @@
 #ifndef BOTAN_ENUMS_H__
 #define BOTAN_ENUMS_H__
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -116,6 +117,7 @@ enum Pulse_Type {
 
 static const u32bit NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 
+}
 }
 
 #endif

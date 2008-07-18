@@ -13,6 +13,7 @@
 #include <botan/base64.h>
 #include <botan/hex.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -68,6 +69,7 @@ class MAC_Filter : public Keyed_Filter
       MessageAuthenticationCode* mac;
    };
 
+}
 }
 
 #endif

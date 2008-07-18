@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <wincrypt.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -90,4 +91,5 @@ Win32_CAPI_EntropySource::Win32_CAPI_EntropySource(const std::string& provs)
       prov_types.push_back(PROV_RSA_FULL);
    }
 
+}
 }

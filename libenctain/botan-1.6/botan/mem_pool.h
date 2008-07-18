@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -69,6 +70,7 @@ class Pooling_Allocator : public Allocator
       Mutex* mutex;
    };
 
+}
 }
 
 #endif

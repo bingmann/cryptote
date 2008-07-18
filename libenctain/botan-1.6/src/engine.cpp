@@ -7,6 +7,7 @@
 #include <botan/libstate.h>
 #include <botan/eng_def.h>
 
+namespace Enctain {
 namespace Botan {
 
 #if 0
@@ -360,4 +361,5 @@ Keyed_Filter* get_cipher(const std::string& algo_spec, const SymmetricKey& key,
    return get_cipher(algo_spec, key, InitializationVector(), direction);
    }
 
+}
 }

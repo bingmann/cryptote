@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <signal.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -239,4 +240,5 @@ DataSource_Command::~DataSource_Command()
       shutdown_pipe();
    }
 
+}
 }

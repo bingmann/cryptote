@@ -7,6 +7,7 @@
 #include <botan/config.h>
 #include <fstream>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -31,4 +32,5 @@ u32bit File_EntropySource::slow_poll(byte output[], u32bit length)
    return read;
    }
 
+}
 }

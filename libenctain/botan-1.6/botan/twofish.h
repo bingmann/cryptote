@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -35,6 +36,7 @@ class Twofish : public BlockCipher
       SecureBuffer<u32bit, 40> round_key;
    };
 
+}
 }
 
 #endif

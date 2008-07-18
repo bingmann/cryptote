@@ -5,6 +5,7 @@
 
 #include <botan/basefilt.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -69,4 +70,5 @@ bool Keyed_Filter::valid_keylength(u32bit n) const
    throw Invalid_State("Keyed_Filter::valid_keylength: No base algorithm set");
    }
 
+}
 }

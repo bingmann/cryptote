@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -95,4 +96,5 @@ Allocator* Allocator::get(bool locking)
    throw Exception("Couldn't find an allocator to use in get_allocator");
    }
 
+}
 }

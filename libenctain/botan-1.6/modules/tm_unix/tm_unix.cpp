@@ -7,6 +7,7 @@
 #include <botan/util.h>
 #include <sys/time.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -19,4 +20,5 @@ u64bit Unix_Timer::clock() const
    return combine_timers(tv.tv_sec, tv.tv_usec, 1000000);
    }
 
+}
 }

@@ -8,6 +8,7 @@
 
 #include <botan/types.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -35,6 +36,7 @@ u64bit combine_timers(u32bit, u32bit, u32bit);
 u32bit entropy_estimate(const byte[], u32bit);
 u32bit dl_work_factor(u32bit);
 
+}
 }
 
 #endif

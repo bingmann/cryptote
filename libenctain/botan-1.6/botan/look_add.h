@@ -10,6 +10,7 @@
 #include <botan/mode_pad.h>
 #include <botan/s2k.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -22,6 +23,7 @@ void add_algorithm(MessageAuthenticationCode*);
 void add_algorithm(S2K*);
 void add_algorithm(BlockCipherModePaddingMethod*);
 
+}
 }
 
 #endif

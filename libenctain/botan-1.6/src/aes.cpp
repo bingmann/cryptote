@@ -6,6 +6,7 @@
 #include <botan/aes.h>
 #include <botan/bit_ops.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -204,4 +205,5 @@ void AES::clear() throw()
    MD.clear();
    }
 
+}
 }

@@ -5,6 +5,7 @@
 
 #include <botan/twofish.h>
 
+namespace Enctain {
 namespace Botan {
 
 const byte Twofish::Q0[256] = {
@@ -288,4 +289,5 @@ const u32bit Twofish::MDS3[256] = {
    0xE2510FE2, 0x00000000, 0x9A196F9A, 0xE01A9DE0, 0x8F94368F, 0xE6C742E6,
    0xECC94AEC, 0xFDD25EFD, 0xAB7FC1AB, 0xD8A8E0D8 };
 
+}
 }

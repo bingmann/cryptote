@@ -10,6 +10,7 @@
 #include <botan/rng.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -135,4 +136,5 @@ OctetString operator^(const OctetString& k1, const OctetString& k2)
    return OctetString(ret);
    }
 
+}
 }

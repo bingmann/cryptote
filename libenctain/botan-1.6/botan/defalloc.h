@@ -8,6 +8,7 @@
 
 #include <botan/mem_pool.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -36,6 +37,7 @@ class Locking_Allocator : public Pooling_Allocator
       void dealloc_block(void*, u32bit);
    };
 
+}
 }
 
 #endif

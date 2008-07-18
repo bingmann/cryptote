@@ -9,6 +9,7 @@
 #include <botan/config.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -103,4 +104,5 @@ u32bit Unix_EntropySource::gather_from(const Unix_Program& prog)
    return got;
    }
 
+}
 }

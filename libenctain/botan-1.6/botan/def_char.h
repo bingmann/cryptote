@@ -8,6 +8,7 @@
 
 #include <botan/charset.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -20,6 +21,7 @@ class Default_Charset_Transcoder : public Charset_Transcoder
                             Character_Set, Character_Set) const;
    };
 
+}
 }
 
 #endif

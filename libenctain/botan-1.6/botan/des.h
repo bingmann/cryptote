@@ -8,6 +8,7 @@
 
 #include <botan/base.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -74,6 +75,7 @@ class DESX : public BlockCipher
       DES des;
    };
 
+}
 }
 
 #endif

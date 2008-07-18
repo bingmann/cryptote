@@ -8,6 +8,7 @@
 
 #include <botan/buf_es.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -26,6 +27,7 @@ class FTW_EntropySource : public Buffered_EntropySource
       u32bit files_read, max_read;
    };
 
+}
 }
 
 #endif

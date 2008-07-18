@@ -6,6 +6,7 @@
 #include <botan/mutex.h>
 #include <botan/libstate.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -81,4 +82,5 @@ Mutex* Default_Mutex_Factory::make()
    return new Default_Mutex;
    }
 
+}
 }

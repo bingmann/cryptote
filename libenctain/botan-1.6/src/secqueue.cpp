@@ -6,6 +6,7 @@
 #include <botan/secqueue.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -200,4 +201,5 @@ bool SecureQueue::end_of_data() const
    return (size() == 0);
    }
 
+}
 }

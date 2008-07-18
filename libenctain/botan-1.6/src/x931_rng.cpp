@@ -9,6 +9,7 @@
 #include <botan/bit_ops.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -133,4 +134,5 @@ ANSI_X931_RNG::~ANSI_X931_RNG()
    delete prng;
    }
 
+}
 }

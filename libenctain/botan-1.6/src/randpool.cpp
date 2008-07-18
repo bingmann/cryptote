@@ -9,6 +9,7 @@
 #include <botan/util.h>
 #include <algorithm>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -186,4 +187,5 @@ Randpool::~Randpool()
    entropy = 0;
    }
 
+}
 }

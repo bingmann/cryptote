@@ -5,6 +5,7 @@
 
 #include <botan/aes.h>
 
+namespace Enctain {
 namespace Botan {
 
 const byte AES::SE[256] = {
@@ -401,4 +402,5 @@ const u32bit AES::TD[1024] = {
    0x3C498B28, 0x0D9541FF, 0xA8017139, 0x0CB3DE08, 0xB4E49CD8, 0x56C19064,
    0xCB84617B, 0x32B670D5, 0x6C5C7448, 0xB85742D0 };
 
+}
 }

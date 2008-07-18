@@ -25,6 +25,7 @@
    #define MAP_FAILED -1
 #endif
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -121,4 +122,5 @@ void MemoryMapping_Allocator::dealloc_block(void* ptr, u32bit n)
       throw MemoryMapping_Failed("Could not unmap file");
    }
 
+}
 }

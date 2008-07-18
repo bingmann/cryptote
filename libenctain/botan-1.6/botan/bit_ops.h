@@ -8,6 +8,7 @@
 
 #include <botan/types.h>
 
+namespace Enctain {
 namespace Botan {
 
 /*************************************************
@@ -59,6 +60,7 @@ u32bit low_bit(u64bit);
 u32bit significant_bytes(u64bit);
 u32bit hamming_weight(u64bit);
 
+}
 }
 
 #endif

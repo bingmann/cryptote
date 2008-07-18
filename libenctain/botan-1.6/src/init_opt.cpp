@@ -8,6 +8,7 @@
 #include <botan/stl_util.h>
 #include <botan/exceptn.h>
 
+namespace Enctain {
 namespace Botan {
 
 namespace {
@@ -116,4 +117,5 @@ InitializerOptions::InitializerOptions(const std::string& arg_string)
       }
    }
 
+}
 }
