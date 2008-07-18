@@ -35,7 +35,7 @@
 
 #include <string.h>
 
-#include "sha256.h"
+#include "mysha256.h"
 
 namespace Enctain {
 namespace internal {

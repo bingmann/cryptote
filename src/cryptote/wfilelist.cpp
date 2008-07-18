@@ -5,6 +5,7 @@
 #include "wfileprop.h"
 #include "bmpcat.h"
 
+#include <vector>
 #include <wx/imaglist.h>
 #include <wx/wfstream.h>
 #include <wx/dirdlg.h>

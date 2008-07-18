@@ -1,6 +1,6 @@
 // $Id$
 
-#include "../crc32.h"
+#include "../mycrc32.h"
 
 #include <stdlib.h>
 #include <time.h>

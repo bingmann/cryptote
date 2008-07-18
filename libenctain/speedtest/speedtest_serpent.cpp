@@ -14,7 +14,7 @@
 
 #include <gcrypt.h>
 
-#include "../serpent.h"
+#include "../myserpent.h"
 
 // *** Speedtest Parameters ***
 

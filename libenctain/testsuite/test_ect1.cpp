@@ -2,6 +2,7 @@
 
 #include "enctain.h"
 
+#include <assert.h>
 #include <iostream>
 #include <fstream>
 

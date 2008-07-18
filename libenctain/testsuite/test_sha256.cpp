@@ -1,6 +1,6 @@
 // $Id$
 
-#include "../sha256.h"
+#include "../mysha256.h"
 
 #include <stdlib.h>
 #include <time.h>

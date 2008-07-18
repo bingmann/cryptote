@@ -2,10 +2,13 @@
 
 #include "enctain.h"
 
-#include "crc32.h"
+#include "mycrc32.h"
 #include "bytebuff.h"
-#include "sha256.h"
-#include "serpent.h"
+#include "mysha256.h"
+#include "myserpent.h"
+
+#include <vector>
+#include <map>
 
 #include <stdlib.h>
 #include <time.h>

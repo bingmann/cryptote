@@ -1,6 +1,6 @@
 // $Id$
 
-#include "../serpent.h"
+#include "../myserpent.h"
 
 #include <stdlib.h>
 #include <time.h>

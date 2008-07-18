@@ -5,7 +5,7 @@
 * (C) 1999-2007 The Botan Project                *
 *************************************************/
 
-#include "serpent.h"
+#include "myserpent.h"
 
 #include <string.h>
 #include <assert.h>

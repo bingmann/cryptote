@@ -3,12 +3,7 @@
 #ifndef ENCTAIN_H
 #define ENCTAIN_H
 
-#include <vector>
-#include <map>
 #include <string>
-
-#include "serpent.h"
-#include "bytebuff.h"
 
 /// Holds all public declarations and classes of Enctain.
 namespace Enctain {

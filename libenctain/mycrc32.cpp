@@ -1,7 +1,7 @@
 // $Id$
 // Based on code from RFC 1952
 
-#include "crc32.h"
+#include "mycrc32.h"
 
 namespace Enctain {
 namespace internal {
