@@ -17,7 +17,7 @@ namespace Botan {
 * Return a PKCS#5 PBKDF1 derived key             *
 *************************************************/
 OctetString PKCS5_PBKDF1::derive(u32bit key_len,
-                                 const std::string& passphrase,
+                                 const MemoryRegion<byte>& passphrase,
                                  const byte salt[], u32bit salt_size,
                                  u32bit iterations) const
    {
@@ -62,18 +62,18 @@ PKCS5_PBKDF1::PKCS5_PBKDF1(const std::string& h_name) : hash_name(h_name)
 * Return a PKCS#5 PBKDF2 derived key             *
 *************************************************/
 OctetString PKCS5_PBKDF2::derive(u32bit key_len,
-                                 const std::string& passphrase,
+                                 const MemoryRegion<byte>& passphrase,
                                  const byte salt[], u32bit salt_size,
                                  u32bit iterations) const
    {
    if(iterations == 0)
       throw Invalid_Argument("PKCS#5 PBKDF2: Invalid iteration count");
 
-   if(passphrase.length() == 0)
+   if(passphrase.size() == 0)
       throw Invalid_Argument("PKCS#5 PBKDF2: Empty passphrase is invalid");
 
    HMAC hmac(hash_name);
-   hmac.set_key((const byte*)passphrase.c_str(), passphrase.length());
+   hmac.set_key(passphrase);
    SecureVector<byte> key(key_len);
 
    byte* T = key.begin();

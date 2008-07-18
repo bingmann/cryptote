@@ -21,7 +21,7 @@ class S2K
       virtual std::string name() const = 0;
       virtual void clear() {}
 
-      OctetString derive_key(u32bit, const std::string&) const;
+      OctetString derive_key(u32bit, const MemoryRegion<byte>&) const;
 
       void set_iterations(u32bit);
       void change_salt(const byte[], u32bit);
@@ -34,7 +34,7 @@ class S2K
       S2K() { iter = 0; }
       virtual ~S2K() {}
    private:
-      virtual OctetString derive(u32bit, const std::string&,
+      virtual OctetString derive(u32bit, const MemoryRegion<byte>&,
                                  const byte[], u32bit, u32bit) const = 0;
       SecureVector<byte> salt;
       u32bit iter;

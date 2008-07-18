@@ -13,7 +13,7 @@ namespace Botan {
 * Derive a key from a passphrase                 *
 *************************************************/
 OctetString S2K::derive_key(u32bit key_len,
-                            const std::string& passphrase) const
+                            const MemoryRegion<byte>& passphrase) const
    {
    return derive(key_len, passphrase, salt, salt.size(), iterations());
    }

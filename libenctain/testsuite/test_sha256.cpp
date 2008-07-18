@@ -46,8 +46,8 @@ int main()
 	pbkdf.set_iterations(4128);
 	pbkdf.change_salt(testsalt.bits_of());
 
-	std::string testpassword("eIU5cm9dVCJOgITU7svqcGlgLj1kTk3SpsU2LtHN5dZ3yc2tc2", 50);
-	Botan::OctetString out = pbkdf.derive_key(64, testpassword);
+	Botan::OctetString testpassword((Botan::byte*)"eIU5cm9dVCJOgITU7svqcGlgLj1kTk3SpsU2LtHN5dZ3yc2tc2", 50);
+	Botan::OctetString out = pbkdf.derive_key(64, testpassword.bits_of());
 
 	Botan::OctetString cmp("216BD1F833F9978C0DF30FE737E77B48EE4419AE4655184734864EC09D55385B"
 			       "60AE14320BA200DC654970D6AF7BA1BD4A6545D71CEA9000064861C9245D44CD");
