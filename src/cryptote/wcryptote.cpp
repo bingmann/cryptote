@@ -495,8 +495,8 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 	if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
 	    defencr = Enctain::ENCRYPTION_SERPENT256;
 
-	container.SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
-	container.SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
+	container.SetSubFileCompression(sfnew, (Enctain::compression_type)defcomp);
+	container.SetSubFileEncryption(sfnew, (Enctain::encryption_type)defencr);
 
 	wxFileName fname (importlist[fi]);
 	container.SetSubFileProperty(sfnew, "Name", strWX2STL(fname.GetFullName()));
@@ -771,8 +771,8 @@ void WCryptoTE::ContainerNew()
     if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
 	defencr = Enctain::ENCRYPTION_SERPENT256;
 
-    container.SetSubFileCompression(sf1, (Enctain::compression_t)defcomp);
-    container.SetSubFileEncryption(sf1, (Enctain::encryption_t)defencr);
+    container.SetSubFileCompression(sf1, (Enctain::compression_type)defcomp);
+    container.SetSubFileEncryption(sf1, (Enctain::encryption_type)defencr);
 
     copt_restoreview = true;
 
@@ -1963,8 +1963,8 @@ void WCryptoTE::OnMenuSubFileNew(wxCommandEvent& WXUNUSED(event))
     if (!strSTL2WX(container.GetGlobalEncryptedProperty("DefaultEncryption")).ToLong(&defencr))
 	defencr = Enctain::ENCRYPTION_SERPENT256;
 
-    container.SetSubFileCompression(sfnew, (Enctain::compression_t)defcomp);
-    container.SetSubFileEncryption(sfnew, (Enctain::encryption_t)defencr);
+    container.SetSubFileCompression(sfnew, (Enctain::compression_type)defcomp);
+    container.SetSubFileEncryption(sfnew, (Enctain::encryption_type)defencr);
 
     filelistpane->ResetItems();
 

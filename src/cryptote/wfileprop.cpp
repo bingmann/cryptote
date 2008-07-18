@@ -186,8 +186,8 @@ void WFileProperties::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	cnt.SetSubFileProperty(subfileid, "Filetype", "");
     }
 
-    Enctain::compression_t newcomp = (Enctain::compression_t)choiceCompression->GetSelection();
-    Enctain::encryption_t newencr = (Enctain::encryption_t)choiceEncryption->GetSelection();
+    Enctain::compression_type newcomp = (Enctain::compression_type)choiceCompression->GetSelection();
+    Enctain::encryption_type newencr = (Enctain::encryption_type)choiceEncryption->GetSelection();
 
     if (newcomp != cnt.GetSubFileCompression(subfileid) ||
 	newencr != cnt.GetSubFileEncryption(subfileid))

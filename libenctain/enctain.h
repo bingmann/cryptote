@@ -74,7 +74,7 @@ enum error_t
  * Enumeration of different supported encryption algorithms which can be
  * applied to individual files.
  */
-enum encryption_t
+enum encryption_type
 {
     ENCRYPTION_NONE = 0,
     ENCRYPTION_SERPENT256 = 1
@@ -84,7 +84,7 @@ enum encryption_t
  * Enumeration of different supported compression algorithms which can be
  * applied to individual files.
  */
-enum compression_t
+enum compression_type
 {
     COMPRESSION_NONE = 0,
     COMPRESSION_ZLIB = 1,
@@ -152,7 +152,8 @@ public:
     /// Pure virtual function called when the progress indicator should
     /// start. The current value and range is given in this call. This call may
     /// be repeated to adjust the text or range during a running process.
-    virtual void	ProgressStart(const char* pitext, progress_indicator_type pitype,
+    virtual void	ProgressStart(const char* pitext,
+				      progress_indicator_type pitype,
 				      size_t value, size_t limit) = 0;
 
     /// Pure virtual function called when the progress indicator should be
@@ -321,26 +322,30 @@ public:
     uint32_t		GetSubFileSize(unsigned int subfileindex) const;
 
     /// Return encryption cipher of the subfile.
-    encryption_t	GetSubFileEncryption(unsigned int subfileindex) const;
+    encryption_type	GetSubFileEncryption(unsigned int subfileindex) const;
 
     /// Return compression method of the subfile.
-    compression_t	GetSubFileCompression(unsigned int subfileindex) const;
+    compression_type	GetSubFileCompression(unsigned int subfileindex) const;
 
 
     // * Set operations of subfile header fields *
 
     /// Set data encryption flag of a subfile. This can be an expensive
     /// operation as the memory buffer may need to be decrypted/encrypted.
-    void		SetSubFileEncryption(unsigned int subfileindex, encryption_t c);
+    void		SetSubFileEncryption(unsigned int subfileindex,
+					     encryption_type c);
 
     /// Set data compression flag of a subfile. This can be an expensive
     /// operation as the memory buffer may need to be decompressed/compressed.
-    void		SetSubFileCompression(unsigned int subfileindex, compression_t c);
+    void		SetSubFileCompression(unsigned int subfileindex,
+					      compression_type c);
 
     /// Set both data compression and encryption flags of a subfile. This can
     /// be an expensive operation as the memory buffer may need to be
     /// decompressed/compressed and reencrypted.
-    void		SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc);
+    void		SetSubFileCompressionEncryption(unsigned int subfileindex,
+							compression_type comp,
+							encryption_type enc);
 
 
     // * Subfile data operations *

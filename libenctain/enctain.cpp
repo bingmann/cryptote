@@ -268,26 +268,26 @@ public:
     uint32_t		GetSubFileSize(unsigned int subfileindex) const;
 
     /// Return encryption cipher of the subfile.
-    encryption_t	GetSubFileEncryption(unsigned int subfileindex) const;
+    encryption_type	GetSubFileEncryption(unsigned int subfileindex) const;
 
     /// Return compression method of the subfile.
-    compression_t	GetSubFileCompression(unsigned int subfileindex) const;
+    compression_type	GetSubFileCompression(unsigned int subfileindex) const;
 
 
     // * Set operations of subfile header fields *
 
     /// Set data encryption flag of a subfile. This can be an expensive
     /// operation as the memory buffer may need to be decrypted/encrypted.
-    void		SetSubFileEncryption(unsigned int subfileindex, encryption_t c);
+    void		SetSubFileEncryption(unsigned int subfileindex, encryption_type c);
 
     /// Set data compression flag of a subfile. This can be an expensive
     /// operation as the memory buffer may need to be decompressed/compressed.
-    void		SetSubFileCompression(unsigned int subfileindex, compression_t c);
+    void		SetSubFileCompression(unsigned int subfileindex, compression_type c);
 
     /// Set both data compression and encryption flags of a subfile. This can
     /// be an expensive operation as the memory buffer may need to be
     /// decompressed/compressed and reencrypted.
-    void		SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc);
+    void		SetSubFileCompressionEncryption(unsigned int subfileindex, compression_type comp, encryption_type enc);
 
 
     // * Subfile data operations *
@@ -1256,25 +1256,25 @@ uint32_t ContainerImpl::GetSubFileSize(unsigned int subfileindex) const
     return subfiles[subfileindex].realsize;
 }
 
-encryption_t ContainerImpl::GetSubFileEncryption(unsigned int subfileindex) const
+encryption_type ContainerImpl::GetSubFileEncryption(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
 
-    return (encryption_t)subfiles[subfileindex].encryption;
+    return (encryption_type)subfiles[subfileindex].encryption;
 }
 
-compression_t ContainerImpl::GetSubFileCompression(unsigned int subfileindex) const
+compression_type ContainerImpl::GetSubFileCompression(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
 
-    return (compression_t)subfiles[subfileindex].compression;
+    return (compression_type)subfiles[subfileindex].compression;
 }
 
 // *** Container SubFiles - Set operations of subfile header fields ***
 
-void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
+void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_type c)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1299,7 +1299,7 @@ void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_t
     }
 }
 
-void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression_t c)
+void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression_type c)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1324,7 +1324,7 @@ void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression
     }
 }
 
-void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc)
+void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_type comp, encryption_type enc)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -2012,27 +2012,27 @@ uint32_t Container::GetSubFileSize(unsigned int subfileindex) const
     return pimpl->GetSubFileSize(subfileindex);
 }
 
-encryption_t Container::GetSubFileEncryption(unsigned int subfileindex) const
+encryption_type Container::GetSubFileEncryption(unsigned int subfileindex) const
 {
     return pimpl->GetSubFileEncryption(subfileindex);
 }
 
-compression_t Container::GetSubFileCompression(unsigned int subfileindex) const
+compression_type Container::GetSubFileCompression(unsigned int subfileindex) const
 {
     return pimpl->GetSubFileCompression(subfileindex);
 }
 
-void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_t c)
+void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_type c)
 {
     return pimpl->SetSubFileEncryption(subfileindex, c);
 }
 
-void Container::SetSubFileCompression(unsigned int subfileindex, compression_t c)
+void Container::SetSubFileCompression(unsigned int subfileindex, compression_type c)
 {
     return pimpl->SetSubFileCompression(subfileindex, c);
 }
 
-void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_t comp, encryption_t enc)
+void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_type comp, encryption_type enc)
 {
     return pimpl->SetSubFileCompressionEncryption(subfileindex, comp, enc);
 }
