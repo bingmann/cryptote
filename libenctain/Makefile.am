@@ -2,6 +2,8 @@
 
 SUBDIRS = . testsuite speedtest
 
+AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
+
 noinst_LIBRARIES = libenctain.a
 
 libenctain_a_SOURCES = bytebuff.h \
@@ -160,6 +162,30 @@ libenctain_a_SOURCES = bytebuff.h \
 	botan-1.6/modules/comp_bzip2/bzip2.cpp \
 	botan-1.6/modules/comp_zlib/zlib.cpp
 
-AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
+if ON_WIN32
+
+libenctain_a_SOURCES += \
+	botan-1.6/modules/es_capi/es_capi.cpp \
+	botan-1.6/modules/es_win32/es_win32.cpp \
+	botan-1.6/modules/mux_win32/mux_win32.cpp \
+	botan-1.6/modules/tm_win32/tm_win32.cpp
+
+AM_CXXFLAGS += -DHAVE_ON_WIN32
+
+else
+
+libenctain_a_SOURCES += \
+	botan-1.6/modules/alloc_mmap/mmap_mem.cpp \
+	botan-1.6/modules/es_egd/es_egd.cpp \
+	botan-1.6/modules/es_ftw/es_ftw.cpp \
+	botan-1.6/modules/es_unix/es_unix.cpp \
+	botan-1.6/modules/es_unix/unix_cmd.cpp \
+	botan-1.6/modules/es_unix/unix_src.cpp \
+	botan-1.6/modules/mux_pthr/mux_pthr.cpp \
+	botan-1.6/modules/tm_hard/tm_hard.cpp \
+	botan-1.6/modules/tm_posix/tm_posix.cpp \
+	botan-1.6/modules/tm_unix/tm_unix.cpp
+
+endif
 
 EXTRA_DIST = format.html

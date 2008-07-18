@@ -34,6 +34,25 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@ON_WIN32_TRUE@am__append_1 = \
+@ON_WIN32_TRUE@	botan-1.6/modules/es_capi/es_capi.cpp \
+@ON_WIN32_TRUE@	botan-1.6/modules/es_win32/es_win32.cpp \
+@ON_WIN32_TRUE@	botan-1.6/modules/mux_win32/mux_win32.cpp \
+@ON_WIN32_TRUE@	botan-1.6/modules/tm_win32/tm_win32.cpp
+
+@ON_WIN32_TRUE@am__append_2 = -DHAVE_ON_WIN32
+@ON_WIN32_FALSE@am__append_3 = \
+@ON_WIN32_FALSE@	botan-1.6/modules/alloc_mmap/mmap_mem.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/es_egd/es_egd.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/es_ftw/es_ftw.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/es_unix/es_unix.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/es_unix/unix_cmd.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/es_unix/unix_src.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/mux_pthr/mux_pthr.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/tm_hard/tm_hard.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/tm_posix/tm_posix.cpp \
+@ON_WIN32_FALSE@	botan-1.6/modules/tm_unix/tm_unix.cpp
+
 subdir = libenctain
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -47,6 +66,104 @@ AR = ar
 ARFLAGS = cru
 libenctain_a_AR = $(AR) $(ARFLAGS)
 libenctain_a_LIBADD =
+am__libenctain_a_SOURCES_DIST = bytebuff.h mycrc32.cpp mycrc32.h \
+	mysha256.cpp mysha256.h myserpent.cpp myserpent.h enctain.cpp \
+	enctain.h botan-1.6/botan/aes.h botan-1.6/botan/allocate.h \
+	botan-1.6/botan/base.h botan-1.6/botan/base64.h \
+	botan-1.6/botan/basefilt.h botan-1.6/botan/bit_ops.h \
+	botan-1.6/botan/botan.h botan-1.6/botan/buf_es.h \
+	botan-1.6/botan/buf_filt.h botan-1.6/botan/build.h \
+	botan-1.6/botan/bzip2.h botan-1.6/botan/cbc.h \
+	botan-1.6/botan/charset.h botan-1.6/botan/config.h \
+	botan-1.6/botan/crc32.h botan-1.6/botan/data_snk.h \
+	botan-1.6/botan/data_src.h botan-1.6/botan/def_char.h \
+	botan-1.6/botan/defalloc.h botan-1.6/botan/des.h \
+	botan-1.6/botan/ecb.h botan-1.6/botan/eng_def.h \
+	botan-1.6/botan/engine.h botan-1.6/botan/enums.h \
+	botan-1.6/botan/es_capi.h botan-1.6/botan/es_egd.h \
+	botan-1.6/botan/es_file.h botan-1.6/botan/es_ftw.h \
+	botan-1.6/botan/es_unix.h botan-1.6/botan/es_win32.h \
+	botan-1.6/botan/exceptn.h botan-1.6/botan/filter.h \
+	botan-1.6/botan/filters.h botan-1.6/botan/fips140.h \
+	botan-1.6/botan/hex.h botan-1.6/botan/hmac.h \
+	botan-1.6/botan/init.h botan-1.6/botan/libstate.h \
+	botan-1.6/botan/look_add.h botan-1.6/botan/lookup.h \
+	botan-1.6/botan/md5.h botan-1.6/botan/mdx_hash.h \
+	botan-1.6/botan/mem_ops.h botan-1.6/botan/mem_pool.h \
+	botan-1.6/botan/mmap_mem.h botan-1.6/botan/mode_pad.h \
+	botan-1.6/botan/modebase.h botan-1.6/botan/modules.h \
+	botan-1.6/botan/mutex.h botan-1.6/botan/mux_pthr.h \
+	botan-1.6/botan/mux_win32.h botan-1.6/botan/out_buf.h \
+	botan-1.6/botan/parsing.h botan-1.6/botan/pipe.h \
+	botan-1.6/botan/pkcs5.h botan-1.6/botan/randpool.h \
+	botan-1.6/botan/rng.h botan-1.6/botan/s2k.h \
+	botan-1.6/botan/secmem.h botan-1.6/botan/secqueue.h \
+	botan-1.6/botan/serpent.h botan-1.6/botan/sha160.h \
+	botan-1.6/botan/sha256.h botan-1.6/botan/sha_64.h \
+	botan-1.6/botan/stl_util.h botan-1.6/botan/symkey.h \
+	botan-1.6/botan/timers.h botan-1.6/botan/tm_hard.h \
+	botan-1.6/botan/tm_posix.h botan-1.6/botan/tm_unix.h \
+	botan-1.6/botan/tm_win32.h botan-1.6/botan/twofish.h \
+	botan-1.6/botan/types.h botan-1.6/botan/ui.h \
+	botan-1.6/botan/unix_cmd.h botan-1.6/botan/util.h \
+	botan-1.6/botan/version.h botan-1.6/botan/x931_rng.h \
+	botan-1.6/botan/zlib.h botan-1.6/src/aes.cpp \
+	botan-1.6/src/aes_tab.cpp botan-1.6/src/base.cpp \
+	botan-1.6/src/base64.cpp botan-1.6/src/basefilt.cpp \
+	botan-1.6/src/bit_ops.cpp botan-1.6/src/buf_es.cpp \
+	botan-1.6/src/buf_filt.cpp botan-1.6/src/cbc.cpp \
+	botan-1.6/src/charset.cpp botan-1.6/src/config.cpp \
+	botan-1.6/src/crc32.cpp botan-1.6/src/data_snk.cpp \
+	botan-1.6/src/data_src.cpp botan-1.6/src/def_alg.cpp \
+	botan-1.6/src/def_char.cpp botan-1.6/src/def_mode.cpp \
+	botan-1.6/src/defalloc.cpp botan-1.6/src/des.cpp \
+	botan-1.6/src/des_tab.cpp botan-1.6/src/ecb.cpp \
+	botan-1.6/src/eng_base.cpp botan-1.6/src/engine.cpp \
+	botan-1.6/src/es_file.cpp botan-1.6/src/exceptn.cpp \
+	botan-1.6/src/filter.cpp botan-1.6/src/filters.cpp \
+	botan-1.6/src/fips140.cpp botan-1.6/src/get_algo.cpp \
+	botan-1.6/src/get_enc.cpp botan-1.6/src/hex.cpp \
+	botan-1.6/src/hmac.cpp botan-1.6/src/inifile.cpp \
+	botan-1.6/src/init_def.cpp botan-1.6/src/init_opt.cpp \
+	botan-1.6/src/libstate.cpp botan-1.6/src/md5.cpp \
+	botan-1.6/src/mdx_hash.cpp botan-1.6/src/mem_pool.cpp \
+	botan-1.6/src/mlock.cpp botan-1.6/src/mode_pad.cpp \
+	botan-1.6/src/modebase.cpp botan-1.6/src/modules.cpp \
+	botan-1.6/src/mutex.cpp botan-1.6/src/out_buf.cpp \
+	botan-1.6/src/parsing.cpp botan-1.6/src/pipe.cpp \
+	botan-1.6/src/pipe_io.cpp botan-1.6/src/pipe_rw.cpp \
+	botan-1.6/src/pkcs5.cpp botan-1.6/src/policy.cpp \
+	botan-1.6/src/randpool.cpp botan-1.6/src/rng.cpp \
+	botan-1.6/src/s2k.cpp botan-1.6/src/secqueue.cpp \
+	botan-1.6/src/serpent.cpp botan-1.6/src/sha160.cpp \
+	botan-1.6/src/sha256.cpp botan-1.6/src/sha_64.cpp \
+	botan-1.6/src/symkey.cpp botan-1.6/src/timers.cpp \
+	botan-1.6/src/two_tab.cpp botan-1.6/src/twofish.cpp \
+	botan-1.6/src/ui.cpp botan-1.6/src/util.cpp \
+	botan-1.6/src/x931_rng.cpp \
+	botan-1.6/modules/comp_bzip2/bzip2.cpp \
+	botan-1.6/modules/comp_zlib/zlib.cpp \
+	botan-1.6/modules/es_capi/es_capi.cpp \
+	botan-1.6/modules/es_win32/es_win32.cpp \
+	botan-1.6/modules/mux_win32/mux_win32.cpp \
+	botan-1.6/modules/tm_win32/tm_win32.cpp \
+	botan-1.6/modules/alloc_mmap/mmap_mem.cpp \
+	botan-1.6/modules/es_egd/es_egd.cpp \
+	botan-1.6/modules/es_ftw/es_ftw.cpp \
+	botan-1.6/modules/es_unix/es_unix.cpp \
+	botan-1.6/modules/es_unix/unix_cmd.cpp \
+	botan-1.6/modules/es_unix/unix_src.cpp \
+	botan-1.6/modules/mux_pthr/mux_pthr.cpp \
+	botan-1.6/modules/tm_hard/tm_hard.cpp \
+	botan-1.6/modules/tm_posix/tm_posix.cpp \
+	botan-1.6/modules/tm_unix/tm_unix.cpp
+@ON_WIN32_TRUE@am__objects_1 = es_capi.$(OBJEXT) es_win32.$(OBJEXT) \
+@ON_WIN32_TRUE@	mux_win32.$(OBJEXT) tm_win32.$(OBJEXT)
+@ON_WIN32_FALSE@am__objects_2 = mmap_mem.$(OBJEXT) es_egd.$(OBJEXT) \
+@ON_WIN32_FALSE@	es_ftw.$(OBJEXT) es_unix.$(OBJEXT) \
+@ON_WIN32_FALSE@	unix_cmd.$(OBJEXT) unix_src.$(OBJEXT) \
+@ON_WIN32_FALSE@	mux_pthr.$(OBJEXT) tm_hard.$(OBJEXT) \
+@ON_WIN32_FALSE@	tm_posix.$(OBJEXT) tm_unix.$(OBJEXT)
 am_libenctain_a_OBJECTS = mycrc32.$(OBJEXT) mysha256.$(OBJEXT) \
 	myserpent.$(OBJEXT) enctain.$(OBJEXT) aes.$(OBJEXT) \
 	aes_tab.$(OBJEXT) base.$(OBJEXT) base64.$(OBJEXT) \
@@ -71,7 +188,7 @@ am_libenctain_a_OBJECTS = mycrc32.$(OBJEXT) mysha256.$(OBJEXT) \
 	sha_64.$(OBJEXT) symkey.$(OBJEXT) timers.$(OBJEXT) \
 	two_tab.$(OBJEXT) twofish.$(OBJEXT) ui.$(OBJEXT) \
 	util.$(OBJEXT) x931_rng.$(OBJEXT) bzip2.$(OBJEXT) \
-	zlib.$(OBJEXT)
+	zlib.$(OBJEXT) $(am__objects_1) $(am__objects_2)
 libenctain_a_OBJECTS = $(am_libenctain_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
@@ -86,7 +203,7 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libenctain_a_SOURCES)
-DIST_SOURCES = $(libenctain_a_SOURCES)
+DIST_SOURCES = $(am__libenctain_a_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -219,164 +336,86 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . testsuite speedtest
+AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS) $(am__append_2)
 noinst_LIBRARIES = libenctain.a
-libenctain_a_SOURCES = bytebuff.h \
-	mycrc32.cpp mycrc32.h \
-	mysha256.cpp mysha256.h \
-	myserpent.cpp myserpent.h \
-	enctain.cpp enctain.h \
-	\
-	botan-1.6/botan/aes.h \
-	botan-1.6/botan/allocate.h \
-	botan-1.6/botan/base.h \
-	botan-1.6/botan/base64.h \
-	botan-1.6/botan/basefilt.h \
-	botan-1.6/botan/bit_ops.h \
-	botan-1.6/botan/botan.h \
-	botan-1.6/botan/buf_es.h \
-	botan-1.6/botan/buf_filt.h \
-	botan-1.6/botan/build.h \
-	botan-1.6/botan/bzip2.h \
-	botan-1.6/botan/cbc.h \
-	botan-1.6/botan/charset.h \
-	botan-1.6/botan/config.h \
-	botan-1.6/botan/crc32.h \
-	botan-1.6/botan/data_snk.h \
-	botan-1.6/botan/data_src.h \
-	botan-1.6/botan/def_char.h \
-	botan-1.6/botan/defalloc.h \
-	botan-1.6/botan/des.h \
-	botan-1.6/botan/ecb.h \
-	botan-1.6/botan/eng_def.h \
-	botan-1.6/botan/engine.h \
-	botan-1.6/botan/enums.h \
-	botan-1.6/botan/es_capi.h \
-	botan-1.6/botan/es_egd.h \
-	botan-1.6/botan/es_file.h \
-	botan-1.6/botan/es_ftw.h \
-	botan-1.6/botan/es_unix.h \
-	botan-1.6/botan/es_win32.h \
-	botan-1.6/botan/exceptn.h \
-	botan-1.6/botan/filter.h \
-	botan-1.6/botan/filters.h \
-	botan-1.6/botan/fips140.h \
-	botan-1.6/botan/hex.h \
-	botan-1.6/botan/hmac.h \
-	botan-1.6/botan/init.h \
-	botan-1.6/botan/libstate.h \
-	botan-1.6/botan/look_add.h \
-	botan-1.6/botan/lookup.h \
-	botan-1.6/botan/md5.h \
-	botan-1.6/botan/mdx_hash.h \
-	botan-1.6/botan/mem_ops.h \
-	botan-1.6/botan/mem_pool.h \
-	botan-1.6/botan/mmap_mem.h \
-	botan-1.6/botan/mode_pad.h \
-	botan-1.6/botan/modebase.h \
-	botan-1.6/botan/modules.h \
-	botan-1.6/botan/mutex.h \
-	botan-1.6/botan/mux_pthr.h \
-	botan-1.6/botan/mux_win32.h \
-	botan-1.6/botan/out_buf.h \
-	botan-1.6/botan/parsing.h \
-	botan-1.6/botan/pipe.h \
-	botan-1.6/botan/pkcs5.h \
-	botan-1.6/botan/randpool.h \
-	botan-1.6/botan/rng.h \
-	botan-1.6/botan/s2k.h \
-	botan-1.6/botan/secmem.h \
-	botan-1.6/botan/secqueue.h \
-	botan-1.6/botan/serpent.h \
-	botan-1.6/botan/sha160.h \
-	botan-1.6/botan/sha256.h \
-	botan-1.6/botan/sha_64.h \
-	botan-1.6/botan/stl_util.h \
-	botan-1.6/botan/symkey.h \
-	botan-1.6/botan/timers.h \
-	botan-1.6/botan/tm_hard.h \
-	botan-1.6/botan/tm_posix.h \
-	botan-1.6/botan/tm_unix.h \
-	botan-1.6/botan/tm_win32.h \
-	botan-1.6/botan/twofish.h \
-	botan-1.6/botan/types.h \
-	botan-1.6/botan/ui.h \
-	botan-1.6/botan/unix_cmd.h \
-	botan-1.6/botan/util.h \
-	botan-1.6/botan/version.h \
-	botan-1.6/botan/x931_rng.h \
-	botan-1.6/botan/zlib.h \
-	\
-	botan-1.6/src/aes.cpp \
-	botan-1.6/src/aes_tab.cpp \
-	botan-1.6/src/base.cpp \
-	botan-1.6/src/base64.cpp \
-	botan-1.6/src/basefilt.cpp \
-	botan-1.6/src/bit_ops.cpp \
-	botan-1.6/src/buf_es.cpp \
-	botan-1.6/src/buf_filt.cpp \
-	botan-1.6/src/cbc.cpp \
-	botan-1.6/src/charset.cpp \
-	botan-1.6/src/config.cpp \
-	botan-1.6/src/crc32.cpp \
-	botan-1.6/src/data_snk.cpp \
-	botan-1.6/src/data_src.cpp \
-	botan-1.6/src/def_alg.cpp \
-	botan-1.6/src/def_char.cpp \
-	botan-1.6/src/def_mode.cpp \
-	botan-1.6/src/defalloc.cpp \
-	botan-1.6/src/des.cpp \
-	botan-1.6/src/des_tab.cpp \
-	botan-1.6/src/ecb.cpp \
-	botan-1.6/src/eng_base.cpp \
-	botan-1.6/src/engine.cpp \
-	botan-1.6/src/es_file.cpp \
-	botan-1.6/src/exceptn.cpp \
-	botan-1.6/src/filter.cpp \
-	botan-1.6/src/filters.cpp \
-	botan-1.6/src/fips140.cpp \
-	botan-1.6/src/get_algo.cpp \
-	botan-1.6/src/get_enc.cpp \
-	botan-1.6/src/hex.cpp \
-	botan-1.6/src/hmac.cpp \
-	botan-1.6/src/inifile.cpp \
-	botan-1.6/src/init_def.cpp \
-	botan-1.6/src/init_opt.cpp \
-	botan-1.6/src/libstate.cpp \
-	botan-1.6/src/md5.cpp \
-	botan-1.6/src/mdx_hash.cpp \
-	botan-1.6/src/mem_pool.cpp \
-	botan-1.6/src/mlock.cpp \
-	botan-1.6/src/mode_pad.cpp \
-	botan-1.6/src/modebase.cpp \
-	botan-1.6/src/modules.cpp \
-	botan-1.6/src/mutex.cpp \
-	botan-1.6/src/out_buf.cpp \
-	botan-1.6/src/parsing.cpp \
-	botan-1.6/src/pipe.cpp \
-	botan-1.6/src/pipe_io.cpp \
-	botan-1.6/src/pipe_rw.cpp \
-	botan-1.6/src/pkcs5.cpp \
-	botan-1.6/src/policy.cpp \
-	botan-1.6/src/randpool.cpp \
-	botan-1.6/src/rng.cpp \
-	botan-1.6/src/s2k.cpp \
-	botan-1.6/src/secqueue.cpp \
-	botan-1.6/src/serpent.cpp \
-	botan-1.6/src/sha160.cpp \
-	botan-1.6/src/sha256.cpp \
-	botan-1.6/src/sha_64.cpp \
-	botan-1.6/src/symkey.cpp \
-	botan-1.6/src/timers.cpp \
-	botan-1.6/src/two_tab.cpp \
-	botan-1.6/src/twofish.cpp \
-	botan-1.6/src/ui.cpp \
-	botan-1.6/src/util.cpp \
+libenctain_a_SOURCES = bytebuff.h mycrc32.cpp mycrc32.h mysha256.cpp \
+	mysha256.h myserpent.cpp myserpent.h enctain.cpp enctain.h \
+	botan-1.6/botan/aes.h botan-1.6/botan/allocate.h \
+	botan-1.6/botan/base.h botan-1.6/botan/base64.h \
+	botan-1.6/botan/basefilt.h botan-1.6/botan/bit_ops.h \
+	botan-1.6/botan/botan.h botan-1.6/botan/buf_es.h \
+	botan-1.6/botan/buf_filt.h botan-1.6/botan/build.h \
+	botan-1.6/botan/bzip2.h botan-1.6/botan/cbc.h \
+	botan-1.6/botan/charset.h botan-1.6/botan/config.h \
+	botan-1.6/botan/crc32.h botan-1.6/botan/data_snk.h \
+	botan-1.6/botan/data_src.h botan-1.6/botan/def_char.h \
+	botan-1.6/botan/defalloc.h botan-1.6/botan/des.h \
+	botan-1.6/botan/ecb.h botan-1.6/botan/eng_def.h \
+	botan-1.6/botan/engine.h botan-1.6/botan/enums.h \
+	botan-1.6/botan/es_capi.h botan-1.6/botan/es_egd.h \
+	botan-1.6/botan/es_file.h botan-1.6/botan/es_ftw.h \
+	botan-1.6/botan/es_unix.h botan-1.6/botan/es_win32.h \
+	botan-1.6/botan/exceptn.h botan-1.6/botan/filter.h \
+	botan-1.6/botan/filters.h botan-1.6/botan/fips140.h \
+	botan-1.6/botan/hex.h botan-1.6/botan/hmac.h \
+	botan-1.6/botan/init.h botan-1.6/botan/libstate.h \
+	botan-1.6/botan/look_add.h botan-1.6/botan/lookup.h \
+	botan-1.6/botan/md5.h botan-1.6/botan/mdx_hash.h \
+	botan-1.6/botan/mem_ops.h botan-1.6/botan/mem_pool.h \
+	botan-1.6/botan/mmap_mem.h botan-1.6/botan/mode_pad.h \
+	botan-1.6/botan/modebase.h botan-1.6/botan/modules.h \
+	botan-1.6/botan/mutex.h botan-1.6/botan/mux_pthr.h \
+	botan-1.6/botan/mux_win32.h botan-1.6/botan/out_buf.h \
+	botan-1.6/botan/parsing.h botan-1.6/botan/pipe.h \
+	botan-1.6/botan/pkcs5.h botan-1.6/botan/randpool.h \
+	botan-1.6/botan/rng.h botan-1.6/botan/s2k.h \
+	botan-1.6/botan/secmem.h botan-1.6/botan/secqueue.h \
+	botan-1.6/botan/serpent.h botan-1.6/botan/sha160.h \
+	botan-1.6/botan/sha256.h botan-1.6/botan/sha_64.h \
+	botan-1.6/botan/stl_util.h botan-1.6/botan/symkey.h \
+	botan-1.6/botan/timers.h botan-1.6/botan/tm_hard.h \
+	botan-1.6/botan/tm_posix.h botan-1.6/botan/tm_unix.h \
+	botan-1.6/botan/tm_win32.h botan-1.6/botan/twofish.h \
+	botan-1.6/botan/types.h botan-1.6/botan/ui.h \
+	botan-1.6/botan/unix_cmd.h botan-1.6/botan/util.h \
+	botan-1.6/botan/version.h botan-1.6/botan/x931_rng.h \
+	botan-1.6/botan/zlib.h botan-1.6/src/aes.cpp \
+	botan-1.6/src/aes_tab.cpp botan-1.6/src/base.cpp \
+	botan-1.6/src/base64.cpp botan-1.6/src/basefilt.cpp \
+	botan-1.6/src/bit_ops.cpp botan-1.6/src/buf_es.cpp \
+	botan-1.6/src/buf_filt.cpp botan-1.6/src/cbc.cpp \
+	botan-1.6/src/charset.cpp botan-1.6/src/config.cpp \
+	botan-1.6/src/crc32.cpp botan-1.6/src/data_snk.cpp \
+	botan-1.6/src/data_src.cpp botan-1.6/src/def_alg.cpp \
+	botan-1.6/src/def_char.cpp botan-1.6/src/def_mode.cpp \
+	botan-1.6/src/defalloc.cpp botan-1.6/src/des.cpp \
+	botan-1.6/src/des_tab.cpp botan-1.6/src/ecb.cpp \
+	botan-1.6/src/eng_base.cpp botan-1.6/src/engine.cpp \
+	botan-1.6/src/es_file.cpp botan-1.6/src/exceptn.cpp \
+	botan-1.6/src/filter.cpp botan-1.6/src/filters.cpp \
+	botan-1.6/src/fips140.cpp botan-1.6/src/get_algo.cpp \
+	botan-1.6/src/get_enc.cpp botan-1.6/src/hex.cpp \
+	botan-1.6/src/hmac.cpp botan-1.6/src/inifile.cpp \
+	botan-1.6/src/init_def.cpp botan-1.6/src/init_opt.cpp \
+	botan-1.6/src/libstate.cpp botan-1.6/src/md5.cpp \
+	botan-1.6/src/mdx_hash.cpp botan-1.6/src/mem_pool.cpp \
+	botan-1.6/src/mlock.cpp botan-1.6/src/mode_pad.cpp \
+	botan-1.6/src/modebase.cpp botan-1.6/src/modules.cpp \
+	botan-1.6/src/mutex.cpp botan-1.6/src/out_buf.cpp \
+	botan-1.6/src/parsing.cpp botan-1.6/src/pipe.cpp \
+	botan-1.6/src/pipe_io.cpp botan-1.6/src/pipe_rw.cpp \
+	botan-1.6/src/pkcs5.cpp botan-1.6/src/policy.cpp \
+	botan-1.6/src/randpool.cpp botan-1.6/src/rng.cpp \
+	botan-1.6/src/s2k.cpp botan-1.6/src/secqueue.cpp \
+	botan-1.6/src/serpent.cpp botan-1.6/src/sha160.cpp \
+	botan-1.6/src/sha256.cpp botan-1.6/src/sha_64.cpp \
+	botan-1.6/src/symkey.cpp botan-1.6/src/timers.cpp \
+	botan-1.6/src/two_tab.cpp botan-1.6/src/twofish.cpp \
+	botan-1.6/src/ui.cpp botan-1.6/src/util.cpp \
 	botan-1.6/src/x931_rng.cpp \
-	\
 	botan-1.6/modules/comp_bzip2/bzip2.cpp \
-	botan-1.6/modules/comp_zlib/zlib.cpp
-
-AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
+	botan-1.6/modules/comp_zlib/zlib.cpp $(am__append_1) \
+	$(am__append_3)
 EXTRA_DIST = format.html
 all: all-recursive
 
@@ -450,7 +489,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/enctain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eng_base.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/engine.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/es_capi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/es_egd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/es_file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/es_ftw.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/es_unix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/es_win32.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exceptn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filters.Po@am__quote@
@@ -467,10 +511,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mdx_hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mem_pool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlock.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mmap_mem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mode_pad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modebase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modules.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mux_pthr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mux_win32.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mycrc32.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/myserpent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mysha256.Po@am__quote@
@@ -491,9 +538,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha_64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symkey.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timers.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tm_hard.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tm_posix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tm_unix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tm_win32.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/two_tab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/twofish.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unix_cmd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unix_src.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x931_rng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zlib.Po@am__quote@
@@ -1463,6 +1516,202 @@ zlib.obj: botan-1.6/modules/comp_zlib/zlib.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/comp_zlib/zlib.cpp' object='zlib.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o zlib.obj `if test -f 'botan-1.6/modules/comp_zlib/zlib.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/comp_zlib/zlib.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/comp_zlib/zlib.cpp'; fi`
+
+es_capi.o: botan-1.6/modules/es_capi/es_capi.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_capi.o -MD -MP -MF $(DEPDIR)/es_capi.Tpo -c -o es_capi.o `test -f 'botan-1.6/modules/es_capi/es_capi.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_capi/es_capi.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_capi.Tpo $(DEPDIR)/es_capi.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_capi/es_capi.cpp' object='es_capi.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_capi.o `test -f 'botan-1.6/modules/es_capi/es_capi.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_capi/es_capi.cpp
+
+es_capi.obj: botan-1.6/modules/es_capi/es_capi.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_capi.obj -MD -MP -MF $(DEPDIR)/es_capi.Tpo -c -o es_capi.obj `if test -f 'botan-1.6/modules/es_capi/es_capi.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_capi/es_capi.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_capi/es_capi.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_capi.Tpo $(DEPDIR)/es_capi.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_capi/es_capi.cpp' object='es_capi.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_capi.obj `if test -f 'botan-1.6/modules/es_capi/es_capi.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_capi/es_capi.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_capi/es_capi.cpp'; fi`
+
+es_win32.o: botan-1.6/modules/es_win32/es_win32.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_win32.o -MD -MP -MF $(DEPDIR)/es_win32.Tpo -c -o es_win32.o `test -f 'botan-1.6/modules/es_win32/es_win32.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_win32/es_win32.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_win32.Tpo $(DEPDIR)/es_win32.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_win32/es_win32.cpp' object='es_win32.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_win32.o `test -f 'botan-1.6/modules/es_win32/es_win32.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_win32/es_win32.cpp
+
+es_win32.obj: botan-1.6/modules/es_win32/es_win32.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_win32.obj -MD -MP -MF $(DEPDIR)/es_win32.Tpo -c -o es_win32.obj `if test -f 'botan-1.6/modules/es_win32/es_win32.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_win32/es_win32.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_win32/es_win32.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_win32.Tpo $(DEPDIR)/es_win32.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_win32/es_win32.cpp' object='es_win32.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_win32.obj `if test -f 'botan-1.6/modules/es_win32/es_win32.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_win32/es_win32.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_win32/es_win32.cpp'; fi`
+
+mux_win32.o: botan-1.6/modules/mux_win32/mux_win32.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mux_win32.o -MD -MP -MF $(DEPDIR)/mux_win32.Tpo -c -o mux_win32.o `test -f 'botan-1.6/modules/mux_win32/mux_win32.cpp' || echo '$(srcdir)/'`botan-1.6/modules/mux_win32/mux_win32.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/mux_win32.Tpo $(DEPDIR)/mux_win32.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/mux_win32/mux_win32.cpp' object='mux_win32.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mux_win32.o `test -f 'botan-1.6/modules/mux_win32/mux_win32.cpp' || echo '$(srcdir)/'`botan-1.6/modules/mux_win32/mux_win32.cpp
+
+mux_win32.obj: botan-1.6/modules/mux_win32/mux_win32.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mux_win32.obj -MD -MP -MF $(DEPDIR)/mux_win32.Tpo -c -o mux_win32.obj `if test -f 'botan-1.6/modules/mux_win32/mux_win32.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/mux_win32/mux_win32.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/mux_win32/mux_win32.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/mux_win32.Tpo $(DEPDIR)/mux_win32.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/mux_win32/mux_win32.cpp' object='mux_win32.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mux_win32.obj `if test -f 'botan-1.6/modules/mux_win32/mux_win32.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/mux_win32/mux_win32.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/mux_win32/mux_win32.cpp'; fi`
+
+tm_win32.o: botan-1.6/modules/tm_win32/tm_win32.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_win32.o -MD -MP -MF $(DEPDIR)/tm_win32.Tpo -c -o tm_win32.o `test -f 'botan-1.6/modules/tm_win32/tm_win32.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_win32/tm_win32.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_win32.Tpo $(DEPDIR)/tm_win32.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_win32/tm_win32.cpp' object='tm_win32.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_win32.o `test -f 'botan-1.6/modules/tm_win32/tm_win32.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_win32/tm_win32.cpp
+
+tm_win32.obj: botan-1.6/modules/tm_win32/tm_win32.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_win32.obj -MD -MP -MF $(DEPDIR)/tm_win32.Tpo -c -o tm_win32.obj `if test -f 'botan-1.6/modules/tm_win32/tm_win32.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_win32/tm_win32.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_win32/tm_win32.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_win32.Tpo $(DEPDIR)/tm_win32.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_win32/tm_win32.cpp' object='tm_win32.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_win32.obj `if test -f 'botan-1.6/modules/tm_win32/tm_win32.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_win32/tm_win32.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_win32/tm_win32.cpp'; fi`
+
+mmap_mem.o: botan-1.6/modules/alloc_mmap/mmap_mem.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mmap_mem.o -MD -MP -MF $(DEPDIR)/mmap_mem.Tpo -c -o mmap_mem.o `test -f 'botan-1.6/modules/alloc_mmap/mmap_mem.cpp' || echo '$(srcdir)/'`botan-1.6/modules/alloc_mmap/mmap_mem.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/mmap_mem.Tpo $(DEPDIR)/mmap_mem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/alloc_mmap/mmap_mem.cpp' object='mmap_mem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mmap_mem.o `test -f 'botan-1.6/modules/alloc_mmap/mmap_mem.cpp' || echo '$(srcdir)/'`botan-1.6/modules/alloc_mmap/mmap_mem.cpp
+
+mmap_mem.obj: botan-1.6/modules/alloc_mmap/mmap_mem.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mmap_mem.obj -MD -MP -MF $(DEPDIR)/mmap_mem.Tpo -c -o mmap_mem.obj `if test -f 'botan-1.6/modules/alloc_mmap/mmap_mem.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/alloc_mmap/mmap_mem.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/alloc_mmap/mmap_mem.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/mmap_mem.Tpo $(DEPDIR)/mmap_mem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/alloc_mmap/mmap_mem.cpp' object='mmap_mem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mmap_mem.obj `if test -f 'botan-1.6/modules/alloc_mmap/mmap_mem.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/alloc_mmap/mmap_mem.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/alloc_mmap/mmap_mem.cpp'; fi`
+
+es_egd.o: botan-1.6/modules/es_egd/es_egd.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_egd.o -MD -MP -MF $(DEPDIR)/es_egd.Tpo -c -o es_egd.o `test -f 'botan-1.6/modules/es_egd/es_egd.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_egd/es_egd.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_egd.Tpo $(DEPDIR)/es_egd.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_egd/es_egd.cpp' object='es_egd.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_egd.o `test -f 'botan-1.6/modules/es_egd/es_egd.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_egd/es_egd.cpp
+
+es_egd.obj: botan-1.6/modules/es_egd/es_egd.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_egd.obj -MD -MP -MF $(DEPDIR)/es_egd.Tpo -c -o es_egd.obj `if test -f 'botan-1.6/modules/es_egd/es_egd.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_egd/es_egd.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_egd/es_egd.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_egd.Tpo $(DEPDIR)/es_egd.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_egd/es_egd.cpp' object='es_egd.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_egd.obj `if test -f 'botan-1.6/modules/es_egd/es_egd.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_egd/es_egd.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_egd/es_egd.cpp'; fi`
+
+es_ftw.o: botan-1.6/modules/es_ftw/es_ftw.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_ftw.o -MD -MP -MF $(DEPDIR)/es_ftw.Tpo -c -o es_ftw.o `test -f 'botan-1.6/modules/es_ftw/es_ftw.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_ftw/es_ftw.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_ftw.Tpo $(DEPDIR)/es_ftw.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_ftw/es_ftw.cpp' object='es_ftw.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_ftw.o `test -f 'botan-1.6/modules/es_ftw/es_ftw.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_ftw/es_ftw.cpp
+
+es_ftw.obj: botan-1.6/modules/es_ftw/es_ftw.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_ftw.obj -MD -MP -MF $(DEPDIR)/es_ftw.Tpo -c -o es_ftw.obj `if test -f 'botan-1.6/modules/es_ftw/es_ftw.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_ftw/es_ftw.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_ftw/es_ftw.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_ftw.Tpo $(DEPDIR)/es_ftw.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_ftw/es_ftw.cpp' object='es_ftw.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_ftw.obj `if test -f 'botan-1.6/modules/es_ftw/es_ftw.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_ftw/es_ftw.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_ftw/es_ftw.cpp'; fi`
+
+es_unix.o: botan-1.6/modules/es_unix/es_unix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_unix.o -MD -MP -MF $(DEPDIR)/es_unix.Tpo -c -o es_unix.o `test -f 'botan-1.6/modules/es_unix/es_unix.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_unix/es_unix.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_unix.Tpo $(DEPDIR)/es_unix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_unix/es_unix.cpp' object='es_unix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_unix.o `test -f 'botan-1.6/modules/es_unix/es_unix.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_unix/es_unix.cpp
+
+es_unix.obj: botan-1.6/modules/es_unix/es_unix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT es_unix.obj -MD -MP -MF $(DEPDIR)/es_unix.Tpo -c -o es_unix.obj `if test -f 'botan-1.6/modules/es_unix/es_unix.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_unix/es_unix.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_unix/es_unix.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/es_unix.Tpo $(DEPDIR)/es_unix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_unix/es_unix.cpp' object='es_unix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o es_unix.obj `if test -f 'botan-1.6/modules/es_unix/es_unix.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_unix/es_unix.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_unix/es_unix.cpp'; fi`
+
+unix_cmd.o: botan-1.6/modules/es_unix/unix_cmd.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unix_cmd.o -MD -MP -MF $(DEPDIR)/unix_cmd.Tpo -c -o unix_cmd.o `test -f 'botan-1.6/modules/es_unix/unix_cmd.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_unix/unix_cmd.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/unix_cmd.Tpo $(DEPDIR)/unix_cmd.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_unix/unix_cmd.cpp' object='unix_cmd.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unix_cmd.o `test -f 'botan-1.6/modules/es_unix/unix_cmd.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_unix/unix_cmd.cpp
+
+unix_cmd.obj: botan-1.6/modules/es_unix/unix_cmd.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unix_cmd.obj -MD -MP -MF $(DEPDIR)/unix_cmd.Tpo -c -o unix_cmd.obj `if test -f 'botan-1.6/modules/es_unix/unix_cmd.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_unix/unix_cmd.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_unix/unix_cmd.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/unix_cmd.Tpo $(DEPDIR)/unix_cmd.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_unix/unix_cmd.cpp' object='unix_cmd.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unix_cmd.obj `if test -f 'botan-1.6/modules/es_unix/unix_cmd.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_unix/unix_cmd.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_unix/unix_cmd.cpp'; fi`
+
+unix_src.o: botan-1.6/modules/es_unix/unix_src.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unix_src.o -MD -MP -MF $(DEPDIR)/unix_src.Tpo -c -o unix_src.o `test -f 'botan-1.6/modules/es_unix/unix_src.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_unix/unix_src.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/unix_src.Tpo $(DEPDIR)/unix_src.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_unix/unix_src.cpp' object='unix_src.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unix_src.o `test -f 'botan-1.6/modules/es_unix/unix_src.cpp' || echo '$(srcdir)/'`botan-1.6/modules/es_unix/unix_src.cpp
+
+unix_src.obj: botan-1.6/modules/es_unix/unix_src.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unix_src.obj -MD -MP -MF $(DEPDIR)/unix_src.Tpo -c -o unix_src.obj `if test -f 'botan-1.6/modules/es_unix/unix_src.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_unix/unix_src.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_unix/unix_src.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/unix_src.Tpo $(DEPDIR)/unix_src.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/es_unix/unix_src.cpp' object='unix_src.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unix_src.obj `if test -f 'botan-1.6/modules/es_unix/unix_src.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/es_unix/unix_src.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/es_unix/unix_src.cpp'; fi`
+
+mux_pthr.o: botan-1.6/modules/mux_pthr/mux_pthr.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mux_pthr.o -MD -MP -MF $(DEPDIR)/mux_pthr.Tpo -c -o mux_pthr.o `test -f 'botan-1.6/modules/mux_pthr/mux_pthr.cpp' || echo '$(srcdir)/'`botan-1.6/modules/mux_pthr/mux_pthr.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/mux_pthr.Tpo $(DEPDIR)/mux_pthr.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/mux_pthr/mux_pthr.cpp' object='mux_pthr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mux_pthr.o `test -f 'botan-1.6/modules/mux_pthr/mux_pthr.cpp' || echo '$(srcdir)/'`botan-1.6/modules/mux_pthr/mux_pthr.cpp
+
+mux_pthr.obj: botan-1.6/modules/mux_pthr/mux_pthr.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mux_pthr.obj -MD -MP -MF $(DEPDIR)/mux_pthr.Tpo -c -o mux_pthr.obj `if test -f 'botan-1.6/modules/mux_pthr/mux_pthr.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/mux_pthr/mux_pthr.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/mux_pthr/mux_pthr.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/mux_pthr.Tpo $(DEPDIR)/mux_pthr.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/mux_pthr/mux_pthr.cpp' object='mux_pthr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mux_pthr.obj `if test -f 'botan-1.6/modules/mux_pthr/mux_pthr.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/mux_pthr/mux_pthr.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/mux_pthr/mux_pthr.cpp'; fi`
+
+tm_hard.o: botan-1.6/modules/tm_hard/tm_hard.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_hard.o -MD -MP -MF $(DEPDIR)/tm_hard.Tpo -c -o tm_hard.o `test -f 'botan-1.6/modules/tm_hard/tm_hard.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_hard/tm_hard.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_hard.Tpo $(DEPDIR)/tm_hard.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_hard/tm_hard.cpp' object='tm_hard.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_hard.o `test -f 'botan-1.6/modules/tm_hard/tm_hard.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_hard/tm_hard.cpp
+
+tm_hard.obj: botan-1.6/modules/tm_hard/tm_hard.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_hard.obj -MD -MP -MF $(DEPDIR)/tm_hard.Tpo -c -o tm_hard.obj `if test -f 'botan-1.6/modules/tm_hard/tm_hard.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_hard/tm_hard.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_hard/tm_hard.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_hard.Tpo $(DEPDIR)/tm_hard.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_hard/tm_hard.cpp' object='tm_hard.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_hard.obj `if test -f 'botan-1.6/modules/tm_hard/tm_hard.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_hard/tm_hard.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_hard/tm_hard.cpp'; fi`
+
+tm_posix.o: botan-1.6/modules/tm_posix/tm_posix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_posix.o -MD -MP -MF $(DEPDIR)/tm_posix.Tpo -c -o tm_posix.o `test -f 'botan-1.6/modules/tm_posix/tm_posix.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_posix/tm_posix.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_posix.Tpo $(DEPDIR)/tm_posix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_posix/tm_posix.cpp' object='tm_posix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_posix.o `test -f 'botan-1.6/modules/tm_posix/tm_posix.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_posix/tm_posix.cpp
+
+tm_posix.obj: botan-1.6/modules/tm_posix/tm_posix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_posix.obj -MD -MP -MF $(DEPDIR)/tm_posix.Tpo -c -o tm_posix.obj `if test -f 'botan-1.6/modules/tm_posix/tm_posix.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_posix/tm_posix.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_posix/tm_posix.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_posix.Tpo $(DEPDIR)/tm_posix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_posix/tm_posix.cpp' object='tm_posix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_posix.obj `if test -f 'botan-1.6/modules/tm_posix/tm_posix.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_posix/tm_posix.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_posix/tm_posix.cpp'; fi`
+
+tm_unix.o: botan-1.6/modules/tm_unix/tm_unix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_unix.o -MD -MP -MF $(DEPDIR)/tm_unix.Tpo -c -o tm_unix.o `test -f 'botan-1.6/modules/tm_unix/tm_unix.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_unix/tm_unix.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_unix.Tpo $(DEPDIR)/tm_unix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_unix/tm_unix.cpp' object='tm_unix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_unix.o `test -f 'botan-1.6/modules/tm_unix/tm_unix.cpp' || echo '$(srcdir)/'`botan-1.6/modules/tm_unix/tm_unix.cpp
+
+tm_unix.obj: botan-1.6/modules/tm_unix/tm_unix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tm_unix.obj -MD -MP -MF $(DEPDIR)/tm_unix.Tpo -c -o tm_unix.obj `if test -f 'botan-1.6/modules/tm_unix/tm_unix.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_unix/tm_unix.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_unix/tm_unix.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/tm_unix.Tpo $(DEPDIR)/tm_unix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/modules/tm_unix/tm_unix.cpp' object='tm_unix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tm_unix.obj `if test -f 'botan-1.6/modules/tm_unix/tm_unix.cpp'; then $(CYGPATH_W) 'botan-1.6/modules/tm_unix/tm_unix.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/modules/tm_unix/tm_unix.cpp'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.

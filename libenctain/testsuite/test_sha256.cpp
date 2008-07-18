@@ -1,70 +1,59 @@
 // $Id$
 
-#include "../mysha256.h"
-
-#include <stdlib.h>
-#include <time.h>
 #include <assert.h>
-
-#include <gcrypt.h>
-
 #include <iostream>
+
+#include "botan-1.6/include/init.h"
+#include "botan-1.6/include/sha256.h"
+#include "botan-1.6/include/hmac.h"
+#include "botan-1.6/include/pkcs5.h"
+
+using namespace Enctain;
 
 int main()
 {
-    std::cout << "Testing SHA256 implementation against libgcrypt...";
+    Botan::LibraryInitializer init;
+
+    std::cout << "Testing SHA256 related functions...";
     std::cout.flush();
 
-    // Create SHA256 context
-
-    Enctain::internal::SHA256 ctx1;
-
-    // Create libgcrypt SHA256 context
-
-    gcry_md_hd_t ctx2;
-
-    gcry_error_t gcryerr = gcry_md_open(&ctx2, GCRY_MD_SHA256, 0);
-    if (gcryerr != 0) return -1;
-
-    assert(gcry_md_get_algo_dlen(GCRY_MD_SHA256) == 32);
-
-    // Hash random data using both contexts.
-
-    srand( time(NULL) );
-
-    uint8_t data[65536];
-
-    for (unsigned int ri = 0; ri < 1000; ++ri)
     {
-	size_t len = rand() % 65536;
+	std::string testdata("lWqojf6XamHoE0fTdVGi5jl0cWaDAgH930EJDA5TNcZJVhG375", 50);
+	Botan::OctetString out = Botan::SHA_256().process(testdata);
 
-	// create random block
-	for (size_t i = 0; i < len; ++i) {
-	    data[i] = (uint8_t)rand();
-	}
-
-	// reset SHA contexts
-	ctx1.reset();
-	gcry_md_reset(ctx2);
-
-	// hash data
-	ctx1.update(data, len);
-
-	gcry_md_write(ctx2, data, len);
-	gcry_md_final(ctx2);
-
-	// get results
-	const uint8_t* result1 = ctx1.final();
-	const uint8_t* result2 = gcry_md_read(ctx2, 0);
-
-	// compare digests
-	for (unsigned int i = 0; i < 32; ++i) {
-	    assert(result1[i] == result2[i]);
-	}
+	Botan::OctetString cmp("D46BC93C4CE6E34C46483A0D1B6E51CB507BE33E19BB981D990D291EA6D79F62");
+	assert(out == cmp);
     }
 
-    gcry_md_close(ctx2);
+    {
+	Botan::HMAC hmac("SHA-256");
 
+	Botan::OctetString testkey((Botan::byte*)"MO8ZXS1JMiPRj9Sx0VUFtlNJUNNX3V54kgNyDlLn3pxzCFxYZE", 50);
+	Botan::OctetString testdata((Botan::byte*)"CdDPEafk40BDHshs50EJvjhzbCMf9jDEihKWQ2HAEXfxwCaGqM", 50);
+
+	hmac.set_key(testkey);
+	Botan::OctetString out = hmac.process(testdata.bits_of());
+
+	Botan::OctetString cmp("E268B3BD6191FF857E22662F7C408C90485F5430A25D899CAE175105D50AFEA6");
+	assert(out == cmp);
+    }
+
+    {
+	Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
+
+	Botan::OctetString testsalt((Botan::byte*)"HnDN1IKwKyUwgJjTwYFHtjM1AdpS1y4yPxYDMtFzAU9a54PYIn", 50);
+
+	pbkdf.set_iterations(4128);
+	pbkdf.change_salt(testsalt.bits_of());
+
+	std::string testpassword("eIU5cm9dVCJOgITU7svqcGlgLj1kTk3SpsU2LtHN5dZ3yc2tc2", 50);
+	Botan::OctetString out = pbkdf.derive_key(64, testpassword);
+
+	Botan::OctetString cmp("216BD1F833F9978C0DF30FE737E77B48EE4419AE4655184734864EC09D55385B"
+			       "60AE14320BA200DC654970D6AF7BA1BD4A6545D71CEA9000064861C9245D44CD");
+	assert(out == cmp);
+    }
+    
     std::cout << "OK\n";
 
     return 0;

@@ -1,15 +1,33 @@
 # $Id$ -*- mode: autoconf -*-
 
 AC_PREREQ(2.59)
-AC_INIT(cryptote, 0.0.20080425)
+AC_INIT(cryptote, 0.0.20080718)
 AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
-AC_CANONICAL_HOST
 
 AM_INIT_AUTOMAKE
 # AM_MAINTAINER_MODE
 
+# Check for Win32 system and set compilation flag.
+
+AC_CANONICAL_HOST
+
+AC_MSG_CHECKING(building on win32)
+case $host_os in
+*cygwin* | *mingw32*)
+    ON_WIN32=true
+    AC_MSG_RESULT(yes)
+    ;;
+*)
+    ON_WIN32=false
+    AC_MSG_RESULT(no)
+    ;;
+esac
+
+AM_CONDITIONAL(ON_WIN32, $ON_WIN32)
+
 # enable full optimization by configure switch
+
 AC_ARG_ENABLE(optimize,
 	AS_HELP_STRING([--enable-optimize],
 		       [Build with full optimization @<:@default=no@:>@]),
@@ -24,6 +42,7 @@ AC_ARG_ENABLE(optimize,
         [ optimize=false ])
 
 # set debug info flag if no optimization flags are set.
+
 if test "$CFLAGS" == ""; then
     CFLAGS="-g"
 fi
@@ -32,6 +51,7 @@ if test "$CXXFLAGS" == ""; then
 fi
 
 # Checks for programs.
+
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
@@ -199,11 +219,10 @@ fi
 
 # Win32 tools to add icons to the programs
 
-case "${host}" in
-*-*-cygwin* | *-*-mingw32*)
+if $ON_WIN32; then
     AC_CHECK_TOOL(RESCOMP, windres)
-    ;;
-esac
+fi
+
 AM_CONDITIONAL(GOT_RESCOMP, test x$RESCOMP != x)
 
 # Checks for library functions.
@@ -223,7 +242,10 @@ AC_CONFIG_FILES([Makefile
 		 src/cryptote/Makefile
 		 src/locale/Makefile
 		 src/locale/wxstd/Makefile
-		 desktop/Makefile
-		 cryptote-win32.iss
-		 cryptote-pwgen-win32.iss])
+		 desktop/Makefile])
+
+if $ON_WIN32; then
+    AC_CONFIG_FILES([cryptote-win32.iss cryptote-pwgen-win32.iss])
+fi
+
 AC_OUTPUT
