@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 static char testtext[2843] = {
     0x2f,0x2f,0x20,0x24,0x49,0x64,0x3a,0x20,0x74,0x65,0x73,0x74,0x5f,0x74,0x78,0x63,
@@ -189,24 +190,26 @@ static char testtext[2843] = {
 
 struct DataOutputStream : public Enctain::DataOutput
 {
-    std::ofstream&	os;
+    std::ostream&	os;
 
-    DataOutputStream(std::ofstream& s)
+    DataOutputStream(std::ostream& s)
 	: os(s)
     {
     }
 
     virtual bool Output(const void* data, size_t datalen)
     {
-	return os.write((const char*)data, datalen).good();
+	os.write((const char*)data, datalen).good();
+	os.flush();
+	return true;
     }
 };
 
 struct DataInputStream : public Enctain::DataInput
 {
-    std::ifstream&	is;
+    std::istream&	is;
 
-    DataInputStream(std::ifstream& s)
+    DataInputStream(std::istream& s)
 	: is(s)
     {
     }
@@ -219,6 +222,9 @@ struct DataInputStream : public Enctain::DataInput
 
 void test_enctain(const std::string& filedata, std::string filename)
 {
+    std::ostringstream memfile;
+    filename.size();
+
     {
 	Enctain::Container container;
 
@@ -247,7 +253,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	container.SetSubFileProperty(sf2, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf2, filedata.data(), filedata.size());
 
-	container.SetKey("oYLiP4Td");
+	container.AddKeySlot("oYLiP4Td");
 
 	unsigned int sf3 = container.AppendSubFile();
 
@@ -276,7 +282,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	container.SetSubFileProperty(sf5, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf5, filedata.data(), filedata.size());
 
-	container.SetKey("ELO0Eia9");
+	container.AddKeySlot("ELO0Eia9");
 
 	unsigned int sf6 = container.AppendSubFile();
 
@@ -287,18 +293,22 @@ void test_enctain(const std::string& filedata, std::string filename)
 	container.SetSubFileProperty(sf6, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf6, filedata.data(), filedata.size());
 
-	std::ofstream outstream(filename.c_str());
-	DataOutputStream dataout(outstream);
+//	std::ofstream outstream(filename.c_str());
+//	DataOutputStream dataout(outstream);
+
+	DataOutputStream dataout(memfile);
 	container.Save(dataout);
     }
 
     {
 	Enctain::Container container;
 
-	std::ifstream instream(filename.c_str());
+//	std::ifstream instream(filename.c_str());
+	std::istringstream instream(memfile.str());
+
 	DataInputStream datain(instream);
 	assert( container.Load(datain, "ELO0Eia9") == Enctain::ETE_SUCCESS );
-	
+
 	std::string key, val;
 	assert( container.GetGlobalUnencryptedPropertyIndex(0, key, val) );
 	assert( key == "prop1" && val == "test abc" );
@@ -390,6 +400,8 @@ void test_enctain(const std::string& filedata, std::string filename)
 
 int main()
 {
+    Enctain::LibraryInitializer init;
+
     srand(time(NULL));
 
     std::cout << "Testing Encrypted Container implementation...";

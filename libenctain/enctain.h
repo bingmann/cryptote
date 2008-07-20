@@ -25,11 +25,11 @@ enum error_t
     ETE_LOAD_HEADER1_METADATA,
     ETE_LOAD_HEADER1_METADATA_PARSE,
 
-    ETE_LOAD_HEADER2,
-    ETE_LOAD_HEADER2_ENCRYPTION,
-    ETE_LOAD_HEADER2_METADATA,
-    ETE_LOAD_HEADER2_METADATA_CRC32,
-    ETE_LOAD_HEADER2_METADATA_PARSE,
+    ETE_LOAD_HEADER3,
+    ETE_LOAD_HEADER3_ENCRYPTION,
+    ETE_LOAD_HEADER3_METADATA,
+    ETE_LOAD_HEADER3_METADATA_CRC32,
+    ETE_LOAD_HEADER3_METADATA_PARSE,
 
     ETE_LOAD_SUBFILE,
 
@@ -102,6 +102,20 @@ enum progress_indicator_type {
     PI_REENCRYPT,
     PI_SAVE_SUBFILE,
     PI_LOAD_SUBFILE
+};
+
+/**
+ * Library Initialization and Shutdown Object. Create it in the main() function
+ * or object. Loads and initializes the ciphers (in the Botan library).
+ */
+class LibraryInitializer
+{
+public:
+    static void initialize(const std::string& args = "");
+    static void deinitialize();
+
+    LibraryInitializer(const std::string& args = "") { initialize(args); }
+    ~LibraryInitializer() { deinitialize(); }
 };
 
 /**
@@ -216,21 +230,13 @@ public:
     error_t		Save(DataOutput& dataout);
 
     /// Load a new container from an input stream and parse the subfile index.
-    error_t		Load(DataInput& datain, const std::string& filekey);
+    error_t		Load(DataInput& datain, const std::string& userkey);
 
     /// Reset all structures in the container
     void		Clear();
 
 
-    // *** Container Info and Key Operations ***
-
-    /// Set a new password string. The string will be hashed and transformed
-    /// into an encryption context. This is a very expensive operation as all
-    /// subfiles need to be reencrypted.
-    void		SetKey(const std::string& keystr);
-
-    /// Checks whether a password key was set.
-    bool		IsKeySet() const;
+    // *** Container Info Operations ***
 
     /// Return number of bytes written to data sink during last Save()
     /// operation.
@@ -238,6 +244,29 @@ public:
 
     /// Set the Progress Indicator object which receives progress notifications
     void		SetProgressIndicator(ProgressIndicator* pi);
+
+
+    // *** Container User KeySlots Operations ***
+
+    /// Return number of user key slots used.
+    unsigned int	CountKeySlots() const;
+    
+    /// Add a new user key string. The string will be hashed and used to store
+    /// a copy of the master key. SubFiles do not need to be
+    /// reencrypted. Returns number of new key slot.
+    unsigned int	AddKeySlot(const std::string& key);
+
+    /// Replace a key slot with a new key string. Requires that the container
+    /// was opened using one of the previously existing user key slots.
+    void		ChangeKeySlot(unsigned int slot, const std::string& newkey);
+
+    /// Remove a user key slot. When all user key slots are removed and a new
+    /// key is added, a new master key is also generated.
+    void		DeleteKeySlot(unsigned int slot);
+
+    /// Return the number of the key slot which matched while loading the
+    /// file. Returns -1 if it was deleted.
+    int			GetUsedKeySlot() const;
 
 
     // *** Container Unencrypted Global Properties ***
@@ -248,8 +277,8 @@ public:
     /// Get an unencrypted  global property by key.
     const std::string&	GetGlobalUnencryptedProperty(const std::string& key) const;
 
-    /// Erase an unencrypted  global property key.
-    bool		EraseGlobalUnencryptedProperty(const std::string& key);
+    /// Delete an unencrypted  global property key.
+    bool		DeleteGlobalUnencryptedProperty(const std::string& key);
     
     /// Get an unencrypted global property (key and value) by index. Returns
     /// false if the index is beyond the last property
@@ -265,8 +294,8 @@ public:
     /// Get an encrypted global property by key.
     const std::string&	GetGlobalEncryptedProperty(const std::string& key) const;
 
-    /// Erase an encrypted global property key.
-    bool		EraseGlobalEncryptedProperty(const std::string& key);
+    /// Delete an encrypted global property key.
+    bool		DeleteGlobalEncryptedProperty(const std::string& key);
     
     /// Get an encrypted global property (key and value) by index. Returns
     /// false if the index is beyond the last property
@@ -302,8 +331,8 @@ public:
     /// Get a subfile's property by key. Returns an empty string if it is not set.
     const std::string&	GetSubFileProperty(unsigned int subfileindex, const std::string& key) const;
 
-    /// Erase a subfile's property key.
-    bool		EraseSubFileProperty(unsigned int subfileindex, const std::string& key);
+    /// Delete a subfile's property key.
+    bool		DeleteSubFileProperty(unsigned int subfileindex, const std::string& key);
     
     /// Get a subfile's property (key and value) by index. Returns false if the
     /// index is beyond the last property

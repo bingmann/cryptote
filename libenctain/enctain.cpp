@@ -2,18 +2,23 @@
 
 #include "enctain.h"
 
-#include "mycrc32.h"
-#include "bytebuff.h"
-#include "mysha256.h"
-#include "myserpent.h"
-
 #include <vector>
 #include <map>
 
-#include <stdlib.h>
-#include <time.h>
 #include <zlib.h>
-#include <bzlib.h>
+
+#include "bytebuff.h"
+
+#include "botan-1.6/include/base.h"
+#include "botan-1.6/include/init.h"
+#include "botan-1.6/include/rng.h"
+#include "botan-1.6/include/lookup.h"
+#include "botan-1.6/include/pkcs5.h"
+#include "botan-1.6/include/crc32.h"
+#include "botan-1.6/include/pipe.h"
+#include "botan-1.6/include/buf_filt.h"
+#include "botan-1.6/include/zlib.h"
+#include "botan-1.6/include/bzip2.h"
 
 namespace Enctain {
 namespace internal {
@@ -52,14 +57,17 @@ protected:
 	    };
 	};
 
+	/// Random encryption key, if needed.
+	Botan::SecureBuffer<Botan::byte, 32>	enckey;
+
 	/// Encryption CBC initialization vector, if needed.
-	unsigned char	cbciv[16];
+	Botan::SecureBuffer<Botan::byte, 16>	cbciv;
     
 	/// User-defined properties of the subfile.
 	propertymap_type properties;
 
 	/// Compressed and encrypted data of subfile.
-	ByteBuffer	data;
+	Botan::SecureVector<Botan::byte>	data;
 
 	/// Constructor initializing everything to zero.
 	SubFile()
@@ -77,8 +85,30 @@ protected:
 
     } __attribute__((packed));
 
-    /// Structure of the encrypted part of the header
+    /// Structure of the disk file's header
     struct Header2
+    {
+	uint32_t	keyslots;	// Number of key slots following.
+	uint32_t	mkd_iterations;	// PBKDF2 digest iterations
+	uint8_t		mkd_salt[32];	// PBKDF2 digest salt
+	uint8_t		mkd_digest[32];	// PBKDF2 digest
+	uint32_t	mkk_iterations;	// PBKDF2 metadata key iterations
+	uint8_t		mkk_salt[32];	// PBKDF2 metadata key salt
+	uint32_t	mki_iterations;	// PBKDF2 metadata iv iterations
+	uint8_t		mki_salt[32];	// PBKDF2 metadata iv salt
+
+    } __attribute__((packed));
+
+    struct KeySlot
+    {
+	uint32_t	iterations;	// PBKDF2 iterations
+	uint8_t		salt[32];	// PBKDF2 random salt
+	uint8_t		emasterkey[64];	// Encrypted master key
+
+    } __attribute__((packed));
+
+    /// Structure of the encrypted part of the header
+    struct Header3
     {
 	uint32_t	test123;	// = 0x12345678 to quick-test if
 					// decryption worked.
@@ -87,9 +117,7 @@ protected:
 					// metadata.
 	uint32_t	metacrc32;	// CRC32 of the following variable
 					// subfile metadata header
-	uint32_t	subfilenum;	// Number of subfiles in the container
-					// excluding the structure for
-					// globalproperties.
+	uint32_t	padding1;	// Padding
 
     } __attribute__((packed));
 
@@ -105,12 +133,17 @@ protected:
     /// container file was not saved yet.
     bool		modified;
 
-    /// Whether the 256-bit encryption context is initialized;
-    bool		iskeyset;
+    /// Header2 either loaded or filled on first user key added.
+    Header2		header2;
 
-    /// Serpent256 keybit encryption context. It is mutable because
-    /// GetSubFileData() is const and changes the CBC IV.
-    mutable SerpentCBC	serpentctx;
+    /// Master key material used for metadata encryption.
+    Botan::SecureBuffer<Botan::byte, 64> masterkey;
+
+    /// Vector of user key slots.
+    std::vector<KeySlot> keyslots;
+
+    /// Number of the correct key slot used while loading.
+    int			usedkeyslot;
 
     /// Unencrypted global properties, completely user-defined.
     propertymap_type	unc_properties;
@@ -137,6 +170,9 @@ public:
 
     ~ContainerImpl();
 
+    /// Reset all structures in the container
+    void		Clear();
+
     /// Increase reference counter by one.
     void		IncReference();
 
@@ -159,24 +195,13 @@ public:
     error_t		Save(DataOutput& dataout);
 
     /// Load a new container from an input stream and parse the subfile index.
-    error_t		Load(DataInput& datain, const std::string& filekey);
+    error_t		Load(DataInput& datain, const std::string& userkey);
 
     /// Load a container version v1.0
-    error_t		Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress);
-
-    /// Reset all structures in the container
-    void		Clear();
+    error_t		Loadv00010000(DataInput& datain, const std::string& userkey, const Header1& header1, class ProgressTicker& progress);
 
 
-    // *** Container Info and Key Operations ***
-
-    /// Set a new password string. The string will be hashed and transformed
-    /// into an encryption context. This is a very expensive operation as all
-    /// subfiles need to be reencrypted.
-    void		SetKey(const std::string& keystr);
-
-    /// Checks whether a password key was set.
-    bool		IsKeySet() const;
+    // *** Container Info Operations ***
 
     /// Return number of bytes written to data sink during last Save()
     /// operation.
@@ -184,6 +209,29 @@ public:
 
     /// Set the Progress Indicator object which receives progress notifications
     void		SetProgressIndicator(ProgressIndicator* pi);
+
+
+    // *** Container User Keys Operations ***
+
+    /// Return number of user key slots used.
+    unsigned int	CountKeySlots() const;
+    
+    /// Add a new user key string. The string will be hashed and used to store
+    /// a copy of the master key. SubFiles do not need to be
+    /// reencrypted. Returns number of new key slot.
+    unsigned int	AddKeySlot(const std::string& key);
+
+    /// Replace a key slot with a new key string. Requires that the container
+    /// was opened using one of the previously existing user key slots.
+    void		ChangeKeySlot(unsigned int slot, const std::string& key);
+
+    /// Remove a user key slot. When all user key slots are removed and a new
+    /// key is added, a new master key is also generated.
+    void		DeleteKeySlot(unsigned int slot);
+
+    /// Return the number of the key slot which matched while loading the
+    /// file. Returns -1 if it was deleted.
+    int			GetUsedKeySlot() const;
 
 
     // *** Container Unencrypted Global Properties ***
@@ -194,8 +242,8 @@ public:
     /// Get an unencrypted  global property by key.
     const std::string&	GetGlobalUnencryptedProperty(const std::string& key) const;
 
-    /// Erase an unencrypted  global property key.
-    bool		EraseGlobalUnencryptedProperty(const std::string& key);
+    /// Delete an unencrypted  global property key.
+    bool		DeleteGlobalUnencryptedProperty(const std::string& key);
     
     /// Get an unencrypted global property (key and value) by index. Returns
     /// false if the index is beyond the last property
@@ -211,8 +259,8 @@ public:
     /// Get an encrypted global property by key.
     const std::string&	GetGlobalEncryptedProperty(const std::string& key) const;
 
-    /// Erase an encrypted global property key.
-    bool		EraseGlobalEncryptedProperty(const std::string& key);
+    /// Delete an encrypted global property key.
+    bool		DeleteGlobalEncryptedProperty(const std::string& key);
     
     /// Get an encrypted global property (key and value) by index. Returns
     /// false if the index is beyond the last property
@@ -248,8 +296,8 @@ public:
     /// Get a subfile's property by key. Returns an empty string if it is not set.
     const std::string&	GetSubFileProperty(unsigned int subfileindex, const std::string& key) const;
 
-    /// Erase a subfile's property key.
-    bool		EraseSubFileProperty(unsigned int subfileindex, const std::string& key);
+    /// Delete a subfile's property key.
+    bool		DeleteSubFileProperty(unsigned int subfileindex, const std::string& key);
     
     /// Get a subfile's property (key and value) by index. Returns false if the
     /// index is beyond the last property
@@ -310,14 +358,31 @@ public:
 ContainerImpl::ContainerImpl()
     : references(1),
       modified(false),
-      iskeyset(false), written(0),
+      usedkeyslot(-1),
+      written(0),
       progressindicator(NULL)
 {
+    memset(&header2, 0, sizeof(header2));
 }
 
 ContainerImpl::~ContainerImpl()
 {
-    serpentctx.wipe();
+    masterkey.clear();
+    keyslots.clear();
+    memset(&header2, 0, sizeof(header2));
+}
+
+void ContainerImpl::Clear()
+{
+    modified = false;
+    memset(&header2, 0, sizeof(header2));
+    masterkey.clear();
+    keyslots.clear();
+    usedkeyslot = -1;
+    unc_properties.clear();
+    enc_properties.clear();
+    subfiles.clear();
+    written = 0;
 }
 
 void ContainerImpl::IncReference()
@@ -417,19 +482,19 @@ char ContainerImpl::fsignature[8] =
     case ETE_LOAD_HEADER1_METADATA_PARSE:
 	return "Error loading container: could not read header, metadata parse failed.";
 
-    case ETE_LOAD_HEADER2:
+    case ETE_LOAD_HEADER3:
 	return "Error loading container: could not read secondary header.";
 
-    case ETE_LOAD_HEADER2_ENCRYPTION:
+    case ETE_LOAD_HEADER3_ENCRYPTION:
 	return "Error loading container: could not read secondary header, check encryption key.";
 
-    case ETE_LOAD_HEADER2_METADATA:
+    case ETE_LOAD_HEADER3_METADATA:
 	return "Error loading container: could not read secondary header, invalid metadata.";
 
-    case ETE_LOAD_HEADER2_METADATA_CRC32:
+    case ETE_LOAD_HEADER3_METADATA_CRC32:
 	return "Error loading container: could not read secondary header, metadata crc32 mismatch.";
 
-    case ETE_LOAD_HEADER2_METADATA_PARSE:
+    case ETE_LOAD_HEADER3_METADATA_PARSE:
 	return "Error loading container: could not read secondary header, metadata parse failed.";
 
     case ETE_LOAD_SUBFILE:
@@ -549,27 +614,81 @@ static error_t ErrorFromZLibError(int ret)
     }
 }
 
-static error_t ErrorFromBZLibError(int ret)
+// *** Utilities Operations ***
+
+static inline uint32_t random_iterations()
 {
-    switch (ret)
-    {
-    default:			return ETE_BZ_UNKNOWN;
-    case BZ_OK:			return ETE_BZ_OK;
-    case BZ_RUN_OK:		return ETE_BZ_RUN_OK;
-    case BZ_FLUSH_OK:		return ETE_BZ_FLUSH_OK;
-    case BZ_FINISH_OK:		return ETE_BZ_FINISH_OK;
-    case BZ_STREAM_END:		return ETE_BZ_STREAM_END;
-    case BZ_SEQUENCE_ERROR:	return ETE_BZ_SEQUENCE_ERROR;
-    case BZ_PARAM_ERROR:	return ETE_BZ_PARAM_ERROR;
-    case BZ_MEM_ERROR:		return ETE_BZ_MEM_ERROR;
-    case BZ_DATA_ERROR:		return ETE_BZ_DATA_ERROR;
-    case BZ_DATA_ERROR_MAGIC:	return ETE_BZ_DATA_ERROR_MAGIC;
-    case BZ_IO_ERROR:		return ETE_BZ_IO_ERROR;
-    case BZ_UNEXPECTED_EOF:	return ETE_BZ_UNEXPECTED_EOF;
-    case BZ_OUTBUFF_FULL:	return ETE_BZ_OUTBUFF_FULL;
-    case BZ_CONFIG_ERROR:	return ETE_BZ_CONFIG_ERROR;
-    }
+    uint16_t iterations;
+    Botan::Global_RNG::randomize((Botan::byte*)&iterations, sizeof(iterations));
+    return (iterations % 10000) + 1000;
 }
+
+static inline uint32_t botan_crc32(Botan::byte* data, uint32_t datalen)
+{
+    Botan::SecureVector<Botan::byte> crc = Botan::CRC32().process(data, datalen);
+    assert(crc.size() == 4);
+    return *(uint32_t*)crc.begin();
+}
+
+// *** Botan Library Helpers ***
+
+class DataSinkSecureVector : public Botan::DataSink
+{
+private:
+    Botan::SecureVector<Botan::byte>&	secmem;
+
+public:
+    DataSinkSecureVector(Botan::SecureVector<Botan::byte>& _secmem)
+	: secmem(_secmem)
+    { }
+
+    void write(const Botan::byte out[], Botan::u32bit length)
+    {
+	secmem.append(out, length);
+    }
+};
+
+class DataSink2DataOutput : public Botan::DataSink
+{
+private:
+    DataOutput&	dataout;
+    uint32_t	written;
+
+public:
+    DataSink2DataOutput(DataOutput& _do)
+	: dataout(_do), written(0)
+    { }
+
+    void write(const Botan::byte out[], Botan::u32bit length)
+    {
+	if (!dataout.Output(out, length))
+	    throw(std::runtime_error("DataOutput failed."));
+
+	written += length;
+    }
+
+    uint32_t get_written() const { return written; }
+};
+
+class NullBufferingFilter : public Botan::Buffering_Filter
+{
+public:
+    const unsigned int block_size;
+
+    NullBufferingFilter(uint32_t blocksize)
+	: Buffering_Filter(blocksize), block_size(blocksize)
+    { }
+
+protected:
+    virtual void main_block(const Botan::byte input[])
+    {
+	send(input, block_size);
+    }
+    virtual void final_block(const Botan::byte input[], Botan::u32bit length)
+    {
+	send(input, length);
+    }
+};
 
 // *** Load/Save Operations ***
 
@@ -577,10 +696,8 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 {
     written = 0;
 
-    if (!iskeyset)
+    if (keyslots.empty())
 	return ETE_SAVE_NO_PASSWORD;
-
-    srand(time(NULL));
 
     // Estimate amount of data written to file
 
@@ -593,7 +710,7 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 
     size_t esttotal = sizeof(Header1)
 	+ 100 // estimate for unencrypted metadata
-	+ sizeof(Header2)
+	+ sizeof(Header3)
 	+ subfiles.size() * 50 // estimate for encrypted metadata
 	+ subfiletotal;
 
@@ -631,6 +748,20 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 	progress.Update(written);
     }
 
+    // Write out master key digest and all key slots
+    {
+	header2.keyslots = keyslots.size();
+
+	if (!dataout.Output(&header2, sizeof(header2)))
+	    return ETE_SAVE_OUTPUT_ERROR;
+
+	for (unsigned int i = 0; i < keyslots.size(); ++i)
+	{
+	    if (!dataout.Output(&keyslots[i], sizeof(keyslots[i])))
+		return ETE_SAVE_OUTPUT_ERROR;
+	}
+    }
+
     // Prepare variable metadata header containing global properties and all
     // subfile properties.
     ByteBuffer metadata;
@@ -646,6 +777,8 @@ error_t ContainerImpl::Save(DataOutput& dataout)
     }
 
     // append subfile metadata
+    metadata.put<unsigned int>(subfiles.size());
+
     for (unsigned int si = 0; si < subfiles.size(); ++si)
     {
 	// fixed structure
@@ -653,7 +786,8 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 	metadata.put<unsigned int>(subfiles[si].realsize);
 	metadata.put<unsigned int>(subfiles[si].flags);
 	metadata.put<unsigned int>(subfiles[si].crc32);
-	metadata.append(subfiles[si].cbciv, 16);
+	metadata.append(subfiles[si].enckey.begin(), 32);
+	metadata.append(subfiles[si].cbciv.begin(), 16);
 
 	// variable properties structure
 	metadata.put<unsigned int>(subfiles[si].properties.size());
@@ -676,7 +810,7 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 	if (ret != Z_OK)
 	    return ErrorFromZLibError(ret);
 
-	zs.next_in = (Bytef*)metadata.data();
+	zs.next_in = metadata.data();
 	zs.avail_in = metadata.size();
 
 	char buffer[65536];
@@ -704,30 +838,39 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 	metadata_compressed.align(16);
     }
 
-    struct Header2 header2;
-    header2.test123 = 0x12345678;
-    header2.metacomplen = metadata_compressed.size();
-    header2.metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
-    header2.subfilenum = subfiles.size();
+    // Encrypt fixed header3 and variable metadata
+    {
+	struct Header3 header3;
+	// memset(&header3, 0, sizeof(header3));
 
-    // Encrypt fixed header2 and variable metadata
+	header3.test123 = 0x12345678;
+	header3.metacomplen = metadata_compressed.size();
+	header3.metacrc32 = botan_crc32(metadata.data(), metadata.size());
 
-    static const uint8_t header2cbciv[16] =
-	{ 0x14, 0x8B, 0x13, 0x5A, 0xEF, 0xF3, 0x01, 0x2B,
-	  0x8F, 0x61, 0x0A, 0xC9, 0x43, 0x22, 0x82, 0x87 };
+	Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
 
-    serpentctx.set_cbciv(header2cbciv);
+	pbkdf.set_iterations(header2.mkk_iterations);
+	pbkdf.change_salt(header2.mkk_salt, sizeof(header2.mkk_salt));
+	Botan::OctetString enckey = pbkdf.derive_key(32, masterkey);
 
-    serpentctx.encrypt(&header2, sizeof(header2));
-    serpentctx.encrypt(metadata_compressed.data(), metadata_compressed.size());
+	pbkdf.set_iterations(header2.mki_iterations);
+	pbkdf.change_salt(header2.mki_salt, sizeof(header2.mki_salt));
+	Botan::OctetString enciv = pbkdf.derive_key(16, masterkey);
 
-    if (!dataout.Output(&header2, sizeof(header2)))
-	return ETE_SAVE_OUTPUT_ERROR;
+	DataSink2DataOutput* datasink;
 
-    if (!dataout.Output(metadata_compressed.data(), metadata_compressed.size()))
-	return ETE_SAVE_OUTPUT_ERROR;
+	Botan::Pipe pipe(
+	    Botan::get_cipher("Serpent/CBC/NoPadding", enckey, enciv, Botan::ENCRYPTION),
+	    new NullBufferingFilter(4096),
+	    (datasink = new DataSink2DataOutput(dataout))
+	    );
 
-    written += sizeof(header2) + metadata_compressed.size();
+	pipe.process_msg((Botan::byte*)&header3, sizeof(header3));
+
+	pipe.process_msg(metadata_compressed.data(), metadata_compressed.size());
+
+	written += datasink->get_written();
+    }
 
     // Refine file target size because it is now exactly known.
     esttotal = written + subfiletotal;
@@ -739,7 +882,7 @@ error_t ContainerImpl::Save(DataOutput& dataout)
     {
 	assert(subfiles[si].storagesize == subfiles[si].data.size());
 
-	if (!dataout.Output(subfiles[si].data.data(), subfiles[si].storagesize))
+	if (!dataout.Output(subfiles[si].data.begin(), subfiles[si].storagesize))
 	    return ETE_SAVE_OUTPUT_ERROR;
 
 	written += subfiles[si].storagesize;
@@ -750,7 +893,7 @@ error_t ContainerImpl::Save(DataOutput& dataout)
     return ETE_SUCCESS;
 }
 
-error_t ContainerImpl::Load(DataInput& datain, const std::string& filekey)
+error_t ContainerImpl::Load(DataInput& datain, const std::string& userkey)
 {
     ProgressTicker progress(*this,
 			    "Loading Container", PI_LOAD_CONTAINER,
@@ -766,7 +909,7 @@ error_t ContainerImpl::Load(DataInput& datain, const std::string& filekey)
 	return ETE_LOAD_HEADER1_SIGNATURE;
 
     if (header1.version == 0x00010000) {
-	error_t e = Loadv00010000(datain, filekey, header1, progress);
+	error_t e = Loadv00010000(datain, userkey, header1, progress);
 	return e;
     }
     else {
@@ -774,7 +917,7 @@ error_t ContainerImpl::Load(DataInput& datain, const std::string& filekey)
     }
 }
 
-error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filekey, const Header1& header1, class ProgressTicker& progress)
+error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userkey, const Header1& header1, class ProgressTicker& progress)
 {
     unsigned int readbyte = sizeof(Header1);
 
@@ -809,44 +952,115 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
 	}
     }
 
-    // Read encrypted fixed Header2
-    struct Header2 header2;
+    // Read master key digest and user key slots
+    {
+	if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
+	    return ETE_LOAD_HEADER1_METADATA;
 
-    if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
+	if (header2.keyslots == 0)
+	    return ETE_LOAD_HEADER1_METADATA;
+
+	for (unsigned int i = 0; i < header2.keyslots; ++i)
+	{
+	    keyslots.push_back(KeySlot());
+	    KeySlot& newkeyslot = keyslots.back();
+
+	    if (datain.Input(&newkeyslot, sizeof(newkeyslot)) != sizeof(newkeyslot))
+		return ETE_LOAD_HEADER1_METADATA;
+	}
+    }
+
+    // Try to retrieve master key by checking all user key slots
+    {
+	Botan::SecureVector<Botan::byte> userkeyvector((Botan::byte*)userkey.data(), userkey.size());
+	unsigned int ks;
+
+	for (ks = 0; ks < header2.keyslots; ++ks)
+	{
+	    KeySlot& keyslot = keyslots[ks];
+
+	    // calculate user encryption key from password
+
+	    Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
+
+	    pbkdf.set_iterations(keyslot.iterations);
+	    pbkdf.change_salt(keyslot.salt, sizeof(keyslot.salt));
+	    Botan::OctetString enckey = pbkdf.derive_key(32, userkeyvector);
+
+	    // decrypt master key copy
+
+	    Botan::Pipe pipe( Botan::get_cipher("Serpent/ECB/NoPadding", enckey, Botan::DECRYPTION) );
+
+	    pipe.process_msg((Botan::byte*)keyslot.emasterkey, sizeof(keyslot.emasterkey));
+
+	    Botan::SecureVector<Botan::byte> testmasterkey = pipe.read_all();
+	    assert(testmasterkey.size() == masterkey.size());
+
+	    // digest master key and compare to stored digest
+
+	    pbkdf.set_iterations(header2.mkd_iterations);
+	    pbkdf.change_salt(header2.mkd_salt, sizeof(header2.mkd_salt));
+	    Botan::OctetString digest = pbkdf.derive_key(32, testmasterkey);
+
+	    assert(digest.length() == sizeof(header2.mkd_digest));
+
+	    if (Botan::same_mem(digest.begin(), header2.mkd_digest, sizeof(header2.mkd_digest)))
+	    {
+		usedkeyslot = ks;
+		masterkey.set(testmasterkey.begin(), testmasterkey.size());
+		break;
+	    }
+	}
+
+	if (ks >= header2.keyslots)
+	    return ETE_LOAD_HEADER1;
+    }
+
+    // Read encrypted fixed Header3
+    struct Header3 header3;
+
+    if (datain.Input(&header3, sizeof(header3)) != sizeof(header3))
 	return ETE_LOAD_HEADER1;
 
-    readbyte += sizeof(header2);
+    readbyte += sizeof(header3);
 
-    // decrypt header2
+    // Attempt to decrypt Header3
 
-    std::string deckey = SHA256::digest( std::string(fsignature, 8) + filekey );
-    assert( deckey.size() == 32 );
+    Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
 
-    static const uint8_t header2cbciv[16] =
-	{ 0x14, 0x8B, 0x13, 0x5A, 0xEF, 0xF3, 0x01, 0x2B,
-	  0x8F, 0x61, 0x0A, 0xC9, 0x43, 0x22, 0x82, 0x87 };
+    pbkdf.set_iterations(header2.mkk_iterations);
+    pbkdf.change_salt(header2.mkk_salt, sizeof(header2.mkk_salt));
+    Botan::OctetString enckey = pbkdf.derive_key(32, masterkey);
 
-    SerpentCBC decctx;
-    decctx.set_key((const uint8_t*)deckey.data(), deckey.size());
-    decctx.set_cbciv(header2cbciv);
+    pbkdf.set_iterations(header2.mki_iterations);
+    pbkdf.change_salt(header2.mki_salt, sizeof(header2.mki_salt));
+    Botan::OctetString enciv = pbkdf.derive_key(16, masterkey);
 
-    decctx.decrypt(&header2, sizeof(header2));
+    Botan::Pipe pipe( Botan::get_cipher("Serpent/CBC/NoPadding", enckey, enciv, Botan::DECRYPTION) );
 
-    if (header2.test123 != 0x12345678)
-	return ETE_LOAD_HEADER2_ENCRYPTION;
+    pipe.process_msg((Botan::byte*)&header3, sizeof(header3));
+
+    if (pipe.read((Botan::byte*)&header3, sizeof(header3)) != sizeof(header3))
+	return ETE_LOAD_HEADER3_ENCRYPTION;
+
+    if (header3.test123 != 0x12345678)
+	return ETE_LOAD_HEADER3_ENCRYPTION;
 
     // Read compressed variable length metadata
 
     ByteBuffer metadata_compressed;
-    metadata_compressed.alloc(header2.metacomplen);
+    metadata_compressed.alloc(header3.metacomplen);
 
-    if (datain.Input(metadata_compressed.data(), header2.metacomplen) != header2.metacomplen)
-	return ETE_LOAD_HEADER2_METADATA;
+    if (datain.Input(metadata_compressed.data(), header3.metacomplen) != header3.metacomplen)
+	return ETE_LOAD_HEADER3_METADATA;
 
-    readbyte += header2.metacomplen;
-    metadata_compressed.set_size(header2.metacomplen);
+    readbyte += header3.metacomplen;
+    metadata_compressed.set_size(header3.metacomplen);
 
-    decctx.decrypt(metadata_compressed.data(), metadata_compressed.size());
+    pipe.process_msg(metadata_compressed.data(), metadata_compressed.size());
+
+    if (pipe.read(metadata_compressed.data(), metadata_compressed.size(), 1) != metadata_compressed.size())
+	return ETE_LOAD_HEADER3_ENCRYPTION;
 
     // Decompress variable encrypted metadata
 
@@ -860,7 +1074,7 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
 	if (ret != Z_OK)
 	    return ErrorFromZLibError(ret);
 
-	zs.next_in = (Bytef*)(metadata_compressed.data());
+	zs.next_in = metadata_compressed.data();
 	zs.avail_in = metadata_compressed.size();
 
 	char buffer[65536];
@@ -882,10 +1096,9 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
 
 	inflateEnd(&zs);
 
-	uint32_t metacrc32 = crc32((unsigned char*)metadata.data(), metadata.size());
-
-	if (metacrc32 != header2.metacrc32)
-	    return ETE_LOAD_HEADER2_METADATA_CRC32;
+	uint32_t testcrc32 = botan_crc32(metadata.data(), metadata.size());
+	if (testcrc32 != header3.metacrc32)
+	    return ETE_LOAD_HEADER3_METADATA_CRC32;
     }
 
     try
@@ -903,9 +1116,10 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
 	}
 
 	// parse subfile metadata
+	unsigned int subfilenum = metadata.get<unsigned int>();
 	subfiles.clear();
 
-	for (unsigned int si = 0; si < header2.subfilenum; ++si)
+	for (unsigned int si = 0; si < subfilenum; ++si)
 	{
 	    subfiles.push_back(SubFile());
 	    SubFile& subfile = subfiles.back();
@@ -915,7 +1129,8 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
 	    subfile.realsize = metadata.get<unsigned int>();
 	    subfile.flags = metadata.get<unsigned int>();
 	    subfile.crc32 = metadata.get<unsigned int>();
-	    metadata.get(subfile.cbciv, 16);
+	    metadata.get(subfile.enckey.begin(), 32);
+	    metadata.get(subfile.cbciv.begin(), 16);
 
 	    // variable properties structure
 	    unsigned int fpropsize = metadata.get<unsigned int>();
@@ -931,7 +1146,7 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
     }
     catch (std::underflow_error& e)
     {
-	return ETE_LOAD_HEADER2_METADATA_PARSE;
+	return ETE_LOAD_HEADER3_METADATA_PARSE;
     }
 
     // Now we can say how large the file actually is.
@@ -952,10 +1167,8 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
     {
 	SubFile& subfile = subfiles[si];
 
-	subfile.data.alloc( subfile.storagesize );
-
-	unsigned int rb = datain.Input(subfile.data.data(), subfile.storagesize);
-	subfile.data.set_size(rb);
+	subfile.data.create( subfile.storagesize );
+	unsigned int rb = datain.Input(subfile.data.begin(), subfile.storagesize);
 
 	if (rb != subfile.storagesize)
 	    return ETE_LOAD_SUBFILE;
@@ -964,95 +1177,15 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& filek
 	progress.Update(readbyte);
     }
 
-    iskeyset = true;
-    serpentctx = decctx;
+    // iskeyset = true;
+    // serpentctx = decctx;
 
-    decctx.wipe();
+    // decctx.wipe();
 
     return ETE_SUCCESS;
 }
 
-/// Reset all structures in the container
-void ContainerImpl::Clear()
-{
-    modified = false;
-    iskeyset = false;
-    serpentctx.wipe();
-    unc_properties.clear();
-    enc_properties.clear();
-    subfiles.clear();
-    written = 0;
-}
-
 // *** Container Info Operations ***
-
-void ContainerImpl::SetKey(const std::string& keystr)
-{
-    std::string enckey = SHA256::digest( std::string(fsignature, 8) + keystr );
-
-    SerpentCBC newctx;
-    newctx.set_key((const uint8_t*)enckey.data(), enckey.size());
-
-    size_t totalsize = 0;
-
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
-    {
-	SubFile& subfile = subfiles[si];
-	totalsize += subfile.storagesize;
-    }
-
-    ProgressTicker progress(*this,
-			    "Reencrypting", PI_REENCRYPT,
-			    0, totalsize);
-
-    // reencrypt all subfile data
-
-    totalsize = 0;
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
-    {
-	SubFile& subfile = subfiles[si];
-
-	assert(subfile.storagesize == subfile.data.size());
-
-	if (subfile.encryption == ENCRYPTION_NONE)
-	{
-	    totalsize += subfile.storagesize;
-	    progress.Update(totalsize);
-	}
-	else if (subfile.encryption == ENCRYPTION_SERPENT256)
-	{
-	    if (iskeyset)
-		serpentctx.set_cbciv(subfile.cbciv);
-
-	    newctx.set_cbciv(subfile.cbciv);
-
-	    const size_t batch = 65536;
-
-	    for (size_t offset = 0; offset < subfile.data.size(); offset += batch)
-	    {
-		size_t len = std::min<size_t>(batch, subfile.data.size() - offset);
-
-		if (iskeyset)
-		    serpentctx.decrypt(subfile.data.data() + offset, len);
-	
-		newctx.encrypt(subfile.data.data() + offset, len);
-
-		totalsize += len;
-		progress.Update(totalsize);
-	    }
-	}
-    }
-
-    serpentctx = newctx;
-    iskeyset = true;
-
-    newctx.wipe();
-}
-
-bool ContainerImpl::IsKeySet() const
-{
-    return iskeyset;
-}
 
 size_t ContainerImpl::GetLastWritten() const
 {
@@ -1062,6 +1195,121 @@ size_t ContainerImpl::GetLastWritten() const
 void ContainerImpl::SetProgressIndicator(ProgressIndicator* pi)
 {
     progressindicator = pi;
+}
+
+// *** Container User KeySlots Operations ***
+
+unsigned int ContainerImpl::CountKeySlots() const
+{
+    return keyslots.size();
+}
+
+unsigned int ContainerImpl::AddKeySlot(const std::string& key)
+{
+    if (keyslots.empty())
+    {
+	// Generate new master key and salt/iter for digest, enckey and enciv.
+
+	Botan::Global_RNG::randomize(masterkey.begin(), masterkey.size());
+
+	header2.mkd_iterations = random_iterations();
+	Botan::Global_RNG::randomize(header2.mkd_salt, sizeof(header2.mkd_salt));
+
+	header2.mkk_iterations = random_iterations();
+	Botan::Global_RNG::randomize(header2.mkk_salt, sizeof(header2.mkk_salt));
+
+	header2.mki_iterations = random_iterations();
+	Botan::Global_RNG::randomize(header2.mki_salt, sizeof(header2.mki_salt));
+
+	// Calculate master key digest
+
+	Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
+
+	pbkdf.set_iterations(header2.mkd_iterations);
+	pbkdf.change_salt(header2.mkd_salt, sizeof(header2.mkd_salt));
+	Botan::OctetString digest = pbkdf.derive_key(32, masterkey);
+
+	memcpy(header2.mkd_digest, digest.begin(), sizeof(header2.mkd_digest));
+    }
+
+    // Create cipher key from new random salt and iterations.
+
+    KeySlot newslot;
+
+    Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
+
+    newslot.iterations = random_iterations();
+    Botan::Global_RNG::randomize(newslot.salt, sizeof(newslot.salt));
+
+    pbkdf.set_iterations(newslot.iterations);
+    pbkdf.change_salt(newslot.salt, sizeof(newslot.salt));
+    Botan::OctetString enckey = pbkdf.derive_key(32, Botan::SecureVector<Botan::byte>((Botan::byte*)key.data(), key.size()));
+
+    // Encrypt the known (or new) master key material with the derived key.
+
+    Botan::Pipe pipe( Botan::get_cipher("Serpent/ECB/NoPadding", enckey, Botan::ENCRYPTION) );
+
+    pipe.process_msg(masterkey);
+
+    Botan::SecureVector<Botan::byte> ciphertext = pipe.read_all();
+    assert(ciphertext.size() == sizeof(newslot.emasterkey));
+
+    memcpy(newslot.emasterkey, ciphertext.begin(), sizeof(newslot.emasterkey));
+    
+    keyslots.push_back(newslot);
+
+    return keyslots.size() - 1;
+}
+
+void ContainerImpl::ChangeKeySlot(unsigned int slot, const std::string& key)
+{
+    // Check that the user key slot is valid.
+    if (slot >= keyslots.size())
+	throw(std::runtime_error("Invalid key slot."));
+
+    KeySlot& keyslot = keyslots[slot];
+
+    // Create cipher key from new random salt and iterations.
+
+    Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
+
+    keyslot.iterations = random_iterations();
+    Botan::Global_RNG::randomize(keyslot.salt, sizeof(keyslot.salt));
+
+    pbkdf.set_iterations(keyslot.iterations);
+    pbkdf.change_salt(keyslot.salt, sizeof(keyslot.salt));
+    Botan::OctetString enckey = pbkdf.derive_key(32, Botan::SecureVector<Botan::byte>((Botan::byte*)key.data(), key.size()));
+
+    // Encrypt the known master key material with the derived key.
+
+    Botan::Pipe pipe( Botan::get_cipher("Serpent/ECB/NoPadding", enckey, Botan::ENCRYPTION) );
+
+    pipe.process_msg(masterkey);
+
+    Botan::SecureVector<Botan::byte> ciphertext = pipe.read_all();
+    assert(ciphertext.size() == sizeof(keyslot.emasterkey));
+
+    memcpy(keyslot.emasterkey, ciphertext.begin(), sizeof(keyslot.emasterkey));
+}
+
+void ContainerImpl::DeleteKeySlot(unsigned int slot)
+{
+    // Check that the user key slot is valid.
+    if (slot >= keyslots.size())
+	throw(std::runtime_error("Invalid key slot."));
+
+    // fixup numbering of used key slot
+    if (usedkeyslot == (int)slot)
+	usedkeyslot = -1;
+    else if (usedkeyslot > (int)slot)
+	--usedkeyslot;
+
+    keyslots.erase(keyslots.begin() + slot);
+}
+
+int ContainerImpl::GetUsedKeySlot() const
+{
+    return usedkeyslot;
 }
 
 // *** Container Global Unencrypted Properties ***
@@ -1084,7 +1332,7 @@ const std::string& ContainerImpl::GetGlobalUnencryptedProperty(const std::string
     }
 }
 
-bool ContainerImpl::EraseGlobalUnencryptedProperty(const std::string& key)
+bool ContainerImpl::DeleteGlobalUnencryptedProperty(const std::string& key)
 {
     return (unc_properties.erase(key) > 0);
 }
@@ -1123,7 +1371,7 @@ const std::string& ContainerImpl::GetGlobalEncryptedProperty(const std::string& 
     }
 }
 
-bool ContainerImpl::EraseGlobalEncryptedProperty(const std::string& key)
+bool ContainerImpl::DeleteGlobalEncryptedProperty(const std::string& key)
 {
     return (enc_properties.erase(key) > 0);
 }
@@ -1210,7 +1458,7 @@ const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, 
     }
 }
 
-bool ContainerImpl::EraseSubFileProperty(unsigned int subfileindex, const std::string& key)
+bool ContainerImpl::DeleteSubFileProperty(unsigned int subfileindex, const std::string& key)
 {
     if (subfileindex >= subfiles.size())
 	throw(std::runtime_error("Invalid subfile index"));
@@ -1370,6 +1618,77 @@ error_t ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* dat
 
     // Setup encryption context if requested
 
+    std::auto_ptr<Botan::Filter> encryption_filter;
+
+    if (subfile.encryption == ENCRYPTION_NONE)
+    {
+    }
+    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+    {
+	// Generate a new encryption ley and CBC IV and save it in the encrypted metadata
+
+	Botan::Global_RNG::randomize(subfile.enckey.begin(), subfile.enckey.size());
+	Botan::Global_RNG::randomize(subfile.cbciv.begin(), subfile.cbciv.size());
+
+	encryption_filter = std::auto_ptr<Botan::Filter>(
+	    Botan::get_cipher("Serpent/CBC/PKCS7", subfile.enckey, subfile.cbciv, Botan::ENCRYPTION)
+	    );
+    }
+    else
+    {
+	return ETE_SUBFILE_ENCRYPTION_INVALID;
+    }
+
+    // Setup compression context if requested
+
+    std::auto_ptr<Botan::Filter> compression_filter;
+
+    if (subfile.compression == COMPRESSION_NONE)
+    {
+    }
+    else if (subfile.compression == COMPRESSION_ZLIB)
+    {
+	compression_filter =  std::auto_ptr<Botan::Filter>(
+	    new Botan::Zlib_Compression(9)
+	    );
+    }
+    else if (subfile.compression == COMPRESSION_BZIP2)
+    {
+	compression_filter =  std::auto_ptr<Botan::Filter>(
+	    new Botan::Bzip_Compression(9)
+	    );
+    }
+    else
+    {
+	return ETE_SUBFILE_COMPRESSION_INVALID;
+    }
+
+    // Setup processing pipe
+
+    subfile.data.create(datalen / 16);	// this allocates memory
+    subfile.data.create(0);		// this clears the append cursor
+
+    // Pipe setup note: the encryption filter is chained to the _first_ filter
+    // in the preceding fork!
+    Botan::Pipe pipe(
+	new Botan::Fork(compression_filter.release(),
+			new Botan::Hash_Filter("CRC32")),
+	encryption_filter.release(),
+	new NullBufferingFilter( std::max<unsigned int>(4096, datalen / 10) ),
+	new DataSinkSecureVector(subfile.data)
+	);
+
+    pipe.process_msg((const Botan::byte*)data, datalen);
+
+    Botan::SecureVector<Botan::byte> crc32 = pipe.read_all(1);
+    assert(crc32.size() == 4);
+    subfile.crc32 = *(const uint32_t*)crc32.begin();
+
+    subfile.storagesize = subfile.data.size();
+
+#if 0
+    // Setup encryption context if requested
+
     if (subfile.encryption == ENCRYPTION_NONE)
     {
     }
@@ -1460,7 +1779,7 @@ error_t ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* dat
 	{
 	    subfile.data.alloc(offset + batch); // extend output buffer
 
-	    zs.next_out = (Bytef*)(subfile.data.data()) + offset;
+	    zs.next_out = subfile.data.data() + offset;
 	    zs.avail_out = subfile.data.buffsize() - offset;
 
 	    ret = deflate(&zs, Z_FINISH);
@@ -1581,6 +1900,7 @@ error_t ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* dat
 
     subfile.crc32 = crc32run;
     subfile.storagesize = subfile.data.size();
+#endif
 
     return ETE_SUCCESS;
 }
@@ -1631,6 +1951,69 @@ error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutpu
 			    "Loading SubFile", PI_LOAD_SUBFILE,
 			    0, subfile.storagesize);
 
+    // Setup decryption context if requested
+
+    std::auto_ptr<Botan::Filter> decryption_filter;
+
+    if (subfile.encryption == ENCRYPTION_NONE)
+    {
+    }
+    else if (subfile.encryption == ENCRYPTION_SERPENT256)
+    {
+	decryption_filter = std::auto_ptr<Botan::Filter>(
+	    Botan::get_cipher("Serpent/CBC/PKCS7", subfile.enckey, subfile.cbciv, Botan::DECRYPTION)
+	    );
+    }
+    else
+    {
+	return ETE_SUBFILE_ENCRYPTION_INVALID;
+    }
+
+    // Setup decompression context if requested
+
+    std::auto_ptr<Botan::Filter> decompression_filter;
+
+    if (subfile.compression == COMPRESSION_NONE)
+    {
+    }
+    else if (subfile.compression == COMPRESSION_ZLIB)
+    {
+	decompression_filter =  std::auto_ptr<Botan::Filter>(
+	    new Botan::Zlib_Decompression()
+	    );
+    }
+    else if (subfile.compression == COMPRESSION_BZIP2)
+    {
+	decompression_filter =  std::auto_ptr<Botan::Filter>(
+	    new Botan::Bzip_Decompression()
+	    );
+    }
+    else
+    {
+	return ETE_SUBFILE_COMPRESSION_INVALID;
+    }
+
+    // Setup processing pipe
+
+    Botan::Pipe pipe(
+	decryption_filter.release(),
+	decompression_filter.release(),
+	new Botan::Fork(NULL,
+			new Botan::Hash_Filter("CRC32"))
+	);
+
+    pipe.append( new NullBufferingFilter(4096) );
+    pipe.append( new DataSink2DataOutput(dataout) );
+
+    pipe.process_msg(subfile.data);
+
+    Botan::SecureVector<Botan::byte> crc32v = pipe.read_all(1);
+    assert(crc32v.size() == 4);
+
+    uint32_t crc32 = *(const uint32_t*)crc32v.begin();
+    assert(subfile.crc32 == crc32);
+
+#if 0
     // Setup decryption context if requested
 
     if (subfile.encryption == ENCRYPTION_NONE)
@@ -1839,11 +2222,24 @@ error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutpu
 
     if (crc32run != subfile.crc32)
 	return ETE_SUBFILE_CRC32;
+#endif
 
     return ETE_SUCCESS;
 }
 
 } // namespace internal
+
+// *** Library Initialization and Shutdown Object ***
+
+void LibraryInitializer::initialize(const std::string& args)
+{
+    Botan::LibraryInitializer::initialize(args);
+}
+
+void LibraryInitializer::deinitialize()
+{
+    Botan::LibraryInitializer::deinitialize();
+}
 
 // *** Pimpl Stubs for Container ***
 
@@ -1892,24 +2288,14 @@ error_t Container::Save(DataOutput& dataout)
     return pimpl->Save(dataout);
 }
 
-error_t Container::Load(DataInput& datain, const std::string& filekey)
+error_t Container::Load(DataInput& datain, const std::string& userkey)
 {
-    return pimpl->Load(datain, filekey);
+    return pimpl->Load(datain, userkey);
 }
 
 void Container::Clear()
 {
     return pimpl->Clear();
-}
-
-void Container::SetKey(const std::string& keystr)
-{
-    return pimpl->SetKey(keystr);
-}
-
-bool Container::IsKeySet() const
-{
-    return pimpl->IsKeySet();
 }
 
 size_t Container::GetLastWritten() const
@@ -1922,6 +2308,31 @@ void Container::SetProgressIndicator(ProgressIndicator* pi)
     return pimpl->SetProgressIndicator(pi);
 }
 
+unsigned int Container::CountKeySlots() const
+{
+    return pimpl->CountKeySlots();
+}
+
+unsigned int Container::AddKeySlot(const std::string& key)
+{
+    return pimpl->AddKeySlot(key);
+}
+
+void Container::ChangeKeySlot(unsigned int slot, const std::string& key)
+{
+    return pimpl->ChangeKeySlot(slot, key);
+}
+
+void Container::DeleteKeySlot(unsigned int slot)
+{
+    return pimpl->DeleteKeySlot(slot);
+}
+
+int Container::GetUsedKeySlot() const
+{
+    return pimpl->GetUsedKeySlot();
+}
+
 void Container::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
 {
     return pimpl->SetGlobalUnencryptedProperty(key, value);
@@ -1932,9 +2343,9 @@ const std::string& Container::GetGlobalUnencryptedProperty(const std::string& ke
     return pimpl->GetGlobalUnencryptedProperty(key);
 }
 
-bool Container::EraseGlobalUnencryptedProperty(const std::string& key)
+bool Container::DeleteGlobalUnencryptedProperty(const std::string& key)
 {
-    return pimpl->EraseGlobalUnencryptedProperty(key);
+    return pimpl->DeleteGlobalUnencryptedProperty(key);
 }
 
 bool Container::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
@@ -1952,9 +2363,9 @@ const std::string& Container::GetGlobalEncryptedProperty(const std::string& key)
     return pimpl->GetGlobalEncryptedProperty(key);
 }
 
-bool Container::EraseGlobalEncryptedProperty(const std::string& key)
+bool Container::DeleteGlobalEncryptedProperty(const std::string& key)
 {
-    return pimpl->EraseGlobalEncryptedProperty(key);
+    return pimpl->DeleteGlobalEncryptedProperty(key);
 }
 
 bool Container::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
@@ -1992,9 +2403,9 @@ const std::string& Container::GetSubFileProperty(unsigned int subfileindex, cons
     return pimpl->GetSubFileProperty(subfileindex, key);
 }
 
-bool Container::EraseSubFileProperty(unsigned int subfileindex, const std::string& key)
+bool Container::DeleteSubFileProperty(unsigned int subfileindex, const std::string& key)
 {
-    return pimpl->EraseSubFileProperty(subfileindex, key);
+    return pimpl->DeleteSubFileProperty(subfileindex, key);
 }
 
 bool Container::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const

@@ -26,16 +26,16 @@ class ByteBuffer
 {
 private:
     /// Allocated buffer pointer.
-    char*	data_;
+    unsigned char*	data_;
 
     /// Size of valid data.
-    unsigned int size_;
+    unsigned int	size_;
 
     /// Total size of buffer.
-    unsigned int buff_;
+    unsigned int	buff_;
 
     /// Current read cursor.
-    unsigned int curr_;
+    unsigned int	curr_;
 
 public:
     /// Create a new empty object
@@ -64,11 +64,11 @@ public:
     }
 
     /// Return a pointer to the currently kept memory area.
-    inline const char *data() const
+    inline const unsigned char *data() const
     { return data_; }
 
     /// Return a writeable pointer to the currently kept memory area.
-    inline char *data()
+    inline unsigned char *data()
     { return data_; }
 
     /// Return the currently used length in bytes.
@@ -86,7 +86,7 @@ public:
 
     /// Explicit conversion to std::string (copies memory of course).
     inline std::string str() const
-    { return std::string(data_, size_); }
+    { return std::string(reinterpret_cast<const char*>(data_), size_); }
 
     /// Make sure that at least n bytes are allocated.
     inline void alloc(unsigned int n)
@@ -94,7 +94,7 @@ public:
 	if (buff_ < n)
 	{
 	    buff_ = n;
-	    data_ = static_cast<char*>(realloc(data_, buff_));
+	    data_ = static_cast<unsigned char*>(realloc(data_, buff_));
 	}
     }
 
@@ -131,9 +131,9 @@ public:
     }
 
     /// Detach the memory from the object, returns the memory pointer.
-    inline const char* detach()
+    inline const unsigned char* detach()
     {
-	const char* data = data_;
+	const unsigned char* data = data_;
 	data_ = NULL;
 	size_ = buff_ = curr_ = 0;
 	return data;
@@ -278,7 +278,7 @@ inline std::string ByteBuffer::get<std::string>()
     }
 
     check_available(slen);
-    std::string ret(data_ + curr_, slen);
+    std::string ret(reinterpret_cast<const char*>(data_ + curr_), slen);
 
     curr_ += slen;
     return ret;
