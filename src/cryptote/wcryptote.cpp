@@ -195,19 +195,19 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
     case ETE_LOAD_HEADER1_METADATA_PARSE:
 	return _("Error loading container: could not read header, metadata parse failed.");
 
-    case ETE_LOAD_HEADER2:
+    case ETE_LOAD_HEADER3:
 	return _("Error loading container: could not read secondary header.");
 
-    case ETE_LOAD_HEADER2_ENCRYPTION:
+    case ETE_LOAD_HEADER3_ENCRYPTION:
 	return _("Error loading container: could not read secondary header, check encryption key.");
 
-    case ETE_LOAD_HEADER2_METADATA:
+    case ETE_LOAD_HEADER3_METADATA:
 	return _("Error loading container: could not read secondary header, invalid metadata.");
 
-    case ETE_LOAD_HEADER2_METADATA_CRC32:
+    case ETE_LOAD_HEADER3_METADATA_CRC32:
 	return _("Error loading container: could not read secondary header, metadata crc32 mismatch.");
 
-    case ETE_LOAD_HEADER2_METADATA_PARSE:
+    case ETE_LOAD_HEADER3_METADATA_PARSE:
 	return _("Error loading container: could not read secondary header, metadata parse failed.");
 
     case ETE_LOAD_SUBFILE:
@@ -859,7 +859,7 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 
 	if (e != Enctain::ETE_SUCCESS)
 	{
-	    if (e == Enctain::ETE_LOAD_HEADER2_ENCRYPTION)
+	    if (e == Enctain::ETE_LOAD_HEADER3_ENCRYPTION)
 	    {
 		WMessageDialog dlg(this,
 				   _("Error loading container: could not read encrypted header.\nEncryption key probably invalid. Retry?"),
@@ -939,12 +939,12 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     }
 
     // check that an encryption key is set
-    if (!container.IsKeySet())
+    if (container.CountKeySlots() == 0)
     {
 	WSetPassword passdlg(this, filename);
 	if (passdlg.ShowModal() != wxID_OK) return false;
 
-	container.SetKey( strWX2STL(passdlg.GetPass()) );
+	container.AddKeySlot( strWX2STL(passdlg.GetPass()) );
     }
 
     // release share lock
@@ -1066,7 +1066,7 @@ void WCryptoTE::SaveOpenSubFilelist()
 {
     if (!copt_restoreview)
     {
-	container.EraseGlobalEncryptedProperty("SubFilesOpened");
+	container.DeleteGlobalEncryptedProperty("SubFilesOpened");
 	return;
     }
 
@@ -1862,7 +1862,7 @@ void WCryptoTE::OnMenuContainerSetPassword(wxCommandEvent& WXUNUSED(event))
     WSetPassword passdlg(this, filename);
     if (passdlg.ShowModal() != wxID_OK) return;
 
-    container.SetKey( strWX2STL(passdlg.GetPass()) );
+    container.ChangeKeySlot(0, strWX2STL(passdlg.GetPass()) );
 
     SetModified();
 }

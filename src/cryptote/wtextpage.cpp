@@ -159,7 +159,7 @@ void WTextPage::SaveSubFileMetaSettings()
 {
     if (!wmain->copt_restoreview)
     {
-	wmain->container.EraseSubFileProperty(subfileid, "WTextPageSettings");
+	wmain->container.DeleteSubFileProperty(subfileid, "WTextPageSettings");
 	return;
     }
 

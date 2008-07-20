@@ -80,6 +80,9 @@ private:
     /// Locale object holding translations
     MyLocale*		locale;
 
+    /// Enctain Library Initializer
+    Enctain::LibraryInitializer	enctain_init;
+
 public:
 
     App()
@@ -338,7 +341,7 @@ public:
 
 		    if (e != Enctain::ETE_SUCCESS)
 		    {
-			if (e == Enctain::ETE_LOAD_HEADER2_ENCRYPTION)
+			if (e == Enctain::ETE_LOAD_HEADER3_ENCRYPTION)
 			{
 			    wxPuts(_("Error loading container: cannot decrypt header. Possibly wrong password."));
 			    wxPuts(_("Try again? Abort with an empty line."));
