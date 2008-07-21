@@ -119,6 +119,19 @@ public:
 };
 
 /**
+ * Random number generator interface based on Botan
+ */
+
+class RNG
+{
+public:
+    static void 		randomize(unsigned char* out, unsigned int len);
+
+    static unsigned char	random_byte();
+    static unsigned int		random_uint();
+};
+
+/**
  * Abstract interface class which receives data during container saving or
  * subfile decompression/decryption operations. It is a generic data receiver.
  */

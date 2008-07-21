@@ -1272,7 +1272,7 @@ unsigned int FIPS181::digram[NUM_RULES][NUM_RULES] =
     }
 };
 
-FIPS181::FIPS181(int (*randfunc)())
+FIPS181::FIPS181(unsigned int (*randfunc)())
     : saved_unit(0),
       randfunc_(randfunc)
 {

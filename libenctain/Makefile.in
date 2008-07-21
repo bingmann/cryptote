@@ -67,7 +67,7 @@ ARFLAGS = cru
 libenctain_a_AR = $(AR) $(ARFLAGS)
 libenctain_a_LIBADD =
 am__libenctain_a_SOURCES_DIST = bytebuff.h enctain.cpp enctain.h \
-	botan-1.6/botan/aes.h botan-1.6/botan/allocate.h \
+	initrng.cpp botan-1.6/botan/aes.h botan-1.6/botan/allocate.h \
 	botan-1.6/botan/base.h botan-1.6/botan/base64.h \
 	botan-1.6/botan/basefilt.h botan-1.6/botan/bit_ops.h \
 	botan-1.6/botan/botan.h botan-1.6/botan/buf_es.h \
@@ -163,29 +163,29 @@ am__libenctain_a_SOURCES_DIST = bytebuff.h enctain.cpp enctain.h \
 @ON_WIN32_FALSE@	unix_cmd.$(OBJEXT) unix_src.$(OBJEXT) \
 @ON_WIN32_FALSE@	mux_pthr.$(OBJEXT) tm_hard.$(OBJEXT) \
 @ON_WIN32_FALSE@	tm_posix.$(OBJEXT) tm_unix.$(OBJEXT)
-am_libenctain_a_OBJECTS = enctain.$(OBJEXT) aes.$(OBJEXT) \
-	aes_tab.$(OBJEXT) base.$(OBJEXT) base64.$(OBJEXT) \
-	basefilt.$(OBJEXT) bit_ops.$(OBJEXT) buf_es.$(OBJEXT) \
-	buf_filt.$(OBJEXT) cbc.$(OBJEXT) charset.$(OBJEXT) \
-	config.$(OBJEXT) crc32.$(OBJEXT) data_snk.$(OBJEXT) \
-	data_src.$(OBJEXT) def_alg.$(OBJEXT) def_char.$(OBJEXT) \
-	def_mode.$(OBJEXT) defalloc.$(OBJEXT) des.$(OBJEXT) \
-	des_tab.$(OBJEXT) ecb.$(OBJEXT) eng_base.$(OBJEXT) \
-	engine.$(OBJEXT) es_file.$(OBJEXT) exceptn.$(OBJEXT) \
-	filter.$(OBJEXT) filters.$(OBJEXT) fips140.$(OBJEXT) \
-	get_algo.$(OBJEXT) get_enc.$(OBJEXT) hex.$(OBJEXT) \
-	hmac.$(OBJEXT) inifile.$(OBJEXT) init_def.$(OBJEXT) \
-	init_opt.$(OBJEXT) libstate.$(OBJEXT) md5.$(OBJEXT) \
-	mdx_hash.$(OBJEXT) mem_pool.$(OBJEXT) mlock.$(OBJEXT) \
-	mode_pad.$(OBJEXT) modebase.$(OBJEXT) modules.$(OBJEXT) \
-	mutex.$(OBJEXT) out_buf.$(OBJEXT) parsing.$(OBJEXT) \
-	pipe.$(OBJEXT) pipe_io.$(OBJEXT) pipe_rw.$(OBJEXT) \
-	pkcs5.$(OBJEXT) policy.$(OBJEXT) randpool.$(OBJEXT) \
-	rng.$(OBJEXT) s2k.$(OBJEXT) secqueue.$(OBJEXT) \
-	serpent.$(OBJEXT) sha160.$(OBJEXT) sha256.$(OBJEXT) \
-	sha_64.$(OBJEXT) symkey.$(OBJEXT) timers.$(OBJEXT) \
-	two_tab.$(OBJEXT) twofish.$(OBJEXT) ui.$(OBJEXT) \
-	util.$(OBJEXT) x931_rng.$(OBJEXT) bzip2.$(OBJEXT) \
+am_libenctain_a_OBJECTS = enctain.$(OBJEXT) initrng.$(OBJEXT) \
+	aes.$(OBJEXT) aes_tab.$(OBJEXT) base.$(OBJEXT) \
+	base64.$(OBJEXT) basefilt.$(OBJEXT) bit_ops.$(OBJEXT) \
+	buf_es.$(OBJEXT) buf_filt.$(OBJEXT) cbc.$(OBJEXT) \
+	charset.$(OBJEXT) config.$(OBJEXT) crc32.$(OBJEXT) \
+	data_snk.$(OBJEXT) data_src.$(OBJEXT) def_alg.$(OBJEXT) \
+	def_char.$(OBJEXT) def_mode.$(OBJEXT) defalloc.$(OBJEXT) \
+	des.$(OBJEXT) des_tab.$(OBJEXT) ecb.$(OBJEXT) \
+	eng_base.$(OBJEXT) engine.$(OBJEXT) es_file.$(OBJEXT) \
+	exceptn.$(OBJEXT) filter.$(OBJEXT) filters.$(OBJEXT) \
+	fips140.$(OBJEXT) get_algo.$(OBJEXT) get_enc.$(OBJEXT) \
+	hex.$(OBJEXT) hmac.$(OBJEXT) inifile.$(OBJEXT) \
+	init_def.$(OBJEXT) init_opt.$(OBJEXT) libstate.$(OBJEXT) \
+	md5.$(OBJEXT) mdx_hash.$(OBJEXT) mem_pool.$(OBJEXT) \
+	mlock.$(OBJEXT) mode_pad.$(OBJEXT) modebase.$(OBJEXT) \
+	modules.$(OBJEXT) mutex.$(OBJEXT) out_buf.$(OBJEXT) \
+	parsing.$(OBJEXT) pipe.$(OBJEXT) pipe_io.$(OBJEXT) \
+	pipe_rw.$(OBJEXT) pkcs5.$(OBJEXT) policy.$(OBJEXT) \
+	randpool.$(OBJEXT) rng.$(OBJEXT) s2k.$(OBJEXT) \
+	secqueue.$(OBJEXT) serpent.$(OBJEXT) sha160.$(OBJEXT) \
+	sha256.$(OBJEXT) sha_64.$(OBJEXT) symkey.$(OBJEXT) \
+	timers.$(OBJEXT) two_tab.$(OBJEXT) twofish.$(OBJEXT) \
+	ui.$(OBJEXT) util.$(OBJEXT) x931_rng.$(OBJEXT) bzip2.$(OBJEXT) \
 	zlib.$(OBJEXT) $(am__objects_1) $(am__objects_2)
 libenctain_a_OBJECTS = $(am_libenctain_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -333,7 +333,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = . testsuite
 AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS) $(am__append_2)
 noinst_LIBRARIES = libenctain.a
-libenctain_a_SOURCES = bytebuff.h enctain.cpp enctain.h \
+libenctain_a_SOURCES = bytebuff.h enctain.cpp enctain.h initrng.cpp \
 	botan-1.6/botan/aes.h botan-1.6/botan/allocate.h \
 	botan-1.6/botan/base.h botan-1.6/botan/base64.h \
 	botan-1.6/botan/basefilt.h botan-1.6/botan/bit_ops.h \
@@ -500,6 +500,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inifile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/init_def.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/init_opt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/initrng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mdx_hash.Po@am__quote@

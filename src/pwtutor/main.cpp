@@ -3,12 +3,16 @@
 #include <wx/wx.h>
 
 #include "wpwtutor.h"
+#include "enctain.h"
 
 class App : public wxApp
 {
 private:
     /// Password Tutor main dialog
     class WPWTutor*	wmain;
+
+    /// Enctain Library Initializer
+    Enctain::LibraryInitializer	enctain_init;
 
 public:
     /// This function is called during application start-up.

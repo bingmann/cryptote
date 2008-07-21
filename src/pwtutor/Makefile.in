@@ -46,7 +46,7 @@ CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_cryptote_pwtutor_OBJECTS = main.$(OBJEXT) wpwtutor.$(OBJEXT) \
 	wnewpass.$(OBJEXT) wquery.$(OBJEXT) wstats.$(OBJEXT) \
-	wpassgen.$(OBJEXT) prng.$(OBJEXT) fips181.$(OBJEXT)
+	wpassgen.$(OBJEXT) fips181.$(OBJEXT)
 cryptote_pwtutor_OBJECTS = $(am_cryptote_pwtutor_OBJECTS)
 cryptote_pwtutor_LDADD = $(LDADD)
 cryptote_pwtutor_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -100,7 +100,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(WX_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a  $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -190,10 +190,10 @@ cryptote_pwtutor_SOURCES = main.cpp \
 	wquery.cpp wquery.h \
 	wstats.cpp wstats.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
-	../pwgen/prng.cpp ../pwgen/prng.h \
 	../pwgen/fips181.cpp ../pwgen/fips181.h
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS)
+cryptote_pwtutor_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a 
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwtutor-rc.o
 @GOT_RESCOMP_TRUE@cryptote_pwtutor_LDFLAGS = pwtutor-rc.o
 EXTRA_DIST = pwtutor.rc pwtutor.xml \
@@ -249,7 +249,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wnewpass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpassgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpwtutor.Po@am__quote@
@@ -283,20 +282,6 @@ wpassgen.obj: ../pwgen/wpassgen.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/wpassgen.cpp' object='wpassgen.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wpassgen.obj `if test -f '../pwgen/wpassgen.cpp'; then $(CYGPATH_W) '../pwgen/wpassgen.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/wpassgen.cpp'; fi`
-
-prng.o: ../pwgen/prng.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT prng.o -MD -MP -MF $(DEPDIR)/prng.Tpo -c -o prng.o `test -f '../pwgen/prng.cpp' || echo '$(srcdir)/'`../pwgen/prng.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/prng.Tpo $(DEPDIR)/prng.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/prng.cpp' object='prng.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o prng.o `test -f '../pwgen/prng.cpp' || echo '$(srcdir)/'`../pwgen/prng.cpp
-
-prng.obj: ../pwgen/prng.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT prng.obj -MD -MP -MF $(DEPDIR)/prng.Tpo -c -o prng.obj `if test -f '../pwgen/prng.cpp'; then $(CYGPATH_W) '../pwgen/prng.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/prng.cpp'; fi`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/prng.Tpo $(DEPDIR)/prng.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/prng.cpp' object='prng.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o prng.obj `if test -f '../pwgen/prng.cpp'; then $(CYGPATH_W) '../pwgen/prng.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/prng.cpp'; fi`
 
 fips181.o: ../pwgen/fips181.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT fips181.o -MD -MP -MF $(DEPDIR)/fips181.Tpo -c -o fips181.o `test -f '../pwgen/fips181.cpp' || echo '$(srcdir)/'`../pwgen/fips181.cpp

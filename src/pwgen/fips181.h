@@ -19,10 +19,10 @@ class FIPS181
 public:
 
     /// Typedef of the random integer generation function 
-    typedef int	(*randfunc_type)();
+    typedef unsigned int	(*randfunc_type)();
 
     /// Construct a new password generator using given random function.
-    explicit FIPS181(int (*randfunc)());
+    explicit FIPS181(unsigned int (*randfunc)());
 
     /// Randomword will generate a random word and place it in the buffer word.
     int 	randomword(std::string& word, std::string& hyphenated_word, unsigned int minlen, unsigned int maxlen);

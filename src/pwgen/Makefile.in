@@ -45,7 +45,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_cryptote_pwgen_OBJECTS = main.$(OBJEXT) wpassgen.$(OBJEXT) \
-	prng.$(OBJEXT) fips181.$(OBJEXT) myintl.$(OBJEXT)
+	fips181.$(OBJEXT) myintl.$(OBJEXT)
 cryptote_pwgen_OBJECTS = $(am_cryptote_pwgen_OBJECTS)
 cryptote_pwgen_LDADD = $(LDADD)
 cryptote_pwgen_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -99,7 +99,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(WX_LIBS) $(ZLIB_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a  $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -185,11 +185,11 @@ top_srcdir = @top_srcdir@
 cryptote_pwgen_SOURCES = main.cpp \
 	../common/tools.h \
 	wpassgen.cpp wpassgen.h \
-	prng.cpp prng.h \
 	fips181.cpp fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS) $(ZLIB_CFLAGS)
+cryptote_pwgen_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a 
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = pwgen-rc.o
 @GOT_RESCOMP_TRUE@cryptote_pwgen_LDFLAGS = pwgen-rc.o
 EXTRA_DIST = pwgen.rc pwgen.xml \
@@ -245,7 +245,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/myintl.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpassgen.Po@am__quote@
 
 .cpp.o:

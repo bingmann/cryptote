@@ -4,8 +4,8 @@
 #include "wpassgen.h"
 
 #include "common/tools.h"
-#include "prng.h"
 #include "fips181.h"
+#include "enctain.h"
 
 #include <wx/config.h>
 #include <wx/textdlg.h>
@@ -838,15 +838,6 @@ float WPassGen::GetTypeKeybits(const Preset& preset)
     return 0;
 }
 
-// Use one global random generator instance for password.
-static class PRNG randgen;
-
-/// Function with right signature for FIPS181 argument.
-static int randgen_func()
-{
-    return randgen.get_int32();
-}
-
 wxString WPassGen::MakePasswordType0(unsigned int len, const wxString& letters)
 {
     wxString s;
@@ -854,7 +845,7 @@ wxString WPassGen::MakePasswordType0(unsigned int len, const wxString& letters)
 
     for(unsigned int i = 0; i < len; ++i)
     {
-	s.Append( letters[ randgen.get(lettlen) ] );
+	s.Append( letters[ Enctain::RNG::random_uint() % lettlen ] );
     }
 
     return s;
@@ -866,7 +857,7 @@ wxString WPassGen::MakePassword(const Preset& preset)
     {
     case PT_PRONOUNCEABLE:
     {
-	FIPS181 fips181 (randgen_func);
+	FIPS181 fips181 (Enctain::RNG::random_uint);
 
 	std::string word, hypenated_word;
 	fips181.randomword(word, hypenated_word, preset.length, preset.length);
@@ -889,7 +880,7 @@ wxString WPassGen::MakePassword(const Preset& preset)
 
     case PT_PORTNUMBER:
     {
-	return wxString::Format(_T("%u"), randgen.get(65536));
+	return wxString::Format(_T("%u"), Enctain::RNG::random_uint() % 65536);
     }
     }
 

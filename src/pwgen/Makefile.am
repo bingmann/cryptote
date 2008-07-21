@@ -5,12 +5,13 @@ noinst_PROGRAMS = cryptote-pwgen
 cryptote_pwgen_SOURCES = main.cpp \
 	../common/tools.h \
 	wpassgen.cpp wpassgen.h \
-	prng.cpp prng.h \
 	fips181.cpp fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src $(WX_CXXFLAGS) $(ZLIB_CFLAGS)
-LIBS = $(WX_LIBS) $(ZLIB_LIBS)
+cryptote_pwgen_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a 
+
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
+LIBS = $(top_builddir)/libenctain/libenctain.a  $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS)
 
 if GOT_RESCOMP
 

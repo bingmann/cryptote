@@ -52,7 +52,7 @@ am_cryptote_OBJECTS = main.$(OBJEXT) wcryptote.$(OBJEXT) \
 	wfilelist.$(OBJEXT) wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) \
 	wmsgdlg.$(OBJEXT) wbinpage.$(OBJEXT) wpass.$(OBJEXT) \
 	imaglbox.$(OBJEXT) wprefs.$(OBJEXT) wpassgen.$(OBJEXT) \
-	prng.$(OBJEXT) fips181.$(OBJEXT) myintl.$(OBJEXT)
+	fips181.$(OBJEXT) myintl.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -109,7 +109,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(BZLIB_LIBS) $(ZLIB_LIBS) $(WX_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -207,13 +207,12 @@ cryptote_SOURCES = main.cpp \
 	imaglbox.cpp imaglbox.h \
 	wprefs.cpp wprefs.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
-	../pwgen/prng.cpp ../pwgen/prng.h \
 	../pwgen/fips181.cpp ../pwgen/fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 dist_man_MANS = cryptote.1
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) $(WX_CXXFLAGS)
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) 
 @GOT_RESCOMP_TRUE@BUILT_SOURCES = cryptote-rc.o
 @GOT_RESCOMP_TRUE@cryptote_LDFLAGS = cryptote-rc.o
 EXTRA_DIST = cryptote.rc cryptote.xml \
@@ -292,7 +291,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imaglbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/myintl.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wbinpage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wcntprop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wcryptote.Po@am__quote@
@@ -332,20 +330,6 @@ wpassgen.obj: ../pwgen/wpassgen.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/wpassgen.cpp' object='wpassgen.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wpassgen.obj `if test -f '../pwgen/wpassgen.cpp'; then $(CYGPATH_W) '../pwgen/wpassgen.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/wpassgen.cpp'; fi`
-
-prng.o: ../pwgen/prng.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT prng.o -MD -MP -MF $(DEPDIR)/prng.Tpo -c -o prng.o `test -f '../pwgen/prng.cpp' || echo '$(srcdir)/'`../pwgen/prng.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/prng.Tpo $(DEPDIR)/prng.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/prng.cpp' object='prng.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o prng.o `test -f '../pwgen/prng.cpp' || echo '$(srcdir)/'`../pwgen/prng.cpp
-
-prng.obj: ../pwgen/prng.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT prng.obj -MD -MP -MF $(DEPDIR)/prng.Tpo -c -o prng.obj `if test -f '../pwgen/prng.cpp'; then $(CYGPATH_W) '../pwgen/prng.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/prng.cpp'; fi`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/prng.Tpo $(DEPDIR)/prng.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../pwgen/prng.cpp' object='prng.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o prng.obj `if test -f '../pwgen/prng.cpp'; then $(CYGPATH_W) '../pwgen/prng.cpp'; else $(CYGPATH_W) '$(srcdir)/../pwgen/prng.cpp'; fi`
 
 fips181.o: ../pwgen/fips181.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT fips181.o -MD -MP -MF $(DEPDIR)/fips181.Tpo -c -o fips181.o `test -f '../pwgen/fips181.cpp' || echo '$(srcdir)/'`../pwgen/fips181.cpp

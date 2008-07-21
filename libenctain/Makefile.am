@@ -9,6 +9,7 @@ noinst_LIBRARIES = libenctain.a
 libenctain_a_SOURCES = \
 	bytebuff.h \
 	enctain.cpp enctain.h \
+	initrng.cpp \
 	\
 	botan-1.6/botan/aes.h \
 	botan-1.6/botan/allocate.h \

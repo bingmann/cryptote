@@ -2261,18 +2261,6 @@ error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutpu
 
 } // namespace internal
 
-// *** Library Initialization and Shutdown Object ***
-
-void LibraryInitializer::initialize(const std::string& args)
-{
-    Botan::LibraryInitializer::initialize(args);
-}
-
-void LibraryInitializer::deinitialize()
-{
-    Botan::LibraryInitializer::deinitialize();
-}
-
 // *** Pimpl Stubs for Container ***
 
 Container::Container()

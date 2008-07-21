@@ -4,6 +4,8 @@
 #include <wx/cmdline.h>
 
 #include "wpassgen.h"
+#include "enctain.h"
+
 #include "common/myintl.h"
 #include "locale/de.h"
 #include "locale/wxstd/de.h"
@@ -28,6 +30,9 @@ private:
 
     /// Locale object holding translations
     MyLocale*		locale;
+
+    /// Enctain Library Initializer
+    Enctain::LibraryInitializer	enctain_init;
 
 public:
     /// This function is called during application start-up.
