@@ -3,6 +3,7 @@
 
 #include <wx/wx.h>
 // begin wxGlade: ::dependencies
+#include <wx/treectrl.h>
 #include <wx/statline.h>
 // end wxGlade
 
@@ -12,13 +13,59 @@
 // begin wxGlade: ::extracode
 // end wxGlade
 
+class WPasswordList : public wxDialog
+{
+public:
+    // begin wxGlade: WPasswordList::ids
+    enum {
+        myID_CHANGE = wxID_HIGHEST + 1000
+    };
+    // end wxGlade
+
+    WPasswordList(class WCryptoTE* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+protected:
+
+    /// Reference to main window
+    class WCryptoTE* wmain;
+
+    /// Update listctrl
+    void	ReinsertList();
+
+private:
+    // begin wxGlade: WPasswordList::methods
+    void set_properties();
+    void do_layout();
+    // end wxGlade
+
+protected:
+    // begin wxGlade: WPasswordList::attributes
+    wxTreeCtrl* treectrl;
+    wxButton* buttonAdd;
+    wxButton* buttonChange;
+    wxButton* buttonRemove;
+    wxButton* buttonOK;
+    // end wxGlade
+
+public:
+    virtual void OnButtonAdd(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnButtonChange(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnButtonRemove(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnTreectrlSelectionChanged(wxTreeEvent &event); // wxGlade: <event_handler>
+
+protected:
+    DECLARE_EVENT_TABLE();
+
+}; // wxGlade: end class
+
 class WSetPassword : public wxDialog
 {
 public:
     // begin wxGlade: WSetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1000,
-        myID_TEXTVERIFY = wxID_HIGHEST + 1002
+        myID_TEXTPASS = wxID_HIGHEST + 1002,
+        myID_TEXTVERIFY = wxID_HIGHEST + 1004
     };
     // end wxGlade
 
@@ -63,7 +110,7 @@ class WGetPassword : public wxDialog
 public:
     // begin wxGlade: WGetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1004
+        myID_TEXTPASS = wxID_HIGHEST + 1006
     };
     // end wxGlade
 

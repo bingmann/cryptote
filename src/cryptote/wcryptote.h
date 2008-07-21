@@ -24,7 +24,7 @@ enum {
     // Main Window Menu Items
 
     myID_MENU_CONTAINER_SHOWLIST,
-    myID_MENU_CONTAINER_SETPASS,
+    myID_MENU_CONTAINER_PASSLIST,
 
     myID_MENU_SUBFILE_NEW,
     myID_MENU_SUBFILE_OPEN,
@@ -86,6 +86,10 @@ enum {
     myID_FILETYPE_TEXT_LARGE,
     myID_FILETYPE_IMAGE_LARGE,
 
+    // *** Other Icons / Identifiers
+
+    myID_IMAGE_USERKEYSLOT,
+
     // *** Variable Menu Item Ranges
 
     myID_MENU_EDIT_INSERT_PASSWORD_FIRST = wxID_HIGHEST + 1000,
@@ -143,6 +147,9 @@ public:
 
     /// Update the window title when a container is loaded.
     void	UpdateTitle();
+
+    /// Return the current file name.
+    wxString	GetSavedFilename();
 
     /// Toggle the filelist pane on or off and set the corresponding button
     void	ShowFilelistPane(bool on);
@@ -236,7 +243,7 @@ public:
 
     void	OnMenuContainerShowList(wxCommandEvent& event);
     void	OnMenuContainerProperties(wxCommandEvent& event);
-    void	OnMenuContainerSetPassword(wxCommandEvent& event);
+    void	OnMenuContainerPasswordList(wxCommandEvent& event);
 
     void	OnMenuContainerPreferences(wxCommandEvent& event);
 

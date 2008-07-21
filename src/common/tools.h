@@ -7,6 +7,7 @@
 #include <wx/string.h>
 #include <string>
 #include <time.h>
+#include <sstream>
 
 // *** Missing in 2.8, but always added by wxGlade ***
 #ifndef wxTHICK_FRAME
@@ -45,6 +46,16 @@ static inline std::string strWX2STL(const wxString& str) {
 #else
     return std::string(str.GetData(), str.Length());
 #endif
+}
+
+// *** Return a string representation of T ***
+
+template <typename T>
+static inline std::string toSTLString(const T& value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
 }
 
 // *** Return the current unix timestamp packed into a std::string ***

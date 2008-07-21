@@ -3,13 +3,178 @@
 
 #include "wpass.h"
 #include "wcryptote.h"
+#include "bmpcat.h"
 #include "wmsgdlg.h"
 #include "common/tools.h"
 
 #include <wx/filename.h>
+#include <wx/imaglist.h>
 
 // begin wxGlade: ::extracode
 // end wxGlade
+
+WPasswordList::WPasswordList(WCryptoTE* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME),
+      wmain(parent)
+{
+    // begin wxGlade: WPasswordList::WPasswordList
+    treectrl = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
+    buttonAdd = new wxButton(this, wxID_ADD, wxEmptyString);
+    buttonChange = new wxButton(this, myID_CHANGE, _("&Change"));
+    buttonRemove = new wxButton(this, wxID_REMOVE, wxEmptyString);
+    buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+
+    SetMinSize(wxSize(400, 350));
+
+    // Initialize the Password TreeCtrl Imagelist
+
+    BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
+    wxBitmap bmp_userkeyslot = bitmapcatalog->GetBitmap(myID_IMAGE_USERKEYSLOT);
+
+    wxImageList *imglist = new wxImageList(bmp_userkeyslot.GetWidth(), bmp_userkeyslot.GetHeight());
+    imglist->Add(bmp_userkeyslot);
+    treectrl->AssignImageList(imglist);
+
+    ReinsertList();
+}
+
+void WPasswordList::set_properties()
+{
+    // begin wxGlade: WPasswordList::set_properties
+    SetTitle(_("Password Slots"));
+    // end wxGlade
+}
+
+void WPasswordList::do_layout()
+{
+    // begin wxGlade: WPasswordList::do_layout
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
+    wxGridSizer* sizer3 = new wxGridSizer(1, 3, 0, 0);
+    sizer2->Add(treectrl, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 12);
+    sizer3->Add(buttonAdd, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer3->Add(buttonChange, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer3->Add(buttonRemove, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer2->Add(sizer3, 0, wxALIGN_CENTER_HORIZONTAL, 0);
+    sizer1->Add(sizer2, 1, wxEXPAND, 0);
+    wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
+    sizer1->Add(staticline1, 0, wxEXPAND, 0);
+    sizer1->Add(buttonOK, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 6);
+    SetSizer(sizer1);
+    sizer1->Fit(this);
+    Layout();
+    Centre();
+    // end wxGlade
+}
+
+BEGIN_EVENT_TABLE(WPasswordList, wxDialog)
+    // begin wxGlade: WPasswordList::event_table
+    EVT_TREE_SEL_CHANGED(wxID_ANY, WPasswordList::OnTreectrlSelectionChanged)
+    EVT_BUTTON(wxID_ADD, WPasswordList::OnButtonAdd)
+    EVT_BUTTON(myID_CHANGE, WPasswordList::OnButtonChange)
+    EVT_BUTTON(wxID_REMOVE, WPasswordList::OnButtonRemove)
+    EVT_BUTTON(wxID_OK, WPasswordList::OnButtonOK)
+    // end wxGlade
+END_EVENT_TABLE();
+
+class wxTreeItemDataInteger : public wxTreeItemData
+{
+public:
+    unsigned int	slot;
+
+    wxTreeItemDataInteger(unsigned int s)
+	: wxTreeItemData(), slot(s)
+    { }
+};
+
+void WPasswordList::ReinsertList()
+{
+    treectrl->DeleteAllItems();
+
+    wxTreeItemId rootitem = treectrl->AddRoot(_("Root"));
+
+    unsigned int slots = wmain->container.CountKeySlots();
+
+    for (unsigned int s = 0; s < slots; ++s)
+    {
+	treectrl->AppendItem(rootitem,
+			     wxString::Format(_T("Slot: %u - User: myself\n   Created: abcde\n   Last Match: 123456"), s),
+			     0, -1,
+			     new wxTreeItemDataInteger(s));
+    }
+
+    buttonChange->Enable(false);
+    buttonRemove->Enable(false);
+}
+
+void WPasswordList::OnTreectrlSelectionChanged(wxTreeEvent& WXUNUSED(event))
+{
+    bool selexist = treectrl->GetSelection().IsOk();
+
+    buttonChange->Enable( selexist );
+    buttonRemove->Enable( selexist );
+}
+
+void WPasswordList::OnButtonAdd(wxCommandEvent& WXUNUSED(event))
+{
+    WSetPassword passdlg(this, wmain->GetSavedFilename());
+    if (passdlg.ShowModal() != wxID_OK) return;
+
+    unsigned int newslot = wmain->container.AddKeySlot( strWX2STL(passdlg.GetPass()) );
+
+    // Add key slot metadata.
+    wmain->container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-CTime", strTimeStampNow());
+
+    wmain->SetModified();
+
+    ReinsertList();
+}
+
+void WPasswordList::OnButtonChange(wxCommandEvent& WXUNUSED(event))
+{
+    wxTreeItemId itemid = treectrl->GetSelection();
+    if (!itemid.IsOk()) return;
+
+    wxTreeItemDataInteger* item = dynamic_cast<wxTreeItemDataInteger*>( treectrl->GetItemData(itemid) );
+    if (!item) return;
+
+    if (item->slot >= wmain->container.CountKeySlots()) return;
+
+    WSetPassword passdlg(this, wmain->GetSavedFilename());
+    if (passdlg.ShowModal() != wxID_OK) return;
+
+    wmain->container.ChangeKeySlot(item->slot, strWX2STL(passdlg.GetPass()) );
+    wmain->SetModified();
+
+    ReinsertList();
+}
+
+void WPasswordList::OnButtonRemove(wxCommandEvent& WXUNUSED(event))
+{
+    wxTreeItemId itemid = treectrl->GetSelection();
+    if (!itemid.IsOk()) return;
+
+    wxTreeItemDataInteger* item = dynamic_cast<wxTreeItemDataInteger*>( treectrl->GetItemData(itemid) );
+    if (!item) return;
+
+    if (item->slot >= wmain->container.CountKeySlots()) return;
+
+    wmain->container.DeleteKeySlot(item->slot);
+    wmain->SetModified();
+
+    ReinsertList();
+}
+
+void WPasswordList::OnButtonOK(wxCommandEvent& WXUNUSED(event))
+{
+    EndModal(wxID_OK);
+}
+
+// wxGlade: add WPasswordList event handlers
 
 WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME)
@@ -119,12 +284,12 @@ static inline std::string checkRepetition(unsigned int plen, const std::string& 
     {
 	bool repeated = true;
 	unsigned int j;
-	
+
 	for (j = 0; j < plen && (i+j+plen) < str.size(); ++j)
 	{
 	    repeated = (repeated && (str[i+j] == str[i+j+plen]));
 	}
-	 
+
 	if (j < plen) repeated = false;
 
 	if (repeated) {
@@ -168,7 +333,7 @@ static int calcPasswordStrength(const std::string& str)
     unsigned int score = str.size() * 4;
 
     // for each repeated character reduce score
-    
+
     score += ( checkRepetition(1, str).size() - str.size() ) * 1;
     score += ( checkRepetition(2, str).size() - str.size() ) * 1;
     score += ( checkRepetition(3, str).size() - str.size() ) * 1;
@@ -198,7 +363,7 @@ static int calcPasswordStrength(const std::string& str)
 
     // +10 for passwords with both lower and upper chars.
     if (upperchars > 0 && lowerchars > 0) score += 10;
-    
+
     // +10 for passwords with both chars and numbers
     if (numbers > 0 && (upperchars+lowerchars) > 0) score += 10;
 
@@ -213,7 +378,7 @@ static int calcPasswordStrength(const std::string& str)
 
     // -15 for password with only numbers
     if (numbers == str.size()) score -= 15;
-    
+
     return score;
 }
 
@@ -229,7 +394,7 @@ void WSetPassword::OnTextPass(wxCommandEvent& WXUNUSED(event))
 
     if (score < 34) {
 	gaugecolor = wxColour(230,0,0);
-	if (score < 10) 
+	if (score < 10)
 	    buttonOK->Disable();
 	else
 	    buttonOK->Enable();
@@ -359,9 +524,9 @@ void WGetPassword::OnTextPassEnter(wxCommandEvent& WXUNUSED(event))
     EndModal(wxID_OK);
 }
 
-// wxGlade: add WGetPassword event handlers
-
 wxString WGetPassword::GetPass() const
 {
     return textctrlPass->GetValue();
 }
+
+// wxGlade: add WGetPassword event handlers

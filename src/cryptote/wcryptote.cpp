@@ -671,6 +671,14 @@ void WCryptoTE::DeleteSubFile(unsigned int sfid, bool resetfilelist)
     SetModified();
 }
 
+wxString WCryptoTE::GetSavedFilename()
+{
+    if (container_filename.IsOk())
+	return container_filename.GetFullName();
+
+    return wxString(_("Untitled.ect"));
+}
+
 void WCryptoTE::ShowFilelistPane(bool on)
 {
     if (on)
@@ -944,7 +952,10 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	WSetPassword passdlg(this, filename);
 	if (passdlg.ShowModal() != wxID_OK) return false;
 
-	container.AddKeySlot( strWX2STL(passdlg.GetPass()) );
+	unsigned int newslot = container.AddKeySlot( strWX2STL(passdlg.GetPass()) );
+
+	// Add key slot metadata.
+	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-CTime", strTimeStampNow());
     }
 
     // release share lock
@@ -1368,9 +1379,9 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 		   _("&Properties ...\tAlt+Enter"),
 		   _("Show metadata properties of the encrypted container."));
 
-    appendMenuItem(menuContainer, myID_MENU_CONTAINER_SETPASS,
-		   _("&Change Password ..."),
-		   _("Change the encryption password of the current container."));
+    appendMenuItem(menuContainer, myID_MENU_CONTAINER_PASSLIST,
+		   _("Password &List ..."),
+		   _("List and modify encryption password slots of the current container."));
 
     menuContainer->AppendSeparator();
 
@@ -1855,16 +1866,10 @@ void WCryptoTE::OnMenuContainerProperties(wxCommandEvent& WXUNUSED(event))
     }
 }
 
-void WCryptoTE::OnMenuContainerSetPassword(wxCommandEvent& WXUNUSED(event))
+void WCryptoTE::OnMenuContainerPasswordList(wxCommandEvent& WXUNUSED(event))
 {
-    wxString filename = container_filename.IsOk() ? container_filename.GetFullName() : wxString(_("Untitled.ect"));
-
-    WSetPassword passdlg(this, filename);
-    if (passdlg.ShowModal() != wxID_OK) return;
-
-    container.ChangeKeySlot(0, strWX2STL(passdlg.GetPass()) );
-
-    SetModified();
+    WPasswordList dlg(this);
+    dlg.ShowModal();
 }
 
 void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
@@ -2632,7 +2637,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
 
     EVT_MENU	(myID_MENU_CONTAINER_SHOWLIST, WCryptoTE::OnMenuContainerShowList)
     EVT_MENU	(wxID_PROPERTIES,	WCryptoTE::OnMenuContainerProperties)
-    EVT_MENU	(myID_MENU_CONTAINER_SETPASS, WCryptoTE::OnMenuContainerSetPassword)
+    EVT_MENU	(myID_MENU_CONTAINER_PASSLIST, WCryptoTE::OnMenuContainerPasswordList)
 
     EVT_MENU	(wxID_PREFERENCES,	WCryptoTE::OnMenuContainerPreferences)
 

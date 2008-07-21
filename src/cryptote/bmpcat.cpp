@@ -165,7 +165,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { wxID_CLOSE,			BU_MENU, _T("container-close"), wxNullBitmap },
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, _T("container-showsubfilelist"), wxNullBitmap },
     { wxID_PROPERTIES,			BU_MENU, _T("container-properties"), wxNullBitmap },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, _T("container-password"), wxNullBitmap },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, _T("container-password"), wxNullBitmap },
     { wxID_PREFERENCES,			BU_MENU, _T("application-preferences"), wxNullBitmap },
     { wxID_EXIT,			BU_MENU, _T("application-exit"), wxNullBitmap },
 
@@ -216,7 +216,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { wxID_CLOSE,			BU_TOOLBAR, _T("container-close-tool"), wxNullBitmap },
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, _T("container-showsubfilelist-tool"), wxNullBitmap },
     { wxID_PROPERTIES,			BU_TOOLBAR, _T("container-properties-tool"), wxNullBitmap },
-    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, _T("container-setpassword-tool"), wxNullBitmap },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, _T("container-setpassword-tool"), wxNullBitmap },
     { wxID_PREFERENCES,			BU_TOOLBAR, _T("application-options"), wxNullBitmap },
     { wxID_EXIT,			BU_TOOLBAR, _T("application-exit-tool"), wxNullBitmap },
 
@@ -277,6 +277,10 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     { wxICON_WARNING,			BU_GENERAL, _T("messagebox-warning"), wxNullBitmap },
     { wxICON_QUESTION,			BU_GENERAL, _T("messagebox-question"), wxNullBitmap },
     { wxICON_INFORMATION,		BU_GENERAL, _T("messagebox-information"), wxNullBitmap },
+
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, _T("userkeyslot"), wxNullBitmap },
 
     { 0, BU_GENERAL, wxEmptyString, wxNullBitmap }
 };
@@ -399,6 +403,7 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/messagebox-info-32.h"
 #include "art/crystal/messagebox-warning-32.h"
 #include "art/crystal/snapshot.h"
+#include "art/crystal/userkeyslot.h"
 #include "art/crystal/view-choose-16.h"
 #include "art/crystal/view-choose-22.h"
 #include "art/crystal/view-detailed-16.h"
@@ -427,7 +432,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(crystal_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(crystal_document_properties_16_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
     { wxID_PREFERENCES,			BU_MENU, BUILTIN(crystal_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(crystal_application_exit_16_png) },
 
@@ -475,7 +480,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(crystal_view_choose_22_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(crystal_document_properties_22_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(crystal_document_password_22_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, BUILTIN(crystal_document_password_22_png) },
     { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(crystal_application_options_22_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(crystal_application_exit_22_png) },
 
@@ -533,6 +538,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
     { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(crystal_file_text_32_png) },
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(crystal_file_image_32_png) },
 
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(crystal_userkeyslot_png) },
+
     { 0, BU_GENERAL, NULL, 0 }
 };
 
@@ -548,7 +557,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(crystal_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(crystal_document_properties_16_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, BUILTIN(crystal_document_password_16_png) },
     { wxID_PREFERENCES,			BU_MENU, BUILTIN(crystal_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(crystal_application_exit_16_png) },
 
@@ -596,7 +605,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(crystal_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(crystal_document_properties_16_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(crystal_document_password_16_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, BUILTIN(crystal_document_password_16_png) },
     { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(crystal_application_options_16_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(crystal_application_exit_16_png) },
 
@@ -653,6 +662,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     { myID_FILETYPE_BINARY_LARGE,	BU_FILETYPE, BUILTIN(crystal_file_binary_32_png) },
     { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(crystal_file_text_32_png) },
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(crystal_file_image_32_png) },
+
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(crystal_userkeyslot_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -713,6 +726,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 #include "art/slick/messagebox-information.h"
 #include "art/slick/messagebox-warning.h"
 #include "art/slick/snapshot.h"
+#include "art/slick/userkeyslot.h"
 #include "art/slick/view-choose-16.h"
 #include "art/slick/view-choose-22.h"
 #include "art/slick/view-detailed-16.h"
@@ -738,7 +752,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(slick_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(slick_document_properties_16_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(slick_document_password_16_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, BUILTIN(slick_document_password_16_png) },
     { wxID_PREFERENCES,			BU_MENU, BUILTIN(slick_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(slick_application_exit_16_png) },
 
@@ -783,7 +797,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(slick_view_choose_22_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(slick_document_properties_22_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(slick_document_password_22_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, BUILTIN(slick_document_password_22_png) },
     { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(slick_application_options_22_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(slick_application_exit_22_png) },
 
@@ -835,6 +849,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
     { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(slick_file_text_32_png) },
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(slick_file_image_32_png) },
 
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(slick_userkeyslot_png) },
+
     { 0, BU_GENERAL, NULL, 0 }
 };
 
@@ -850,7 +868,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(slick_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(slick_document_properties_16_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(slick_document_password_16_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, BUILTIN(slick_document_password_16_png) },
     { wxID_PREFERENCES,			BU_MENU, BUILTIN(slick_application_options_16_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(slick_application_exit_16_png) },
 
@@ -896,7 +914,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(slick_view_choose_16_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(slick_document_properties_16_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(slick_document_password_16_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, BUILTIN(slick_document_password_16_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(slick_application_exit_16_png) },
 
     { myID_MENU_SUBFILE_NEW,		BU_TOOLBAR, BUILTIN(slick_document_new_16_png) },
@@ -950,6 +968,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     { myID_FILETYPE_BINARY_LARGE,	BU_FILETYPE, BUILTIN(slick_file_binary_32_png) },
     { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(slick_file_text_32_png) },
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(slick_file_image_32_png) },
+
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(slick_userkeyslot_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -1027,6 +1049,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 #include "art/gnome/subfile-open-tool.h"
 #include "art/gnome/subfile-open.h"
 #include "art/gnome/subfile-properties.h"
+#include "art/gnome/userkeyslot.h"
 #include "art/gnome/view-zoom.h"
 #include "art/gnome/view-zoom-increase.h"
 #include "art/gnome/view-zoom-decrease.h"
@@ -1044,7 +1067,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(gnome_container_showlist_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(gnome_container_properties_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(gnome_container_password_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, BUILTIN(gnome_container_password_png) },
     { wxID_PREFERENCES,			BU_MENU, BUILTIN(gnome_application_preferences_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(gnome_application_exit_png) },
 
@@ -1093,7 +1116,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(gnome_container_showlist_tool_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(gnome_container_properties_tool_png) },
-    // { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(gnome_container_password_tool_png) },
+    // { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, BUILTIN(gnome_container_password_tool_png) },
     { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(gnome_application_preferences_tool_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(gnome_application_exit_tool_png) },
 
@@ -1151,6 +1174,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
     { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(gnome_file_text_32_png) },
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(gnome_file_image_32_png) },
 
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(gnome_userkeyslot_png) },
+
     { 0, BU_GENERAL, NULL, 0 }
 };
 
@@ -1166,7 +1193,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_MENU, BUILTIN(gnome_container_showlist_png) },
     { wxID_PROPERTIES,			BU_MENU, BUILTIN(gnome_container_properties_png) },
-    { myID_MENU_CONTAINER_SETPASS,	BU_MENU, BUILTIN(gnome_container_password_png) },
+    { myID_MENU_CONTAINER_PASSLIST,	BU_MENU, BUILTIN(gnome_container_password_png) },
     { wxID_PREFERENCES,			BU_MENU, BUILTIN(gnome_application_preferences_png) },
     { wxID_EXIT,			BU_MENU, BUILTIN(gnome_application_exit_png) },
 
@@ -1215,7 +1242,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
 
     { myID_MENU_CONTAINER_SHOWLIST,	BU_TOOLBAR, BUILTIN(gnome_container_showlist_png) },
     { wxID_PROPERTIES,			BU_TOOLBAR, BUILTIN(gnome_container_properties_png) },
-    // { myID_MENU_CONTAINER_SETPASS,	BU_TOOLBAR, BUILTIN(gnome_container_password_png) },
+    // { myID_MENU_CONTAINER_PASSLIST,	BU_TOOLBAR, BUILTIN(gnome_container_password_png) },
     { wxID_PREFERENCES,			BU_TOOLBAR, BUILTIN(gnome_application_preferences_png) },
     { wxID_EXIT,			BU_TOOLBAR, BUILTIN(gnome_application_exit_png) },
 
@@ -1272,6 +1299,10 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
     { myID_FILETYPE_BINARY_LARGE,	BU_FILETYPE, BUILTIN(gnome_file_binary_32_png) },
     { myID_FILETYPE_TEXT_LARGE,		BU_FILETYPE, BUILTIN(gnome_file_text_32_png) },
     { myID_FILETYPE_IMAGE_LARGE,	BU_FILETYPE, BUILTIN(gnome_file_image_32_png) },
+
+    // Other Images
+
+    { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(gnome_userkeyslot_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };

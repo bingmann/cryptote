@@ -70,6 +70,7 @@ noinst_HEADERS = \
 	messagebox-info-32.h \
 	messagebox-warning-32.h \
 	snapshot.h \
+	userkeyslot.h \
 	view-choose-16.h \
 	view-choose-22.h \
 	view-detailed-16.h \
@@ -153,6 +154,7 @@ EXTRA_DIST = \
 	messagebox-warning-32.png \
 	snapshot.png \
 	snapshot.xcf \
+	userkeyslot.png \
 	view-choose-16.png \
 	view-choose-22.png \
 	view-detailed-16.png \
