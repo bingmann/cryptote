@@ -76,7 +76,7 @@ void WPasswordList::ReinsertList()
 {
     listbox->Clear();
     listbox->SetSelection(-1);
-    listbox->SetTextSpacing(8);
+    listbox->SetTextSpacing(7);
 
     BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
     wxBitmap bmp_userkeyslot = bitmapcatalog->GetBitmap(myID_IMAGE_USERKEYSLOT);
@@ -96,30 +96,30 @@ void WPasswordList::ReinsertList()
 
 	std::string ctime = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-CTime");
 	
-	text += "\n    Created: ";
+	text += _("\n    Created: ");
 
 	if (ctime.size() == sizeof(time_t)) {
 	    wxDateTime datetime (*(time_t*)ctime.data());
 	    text += datetime.Format(_("%c"));
 	}
 	else {
-	    text += "<never-created>";
+	    text += _("<never-created>");
 	}
 
 	std::string atime = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-ATime");
 
-	text += "\n    Last Match: ";
+	text += _("\n    Last Match: ");
 
 	if (atime.size() == sizeof(time_t)) {
 	    wxDateTime datetime (*(time_t*)atime.data());
 	    text += datetime.Format(_("%c"));
 	}
 	else {
-	    text += "<never-matched>";
+	    text += _("<never-matched>");
 	}
 
 	if (cnt.GetUsedKeySlot() == (int)s) {
-	    text += "\n    Active";
+	    text += _("\n    Active");
 	}
 
 	listbox->Append(text);
