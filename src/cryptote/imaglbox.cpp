@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------------
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
     #pragma hdrstop
@@ -24,8 +24,9 @@
 
 #include "imaglbox.h"
 
-#include "wx/settings.h"
-#include "wx/dc.h"
+#include <wx/settings.h>
+#include <wx/dc.h>
+#include <wx/dcclient.h>
 
 // ----------------------------------------------------------------------------
 // constants
@@ -132,6 +133,8 @@ void wxImageListBox::SetTextSpacing(wxCoord vertical)
 
 void wxImageListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const
 {
+    dc.SetFont( GetFont() );
+
     // Set correct text colour for selected items
     if ( wxVListBox::GetSelection() == (int)n )
     {
@@ -163,7 +166,7 @@ void wxImageListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const
     wxString str = OnGetItemString(n);
 
     int strHeight = 0, strWidth = 0;
-    dc.GetTextExtent(str, &strWidth, &strHeight);
+    dc.GetMultiLineTextExtent(str, &strWidth, &strHeight);
 
     dc.DrawLabel(str,
 		 wxRect(rect.x + textIndent,
@@ -175,8 +178,10 @@ void wxImageListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const
 
 wxCoord wxImageListBox::OnMeasureItem(size_t n) const
 {
+    wxClientDC dc((wxWindow*)this);
+
     int textHeight = 0, textWidth = 0;
-    GetTextExtent( OnGetItemString(n), &textWidth, &textHeight);
+    dc.GetMultiLineTextExtent( OnGetItemString(n), &textWidth, &textHeight);
     textHeight += 2 * m_text_spacing_vertical;
 
     int imgHeight = 0;
