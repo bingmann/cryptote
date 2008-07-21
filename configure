@@ -729,11 +729,6 @@ ZLIB_CFLAGS
 ZLIB_LIBS
 BZLIB_CFLAGS
 BZLIB_LIBS
-LIBGCRYPT_CONFIG
-LIBGCRYPT_CFLAGS
-LIBGCRYPT_LIBS
-HAVE_LIBGCRYPT_TRUE
-HAVE_LIBGCRYPT_FALSE
 RESCOMP
 GOT_RESCOMP_TRUE
 GOT_RESCOMP_FALSE
@@ -1348,8 +1343,6 @@ Optional Packages:
                     /usr/local or /usr if not found in /usr/local
   --with-bzlib=DIR root directory path of bzip2 installation defaults to
                     /usr/local or /usr if not found in /usr/local
-  --with-libgcrypt-prefix=PFX
-                          prefix where LIBGCRYPT is installed (optional)
 
 Some influential environment variables:
   CC          C compiler command
@@ -5698,162 +5691,6 @@ Install the bzip2 development package using your distribution's package manager.
    { (exit 1); exit 1; }; }
 fi
 
-# Check for libgcrypt which is only used in test cases
-
-
-# Check whether --with-libgcrypt-prefix was given.
-if test "${with_libgcrypt_prefix+set}" = set; then
-  withval=$with_libgcrypt_prefix; libgcrypt_config_prefix="$withval"
-else
-  libgcrypt_config_prefix=""
-fi
-
-  if test x$libgcrypt_config_prefix != x ; then
-     if test x${LIBGCRYPT_CONFIG+set} != xset ; then
-        LIBGCRYPT_CONFIG=$libgcrypt_config_prefix/bin/libgcrypt-config
-     fi
-  fi
-
-  # Extract the first word of "libgcrypt-config", so it can be a program name with args.
-set dummy libgcrypt-config; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_path_LIBGCRYPT_CONFIG+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  case $LIBGCRYPT_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_LIBGCRYPT_CONFIG="$LIBGCRYPT_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_LIBGCRYPT_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_path_LIBGCRYPT_CONFIG" && ac_cv_path_LIBGCRYPT_CONFIG="no"
-  ;;
-esac
-fi
-LIBGCRYPT_CONFIG=$ac_cv_path_LIBGCRYPT_CONFIG
-if test -n "$LIBGCRYPT_CONFIG"; then
-  { echo "$as_me:$LINENO: result: $LIBGCRYPT_CONFIG" >&5
-echo "${ECHO_T}$LIBGCRYPT_CONFIG" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-  tmp=1.2.2
-  if echo "$tmp" | grep ':' >/dev/null 2>/dev/null ; then
-     req_libgcrypt_api=`echo "$tmp"     | sed 's/\(.*\):\(.*\)/\1/'`
-     min_libgcrypt_version=`echo "$tmp" | sed 's/\(.*\):\(.*\)/\2/'`
-  else
-     req_libgcrypt_api=0
-     min_libgcrypt_version="$tmp"
-  fi
-
-  { echo "$as_me:$LINENO: checking for LIBGCRYPT - version >= $min_libgcrypt_version" >&5
-echo $ECHO_N "checking for LIBGCRYPT - version >= $min_libgcrypt_version... $ECHO_C" >&6; }
-  ok=no
-  if test "$LIBGCRYPT_CONFIG" != "no" ; then
-    req_major=`echo $min_libgcrypt_version | \
-               sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\1/'`
-    req_minor=`echo $min_libgcrypt_version | \
-               sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\2/'`
-    req_micro=`echo $min_libgcrypt_version | \
-               sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\3/'`
-    libgcrypt_config_version=`$LIBGCRYPT_CONFIG --version`
-    major=`echo $libgcrypt_config_version | \
-               sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1/'`
-    minor=`echo $libgcrypt_config_version | \
-               sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\2/'`
-    micro=`echo $libgcrypt_config_version | \
-               sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\3/'`
-    if test "$major" -gt "$req_major"; then
-        ok=yes
-    else
-        if test "$major" -eq "$req_major"; then
-            if test "$minor" -gt "$req_minor"; then
-               ok=yes
-            else
-               if test "$minor" -eq "$req_minor"; then
-                   if test "$micro" -ge "$req_micro"; then
-                     ok=yes
-                   fi
-               fi
-            fi
-        fi
-    fi
-  fi
-  if test $ok = yes; then
-    { echo "$as_me:$LINENO: result: yes ($libgcrypt_config_version)" >&5
-echo "${ECHO_T}yes ($libgcrypt_config_version)" >&6; }
-  else
-    { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-  fi
-  if test $ok = yes; then
-     # If we have a recent libgcrypt, we should also check that the
-     # API is compatible
-     if test "$req_libgcrypt_api" -gt 0 ; then
-        tmp=`$LIBGCRYPT_CONFIG --api-version 2>/dev/null || echo 0`
-        if test "$tmp" -gt 0 ; then
-           { echo "$as_me:$LINENO: checking LIBGCRYPT API version" >&5
-echo $ECHO_N "checking LIBGCRYPT API version... $ECHO_C" >&6; }
-           if test "$req_libgcrypt_api" -eq "$tmp" ; then
-             { echo "$as_me:$LINENO: result: okay" >&5
-echo "${ECHO_T}okay" >&6; }
-           else
-             ok=no
-             { echo "$as_me:$LINENO: result: does not match. want=$req_libgcrypt_api got=$tmp" >&5
-echo "${ECHO_T}does not match. want=$req_libgcrypt_api got=$tmp" >&6; }
-           fi
-        fi
-     fi
-  fi
-  if test $ok = yes; then
-    LIBGCRYPT_CFLAGS=`$LIBGCRYPT_CONFIG --cflags`
-    LIBGCRYPT_LIBS=`$LIBGCRYPT_CONFIG --libs`
-    :
-  else
-    LIBGCRYPT_CFLAGS=""
-    LIBGCRYPT_LIBS=""
-    :
-  fi
-
-
-
-
- if test "$LIBGCRYPT_LIBS" != ""; then
-  HAVE_LIBGCRYPT_TRUE=
-  HAVE_LIBGCRYPT_FALSE='#'
-else
-  HAVE_LIBGCRYPT_TRUE='#'
-  HAVE_LIBGCRYPT_FALSE=
-fi
-
-
-if test "$LIBGCRYPT_LIBS" == ""; then
-    { echo "$as_me:$LINENO: WARNING: libgcrypt is not installed.
-The main programs can still be built, the library is only
-used in test cases." >&5
-echo "$as_me: WARNING: libgcrypt is not installed.
-The main programs can still be built, the library is only
-used in test cases." >&2;}
-fi
-
 # Win32 tools to add icons to the programs
 
 if $ON_WIN32; then
@@ -5966,7 +5803,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile libenctain/speedtest/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile src/locale/Makefile src/locale/wxstd/Makefile desktop/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/pwgen/Makefile src/pwtutor/Makefile src/cryptote/Makefile src/locale/Makefile src/locale/wxstd/Makefile desktop/Makefile"
 
 
 if $ON_WIN32; then
@@ -6139,13 +5976,6 @@ if test -z "${GCOV_TRUE}" && test -z "${GCOV_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"GCOV\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"GCOV\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${HAVE_LIBGCRYPT_TRUE}" && test -z "${HAVE_LIBGCRYPT_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"HAVE_LIBGCRYPT\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"HAVE_LIBGCRYPT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -6613,7 +6443,6 @@ do
     "libstc/Makefile") CONFIG_FILES="$CONFIG_FILES libstc/Makefile" ;;
     "libenctain/Makefile") CONFIG_FILES="$CONFIG_FILES libenctain/Makefile" ;;
     "libenctain/testsuite/Makefile") CONFIG_FILES="$CONFIG_FILES libenctain/testsuite/Makefile" ;;
-    "libenctain/speedtest/Makefile") CONFIG_FILES="$CONFIG_FILES libenctain/speedtest/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/art/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/Makefile" ;;
     "src/art/crystal/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/crystal/Makefile" ;;
@@ -6845,11 +6674,6 @@ ZLIB_CFLAGS!$ZLIB_CFLAGS$ac_delim
 ZLIB_LIBS!$ZLIB_LIBS$ac_delim
 BZLIB_CFLAGS!$BZLIB_CFLAGS$ac_delim
 BZLIB_LIBS!$BZLIB_LIBS$ac_delim
-LIBGCRYPT_CONFIG!$LIBGCRYPT_CONFIG$ac_delim
-LIBGCRYPT_CFLAGS!$LIBGCRYPT_CFLAGS$ac_delim
-LIBGCRYPT_LIBS!$LIBGCRYPT_LIBS$ac_delim
-HAVE_LIBGCRYPT_TRUE!$HAVE_LIBGCRYPT_TRUE$ac_delim
-HAVE_LIBGCRYPT_FALSE!$HAVE_LIBGCRYPT_FALSE$ac_delim
 RESCOMP!$RESCOMP$ac_delim
 GOT_RESCOMP_TRUE!$GOT_RESCOMP_TRUE$ac_delim
 GOT_RESCOMP_FALSE!$GOT_RESCOMP_FALSE$ac_delim
@@ -6857,7 +6681,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 29; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 24; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

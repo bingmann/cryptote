@@ -31,7 +31,7 @@ int main()
 	Botan::OctetString testkey((Botan::byte*)"MO8ZXS1JMiPRj9Sx0VUFtlNJUNNX3V54kgNyDlLn3pxzCFxYZE", 50);
 	Botan::OctetString testdata((Botan::byte*)"CdDPEafk40BDHshs50EJvjhzbCMf9jDEihKWQ2HAEXfxwCaGqM", 50);
 
-	hmac.set_key(testkey);
+	hmac.set_key(testkey.bits_of());
 	Botan::OctetString out = hmac.process(testdata.bits_of());
 
 	Botan::OctetString cmp("E268B3BD6191FF857E22662F7C408C90485F5430A25D899CAE175105D50AFEA6");

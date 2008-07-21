@@ -205,18 +205,6 @@ else
 Install the bzip2 development package using your distribution's package manager.])
 fi
 
-# Check for libgcrypt which is only used in test cases
-
-AM_PATH_LIBGCRYPT([1.2.2])
-
-AM_CONDITIONAL(HAVE_LIBGCRYPT, test "$LIBGCRYPT_LIBS" != "")
-
-if test "$LIBGCRYPT_LIBS" == ""; then
-    AC_MSG_WARN([libgcrypt is not installed.
-The main programs can still be built, the library is only
-used in test cases.])
-fi
-
 # Win32 tools to add icons to the programs
 
 if $ON_WIN32; then
@@ -231,7 +219,6 @@ AC_CONFIG_FILES([Makefile
 		 libstc/Makefile
 		 libenctain/Makefile
 		 libenctain/testsuite/Makefile
-		 libenctain/speedtest/Makefile
 		 src/Makefile
 		 src/art/Makefile
 		 src/art/crystal/Makefile

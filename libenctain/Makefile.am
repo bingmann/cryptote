@@ -1,13 +1,13 @@
 # $Id$
 
-SUBDIRS = . testsuite speedtest
+SUBDIRS = . testsuite
 
 AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
 
 noinst_LIBRARIES = libenctain.a
 
-libenctain_a_SOURCES = bytebuff.h \
-	myserpent.cpp myserpent.h \
+libenctain_a_SOURCES = \
+	bytebuff.h \
 	enctain.cpp enctain.h \
 	\
 	botan-1.6/botan/aes.h \

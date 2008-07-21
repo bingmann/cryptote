@@ -34,12 +34,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = test_ect1$(EXEEXT) $(am__EXEEXT_1)
-noinst_PROGRAMS = test_ect1$(EXEEXT) $(am__EXEEXT_1)
-@HAVE_LIBGCRYPT_TRUE@am__append_1 = test_sha256 test_serpent_ecb test_serpent_cbc
-@HAVE_LIBGCRYPT_TRUE@am__append_2 = test_sha256 test_serpent_ecb test_serpent_cbc
-@HAVE_LIBGCRYPT_TRUE@am__append_3 = $(LIBGCRYPT_CFLAGS)
-@HAVE_LIBGCRYPT_TRUE@am__append_4 = $(LIBGCRYPT_LIBS)
+TESTS = test_ect1$(EXEEXT) test_sha256$(EXEEXT) test_serpent$(EXEEXT)
+noinst_PROGRAMS = test_ect1$(EXEEXT) test_sha256$(EXEEXT) \
+	test_serpent$(EXEEXT)
 subdir = libenctain/testsuite
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -48,25 +45,14 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
-@HAVE_LIBGCRYPT_TRUE@am__EXEEXT_1 = test_sha256$(EXEEXT) \
-@HAVE_LIBGCRYPT_TRUE@	test_serpent_ecb$(EXEEXT) \
-@HAVE_LIBGCRYPT_TRUE@	test_serpent_cbc$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_test_ect1_OBJECTS = test_ect1.$(OBJEXT)
 test_ect1_OBJECTS = $(am_test_ect1_OBJECTS)
 test_ect1_LDADD = $(LDADD)
-am__test_serpent_cbc_SOURCES_DIST = test_serpent_cbc.cpp
-@HAVE_LIBGCRYPT_TRUE@am_test_serpent_cbc_OBJECTS =  \
-@HAVE_LIBGCRYPT_TRUE@	test_serpent_cbc.$(OBJEXT)
-test_serpent_cbc_OBJECTS = $(am_test_serpent_cbc_OBJECTS)
-test_serpent_cbc_LDADD = $(LDADD)
-am__test_serpent_ecb_SOURCES_DIST = test_serpent_ecb.cpp
-@HAVE_LIBGCRYPT_TRUE@am_test_serpent_ecb_OBJECTS =  \
-@HAVE_LIBGCRYPT_TRUE@	test_serpent_ecb.$(OBJEXT)
-test_serpent_ecb_OBJECTS = $(am_test_serpent_ecb_OBJECTS)
-test_serpent_ecb_LDADD = $(LDADD)
-am__test_sha256_SOURCES_DIST = test_sha256.cpp
-@HAVE_LIBGCRYPT_TRUE@am_test_sha256_OBJECTS = test_sha256.$(OBJEXT)
+am_test_serpent_OBJECTS = test_serpent.$(OBJEXT)
+test_serpent_OBJECTS = $(am_test_serpent_OBJECTS)
+test_serpent_LDADD = $(LDADD)
+am_test_sha256_OBJECTS = test_sha256.$(OBJEXT)
 test_sha256_OBJECTS = $(am_test_sha256_OBJECTS)
 test_sha256_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -77,12 +63,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(test_ect1_SOURCES) $(test_serpent_cbc_SOURCES) \
-	$(test_serpent_ecb_SOURCES) $(test_sha256_SOURCES)
-DIST_SOURCES = $(test_ect1_SOURCES) \
-	$(am__test_serpent_cbc_SOURCES_DIST) \
-	$(am__test_serpent_ecb_SOURCES_DIST) \
-	$(am__test_sha256_SOURCES_DIST)
+SOURCES = $(test_ect1_SOURCES) $(test_serpent_SOURCES) \
+	$(test_sha256_SOURCES)
+DIST_SOURCES = $(test_ect1_SOURCES) $(test_serpent_SOURCES) \
+	$(test_sha256_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -117,12 +101,8 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
-LIBGCRYPT_CFLAGS = @LIBGCRYPT_CFLAGS@
-LIBGCRYPT_CONFIG = @LIBGCRYPT_CONFIG@
-LIBGCRYPT_LIBS = @LIBGCRYPT_LIBS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(top_builddir)/libenctain/libenctain.a $(BZLIB_LIBS) \
-	$(ZLIB_LIBS) $(am__append_4)
+LIBS = $(top_builddir)/libenctain/libenctain.a $(BZLIB_LIBS) $(ZLIB_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -206,12 +186,12 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 test_ect1_SOURCES = test_ect1.cpp
-test_ect1_DEPENDENCIES = ../libenctain.a
-AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(BZLIB_CFLAGS) \
-	$(ZLIB_CFLAGS) $(am__append_3)
-@HAVE_LIBGCRYPT_TRUE@test_sha256_SOURCES = test_sha256.cpp
-@HAVE_LIBGCRYPT_TRUE@test_serpent_ecb_SOURCES = test_serpent_ecb.cpp
-@HAVE_LIBGCRYPT_TRUE@test_serpent_cbc_SOURCES = test_serpent_cbc.cpp
+test_ect1_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a
+test_sha256_SOURCES = test_sha256.cpp
+test_sha256_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a
+test_serpent_SOURCES = test_serpent.cpp
+test_serpent_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a
+AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
 EXTRA_DIST = 
 all: all-am
 
@@ -252,12 +232,9 @@ clean-noinstPROGRAMS:
 test_ect1$(EXEEXT): $(test_ect1_OBJECTS) $(test_ect1_DEPENDENCIES) 
 	@rm -f test_ect1$(EXEEXT)
 	$(CXXLINK) $(test_ect1_OBJECTS) $(test_ect1_LDADD) $(LIBS)
-test_serpent_cbc$(EXEEXT): $(test_serpent_cbc_OBJECTS) $(test_serpent_cbc_DEPENDENCIES) 
-	@rm -f test_serpent_cbc$(EXEEXT)
-	$(CXXLINK) $(test_serpent_cbc_OBJECTS) $(test_serpent_cbc_LDADD) $(LIBS)
-test_serpent_ecb$(EXEEXT): $(test_serpent_ecb_OBJECTS) $(test_serpent_ecb_DEPENDENCIES) 
-	@rm -f test_serpent_ecb$(EXEEXT)
-	$(CXXLINK) $(test_serpent_ecb_OBJECTS) $(test_serpent_ecb_LDADD) $(LIBS)
+test_serpent$(EXEEXT): $(test_serpent_OBJECTS) $(test_serpent_DEPENDENCIES) 
+	@rm -f test_serpent$(EXEEXT)
+	$(CXXLINK) $(test_serpent_OBJECTS) $(test_serpent_LDADD) $(LIBS)
 test_sha256$(EXEEXT): $(test_sha256_OBJECTS) $(test_sha256_DEPENDENCIES) 
 	@rm -f test_sha256$(EXEEXT)
 	$(CXXLINK) $(test_sha256_OBJECTS) $(test_sha256_LDADD) $(LIBS)
@@ -269,8 +246,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ect1.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent_cbc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent_ecb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_serpent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_sha256.Po@am__quote@
 
 .cpp.o:
