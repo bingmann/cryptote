@@ -20,10 +20,10 @@ WPasswordList::WPasswordList(WCryptoTE* parent, int id, const wxString& title, c
     SetMinSize(wxSize(400, 350));
 
     // begin wxGlade: WPasswordList::WPasswordList
-    listbox = new wxSimpleImageListBox(this, wxID_ANY);
+    listbox = new wxSimpleImageListBox(this, myID_PASSLIST);
     buttonAdd = new wxButton(this, wxID_ADD, wxEmptyString);
     buttonChange = new wxButton(this, myID_CHANGE, _("&Change"));
-    buttonRemove = new wxButton(this, wxID_REMOVE, wxEmptyString);
+    buttonRemove = new wxButton(this, myID_REMOVE, _("&Remove"));
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
 
     set_properties();
@@ -46,7 +46,7 @@ void WPasswordList::do_layout()
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
     wxGridSizer* sizer3 = new wxGridSizer(1, 3, 0, 0);
-    sizer2->Add(listbox, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 12);
+    sizer2->Add(listbox, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 12);
     sizer3->Add(buttonAdd, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(buttonChange, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(buttonRemove, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
@@ -66,7 +66,7 @@ BEGIN_EVENT_TABLE(WPasswordList, wxDialog)
     // begin wxGlade: WPasswordList::event_table
     EVT_BUTTON(wxID_ADD, WPasswordList::OnButtonAdd)
     EVT_BUTTON(myID_CHANGE, WPasswordList::OnButtonChange)
-    EVT_BUTTON(wxID_REMOVE, WPasswordList::OnButtonRemove)
+    EVT_BUTTON(myID_REMOVE, WPasswordList::OnButtonRemove)
     EVT_BUTTON(wxID_OK, WPasswordList::OnButtonOK)
     // end wxGlade
     EVT_LISTBOX(wxID_ANY, WPasswordList::OnListboxSelectionChanged)
@@ -80,14 +80,56 @@ void WPasswordList::ReinsertList()
 
     BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
     wxBitmap bmp_userkeyslot = bitmapcatalog->GetBitmap(myID_IMAGE_USERKEYSLOT);
+    wxBitmap bmp_userkeyslot_active = bitmapcatalog->GetBitmap(myID_IMAGE_USERKEYSLOT_ACTIVE);
 
-    unsigned int slots = wmain->container.CountKeySlots();
+    Enctain::Container cnt = wmain->container;
+
+    unsigned int slots = cnt.CountKeySlots();
 
     for (unsigned int s = 0; s < slots; ++s)
     {
-	listbox->Append(wxString::Format(_T("Slot: %u - User: myself\n   Created: abcde\n   Last Match: 123456"), s));
+	wxString text = wxString::Format(_("Slot: %u - "), s);
 
-	listbox->SetBitmap(s, bmp_userkeyslot);
+	std::string desc = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-Description");
+	if (desc.empty()) text += _("<empty-description>");
+	else text += strSTL2WX(desc);
+
+	std::string ctime = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-CTime");
+	
+	text += "\n    Created: ";
+
+	if (ctime.size() == sizeof(time_t)) {
+	    wxDateTime datetime (*(time_t*)ctime.data());
+	    text += datetime.Format(_("%c"));
+	}
+	else {
+	    text += "<never-created>";
+	}
+
+	std::string atime = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-ATime");
+
+	text += "\n    Last Match: ";
+
+	if (atime.size() == sizeof(time_t)) {
+	    wxDateTime datetime (*(time_t*)atime.data());
+	    text += datetime.Format(_("%c"));
+	}
+	else {
+	    text += "<never-matched>";
+	}
+
+	if (cnt.GetUsedKeySlot() == (int)s) {
+	    text += "\n    Active";
+	}
+
+	listbox->Append(text);
+
+	if (cnt.GetUsedKeySlot() == (int)s) {
+	    listbox->SetBitmap(s, bmp_userkeyslot_active);
+	}
+	else {
+	    listbox->SetBitmap(s, bmp_userkeyslot);
+	}
     }
 
     buttonChange->Enable(false);
@@ -104,13 +146,17 @@ void WPasswordList::OnListboxSelectionChanged(wxCommandEvent& WXUNUSED(event))
 
 void WPasswordList::OnButtonAdd(wxCommandEvent& WXUNUSED(event))
 {
+    Enctain::Container cnt = wmain->container;
+
     WSetPassword passdlg(this, wmain->GetSavedFilename());
     if (passdlg.ShowModal() != wxID_OK) return;
 
-    unsigned int newslot = wmain->container.AddKeySlot( strWX2STL(passdlg.GetPass()) );
+    unsigned int newslot = cnt.AddKeySlot( strWX2STL(passdlg.GetPass()) );
 
     // Add key slot metadata.
-    wmain->container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-CTime", strTimeStampNow());
+    cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-CTime", strTimeStampNow());
+    cnt.DeleteGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-ATime");
+    cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-Description", strWX2STL( passdlg.GetDescription() ));
 
     wmain->SetModified();
 
@@ -119,14 +165,23 @@ void WPasswordList::OnButtonAdd(wxCommandEvent& WXUNUSED(event))
 
 void WPasswordList::OnButtonChange(wxCommandEvent& WXUNUSED(event))
 {
+    Enctain::Container cnt = wmain->container;
+
     int slot = listbox->GetSelection();
     if (slot < 0) return;
-    if (slot >= (int)wmain->container.CountKeySlots()) return;
+    if (slot >= (int)cnt.CountKeySlots()) return;
 
     WSetPassword passdlg(this, wmain->GetSavedFilename());
+    passdlg.SetDescription(strSTL2WX( cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(slot) + "-Description") ));
+    
     if (passdlg.ShowModal() != wxID_OK) return;
 
-    wmain->container.ChangeKeySlot(slot, strWX2STL(passdlg.GetPass()) );
+    cnt.ChangeKeySlot(slot, strWX2STL(passdlg.GetPass()) );
+
+    cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(slot) + "-CTime", strTimeStampNow());
+    cnt.DeleteGlobalEncryptedProperty("KeySlot-" + toSTLString(slot) + "-ATime");
+    cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(slot) + "-Description", strWX2STL( passdlg.GetDescription() ));
+
     wmain->SetModified();
 
     ReinsertList();
@@ -134,11 +189,30 @@ void WPasswordList::OnButtonChange(wxCommandEvent& WXUNUSED(event))
 
 void WPasswordList::OnButtonRemove(wxCommandEvent& WXUNUSED(event))
 {
+    Enctain::Container cnt = wmain->container;
+
     int slot = listbox->GetSelection();
     if (slot < 0) return;
-    if (slot >= (int)wmain->container.CountKeySlots()) return;
+    if (slot >= (int)cnt.CountKeySlots()) return;
 
-    wmain->container.DeleteKeySlot(slot);
+    cnt.DeleteKeySlot(slot);
+
+    for (unsigned int s = slot; s < cnt.CountKeySlots(); ++s)
+    {
+	std::string copy = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s+1) + "-Description");
+	cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-Description", copy);
+
+	copy = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s+1) + "-ATime");
+	cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-ATime", copy);
+
+	copy = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s+1) + "-CTime");
+	cnt.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-CTime", copy);
+    }
+
+    cnt.DeleteGlobalEncryptedProperty("KeySlot-" + toSTLString(cnt.CountKeySlots()) + "-ATime");
+    cnt.DeleteGlobalEncryptedProperty("KeySlot-" + toSTLString(cnt.CountKeySlots()) + "-CTime");
+    cnt.DeleteGlobalEncryptedProperty("KeySlot-" + toSTLString(cnt.CountKeySlots()) + "-Description");
+
     wmain->SetModified();
 
     ReinsertList();
@@ -159,6 +233,7 @@ WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int
     textctrlPass = new wxTextCtrl(this, myID_TEXTPASS, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PASSWORD);
     gaugeStrength = new wxGauge(this, wxID_ANY, 100, wxDefaultPosition, wxDefaultSize, wxGA_HORIZONTAL|wxGA_SMOOTH);
     textctrlVerify = new wxTextCtrl(this, myID_TEXTVERIFY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PASSWORD);
+    textctrlDescription = new wxTextCtrl(this, myID_TEXTDESCRIPTION, wxEmptyString);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
 
@@ -188,6 +263,8 @@ WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int
 
     wxFileName fn(filename);
     labelQuery->SetLabel( wxString::Format(_("Set Password for \"%s\":"), fn.GetFullName().c_str()) );
+
+    textctrlDescription->SetValue( _("User ") + wxGetUserId() );
 
     buttonOK->Disable();
     textctrlPass->SetFocus();
@@ -222,6 +299,9 @@ void WSetPassword::do_layout()
     sizer4->Add(labelVerify, 0, wxALL, 8);
     sizer4->Add(textctrlVerify, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     sizer2->Add(sizer4, 1, wxEXPAND, 0);
+    wxStaticText* labelDescription = new wxStaticText(this, wxID_ANY, _("Description:"));
+    sizer2->Add(labelDescription, 0, wxALL, 8);
+    sizer2->Add(textctrlDescription, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 8);
     wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
@@ -397,9 +477,19 @@ void WSetPassword::OnTextPassEnter(wxCommandEvent& event)
 	OnButtonOK(event);
 }
 
-wxString WSetPassword::GetPass() const
+const wxString& WSetPassword::GetPass() const
 {
     return pass;
+}
+
+const wxString& WSetPassword::GetDescription() const
+{
+    return description;
+}
+
+void WSetPassword::SetDescription(const wxString& desc)
+{
+    textctrlDescription->SetValue(desc);
 }
 
 void WSetPassword::OnTextVerifyEnter(wxCommandEvent& event)
@@ -434,6 +524,7 @@ void WSetPassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	}
 	else
 	{
+	    description = textctrlDescription->GetValue();
 	    EndModal(wxID_OK);
 	}
     }

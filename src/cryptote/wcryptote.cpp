@@ -902,6 +902,9 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 
     HideQuickBars();
 
+    if (container.GetUsedKeySlot() >= 0)
+	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString( container.GetUsedKeySlot() ) + "-ATime", strTimeStampNow());
+
     // close all notebook pages
     while( auinotebook->GetPageCount() > 0 )
     {
@@ -956,6 +959,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 
 	// Add key slot metadata.
 	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-CTime", strTimeStampNow());
+	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-Description", strWX2STL(passdlg.GetDescription()));
     }
 
     // release share lock

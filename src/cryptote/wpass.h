@@ -18,7 +18,9 @@ class WPasswordList : public wxDialog
 public:
     // begin wxGlade: WPasswordList::ids
     enum {
-        myID_CHANGE = wxID_HIGHEST + 1000
+        myID_PASSLIST = wxID_HIGHEST + 1000,
+        myID_CHANGE = wxID_HIGHEST + 1001,
+        myID_REMOVE = wxID_HIGHEST + 1003
     };
     // end wxGlade
 
@@ -64,15 +66,22 @@ class WSetPassword : public wxDialog
 public:
     // begin wxGlade: WSetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1002,
-        myID_TEXTVERIFY = wxID_HIGHEST + 1004
+        myID_TEXTPASS = wxID_HIGHEST + 1005,
+        myID_TEXTVERIFY = wxID_HIGHEST + 1007,
+        myID_TEXTDESCRIPTION = wxID_HIGHEST + 1009
     };
     // end wxGlade
 
     WSetPassword(wxWindow* parent, const wxString& filename, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
     /// Return pass after user enters it.
-    wxString	GetPass() const;
+    const wxString&	GetPass() const;
+
+    /// Return description after user enters it.
+    const wxString&	GetDescription() const;
+
+    /// Set description for existing slots
+    void		SetDescription(const wxString& desc);
 
 private:
     // begin wxGlade: WSetPassword::methods
@@ -86,12 +95,14 @@ protected:
     wxTextCtrl* textctrlPass;
     wxGauge* gaugeStrength;
     wxTextCtrl* textctrlVerify;
+    wxTextCtrl* textctrlDescription;
     wxButton* buttonOK;
     wxButton* buttonCancel;
     // end wxGlade
 
     int		state;
     wxString	pass;
+    wxString	description;
 
     wxSizer*	sizerGauge;
     wxSizer*	sizerVerify;
@@ -110,7 +121,7 @@ class WGetPassword : public wxDialog
 public:
     // begin wxGlade: WGetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1006
+        myID_TEXTPASS = wxID_HIGHEST + 1010
     };
     // end wxGlade
 

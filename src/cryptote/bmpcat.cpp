@@ -281,6 +281,7 @@ struct BitmapCatalog::BitmapInfo BitmapCatalog::bitmaplist[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, _T("userkeyslot"), wxNullBitmap },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, _T("userkeyslot-active"), wxNullBitmap },
 
     { 0, BU_GENERAL, wxEmptyString, wxNullBitmap }
 };
@@ -404,6 +405,7 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/messagebox-warning-32.h"
 #include "art/crystal/snapshot.h"
 #include "art/crystal/userkeyslot.h"
+#include "art/crystal/userkeyslot-active.h"
 #include "art/crystal/view-choose-16.h"
 #include "art/crystal/view-choose-22.h"
 #include "art/crystal/view-detailed-16.h"
@@ -541,6 +543,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_large[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(crystal_userkeyslot_png) },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, BUILTIN(crystal_userkeyslot_active_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -666,6 +669,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(crystal_userkeyslot_png) },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, BUILTIN(crystal_userkeyslot_active_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -727,6 +731,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 #include "art/slick/messagebox-warning.h"
 #include "art/slick/snapshot.h"
 #include "art/slick/userkeyslot.h"
+#include "art/slick/userkeyslot-active.h"
 #include "art/slick/view-choose-16.h"
 #include "art/slick/view-choose-22.h"
 #include "art/slick/view-detailed-16.h"
@@ -852,6 +857,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(slick_userkeyslot_png) },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, BUILTIN(slick_userkeyslot_active_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -972,6 +978,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(slick_userkeyslot_png) },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, BUILTIN(slick_userkeyslot_active_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -1050,6 +1057,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 #include "art/gnome/subfile-open.h"
 #include "art/gnome/subfile-properties.h"
 #include "art/gnome/userkeyslot.h"
+#include "art/gnome/userkeyslot-active.h"
 #include "art/gnome/view-zoom.h"
 #include "art/gnome/view-zoom-increase.h"
 #include "art/gnome/view-zoom-decrease.h"
@@ -1177,6 +1185,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(gnome_userkeyslot_png) },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, BUILTIN(gnome_userkeyslot_active_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };
@@ -1303,6 +1312,7 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_small[] =
     // Other Images
 
     { myID_IMAGE_USERKEYSLOT,		BU_GENERAL, BUILTIN(gnome_userkeyslot_png) },
+    { myID_IMAGE_USERKEYSLOT_ACTIVE,	BU_GENERAL, BUILTIN(gnome_userkeyslot_active_png) },
 
     { 0, BU_GENERAL, NULL, 0 }
 };

@@ -412,7 +412,7 @@ public:
 	// Write data out into a temporary file
 
 	wxString filename = strSTL2WX(container->GetSubFileProperty(subfileindex, "Name"));
-	wxString tempname = wxString::Format(_T("temp-%d-%s"), wxGetProcessId(), filename.c_str());
+	wxString tempname = wxString::Format(_T("temp-%d-%s"), (int)wxGetProcessId(), filename.c_str());
 
 	{
 	    DataOutputTempFile dataout(tempname);

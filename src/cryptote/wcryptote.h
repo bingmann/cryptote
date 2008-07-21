@@ -89,6 +89,7 @@ enum {
     // *** Other Icons / Identifiers
 
     myID_IMAGE_USERKEYSLOT,
+    myID_IMAGE_USERKEYSLOT_ACTIVE,
 
     // *** Variable Menu Item Ranges
 

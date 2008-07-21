@@ -82,6 +82,7 @@ noinst_HEADERS = \
 	subfile-open.h \
 	subfile-properties.h \
 	userkeyslot.h \
+	userkeyslot-active.h \
 	view-zoom.h \
 	view-zoom-increase.h \
 	view-zoom-decrease.h \
@@ -168,6 +169,7 @@ EXTRA_DIST = \
 	subfile-open.png \
 	subfile-properties.png \
 	userkeyslot.png \
+	userkeyslot-active.png \
 	view-zoom.png \
 	view-zoom-increase.png \
 	view-zoom-decrease.png \
