@@ -7,8 +7,6 @@ AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS) $(BZLIB_CFLAGS)
 noinst_LIBRARIES = libenctain.a
 
 libenctain_a_SOURCES = bytebuff.h \
-	mycrc32.cpp mycrc32.h \
-	mysha256.cpp mysha256.h \
 	myserpent.cpp myserpent.h \
 	enctain.cpp enctain.h \
 	\
