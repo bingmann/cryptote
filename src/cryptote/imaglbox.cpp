@@ -165,9 +165,12 @@ void wxImageListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const
     int strHeight = 0, strWidth = 0;
     dc.GetTextExtent(str, &strWidth, &strHeight);
 
-    dc.DrawText(str,
-		rect.x + textIndent + 1,
-		rect.y + (rect.height - strHeight) / 2);
+    dc.DrawLabel(str,
+		 wxRect(rect.x + textIndent,
+			rect.y,
+			rect.width - textIndent,
+			rect.height),
+		 wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL);
 }
 
 wxCoord wxImageListBox::OnMeasureItem(size_t n) const
