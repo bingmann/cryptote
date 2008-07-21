@@ -129,7 +129,7 @@ protected:
     /// Number of references to this object
     unsigned int	references;
 
-    /// True if one of the subfiles was changed using saveSubFile() and the
+    /// True if one of the subfiles was changed using SetSubFileData() and the
     /// container file was not saved yet.
     bool		modified;
 
@@ -404,7 +404,11 @@ unsigned int ContainerImpl::DecReference()
 class ProgressTicker
 {
 private:
+    /// Reference to the container implementation
     const ContainerImpl& 	cnt;
+
+    /// Current counter value
+    size_t			current;
 
 public:
     ProgressTicker(const ContainerImpl& c,
@@ -414,6 +418,7 @@ public:
     {
 	if (cnt.progressindicator)
 	    cnt.progressindicator->ProgressStart(pitext, pitype, value, limit);
+	current = value;
     }
 
     void Restart(const char* pitext, progress_indicator_type pitype,
@@ -421,12 +426,22 @@ public:
     {
 	if (cnt.progressindicator)
 	    cnt.progressindicator->ProgressStart(pitext, pitype, value, limit);
+	current = value;
     }
 
     void Update(size_t value)
     {
 	if (cnt.progressindicator)
 	    cnt.progressindicator->ProgressUpdate(value);
+	current = value;
+    }
+    
+    void Add(size_t increment)
+    {
+	current += increment;
+
+	if (cnt.progressindicator)
+	    cnt.progressindicator->ProgressUpdate(current);
     }
 
     ~ProgressTicker()
@@ -651,12 +666,13 @@ public:
 class DataSink2DataOutput : public Botan::DataSink
 {
 private:
-    DataOutput&	dataout;
-    uint32_t	written;
+    DataOutput&		dataout;
+    uint32_t		written;
+    ProgressTicker&	progress;
 
 public:
-    DataSink2DataOutput(DataOutput& _do)
-	: dataout(_do), written(0)
+    DataSink2DataOutput(DataOutput& _do, ProgressTicker& _progress)
+	: dataout(_do), written(0), progress(_progress)
     { }
 
     void write(const Botan::byte out[], Botan::u32bit length)
@@ -665,6 +681,7 @@ public:
 	    throw(std::runtime_error("DataOutput failed."));
 
 	written += length;
+	progress.Add(length);
     }
 
     uint32_t get_written() const { return written; }
@@ -710,6 +727,8 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 
     size_t esttotal = sizeof(Header1)
 	+ 100 // estimate for unencrypted metadata
+	+ sizeof(Header2)
+	+ keyslots.size() * sizeof(KeySlot)
 	+ sizeof(Header3)
 	+ subfiles.size() * 50 // estimate for encrypted metadata
 	+ subfiletotal;
@@ -862,7 +881,7 @@ error_t ContainerImpl::Save(DataOutput& dataout)
 	Botan::Pipe pipe(
 	    Botan::get_cipher("Serpent/CBC/NoPadding", enckey, enciv, Botan::ENCRYPTION),
 	    new NullBufferingFilter(4096),
-	    (datasink = new DataSink2DataOutput(dataout))
+	    (datasink = new DataSink2DataOutput(dataout, progress))
 	    );
 
 	pipe.process_msg((Botan::byte*)&header3, sizeof(header3));
@@ -897,7 +916,7 @@ error_t ContainerImpl::Load(DataInput& datain, const std::string& userkey)
 {
     ProgressTicker progress(*this,
 			    "Loading Container", PI_LOAD_CONTAINER,
-			    0, 1000);
+			    0, 10240);
 
     // Read unencrypted fixed Header1
     struct Header1 header1;
@@ -952,6 +971,8 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userk
 	}
     }
 
+    progress.Update(readbyte);
+
     // Read master key digest and user key slots
     {
 	if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
@@ -968,7 +989,11 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userk
 	    if (datain.Input(&newkeyslot, sizeof(newkeyslot)) != sizeof(newkeyslot))
 		return ETE_LOAD_HEADER1_METADATA;
 	}
+
+	readbyte += sizeof(header2) + header2.keyslots * sizeof(KeySlot);
     }
+
+    progress.Update(readbyte);
 
     // Try to retrieve master key by checking all user key slots
     {
@@ -1061,6 +1086,9 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userk
 
     if (pipe.read(metadata_compressed.data(), metadata_compressed.size(), 1) != metadata_compressed.size())
 	return ETE_LOAD_HEADER3_ENCRYPTION;
+
+    progress.Restart("Loading Container", PI_LOAD_CONTAINER,
+		     readbyte, readbyte * 10);
 
     // Decompress variable encrypted metadata
 
@@ -1176,11 +1204,6 @@ error_t ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userk
 	readbyte += rb;
 	progress.Update(readbyte);
     }
-
-    // iskeyset = true;
-    // serpentctx = decctx;
-
-    // decctx.wipe();
 
     return ETE_SUCCESS;
 }
@@ -1670,15 +1693,24 @@ error_t ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* dat
 
     // Pipe setup note: the encryption filter is chained to the _first_ filter
     // in the preceding fork!
-    Botan::Pipe pipe(
+    Botan::Filter* filters[4] = {
 	new Botan::Fork(compression_filter.release(),
 			new Botan::Hash_Filter("CRC32")),
 	encryption_filter.release(),
 	new NullBufferingFilter( std::max<unsigned int>(4096, datalen / 10) ),
 	new DataSinkSecureVector(subfile.data)
-	);
+    };
 
-    pipe.process_msg((const Botan::byte*)data, datalen);
+    Botan::Pipe pipe(filters, 4);
+
+    pipe.start_msg();
+    for(unsigned int dataptr = 0; dataptr < datalen; dataptr += 8192)
+    {
+	pipe.write((const Botan::byte*)data + dataptr, std::min<unsigned int>(datalen - dataptr, 8192));
+	progress.Update(dataptr);
+    }
+    pipe.end_msg();
+    progress.Update(datalen);
 
     Botan::SecureVector<Botan::byte> crc32 = pipe.read_all(1);
     assert(crc32.size() == 4);
@@ -1949,7 +1981,7 @@ error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutpu
 
     ProgressTicker progress(*this,
 			    "Loading SubFile", PI_LOAD_SUBFILE,
-			    0, subfile.storagesize);
+			    0, subfile.realsize);
 
     // Setup decryption context if requested
 
@@ -1995,16 +2027,16 @@ error_t ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutpu
 
     // Setup processing pipe
 
-    Botan::Pipe pipe(
+    Botan::Filter* filters[5] = {
 	decryption_filter.release(),
 	decompression_filter.release(),
 	new Botan::Fork(NULL,
-			new Botan::Hash_Filter("CRC32"))
-	);
+			new Botan::Hash_Filter("CRC32")),
+	new NullBufferingFilter(4096),
+	new DataSink2DataOutput(dataout, progress)
+    };
 
-    pipe.append( new NullBufferingFilter(4096) );
-    pipe.append( new DataSink2DataOutput(dataout) );
-
+    Botan::Pipe pipe(filters, 5);
     pipe.process_msg(subfile.data);
 
     Botan::SecureVector<Botan::byte> crc32v = pipe.read_all(1);

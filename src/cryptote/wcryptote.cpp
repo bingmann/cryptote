@@ -2831,6 +2831,14 @@ void WStatusBar::ProgressStart(const char* text, Enctain::progress_indicator_typ
 
 void WStatusBar::ProgressUpdate(size_t value)
 {
+    if ((int)value > gaugeProgress->GetRange()) {
+	printf("Debug: Progress out of range: %d - %d = %d\n", 
+	       value, gaugeProgress->GetRange(),
+	       gaugeProgress->GetRange() - value);
+	       
+	value = gaugeProgress->GetRange();
+    }
+
     gaugeProgress->SetValue(value);
     Update();
 }
