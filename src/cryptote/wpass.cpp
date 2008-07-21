@@ -18,7 +18,7 @@ WPasswordList::WPasswordList(WCryptoTE* parent, int id, const wxString& title, c
       wmain(parent)
 {
     // begin wxGlade: WPasswordList::WPasswordList
-    treectrl = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
+    treectrl = new wxGenericTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
     buttonAdd = new wxButton(this, wxID_ADD, wxEmptyString);
     buttonChange = new wxButton(this, myID_CHANGE, _("&Change"));
     buttonRemove = new wxButton(this, wxID_REMOVE, wxEmptyString);
@@ -45,7 +45,7 @@ WPasswordList::WPasswordList(WCryptoTE* parent, int id, const wxString& title, c
 void WPasswordList::set_properties()
 {
     // begin wxGlade: WPasswordList::set_properties
-    SetTitle(_("Password Slots"));
+    SetTitle(_("Password Slots - CryptoTE"));
     // end wxGlade
 }
 

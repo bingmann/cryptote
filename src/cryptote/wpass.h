@@ -4,6 +4,7 @@
 #include <wx/wx.h>
 // begin wxGlade: ::dependencies
 #include <wx/treectrl.h>
+#include <wx/generic/treectlg.h>
 #include <wx/statline.h>
 // end wxGlade
 
@@ -40,7 +41,7 @@ private:
 
 protected:
     // begin wxGlade: WPasswordList::attributes
-    wxTreeCtrl* treectrl;
+    wxGenericTreeCtrl* treectrl;
     wxButton* buttonAdd;
     wxButton* buttonChange;
     wxButton* buttonRemove;
