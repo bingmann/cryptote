@@ -3,10 +3,9 @@
 
 #include <wx/wx.h>
 // begin wxGlade: ::dependencies
-#include <wx/treectrl.h>
-#include <wx/generic/treectlg.h>
 #include <wx/statline.h>
 // end wxGlade
+#include "imaglbox.h"
 
 #ifndef WPASS_H
 #define WPASS_H
@@ -41,7 +40,7 @@ private:
 
 protected:
     // begin wxGlade: WPasswordList::attributes
-    wxGenericTreeCtrl* treectrl;
+    wxSimpleImageListBox* listbox;
     wxButton* buttonAdd;
     wxButton* buttonChange;
     wxButton* buttonRemove;
@@ -53,7 +52,7 @@ public:
     virtual void OnButtonChange(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonRemove(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
-    virtual void OnTreectrlSelectionChanged(wxTreeEvent &event); // wxGlade: <event_handler>
+    virtual void OnListboxSelectionChanged(wxCommandEvent &event); // wxGlade: <event_handler>
 
 protected:
     DECLARE_EVENT_TABLE();

@@ -14,6 +14,7 @@ cryptote_SOURCES = main.cpp \
 	wmsgdlg.cpp wmsgdlg.h \
 	wbinpage.cpp wbinpage.h \
 	wpass.cpp wpass.h \
+	imaglbox.cpp imaglbox.h \
 	wprefs.cpp wprefs.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
 	../pwgen/prng.cpp ../pwgen/prng.h \

@@ -17,8 +17,10 @@ WPasswordList::WPasswordList(WCryptoTE* parent, int id, const wxString& title, c
     : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME),
       wmain(parent)
 {
+    SetMinSize(wxSize(400, 350));
+
     // begin wxGlade: WPasswordList::WPasswordList
-    treectrl = new wxGenericTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
+    listbox = new wxSimpleImageListBox(this, wxID_ANY);
     buttonAdd = new wxButton(this, wxID_ADD, wxEmptyString);
     buttonChange = new wxButton(this, myID_CHANGE, _("&Change"));
     buttonRemove = new wxButton(this, wxID_REMOVE, wxEmptyString);
@@ -27,17 +29,6 @@ WPasswordList::WPasswordList(WCryptoTE* parent, int id, const wxString& title, c
     set_properties();
     do_layout();
     // end wxGlade
-
-    SetMinSize(wxSize(400, 350));
-
-    // Initialize the Password TreeCtrl Imagelist
-
-    BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
-    wxBitmap bmp_userkeyslot = bitmapcatalog->GetBitmap(myID_IMAGE_USERKEYSLOT);
-
-    wxImageList *imglist = new wxImageList(bmp_userkeyslot.GetWidth(), bmp_userkeyslot.GetHeight());
-    imglist->Add(bmp_userkeyslot);
-    treectrl->AssignImageList(imglist);
 
     ReinsertList();
 }
@@ -55,7 +46,7 @@ void WPasswordList::do_layout()
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
     wxGridSizer* sizer3 = new wxGridSizer(1, 3, 0, 0);
-    sizer2->Add(treectrl, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 12);
+    sizer2->Add(listbox, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 12);
     sizer3->Add(buttonAdd, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(buttonChange, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(buttonRemove, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
@@ -73,50 +64,42 @@ void WPasswordList::do_layout()
 
 BEGIN_EVENT_TABLE(WPasswordList, wxDialog)
     // begin wxGlade: WPasswordList::event_table
-    EVT_TREE_SEL_CHANGED(wxID_ANY, WPasswordList::OnTreectrlSelectionChanged)
     EVT_BUTTON(wxID_ADD, WPasswordList::OnButtonAdd)
     EVT_BUTTON(myID_CHANGE, WPasswordList::OnButtonChange)
     EVT_BUTTON(wxID_REMOVE, WPasswordList::OnButtonRemove)
     EVT_BUTTON(wxID_OK, WPasswordList::OnButtonOK)
     // end wxGlade
+    EVT_LISTBOX(wxID_ANY, WPasswordList::OnListboxSelectionChanged)
 END_EVENT_TABLE();
-
-class wxTreeItemDataInteger : public wxTreeItemData
-{
-public:
-    unsigned int	slot;
-
-    wxTreeItemDataInteger(unsigned int s)
-	: wxTreeItemData(), slot(s)
-    { }
-};
 
 void WPasswordList::ReinsertList()
 {
-    treectrl->DeleteAllItems();
+    listbox->Clear();
+    listbox->SetSelection(-1);
+    listbox->SetTextSpacing(8);
 
-    wxTreeItemId rootitem = treectrl->AddRoot(_("Root"));
+    BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
+    wxBitmap bmp_userkeyslot = bitmapcatalog->GetBitmap(myID_IMAGE_USERKEYSLOT);
 
     unsigned int slots = wmain->container.CountKeySlots();
 
     for (unsigned int s = 0; s < slots; ++s)
     {
-	treectrl->AppendItem(rootitem,
-			     wxString::Format(_T("Slot: %u - User: myself\n   Created: abcde\n   Last Match: 123456"), s),
-			     0, -1,
-			     new wxTreeItemDataInteger(s));
+	listbox->Append(wxString::Format(_T("Slot: %u - User: myself\n   Created: abcde\n   Last Match: 123456"), s));
+
+	listbox->SetBitmap(s, bmp_userkeyslot);
     }
 
     buttonChange->Enable(false);
     buttonRemove->Enable(false);
 }
 
-void WPasswordList::OnTreectrlSelectionChanged(wxTreeEvent& WXUNUSED(event))
+void WPasswordList::OnListboxSelectionChanged(wxCommandEvent& WXUNUSED(event))
 {
-    bool selexist = treectrl->GetSelection().IsOk();
+    int slot = listbox->GetSelection();
 
-    buttonChange->Enable( selexist );
-    buttonRemove->Enable( selexist );
+    buttonChange->Enable( slot >= 0 );
+    buttonRemove->Enable( slot >= 0 );
 }
 
 void WPasswordList::OnButtonAdd(wxCommandEvent& WXUNUSED(event))
@@ -136,18 +119,14 @@ void WPasswordList::OnButtonAdd(wxCommandEvent& WXUNUSED(event))
 
 void WPasswordList::OnButtonChange(wxCommandEvent& WXUNUSED(event))
 {
-    wxTreeItemId itemid = treectrl->GetSelection();
-    if (!itemid.IsOk()) return;
-
-    wxTreeItemDataInteger* item = dynamic_cast<wxTreeItemDataInteger*>( treectrl->GetItemData(itemid) );
-    if (!item) return;
-
-    if (item->slot >= wmain->container.CountKeySlots()) return;
+    int slot = listbox->GetSelection();
+    if (slot < 0) return;
+    if (slot >= (int)wmain->container.CountKeySlots()) return;
 
     WSetPassword passdlg(this, wmain->GetSavedFilename());
     if (passdlg.ShowModal() != wxID_OK) return;
 
-    wmain->container.ChangeKeySlot(item->slot, strWX2STL(passdlg.GetPass()) );
+    wmain->container.ChangeKeySlot(slot, strWX2STL(passdlg.GetPass()) );
     wmain->SetModified();
 
     ReinsertList();
@@ -155,15 +134,11 @@ void WPasswordList::OnButtonChange(wxCommandEvent& WXUNUSED(event))
 
 void WPasswordList::OnButtonRemove(wxCommandEvent& WXUNUSED(event))
 {
-    wxTreeItemId itemid = treectrl->GetSelection();
-    if (!itemid.IsOk()) return;
+    int slot = listbox->GetSelection();
+    if (slot < 0) return;
+    if (slot >= (int)wmain->container.CountKeySlots()) return;
 
-    wxTreeItemDataInteger* item = dynamic_cast<wxTreeItemDataInteger*>( treectrl->GetItemData(itemid) );
-    if (!item) return;
-
-    if (item->slot >= wmain->container.CountKeySlots()) return;
-
-    wmain->container.DeleteKeySlot(item->slot);
+    wmain->container.DeleteKeySlot(slot);
     wmain->SetModified();
 
     ReinsertList();
