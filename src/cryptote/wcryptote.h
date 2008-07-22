@@ -41,6 +41,15 @@ enum {
     myID_MENU_EDIT_INSERT_PASSWORD,
     myID_MENU_EDIT_INSERT_PASSWORD_DIALOG,
     myID_TOOL_EDIT_INSERT_PASSWORD,
+    myID_MENU_EDIT_INSERT_DATETIME,
+    myID_TOOL_EDIT_INSERT_DATETIME,
+    myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD_HHMMSS,
+    myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD,
+    myID_MENU_EDIT_INSERT_DATETIME_HHMMSS,
+    myID_MENU_EDIT_INSERT_DATETIME_LOCALE,
+    myID_MENU_EDIT_INSERT_DATETIME_LOCALE_DATE,
+    myID_MENU_EDIT_INSERT_DATETIME_LOCALE_TIME,
+    myID_MENU_EDIT_INSERT_DATETIME_RFC822,
 
     myID_MENU_VIEW_LINEWRAP,
     myID_MENU_VIEW_LINENUMBER,
@@ -264,6 +273,8 @@ public:
     void	OnMenuEditInsertPassword(wxCommandEvent& event);
     void	OnToolEditInsertPassword(wxCommandEvent& event);
     void	OnMenuEditInsertPasswordPreset(wxCommandEvent& event);
+    void	OnMenuEditInsertDateTime(wxCommandEvent& event);
+    void	OnToolEditInsertDateTime(wxCommandEvent& event);
 
     void	OnMenuViewLineWrap(wxCommandEvent& event);
     void	OnMenuViewLineNumber(wxCommandEvent& event);

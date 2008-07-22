@@ -191,6 +191,8 @@ noinst_HEADERS = \
 	edit-copy.h \
 	edit-cut-tool.h \
 	edit-cut.h \
+	edit-datetime.h \
+	edit-datetime-tool.h \
 	edit-delete-tool.h \
 	edit-delete.h \
 	edit-find-replace-tool.h \
@@ -276,6 +278,8 @@ EXTRA_DIST = \
 	edit-copy.png \
 	edit-cut-tool.png \
 	edit-cut.png \
+	edit-datetime.png \
+	edit-datetime-tool.png \
 	edit-delete-tool.png \
 	edit-delete.png \
 	edit-find-replace-tool.png \

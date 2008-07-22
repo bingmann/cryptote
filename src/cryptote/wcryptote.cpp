@@ -1510,6 +1510,48 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 	passgenitem->SetBitmap( BitmapCatalog::GetMenuBitmap(myID_MENU_EDIT_INSERT_PASSWORD) );
 	menuEdit->Append(passgenitem);
 
+	// Create Date/Time Generator Submenu
+
+	wxMenu* dategenmenu = new wxMenu;
+ 
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD_HHMMSS,
+			    _("YYYY-MM-DD HH:MM:SS"),
+			    _("Insert current local date/time in YYYY-MM-DD HH:MM:SS (ISO 8601) format."));
+
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD,
+			    _("YYYY-MM-DD"),
+			    _("Insert current local date in YYYY-MM-DD (ISO 8601) format."));
+
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_HHMMSS,
+			    _("HH:MM:SS"),
+			    _("Insert current local time in HH:MM:SS (ISO 8601) format."));
+
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_LOCALE,
+			    _("Text Date/Time"),
+			    _("Insert current local date/time in text format."));
+
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_LOCALE_DATE,
+			    _("Text Date"),
+			    _("Insert current local date in text format."));
+
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_LOCALE_TIME,
+			    _("Text Time"),
+			    _("Insert current local time in text format."));
+
+	dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_RFC822,
+			    _("RFC 822 Date/Time"),
+			    _("Insert current local date/time in RFC 822 format."));
+
+	// Create wxMenuItem for Date Generator Submenu
+	wxMenuItem* dategenitem
+	    = new wxMenuItem(menuEdit, myID_MENU_EDIT_INSERT_DATETIME,
+			     _("Insert &Date/Time"),
+			     _("Insert current date/time into document."),
+			     wxITEM_NORMAL, dategenmenu);
+	
+	dategenitem->SetBitmap( BitmapCatalog::GetMenuBitmap(myID_MENU_EDIT_INSERT_DATETIME) );
+	menuEdit->Append(dategenitem);
+
 	menubar->Append(menuEdit, _("&Edit"));
 
 	// *** View
@@ -1674,6 +1716,9 @@ void WCryptoTE::CreateToolBar()
 
 	appendTool(toolbar, myID_TOOL_EDIT_INSERT_PASSWORD, _("Insert Password ..."), wxITEM_NORMAL,
 		   _("Insert random password from generator preset or open generator dialog box."));
+
+	appendTool(toolbar, myID_TOOL_EDIT_INSERT_DATETIME, _("Insert Date/Time ..."), wxITEM_NORMAL,
+		   _("Insert current date/time."));
     }
 
     if (cpage && cpage->IsKindOf(CLASSINFO(WBinaryPage)))
@@ -2184,7 +2229,7 @@ void WCryptoTE::UpdateMenuInsertPassword()
 
 void WCryptoTE::OnToolEditInsertPassword(wxCommandEvent& WXUNUSED(event))
 {
-    wxMenu* menu = new wxMenu(_("Password Presets"));
+    wxMenu* menu = new wxMenu(_("Insert Password Presets"));
  
     for (unsigned int pi = 0; pi < wpassgen->presetlist.size(); ++pi)
     {
@@ -2216,6 +2261,84 @@ void WCryptoTE::OnMenuEditInsertPasswordPreset(wxCommandEvent& event)
     const WPassGen::Preset& preset = wpassgen->presetlist[id];
     
     page->AddText(wpassgen->MakePassword(preset));
+}
+
+void WCryptoTE::OnMenuEditInsertDateTime(wxCommandEvent& event)
+{
+    WTextPage* page = wxDynamicCast(cpage, WTextPage);
+    if (!page) return;
+
+    wxString datestr;
+    wxDateTime now = wxDateTime::Now();
+
+    switch(event.GetId())
+    {
+    default:
+    case myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD_HHMMSS:
+	datestr = now.Format("%Y-%m-%d %H:%M:%S");
+	break;
+
+    case myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD:
+	datestr = now.Format("%Y-%m-%d");
+	break;
+
+    case myID_MENU_EDIT_INSERT_DATETIME_HHMMSS:
+	datestr = now.Format("%H:%M:%S");
+	break;
+
+    case myID_MENU_EDIT_INSERT_DATETIME_LOCALE:
+	datestr = now.Format("%c");
+	break;
+
+    case myID_MENU_EDIT_INSERT_DATETIME_LOCALE_DATE:
+	datestr = now.Format("%x");
+	break;
+
+    case myID_MENU_EDIT_INSERT_DATETIME_LOCALE_TIME:
+	datestr = now.Format("%X");
+	break;
+
+    case myID_MENU_EDIT_INSERT_DATETIME_RFC822:
+	datestr = now.Format("%a, %d %b %Y %H:%M:%S %z");
+	break;
+    }
+
+    page->AddText(datestr);
+}
+
+void WCryptoTE::OnToolEditInsertDateTime(wxCommandEvent& WXUNUSED(event))
+{
+    wxMenu* dategenmenu = new wxMenu(_("Insert Date/Time"));
+ 
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD_HHMMSS,
+			_("YYYY-MM-DD HH:MM:SS"),
+			_("Insert current local date/time in YYYY-MM-DD HH:MM:SS (ISO 8601) format."));
+
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD,
+			_("YYYY-MM-DD"),
+			_("Insert current local date in YYYY-MM-DD (ISO 8601) format."));
+
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_HHMMSS,
+			_("HH:MM:SS"),
+			_("Insert current local time in HH:MM:SS (ISO 8601) format."));
+
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_LOCALE,
+			_("Text Date/Time"),
+			_("Insert current local date/time in text format."));
+
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_LOCALE_DATE,
+			_("Text Date"),
+			_("Insert current local date in text format."));
+
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_LOCALE_TIME,
+			_("Text Time"),
+			_("Insert current local time in text format."));
+
+    dategenmenu->Append(myID_MENU_EDIT_INSERT_DATETIME_RFC822,
+			_("RFC 822 Date/Time"),
+			_("Insert current local date/time in RFC 822 format."));
+
+    PopupMenu(dategenmenu);
 }
 
 void WCryptoTE::OnMenuViewLineWrap(wxCommandEvent& event)
@@ -2676,6 +2799,16 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_TOOL	(myID_TOOL_EDIT_INSERT_PASSWORD, WCryptoTE::OnToolEditInsertPassword)
     EVT_MENU_RANGE(myID_MENU_EDIT_INSERT_PASSWORD_FIRST, myID_MENU_EDIT_INSERT_PASSWORD_FIRST + 999,
 		   WCryptoTE::OnMenuEditInsertPasswordPreset)
+
+    EVT_TOOL	(myID_TOOL_EDIT_INSERT_DATETIME, WCryptoTE::OnToolEditInsertDateTime)
+
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD_HHMMSS, WCryptoTE::OnMenuEditInsertDateTime)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD, WCryptoTE::OnMenuEditInsertDateTime)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_HHMMSS, WCryptoTE::OnMenuEditInsertDateTime)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_LOCALE, WCryptoTE::OnMenuEditInsertDateTime)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_LOCALE_DATE, WCryptoTE::OnMenuEditInsertDateTime)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_LOCALE_TIME, WCryptoTE::OnMenuEditInsertDateTime)
+    EVT_MENU	(myID_MENU_EDIT_INSERT_DATETIME_RFC822, WCryptoTE::OnMenuEditInsertDateTime)
 
     // View
     EVT_MENU	(myID_MENU_VIEW_LINEWRAP,	WCryptoTE::OnMenuViewLineWrap)

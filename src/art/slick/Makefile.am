@@ -34,6 +34,8 @@ noinst_HEADERS = \
 	edit-copy-22.h \
 	edit-cut-16.h \
 	edit-cut-22.h \
+	edit-datetime-16.h \
+	edit-datetime-22.h \
 	edit-find-16.h \
 	edit-find-22.h \
 	edit-goto-16.h \
@@ -110,6 +112,8 @@ EXTRA_DIST = \
 	edit-copy-22.png \
 	edit-cut-16.png \
 	edit-cut-22.png \
+	edit-datetime-16.png \
+	edit-datetime-22.png \
 	edit-find-16.png \
 	edit-find-22.png \
 	edit-goto-16.png \
