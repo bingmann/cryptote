@@ -27,10 +27,18 @@ VersionInfoDescription=http://idlebox.net/2008/cryptote/
 VersionInfoCopyright=GNU General Public License v2.0
 MinVersion=0,4.0
 ShowLanguageDialog=auto
+WizardImageFile=SetupModern20.bmp
+WizardSmallImageFile=SetupModernSmall20.bmp
 
 [Languages]
-Name: english; MessagesFile: compiler:Default.isl
-Name: german; MessagesFile: compiler:Languages\German.isl
+Name: en; MessagesFile: compiler:Default.isl
+Name: de; MessagesFile: compiler:Languages\German.isl
+
+[CustomMessages]
+PasswordGenerator=Password Generator
+de.PasswordGenerator=Passwort-Generator
+EncryptedContainer=Encrypted Container
+de.EncryptedContainer=Verschlüsselter Container
 
 [Tasks]
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
@@ -40,16 +48,16 @@ Source: src\cryptote\cryptote.exe; DestDir: {app}; Flags: ignoreversion 32bit
 
 [Icons]
 Name: {group}\CryptoTE; Filename: {app}\cryptote.exe
-Name: {group}\Password Generator; Filename: {app}\cryptote.exe; Parameters: -pwgen; IconIndex: 2
+Name: {group}\{cm:PasswordGenerator}; Filename: {app}\cryptote.exe; Parameters: -pwgen; IconIndex: 2
 Name: {commondesktop}\CryptoTE; Filename: {app}\cryptote.exe; Tasks: desktopicon
 
 [Run]
 Filename: {app}\cryptote.exe; Description: "{cm:LaunchProgram,""CryptoTE""}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
-Root: HKCR; SubKey: .ect; ValueType: string; ValueData: Encrypted Container; Flags: uninsdeletekey
-Root: HKCR; SubKey: Encrypted Container; ValueType: string; ValueData: Encrypted Container; Flags: uninsdeletekey
-Root: HKCR; SubKey: Encrypted Container\Shell\Open\Command; ValueType: string; ValueData: """{app}\cryptote.exe"" ""%1"""; Flags: uninsdeletevalue
-Root: HKCR; Subkey: Encrypted Container\DefaultIcon; ValueType: string; ValueData: {app}\cryptote.exe,1; Flags: uninsdeletevalue
+Root: HKCR; SubKey: .ect; ValueType: string; ValueData: CryptoTE Encrypted Container; Flags: uninsdeletekey
+Root: HKCR; SubKey: CryptoTE Encrypted Container; ValueType: string; ValueData: {cm:EncryptedContainer}; Flags: uninsdeletekey
+Root: HKCR; SubKey: CryptoTE Encrypted Container\Shell\Open\Command; ValueType: string; ValueData: """{app}\cryptote.exe"" ""%1"""; Flags: uninsdeletevalue
+Root: HKCR; Subkey: CryptoTE Encrypted Container\DefaultIcon; ValueType: string; ValueData: {app}\cryptote.exe,1; Flags: uninsdeletevalue
 Root: HKCU; Subkey: Software\idlebox.net\CryptoTE; Flags: dontcreatekey uninsdeletekey
 Root: HKCU; Subkey: Software\idlebox.net; Flags: dontcreatekey uninsdeletekeyifempty

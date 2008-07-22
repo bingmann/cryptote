@@ -3,9 +3,9 @@
 ; $Id$
 
 [Setup]
-AppName=CryptoTE Password Generator
+AppName=CryptoTE {cm:PasswordGenerator}
 AppVersion=@VERSION@
-AppVerName=CryptoTE Password Generator @VERSION@
+AppVerName=CryptoTE {cm:PasswordGenerator} @VERSION@
 AppID={{1408E7CE-CB5D-44DE-A138-D9EAE08F4949}
 AppPublisher=Timo Bingmann
 AppPublisherURL=http://idlebox.net/2008/cryptote/
@@ -27,10 +27,16 @@ VersionInfoDescription=http://idlebox.net/2008/cryptote/
 VersionInfoCopyright=GNU General Public License v2.0
 MinVersion=0,4.0
 ShowLanguageDialog=auto
+WizardImageFile=SetupModern20.bmp
+WizardSmallImageFile=SetupModernSmall20.bmp
 
 [Languages]
-Name: english; MessagesFile: compiler:Default.isl
-Name: german; MessagesFile: compiler:Languages\German.isl
+Name: en; MessagesFile: compiler:Default.isl
+Name: de; MessagesFile: compiler:Languages\German.isl
+
+[CustomMessages]
+PasswordGenerator=Password Generator
+de.PasswordGenerator=Passwort-Generator
 
 [Tasks]
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
@@ -39,11 +45,11 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Source: src\pwgen\cryptote-pwgen.exe; DestDir: {app}; Flags: ignoreversion 32bit
 
 [Icons]
-Name: {group}\Password Generator; Filename: {app}\cryptote-pwgen.exe
-Name: {commondesktop}\CryptoTE Password Generator; Filename: {app}\cryptote-pwgen.exe; Tasks: desktopicon
+Name: {group}\{cm:PasswordGenerator}; Filename: {app}\cryptote-pwgen.exe
+Name: {commondesktop}\CryptoTE {cm:PasswordGenerator}; Filename: {app}\cryptote-pwgen.exe; Tasks: desktopicon
 
 [Run]
-Filename: {app}\cryptote-pwgen.exe; Description: "{cm:LaunchProgram,""CryptoTE Password Generator""}"; Flags: nowait postinstall skipifsilent
+Filename: {app}\cryptote-pwgen.exe; Description: "{cm:LaunchProgram,""CryptoTE {cm:PasswordGenerator}""}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKCU; Subkey: Software\idlebox.net\CryptoTE\pwgen; Flags: dontcreatekey uninsdeletekey
