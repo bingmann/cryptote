@@ -178,28 +178,28 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
 	return _("Generic text message error.");
 
     case ETE_OUTPUT_ERROR:
-	return _("Error saving container: file output error.");
+	return _("Error in data output stream: error writing file.");
 
     case ETE_INPUT_ERROR:
-	return _("Error loading container: file input error.");
+	return _("Error in data input stream: error reading file.");
 
     case ETE_SAVE_NO_KEYSLOTS:
 	return _("Error saving container: no encryption key slots set!");
 
     case ETE_LOAD_HEADER1:
-	return _("Error loading container: could not read header.");
+	return _("Error loading container: could not read primary header.");
 
     case ETE_LOAD_HEADER1_SIGNATURE:
-	return _("Error loading container: could not read header, invalid signature.");
+	return _("Error loading container: could not read primary header, invalid signature.");
 
     case ETE_LOAD_HEADER1_VERSION:
-	return _("Error loading container: could not read header, invalid version.");
+	return _("Error loading container: could not read primary header, invalid version.");
 
     case ETE_LOAD_HEADER1_METADATA:
-	return _("Error loading container: could not read header, invalid metadata.");
+	return _("Error loading container: could not read primary header, invalid metadata.");
 
     case ETE_LOAD_HEADER1_METADATA_PARSE:
-	return _("Error loading container: could not read header, metadata parse failed.");
+	return _("Error loading container: could not read primary header, metadata parse failed.");
 
     case ETE_LOAD_HEADER2:
 	return _("Error loading container: could not read key slots header.");
@@ -214,19 +214,19 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
 	return _("Error loading container: supplied key matches no key slot in header, check password.");
 
     case ETE_LOAD_HEADER3:
-	return _("Error loading container: could not read secondary header.");
+	return _("Error loading container: could not read data header.");
 
     case ETE_LOAD_HEADER3_ENCRYPTION:
-	return _("Error loading container: could not read secondary header, check encryption key.");
+	return _("Error loading container: could not read data header, check encryption key.");
 
     case ETE_LOAD_HEADER3_METADATA:
-	return _("Error loading container: could not read secondary header, invalid metadata.");
+	return _("Error loading container: could not read data header, invalid metadata.");
 
     case ETE_LOAD_HEADER3_METADATA_CRC32:
-	return _("Error loading container: could not read secondary header, metadata crc32 mismatch.");
+	return _("Error loading container: could not read data header, metadata crc32 mismatch.");
 
     case ETE_LOAD_HEADER3_METADATA_PARSE:
-	return _("Error loading container: could not read secondary header, metadata parse failed.");
+	return _("Error loading container: could not read data header, metadata parse failed.");
 
     case ETE_LOAD_SUBFILE:
 	return _("Error loading container: could not read encrypted subfile data.");
@@ -241,10 +241,10 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
 	return _("Error in subfile: crc32 mismatch, data possibly corrupt.");
 
     case ETE_SUBFILE_INVALID_COMPRESSION:
-	return _("Unknown compression algorithm.");
+	return _("Unknown subfile compression algorithm.");
 
     case ETE_SUBFILE_INVALID_ENCRYPTION:
-	return _("Unknown encryption cipher.");
+	return _("Unknown subfile encryption cipher.");
 
     case ETE_Z_UNKNOWN:
 	return _("Error in zlib: unknown error.");
