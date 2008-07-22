@@ -165,7 +165,7 @@ WCryptoTE::~WCryptoTE()
     }
 }
 
-const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
+const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
 {
     using namespace Enctain;
 
@@ -174,11 +174,17 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
     case ETE_SUCCESS:
 	return _("Success.");
 
-    case ETE_SAVE_NO_PASSWORD:
-	return _("Error saving container: no encryption password set!");
+    case ETE_TEXT:
+	return _("Generic text message error.");
 
-    case ETE_SAVE_OUTPUT_ERROR:
+    case ETE_OUTPUT_ERROR:
 	return _("Error saving container: file output error.");
+
+    case ETE_INPUT_ERROR:
+	return _("Error loading container: file input error.");
+
+    case ETE_SAVE_NO_KEYSLOTS:
+	return _("Error saving container: no encryption key slots set!");
 
     case ETE_LOAD_HEADER1:
 	return _("Error loading container: could not read header.");
@@ -194,6 +200,18 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
 
     case ETE_LOAD_HEADER1_METADATA_PARSE:
 	return _("Error loading container: could not read header, metadata parse failed.");
+
+    case ETE_LOAD_HEADER2:
+	return _("Error loading container: could not read key slots header.");
+
+    case ETE_LOAD_HEADER2_NO_KEYSLOTS:
+	return _("Error loading container: file contains no key slots for decryption.");
+
+    case ETE_LOAD_HEADER2_KEYSLOTS:
+	return _("Error loading container: could not read key slots header, error reading key slot material.");
+
+    case ETE_LOAD_HEADER2_INVALID_KEY:
+	return _("Error loading container: supplied key matches no key slot in header, check password.");
 
     case ETE_LOAD_HEADER3:
 	return _("Error loading container: could not read secondary header.");
@@ -213,23 +231,20 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
     case ETE_LOAD_SUBFILE:
 	return _("Error loading container: could not read encrypted subfile data.");
 
-    case ETE_SUBFILE_COMPRESSION_INVALID:
-	return _("Error in subfile: unknown compression algorithm.");
+    case ETE_KEYSLOT_INVALID_INDEX:
+	return _("Invalid encryption key slot index.");
 
-    case ETE_SUBFILE_ENCRYPTION_INVALID:
-	return _("Error in subfile: unknown encryption cipher.");
-
-    case ETE_SUBFILE_ENCRYPTION_LENGTH:
-	return _("Error in subfile: invalid encrypted data length.");
-
-    case ETE_SUBFILE_UNEXPECTED_EOF:
-	return _("Error in subfile: read beyond end of stream.");
+    case ETE_SUBFILE_INVALID_INDEX:
+	return _("Invalid subfile index.");
 
     case ETE_SUBFILE_CRC32:
 	return _("Error in subfile: crc32 mismatch, data possibly corrupt.");
 
-    case ETE_SUBFILE_OUTPUT_ERROR:
-	return _("Error in subfile: file output error.");
+    case ETE_SUBFILE_INVALID_COMPRESSION:
+	return _("Unknown compression algorithm.");
+
+    case ETE_SUBFILE_INVALID_ENCRYPTION:
+	return _("Unknown encryption cipher.");
 
     case ETE_Z_UNKNOWN:
 	return _("Error in zlib: unknown error.");
@@ -260,54 +275,17 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_t e)
 
     case ETE_Z_VERSION_ERROR:
 	return _("Error in zlib: incompatible version.");
-
-    case ETE_BZ_UNKNOWN:
-	return _("Error in bzip2: unknown error.");
-
-    case ETE_BZ_OK:
-	return _("Error in bzip2: success.");
-
-    case ETE_BZ_RUN_OK:
-	return _("Error in bzip2: successful run.");
-
-    case ETE_BZ_FLUSH_OK:
-	return _("Error in bzip2: successful flush.");
-
-    case ETE_BZ_FINISH_OK:
-	return _("Error in bzip2: successful finish.");
-
-    case ETE_BZ_STREAM_END:
-	return _("Error in bzip2: stream end.");
-
-    case ETE_BZ_SEQUENCE_ERROR:
-	return _("Error in bzip2: sequence error.");
-
-    case ETE_BZ_PARAM_ERROR:
-	return _("Error in bzip2: parameter error.");
-
-    case ETE_BZ_MEM_ERROR:
-	return _("Error in bzip2: insufficient memory.");
-
-    case ETE_BZ_DATA_ERROR:
-	return _("Error in bzip2: data error.");
-
-    case ETE_BZ_DATA_ERROR_MAGIC:
-	return _("Error in bzip2: magic header error.");
-
-    case ETE_BZ_IO_ERROR:
-	return _("Error in bzip2: file system error.");
-
-    case ETE_BZ_UNEXPECTED_EOF:
-	return _("Error in bzip2: unexpected end of file.");
-
-    case ETE_BZ_OUTBUFF_FULL:
-	return _("Error in bzip2: output buffer full.");
-
-    case ETE_BZ_CONFIG_ERROR:
-	return _("Error in bzip2: platform config error.");
     }
 
     return _("Unknown error code.");
+}
+
+wxString WCryptoTE::EnctainExceptionString(Enctain::Exception& e)
+{
+    if (e.code() == Enctain::ETE_TEXT)
+	return strSTL2WX(e.str());
+
+    return EnctainErrorString(e.code());
 }
 
 void WCryptoTE::UpdateStatusBar(const wxString& str)
@@ -577,10 +555,13 @@ void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::strin
 		container.SetSubFileProperty(sfnew, "Filetype", "text");
 	    }
 
-	    Enctain::error_t e = container.SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
-	    if (e != Enctain::ETE_SUCCESS)
+	    try {
+		container.SetSubFileData(sfnew, filedata.GetData(), filedata.GetDataLen());
+	    }
+	    catch (Enctain::Exception& e)
 	    {
-		wxMessageDialogErrorOK(this, WCryptoTE::EnctainErrorString(e));
+		wxMessageDialogErrorOK(this, EnctainExceptionString(e));
+		return;
 	    }
 
 	    container.SetSubFileProperty(sfnew, "MTime", strTimeStampNow());
@@ -616,12 +597,14 @@ void WCryptoTE::ExportSubFile(unsigned int sfid, wxOutputStream& outstream)
     else
     {
 	// export directly from the container storage
-
-	DataOutputStream dataout(outstream);
-	Enctain::error_t e = container.GetSubFileData(sfid, dataout);
-	if (e != Enctain::ETE_SUCCESS)
+	try {
+	    DataOutputStream dataout(outstream);
+	    container.GetSubFileData(sfid, dataout);
+	}
+	catch (Enctain::Exception& e)
 	{
-	    wxMessageDialogErrorOK(this, EnctainErrorString(e));
+	    wxMessageDialogErrorOK(this, EnctainExceptionString(e));
+	    return;
 	}
     }
 }
@@ -841,15 +824,16 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
     Enctain::Container newcontainer;
     newcontainer.SetProgressIndicator(statusbar);
     
-    Enctain::error_t e = Enctain::ETE_SUCCESS;
-    do
+    bool defpass_tried = false;
+    while(1)
     {
 	wxString passstr;
 
 	// Only try defpass given on commandline once
-	if (e == Enctain::ETE_SUCCESS && !defpass.IsEmpty())
+	if (!defpass.IsEmpty() && !defpass_tried)
 	{
 	    passstr = defpass;
+	    defpass_tried = true;
 	}
 	else
 	{
@@ -858,16 +842,17 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 	    passstr = passdlg.GetPass();
 	}
 
-	fh->Seek(0, wxFromStart);
-	wxFileInputStream stream(*fh.get());
-	if (!stream.IsOk()) return false;
+	try {
+	    fh->Seek(0, wxFromStart);
+	    wxFileInputStream stream(*fh.get());
+	    if (!stream.IsOk()) return false;
 
-	DataInputStream datain(stream);
-	e = newcontainer.Load(datain, strWX2STL(passstr));
-
-	if (e != Enctain::ETE_SUCCESS)
+	    DataInputStream datain(stream);
+	    newcontainer.Load(datain, strWX2STL(passstr));
+	}
+	catch (Enctain::Exception& e)
 	{
-	    if (e == Enctain::ETE_LOAD_HEADER3_ENCRYPTION)
+	    if (e.code() == Enctain::ETE_LOAD_HEADER2_INVALID_KEY)
 	    {
 		WMessageDialog dlg(this,
 				   _("Error loading container: could not read encrypted header.\nEncryption key probably invalid. Retry?"),
@@ -879,14 +864,18 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
 
 		if (id != wxID_YES)
 		    return false;
+
+		continue;
 	    }
 	    else
 	    {
-		wxMessageDialogErrorOK(this, EnctainErrorString(e));
+		wxMessageDialogErrorOK(this, EnctainExceptionString(e));
 		return false;
 	    }
 	}
-    } while(e != Enctain::ETE_SUCCESS);
+
+	break;
+    }
 
     // Loading was successful
 
@@ -1054,12 +1043,14 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     filelistpane->SaveProperties();
     SaveOpenSubFilelist();
 
-    DataOutputStream dataout(stream);
-    Enctain::error_t e = container.Save(dataout);
-    if (e != Enctain::ETE_SUCCESS)
+    try {
+	DataOutputStream dataout(stream);
+	container.Save(dataout);
+    }
+    catch (Enctain::Exception& e)
     {
-	UpdateStatusBar(EnctainErrorString(e));
-	wxMessageDialogErrorOK(this, EnctainErrorString(e));
+	UpdateStatusBar(EnctainExceptionString(e));
+	wxMessageDialogErrorOK(this, EnctainExceptionString(e));
 	return false;
     }
 
@@ -2275,31 +2266,31 @@ void WCryptoTE::OnMenuEditInsertDateTime(wxCommandEvent& event)
     {
     default:
     case myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD_HHMMSS:
-	datestr = now.Format("%Y-%m-%d %H:%M:%S");
+	datestr = now.Format(_T("%Y-%m-%d %H:%M:%S"));
 	break;
 
     case myID_MENU_EDIT_INSERT_DATETIME_YYYYMMDD:
-	datestr = now.Format("%Y-%m-%d");
+	datestr = now.Format(_T("%Y-%m-%d"));
 	break;
 
     case myID_MENU_EDIT_INSERT_DATETIME_HHMMSS:
-	datestr = now.Format("%H:%M:%S");
+	datestr = now.Format(_T("%H:%M:%S"));
 	break;
 
     case myID_MENU_EDIT_INSERT_DATETIME_LOCALE:
-	datestr = now.Format("%c");
+	datestr = now.Format(_T("%c"));
 	break;
 
     case myID_MENU_EDIT_INSERT_DATETIME_LOCALE_DATE:
-	datestr = now.Format("%x");
+	datestr = now.Format(_T("%x"));
 	break;
 
     case myID_MENU_EDIT_INSERT_DATETIME_LOCALE_TIME:
-	datestr = now.Format("%X");
+	datestr = now.Format(_T("%X"));
 	break;
 
     case myID_MENU_EDIT_INSERT_DATETIME_RFC822:
-	datestr = now.Format("%a, %d %b %Y %H:%M:%S %z");
+	datestr = now.Format(_T("%a, %d %b %Y %H:%M:%S %z"));
 	break;
     }
 

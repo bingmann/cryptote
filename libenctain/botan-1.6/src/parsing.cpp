@@ -139,6 +139,7 @@ std::vector<std::string> split_on(const std::string& str, char delim)
    return elems;
    }
 
+#if 0
 /*************************************************
 * Parse an ASN.1 OID string                      *
 *************************************************/
@@ -210,6 +211,7 @@ bool x500_name_cmp(const std::string& name1, const std::string& name2)
       return false;
    return true;
    }
+#endif
 
 /*************************************************
 * Parse and compute an arithmetic expression     *

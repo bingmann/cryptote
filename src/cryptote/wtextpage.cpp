@@ -95,12 +95,15 @@ bool WTextPage::LoadSubFile(unsigned int sfid)
     editctrl->Allocate(wmain->container.GetSubFileSize(sfid));
     editctrl->SetUndoCollection(false);
 
-    DataOutputTextPage dataout(*this);
-
-    Enctain::error_t e = wmain->container.GetSubFileData(sfid, dataout);
-    if (e != Enctain::ETE_SUCCESS)
+    try {
+	DataOutputTextPage dataout(*this);
+	wmain->container.GetSubFileData(sfid, dataout);
+    }
+    catch (Enctain::Exception& e)
     {
-	wxLogError(WCryptoTE::EnctainErrorString(e));
+	editctrl->ClearAll();
+	wxLogError(WCryptoTE::EnctainExceptionString(e));
+	return false;
     }
 
     subfileid = sfid;
@@ -456,10 +459,13 @@ void WTextPage::PageSaveData()
     size_t buflen = editctrl->GetTextLength();
     wxCharBuffer buf = editctrl->GetTextRaw();
 
-    Enctain::error_t e = wmain->container.SetSubFileData(subfileid, buf.data(), buflen);
-    if (e != Enctain::ETE_SUCCESS)
+    try {
+	wmain->container.SetSubFileData(subfileid, buf.data(), buflen);
+    }
+    catch (Enctain::Exception& e)
     {
-	wxLogError(WCryptoTE::EnctainErrorString(e));
+	wxLogFatalError(WCryptoTE::EnctainExceptionString(e));
+	return;
     }
 
     wmain->container.SetSubFileProperty(subfileid, "MTime", strTimeStampNow());

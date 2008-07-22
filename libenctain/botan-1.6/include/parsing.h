@@ -18,8 +18,8 @@ namespace Botan {
 *************************************************/
 std::vector<std::string> parse_algorithm_name(const std::string&);
 std::vector<std::string> split_on(const std::string&, char);
-std::vector<u32bit> parse_asn1_oid(const std::string&);
-bool x500_name_cmp(const std::string&, const std::string&);
+//std::vector<u32bit> parse_asn1_oid(const std::string&);
+//bool x500_name_cmp(const std::string&, const std::string&);
 u32bit parse_expr(const std::string&);
 
 /*************************************************

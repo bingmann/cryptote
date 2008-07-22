@@ -116,7 +116,10 @@ public:
     // *** Operations ***
 
     /// Return a localized string for the given error code.
-    static const wxChar* EnctainErrorString(Enctain::error_t e);
+    static const wxChar* EnctainErrorString(Enctain::error_type e);
+
+    /// Return a localized string for the given exception object.
+    static wxString EnctainExceptionString(Enctain::Exception& e);
 
     /// Temporarily set status bar to show given text.
     void	UpdateStatusBar(const wxString& str);

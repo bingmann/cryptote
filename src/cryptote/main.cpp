@@ -273,22 +273,22 @@ public:
 
 	    if (!cmdlinepass.IsEmpty())
 	    {
-		wxFileInputStream stream(*fh.get());
-		if (!stream.IsOk()) return false;
+		try {
+		    wxFileInputStream stream(*fh.get());
+		    if (!stream.IsOk()) return false;
 
-		DataInputStream datain(stream);
-		Enctain::error_t e = container->Load(datain, strWX2STL(cmdlinepass));
-
-		if (e != Enctain::ETE_SUCCESS)
+		    DataInputStream datain(stream);
+		    container->Load(datain, strWX2STL(cmdlinepass));
+		}
+		catch (Enctain::Exception& e)
 		{
-		    wxPuts(WCryptoTE::EnctainErrorString(e));
+		    wxPuts(WCryptoTE::EnctainExceptionString(e));
 		    return false;
 		}
 	    }
 	    else
 	    {
-		Enctain::error_t e;
-		do
+		while(1)
 		{
 #ifdef __UNIX__
 		    // Disable terminal echo of password
@@ -332,27 +332,31 @@ public:
 			return false;
 		    }
 
-		    fh->Seek(0, wxFromStart);
-		    wxFileInputStream stream(*fh.get());
-		    if (!stream.IsOk()) return false;
+		    try {
+			fh->Seek(0, wxFromStart);
+			wxFileInputStream stream(*fh.get());
+			if (!stream.IsOk()) return false;
 
-		    DataInputStream datain(stream);
-		    e = container->Load(datain, strWX2STL(linepassstr));
-
-		    if (e != Enctain::ETE_SUCCESS)
+			DataInputStream datain(stream);
+			container->Load(datain, strWX2STL(linepassstr));
+		    }
+		    catch (Enctain::Exception& e)
 		    {
-			if (e == Enctain::ETE_LOAD_HEADER3_ENCRYPTION)
+			if (e.code() == Enctain::ETE_LOAD_HEADER2_INVALID_KEY)
 			{
 			    wxPuts(_("Error loading container: cannot decrypt header. Possibly wrong password."));
 			    wxPuts(_("Try again? Abort with an empty line."));
+			    continue;
 			}
 			else
 			{
-			    wxPuts(WCryptoTE::EnctainErrorString(e));
+			    wxPuts(WCryptoTE::EnctainExceptionString(e));
 			    return false;
 			}
 		    }
-		} while(e != Enctain::ETE_SUCCESS);
+
+		    break;
+		}
 	    }
 
 	    long subfileindex;
@@ -375,17 +379,20 @@ public:
 	    {
 		if (subfileindex >= 0 && (unsigned int)subfileindex < container->CountSubFile())
 		{
-		    DataOutputStdout dataout;
-
-		    Enctain::error_t e = container->GetSubFileData(subfileindex, dataout);
-		    if (e != Enctain::ETE_SUCCESS)
+		    try {
+			DataOutputStdout dataout;
+			container->GetSubFileData(subfileindex, dataout);
+		    }
+		    catch (Enctain::Exception& e)
 		    {
-			wxPuts(WCryptoTE::EnctainErrorString(e));
+			wxPuts(WCryptoTE::EnctainExceptionString(e));
+			return false;
 		    }
 		}
 		else
 		{
 		    wxPuts(_("Error during --decrypt: Invalid subfile index."));
+		    return false;
 		}
 	    }
 	    else if (parser.Found(_T("e"), &subfileindex))
@@ -415,14 +422,15 @@ public:
 	wxString tempname = wxString::Format(_T("temp-%d-%s"), (int)wxGetProcessId(), filename.c_str());
 
 	{
-	    DataOutputTempFile dataout(tempname);
-	    if (!dataout.filestream.IsOk())
-		return;
+	    try {
+		DataOutputTempFile dataout(tempname);
+		if (!dataout.filestream.IsOk()) return;
 
-	    Enctain::error_t e = container->GetSubFileData(subfileindex, dataout);
-	    if (e != Enctain::ETE_SUCCESS)
+		container->GetSubFileData(subfileindex, dataout);
+	    }
+	    catch (Enctain::Exception& e)
 	    {
-		wxPuts(WCryptoTE::EnctainErrorString(e));
+		wxPuts(WCryptoTE::EnctainExceptionString(e));
 		return;
 	    }
 	}
@@ -505,10 +513,12 @@ public:
 
 	    wxPrintf(_("Saving changed data of subfile %d into container: %+d bytes\n"), subfileindex, (after_size - before_size).GetLo());
 
-	    Enctain::error_t e = container->SetSubFileData(subfileindex, fdata.GetData(), fsize);
-	    if (e != Enctain::ETE_SUCCESS)
+	    try {
+		container->SetSubFileData(subfileindex, fdata.GetData(), fsize);
+	    }
+	    catch (Enctain::Exception& e)
 	    {
-		wxLogError(WCryptoTE::EnctainErrorString(e));
+		wxLogError(WCryptoTE::EnctainExceptionString(e));
 
 		if (!wxRemoveFile(tempname)) {
 		    wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
@@ -531,16 +541,18 @@ public:
 	    if (!fh.Create(cmdlinefile.c_str(), true, wxS_DEFAULT))
 		return;
 
-	    wxFileOutputStream stream(fh);
-	    if (!stream.IsOk()) return;
+	    try {
+		wxFileOutputStream stream(fh);
+		if (!stream.IsOk()) return;
 
-	    container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
+		container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
 
-	    DataOutputStream dataout(stream);
-	    Enctain::error_t e = container->Save(dataout);
-	    if (e != Enctain::ETE_SUCCESS)
+		DataOutputStream dataout(stream);
+		container->Save(dataout);
+	    }
+	    catch (Enctain::Exception& e)
 	    {
-		wxPuts(WCryptoTE::EnctainErrorString(e));
+		wxPuts(WCryptoTE::EnctainExceptionString(e));
 		return;
 	    }
 	}

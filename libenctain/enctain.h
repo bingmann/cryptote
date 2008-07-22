@@ -4,6 +4,7 @@
 #define ENCTAIN_H
 
 #include <string>
+#include <exception>
 
 /// Holds all public declarations and classes of Enctain.
 namespace Enctain {
@@ -12,18 +13,29 @@ namespace Enctain {
  * Enumeration of different error return codes. They can be resolved into
  * English strings using GetErrorString().
  */
-enum error_t
+enum error_type
 {
+    /// No Exception occured.
     ETE_SUCCESS = 0,
-  
-    ETE_SAVE_NO_PASSWORD,
-    ETE_SAVE_OUTPUT_ERROR,
+
+    /// Exception with unknown error code, see plain text message.
+    ETE_TEXT = 1,
+    
+    ETE_OUTPUT_ERROR = 1000,
+    ETE_INPUT_ERROR,
+
+    ETE_SAVE_NO_KEYSLOTS,
 
     ETE_LOAD_HEADER1,
     ETE_LOAD_HEADER1_SIGNATURE,
     ETE_LOAD_HEADER1_VERSION,
     ETE_LOAD_HEADER1_METADATA,
     ETE_LOAD_HEADER1_METADATA_PARSE,
+
+    ETE_LOAD_HEADER2,
+    ETE_LOAD_HEADER2_NO_KEYSLOTS,
+    ETE_LOAD_HEADER2_KEYSLOTS,
+    ETE_LOAD_HEADER2_INVALID_KEY,
 
     ETE_LOAD_HEADER3,
     ETE_LOAD_HEADER3_ENCRYPTION,
@@ -33,15 +45,14 @@ enum error_t
 
     ETE_LOAD_SUBFILE,
 
-    ETE_SUBFILE_COMPRESSION_INVALID,
-    ETE_SUBFILE_ENCRYPTION_INVALID,
-    ETE_SUBFILE_ENCRYPTION_LENGTH,    
+    ETE_KEYSLOT_INVALID_INDEX,
 
-    ETE_SUBFILE_UNEXPECTED_EOF,
+    ETE_SUBFILE_INVALID_INDEX,
     ETE_SUBFILE_CRC32,
-    ETE_SUBFILE_OUTPUT_ERROR,
+    ETE_SUBFILE_INVALID_COMPRESSION,
+    ETE_SUBFILE_INVALID_ENCRYPTION,
 
-    ETE_Z_UNKNOWN,
+    ETE_Z_UNKNOWN = 2000,
     ETE_Z_OK,
     ETE_Z_NEED_DICT,
     ETE_Z_STREAM_END,
@@ -51,23 +62,6 @@ enum error_t
     ETE_Z_MEM_ERROR,
     ETE_Z_BUF_ERROR,
     ETE_Z_VERSION_ERROR,
-
-    ETE_BZ_UNKNOWN,
-    ETE_BZ_OK,
-    ETE_BZ_RUN_OK,
-    ETE_BZ_FLUSH_OK,
-    ETE_BZ_FINISH_OK,
-    ETE_BZ_STREAM_END,
-    ETE_BZ_SEQUENCE_ERROR,
-    ETE_BZ_PARAM_ERROR,
-    ETE_BZ_MEM_ERROR,
-    ETE_BZ_DATA_ERROR,
-    ETE_BZ_DATA_ERROR_MAGIC,
-    ETE_BZ_IO_ERROR,
-    ETE_BZ_UNEXPECTED_EOF,
-    ETE_BZ_OUTBUFF_FULL,
-    ETE_BZ_CONFIG_ERROR,
-
 };
 
 /**
@@ -102,6 +96,84 @@ enum progress_indicator_type {
     PI_REENCRYPT,
     PI_SAVE_SUBFILE,
     PI_LOAD_SUBFILE
+};
+
+/**
+ * Top-Level Exception Class for all exceptions thrown from Enctain. The
+ * additional error_type code can be used for better translation of error
+ * strings.
+ */
+class Exception : public std::exception
+{
+protected:
+    /// Error code which can be used for translation.
+    error_type		ecode;
+
+    /// Error message in English plain text.
+    std::string		msg;
+
+public:
+    /// Initializing constructor.
+    Exception(error_type ec, const std::string& m);
+
+    /// Required for virtual functions.
+    virtual ~Exception() throw()
+    { }
+
+    /// Return the English error message
+    virtual const char* what() const throw()
+    { return msg.c_str(); }
+
+    /// Return Enctain error message string
+    virtual const std::string& str() const throw()
+    { return msg; }
+
+    /// Return Enctain error code
+    virtual error_type code() const throw()
+    { return ecode; }
+};
+
+/**
+ * Second-Level Exception Class for all exceptions which indicate a transient
+ * run-time like entering an invalid decryption key.
+ */
+class RuntimeException : public Exception
+{
+public:
+    /// Initializing constructor.
+    RuntimeException(error_type ec, const std::string& m);
+
+    /// Initializing constructor with automatic message text.
+    RuntimeException(error_type ec);
+};
+
+/**
+ * Second-Level Exception Class for all exceptions which indicate a permanent
+ * program error, like specifying wrong parameters or calling functions in an
+ * invalid order.
+ */
+class ProgramException : public Exception
+{
+public:
+    /// Initializing constructor.
+    ProgramException(error_type ec, const std::string& m);
+
+    /// Initializing constructor with automatic message text.
+    ProgramException(error_type ec);
+};
+
+/**
+ * Second-Level Exception Class for all exceptions which indicate an internal
+ * error which should never occur.
+ */
+class InternalException : public Exception
+{
+public:
+    /// Initializing constructor.
+    InternalException(error_type ec, const std::string& m);
+
+    /// Initializing constructor with automatic message text.
+    InternalException(error_type ec);
 };
 
 /**
@@ -235,15 +307,15 @@ public:
     static void		SetSignature(const char* sign);
 
     /// Return a one-line English description of the error code.
-    static const char*	GetErrorString(error_t e);
+    static const char*	GetErrorString(error_type e);
 
     // *** Load/Save/Clear Operations ***
 
     /// Save the current container by outputting all data to the data sink.
-    error_t		Save(DataOutput& dataout);
+    void		Save(DataOutput& dataout);
 
     /// Load a new container from an input stream and parse the subfile index.
-    error_t		Load(DataInput& datain, const std::string& userkey);
+    void		Load(DataInput& datain, const std::string& userkey);
 
     /// Reset all structures in the container
     void		Clear();
@@ -394,15 +466,15 @@ public:
 
     /// Return the data of a subfile: decrypt and uncompress it. The data is
     /// sent block-wise to the DataOutput object.
-    error_t		GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const;
+    void		GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const;
 
     /// Return the data of a subfile: decrypt and uncompress it. Return
     /// complete data in a memory string.
-    error_t		GetSubFileData(unsigned int subfileindex, std::string& data) const;
+    void		GetSubFileData(unsigned int subfileindex, std::string& data) const;
 
     /// Set/change the data of a subfile, it will be compressed and encrypted
     /// but not written to disk, yet.
-    error_t		SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen);
+    void 		SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen);
 };
 
 } // namespace Enctain

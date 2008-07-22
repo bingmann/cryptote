@@ -7,7 +7,7 @@
 #define BOTAN_EXCEPTION_H__
 
 #include "botan-1.6/include/types.h"
-#include <exception>
+#include "enctain.h"
 #include <string>
 
 namespace Enctain {
@@ -16,16 +16,14 @@ namespace Botan {
 /*************************************************
 * Exception Base Class                           *
 *************************************************/
-class Exception : public std::exception
+class Exception : public InternalException
    {
    public:
-      const char* what() const throw() { return msg.c_str(); }
-      Exception(const std::string& m = "Unknown error") { set_msg(m); }
-      virtual ~Exception() throw() {}
+       Exception(const std::string& m = "Unknown error")
+	  : InternalException(ETE_TEXT)
+       { set_msg(m); }
    protected:
-      void set_msg(const std::string& m) { msg = "Botan: " + m; }
-   private:
-      std::string msg;
+       void set_msg(const std::string& m) { msg = "Enctain: <Botan> " + m; }
    };
 
 /*************************************************
@@ -138,19 +136,11 @@ struct Encoding_Error : public Format_Error
 /*************************************************
 * Decoding_Error Exception                       *
 *************************************************/
-struct Decoding_Error : public Format_Error
+struct Decoding_Error : public Enctain::RuntimeException
    {
-   Decoding_Error(const std::string& name) :
-      Format_Error("Decoding error: " + name) {}
-   };
-
-/*************************************************
-* Invalid_OID Exception                          *
-*************************************************/
-struct Invalid_OID : public Decoding_Error
-   {
-   Invalid_OID(const std::string& oid) :
-      Decoding_Error("Invalid ASN.1 OID: " + oid) {}
+       Decoding_Error(const std::string& name)
+	   : Enctain::RuntimeException(ETE_TEXT, "Decoding error: " + name)
+       {}
    };
 
 /*************************************************
