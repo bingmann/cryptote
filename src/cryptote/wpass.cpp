@@ -96,7 +96,9 @@ void WPasswordList::ReinsertList()
 
 	std::string ctime = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-CTime");
 	
-	text += _("\n    Created: ");
+	text += _T("\n    ");
+	text += _("Created:");
+	text += _T(" ");
 
 	if (ctime.size() == sizeof(time_t)) {
 	    wxDateTime datetime (*(time_t*)ctime.data());
@@ -108,7 +110,9 @@ void WPasswordList::ReinsertList()
 
 	std::string atime = cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(s) + "-ATime");
 
-	text += _("\n    Last Match: ");
+	text += _T("\n    ");
+	text += _("Last Match:");
+	text += _T(" ");
 
 	if (atime.size() == sizeof(time_t)) {
 	    wxDateTime datetime (*(time_t*)atime.data());
@@ -119,7 +123,9 @@ void WPasswordList::ReinsertList()
 	}
 
 	if (cnt.GetUsedKeySlot() == (int)s) {
-	    text += _("\n    Active");
+	    text += _T("\n    ");
+	    text += _("Active");
+	    text += _T(" ");
 	}
 
 	listbox->Append(text);

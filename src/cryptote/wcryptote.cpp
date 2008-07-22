@@ -1546,7 +1546,7 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 	wxMenuItem* dategenitem
 	    = new wxMenuItem(menuEdit, myID_MENU_EDIT_INSERT_DATETIME,
 			     _("Insert &Date/Time"),
-			     _("Insert current date/time into document."),
+			     _("Insert current date/time."),
 			     wxITEM_NORMAL, dategenmenu);
 	
 	dategenitem->SetBitmap( BitmapCatalog::GetMenuBitmap(myID_MENU_EDIT_INSERT_DATETIME) );
