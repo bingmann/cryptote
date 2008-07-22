@@ -35,9 +35,10 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/cryptote-pwgen-win32.iss.in \
-	$(srcdir)/cryptote-win32.iss.in $(top_srcdir)/configure \
-	AUTHORS COPYING ChangeLog INSTALL NEWS acscripts/config.guess \
+	$(srcdir)/Makefile.in $(top_srcdir)/configure \
+	$(top_srcdir)/win32/cryptote-pwgen-win32.iss.in \
+	$(top_srcdir)/win32/cryptote-win32.iss.in AUTHORS COPYING \
+	ChangeLog INSTALL NEWS acscripts/config.guess \
 	acscripts/config.sub acscripts/depcomp acscripts/install-sh \
 	acscripts/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -47,7 +48,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = cryptote-win32.iss cryptote-pwgen-win32.iss
+CONFIG_CLEAN_FILES = win32/cryptote-win32.iss \
+	win32/cryptote-pwgen-win32.iss
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -189,7 +191,12 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = libstc libenctain src desktop
-EXTRA_DIST = cryptote-win32.iss.in cryptote-pwgen-win32.iss.in
+EXTRA_DIST = \
+	win32/cryptote-win32.iss.in \
+	win32/cryptote-pwgen-win32.iss.in \
+	win32/SetupModern20.bmp \
+	win32/SetupModernSmall20.bmp
+
 all: all-recursive
 
 .SUFFIXES:
@@ -226,9 +233,9 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(srcdir) && $(AUTOCONF)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
-cryptote-win32.iss: $(top_builddir)/config.status $(srcdir)/cryptote-win32.iss.in
+win32/cryptote-win32.iss: $(top_builddir)/config.status $(top_srcdir)/win32/cryptote-win32.iss.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-cryptote-pwgen-win32.iss: $(top_builddir)/config.status $(srcdir)/cryptote-pwgen-win32.iss.in
+win32/cryptote-pwgen-win32.iss: $(top_builddir)/config.status $(top_srcdir)/win32/cryptote-pwgen-win32.iss.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -614,6 +621,13 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am
 
+
+.PHONY: strip run-gcov
+
+strip:
+	strip -s src/cryptote/cryptote$(EXEEXT)
+	strip -s src/pwtutor/cryptote-pwtutor$(EXEEXT)
+	strip -s src/pwgen/cryptote-pwgen$(EXEEXT)
 
 @GCOV_TRUE@clean-local:
 @GCOV_TRUE@	find -name "*.da" -o -name "*.gcov" -o -name "*.gcda" -o -name "*.gcno" | xargs rm || true

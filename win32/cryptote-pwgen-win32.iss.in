@@ -42,7 +42,7 @@ de.PasswordGenerator=Passwort-Generator
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
 
 [Files]
-Source: src\pwgen\cryptote-pwgen.exe; DestDir: {app}; Flags: ignoreversion 32bit
+Source: ..\src\pwgen\cryptote-pwgen.exe; DestDir: {app}; Flags: ignoreversion 32bit
 
 [Icons]
 Name: {group}\{cm:PasswordGenerator}; Filename: {app}\cryptote-pwgen.exe

@@ -5807,7 +5807,7 @@ ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile l
 
 
 if $ON_WIN32; then
-    ac_config_files="$ac_config_files cryptote-win32.iss cryptote-pwgen-win32.iss"
+    ac_config_files="$ac_config_files win32/cryptote-win32.iss win32/cryptote-pwgen-win32.iss"
 
 fi
 
@@ -6454,8 +6454,8 @@ do
     "src/locale/Makefile") CONFIG_FILES="$CONFIG_FILES src/locale/Makefile" ;;
     "src/locale/wxstd/Makefile") CONFIG_FILES="$CONFIG_FILES src/locale/wxstd/Makefile" ;;
     "desktop/Makefile") CONFIG_FILES="$CONFIG_FILES desktop/Makefile" ;;
-    "cryptote-win32.iss") CONFIG_FILES="$CONFIG_FILES cryptote-win32.iss" ;;
-    "cryptote-pwgen-win32.iss") CONFIG_FILES="$CONFIG_FILES cryptote-pwgen-win32.iss" ;;
+    "win32/cryptote-win32.iss") CONFIG_FILES="$CONFIG_FILES win32/cryptote-win32.iss" ;;
+    "win32/cryptote-pwgen-win32.iss") CONFIG_FILES="$CONFIG_FILES win32/cryptote-pwgen-win32.iss" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

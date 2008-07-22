@@ -232,7 +232,7 @@ AC_CONFIG_FILES([Makefile
 		 desktop/Makefile])
 
 if $ON_WIN32; then
-    AC_CONFIG_FILES([cryptote-win32.iss cryptote-pwgen-win32.iss])
+    AC_CONFIG_FILES([win32/cryptote-win32.iss win32/cryptote-pwgen-win32.iss])
 fi
 
 AC_OUTPUT

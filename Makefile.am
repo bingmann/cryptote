@@ -2,7 +2,18 @@
 
 SUBDIRS = libstc libenctain src desktop
 
-EXTRA_DIST = cryptote-win32.iss.in cryptote-pwgen-win32.iss.in
+EXTRA_DIST = \
+	win32/cryptote-win32.iss.in \
+	win32/cryptote-pwgen-win32.iss.in \
+	win32/SetupModern20.bmp \
+	win32/SetupModernSmall20.bmp
+
+.PHONY: strip run-gcov
+
+strip:
+	strip -s src/cryptote/cryptote$(EXEEXT)
+	strip -s src/pwtutor/cryptote-pwtutor$(EXEEXT)
+	strip -s src/pwgen/cryptote-pwgen$(EXEEXT)
 
 if GCOV
 

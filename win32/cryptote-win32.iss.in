@@ -44,7 +44,7 @@ de.EncryptedContainer=Verschlüsselter Container
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
 
 [Files]
-Source: src\cryptote\cryptote.exe; DestDir: {app}; Flags: ignoreversion 32bit
+Source: ..\src\cryptote\cryptote.exe; DestDir: {app}; Flags: ignoreversion 32bit
 
 [Icons]
 Name: {group}\CryptoTE; Filename: {app}\cryptote.exe
