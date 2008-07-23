@@ -3,6 +3,8 @@
 #include "enctain.h"
 
 #include <assert.h>
+#include <stdlib.h>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
