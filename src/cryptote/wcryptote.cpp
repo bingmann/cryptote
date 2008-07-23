@@ -17,6 +17,7 @@
 #include <wx/tokenzr.h>
 #include <wx/url.h>
 #include <wx/protocol/http.h>
+#include <memory>
 
 #include "common/tools.h"
 

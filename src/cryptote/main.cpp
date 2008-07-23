@@ -2,6 +2,7 @@
 
 #include <wx/wx.h>
 #include <wx/cmdline.h>
+#include <memory>
 
 #include "wcryptote.h"
 #include "pwgen/wpassgen.h"

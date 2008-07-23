@@ -29,7 +29,7 @@
 #include "wx/filename.h"
 
 #include <zlib.h>
-#include <algorithm>
+#include <memory>
 #include <stdexcept>
 #include <sstream>
 

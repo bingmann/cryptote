@@ -1,6 +1,7 @@
 // $Id$
 
 #include "fips181.h"
+#include <string.h>
 
 // Number of retries until a search branch is broken and the algorithm
 // restarts.
