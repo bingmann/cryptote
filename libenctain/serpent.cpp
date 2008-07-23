@@ -65,7 +65,7 @@ static inline T load_le(const byte in[], u32bit off)
 }
 
 template<>
-static inline u32bit load_le<u32bit>(const byte in[], u32bit off)
+inline u32bit load_le<u32bit>(const byte in[], u32bit off)
 {
     in += off * sizeof(u32bit);
     return make_u32bit(in[3], in[2], in[1], in[0]);
