@@ -6,9 +6,10 @@
 
 // begin wxGlade: ::dependencies
 #include <wx/spinctrl.h>
-#include <wx/listctrl.h>
 #include <wx/notebook.h>
 // end wxGlade
+
+#include "imaglbox.h"
 
 #ifndef WPREFERENCES_H
 #define WPREFERENCES_H
@@ -55,7 +56,7 @@ protected:
     wxCheckBox* checkboxShareLock;
     wxStaticText* labelShareLock1;
     wxPanel* notebook_pane1;
-    wxListCtrl* listctrlTheme;
+    wxSimpleImageListBox* listboxTheme;
     wxPanel* notebook_pane2;
     wxCheckBox* checkboxWebUpdateCheck;
     wxPanel* notebook_pane3;

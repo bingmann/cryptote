@@ -6,7 +6,6 @@
 #include "bmpcat.h"
 #include "common/tools.h"
 
-#include <wx/imaglist.h>
 #include <wx/config.h>
 
 // begin wxGlade: ::extracode
@@ -36,7 +35,7 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
     checkboxAutoCloseExit = new wxCheckBox(notebook_pane1, wxID_ANY, _("Also close CryptoTE after saving the container."));
     checkboxShareLock = new wxCheckBox(notebook_pane1, wxID_ANY, _("Keep exclusive Share-Lock on container file."));
     labelShareLock1 = new wxStaticText(notebook_pane1, wxID_ANY, _("Other users cannot open it while loaded."));
-    listctrlTheme = new wxListCtrl(notebook_pane2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
+    listboxTheme = new wxSimpleImageListBox(notebook_pane2, wxID_ANY);
     checkboxWebUpdateCheck = new wxCheckBox(notebook_pane3, wxID_ANY, _("Automatically check for updated versions."));
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
@@ -79,11 +78,10 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
 
     // *** Initialize the Theme List ***
 
+    listboxTheme->SetImageSpacing(6, 6, 6);
+
     BitmapCatalog* bitmapcatalog = BitmapCatalog::GetSingleton();
 
-    // first calculate the imagelist's items size
-
-    int maxwidth = 0, maxheight = 0;
     for(int ti = 0; ; ++ti)
     {
 	wxString str;
@@ -91,38 +89,11 @@ WPreferences::WPreferences(WCryptoTE* parent, int id, const wxString& title, con
 
 	if (!bitmapcatalog->GetThemeInfo(ti, str, bmp)) break;
 
-	maxwidth = wxMax(maxwidth, bmp.GetWidth());
-	maxheight = wxMax(maxheight, bmp.GetHeight());
+	listboxTheme->Append(str);
+	listboxTheme->SetBitmap(ti, bmp);
     }
 
-    wxImageList *imglist = new wxImageList(maxwidth, maxheight);
-
-    listctrlTheme->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
-    for(int ti = 0; ; ++ti)
-    {
-	wxString str;
-	wxBitmap bmp;
-
-	if (!bitmapcatalog->GetThemeInfo(ti, str, bmp)) break;
-
-	imglist->Add(bmp);
-    }
-
-    listctrlTheme->InsertColumn(0, _("Theme"), wxLIST_FORMAT_LEFT);
-    for(int ti = 0; ; ++ti)
-    {
-	wxString str;
-	wxBitmap bmp;
-
-	if (!bitmapcatalog->GetThemeInfo(ti, str, bmp)) break;
-
-	listctrlTheme->InsertItem(ti, str, ti);
-    }
-    listctrlTheme->SetColumnWidth(0, wxLIST_AUTOSIZE);
-
-    listctrlTheme->SetItemState(bitmapcatalog->GetCurrentTheme(),
-				wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
-				wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
+    listboxTheme->SetSelection(bitmapcatalog->GetCurrentTheme());
 }
 
 void WPreferences::set_properties()
@@ -164,7 +135,7 @@ void WPreferences::do_layout()
     sizerA1->Add(sizerA6, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
     sizerA1->Add(0, 0, 1, 0, 0);
     notebook_pane1->SetSizer(sizerA1);
-    sizerB2->Add(listctrlTheme, 1, wxALL|wxEXPAND, 4);
+    sizerB2->Add(listboxTheme, 1, wxALL|wxEXPAND, 4);
     sizerB1->Add(sizerB2, 1, wxALL|wxEXPAND, 8);
     notebook_pane2->SetSizer(sizerB1);
     sizerC2->Add(checkboxWebUpdateCheck, 0, wxALL, 4);
@@ -215,7 +186,7 @@ void WPreferences::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
     cfg->SetPath(_T("/cryptote"));
 
-    long bitmaptheme = listctrlTheme->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    long bitmaptheme = listboxTheme->GetSelection();
     if (bitmaptheme >= 0) {
 	cfg->Write(_T("bitmaptheme"), bitmaptheme);
     }
