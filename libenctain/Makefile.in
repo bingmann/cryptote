@@ -417,7 +417,6 @@ libenctain_a_SOURCES = bytebuff.h enctain.cpp enctain.h initrng.cpp \
 	botan-1.6/modules/comp_zlib/zlib.cpp $(am__append_1) \
 	$(am__append_3)
 EXTRA_DIST = \
-	format.html \
 	botan-1.6/README \
 	botan-1.6/license.txt \
 	botan-1.6/modules/*/modinfo.txt

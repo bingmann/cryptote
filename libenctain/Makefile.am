@@ -190,7 +190,6 @@ libenctain_a_SOURCES += \
 endif
 
 EXTRA_DIST = \
-	format.html \
 	botan-1.6/README \
 	botan-1.6/license.txt \
 	botan-1.6/modules/*/modinfo.txt
