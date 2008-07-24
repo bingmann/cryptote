@@ -1,3 +1,3 @@
 # $Id$
 
-SUBDIRS = art locale pwgen pwtutor cryptote
+SUBDIRS = art locale pwgen cryptote
