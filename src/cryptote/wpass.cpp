@@ -518,6 +518,10 @@ void WSetPassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	textctrlPass->Disable();
 	buttonOK->Enable();
 
+	// Show legal notice dialog in between entries
+	WLegalNotice dlglegal(this);
+	dlglegal.ShowModal();
+
 	textctrlVerify->SetFocus();
 
 	state = 1;
@@ -602,3 +606,141 @@ wxString WGetPassword::GetPass() const
 }
 
 // wxGlade: add WGetPassword event handlers
+
+WLegalNotice::WLegalNotice(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+{
+    // begin wxGlade: WLegalNotice::WLegalNotice
+    labelText = new wxStaticText(this, wxID_ANY, wxEmptyString);
+    bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
+    buttonOK = new wxButton(this, wxID_OK, _("OK"));
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+
+    labelText->SetLabel(_("The password you just entered will be hashed and used to encrypt all subfiles\n"
+			  "in the container. If you lose / forget / misspelled the password there is\n"
+			  "NO KNOWN METHOD TO RETRIEVE YOUR SENSITIVE DATA WITHIN\n"
+			  "THE NEXT 100 YEARS! Otherwise the cryptographic protection would be\n"
+			  "pointless.\n"
+			  "\n"
+			  "Furthermore this program is BETA SOFTWARE and free under the GNU\n"
+			  "General Public License. As such it comes with NO WARRANTY. This means\n"
+			  "if it contains some unknown bug or error which screws up your irreplaceable\n"
+			  "password file, then I (the author) am not liable. You (re)acknowledge these\n"
+			  "terms by pressing the OK button below.\n"
+			  "\n"
+			  "Don't be too troubled though, I use the program for my own password lists and\n"
+			  "try to keep it bug-free. However I had to point out this legal issue, which you\n"
+			  "will find in almost any software license agreement. If you find a bug, please\n"
+			  "report it on"));
+
+    #include "art/web-16.h"
+    bitmapWeb->SetBitmap( wxBitmapFromMemory(web_16_png) );
+
+    // Setup countdown
+
+    countdown = 15;
+
+    mytimer.SetOwner(this);
+    mytimer.Start(1000, wxTIMER_CONTINUOUS);
+
+    buttonOK->SetLabel( wxString::Format(_("Wait %d %s ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+
+    buttonpressed = 0;
+
+    Layout();
+    GetSizer()->Fit(this);
+    Centre();
+}
+
+void WLegalNotice::set_properties()
+{
+    // begin wxGlade: WLegalNotice::set_properties
+    SetTitle(_("Legal Notice - CryptoTE"));
+    // end wxGlade
+}
+
+void WLegalNotice::do_layout()
+{
+    // begin wxGlade: WLegalNotice::do_layout
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer3 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Legal Notice"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+    label1->SetFont(wxFont(14, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
+    sizer2->Add(label1, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 8);
+    sizer2->Add(labelText, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 8);
+    sizer3->Add(bitmapWeb, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 4);
+    sizer3->Add(hyperlink1, 0, wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL, 4);
+    sizer2->Add(sizer3, 0, wxTOP|wxALIGN_CENTER_HORIZONTAL, 2);
+    sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 16);
+    wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
+    sizer1->Add(staticline1, 0, wxEXPAND, 0);
+    sizer1->Add(buttonOK, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 6);
+    SetSizer(sizer1);
+    sizer1->Fit(this);
+    Layout();
+    Centre();
+    // end wxGlade
+}
+
+BEGIN_EVENT_TABLE(WLegalNotice, wxDialog)
+    // begin wxGlade: WLegalNotice::event_table
+    EVT_BUTTON(wxID_OK, WLegalNotice::OnButtonOK)
+    // end wxGlade
+    EVT_TIMER(wxID_ANY, WLegalNotice::OnTimer)
+    EVT_CLOSE(WLegalNotice::OnClose)
+END_EVENT_TABLE();
+
+void WLegalNotice::OnButtonOK(wxCommandEvent& WXUNUSED(event))
+{
+    if (countdown == 0)
+    {
+	EndModal(wxID_OK);
+    }
+    else
+    {
+	buttonpressed = countdown;
+
+	if (buttonpressed < countdown +3 && buttonpressed >= countdown)
+	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s (Yes, I know it sucks. Sorry) ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+	else
+	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+
+	Layout();
+    }
+}
+
+void WLegalNotice::OnClose(wxCloseEvent& event)
+{
+    event.Veto();
+}
+
+void WLegalNotice::OnTimer(wxTimerEvent& WXUNUSED(event))
+{
+    if (countdown > 1)
+    {
+	--countdown;
+
+	if (buttonpressed < countdown +3 && buttonpressed >= countdown)
+	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s (Yes, I know it sucks. Sorry) ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+	else
+	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+
+	Layout();
+    }
+    else if (countdown == 1)
+    {
+	countdown = 0;
+	mytimer.Stop();
+
+	buttonOK->SetLabel(_("OK"));
+	Layout();
+    }
+    else {
+	mytimer.Stop();
+    }
+}

@@ -195,7 +195,8 @@ EXTRA_DIST = \
 	win32/cryptote-win32.iss.in \
 	win32/cryptote-pwgen-win32.iss.in \
 	win32/SetupModern20.bmp \
-	win32/SetupModernSmall20.bmp
+	win32/SetupModernSmall20.bmp \
+	win32/COPYING.rtf
 
 all: all-recursive
 

@@ -2,6 +2,7 @@
 // $Id$
 
 #include <wx/wx.h>
+#include <wx/hyperlink.h>
 // begin wxGlade: ::dependencies
 #include <wx/statline.h>
 // end wxGlade
@@ -148,6 +149,46 @@ protected:
 
 public:
     virtual void OnTextPassEnter(wxCommandEvent &event); // wxGlade: <event_handler>
+}; // wxGlade: end class
+
+class WLegalNotice : public wxDialog
+{
+public:
+    // begin wxGlade: WLegalNotice::ids
+    // end wxGlade
+
+    WLegalNotice(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+
+private:
+    /// wxTimer object to update and ultimately enable the OK button
+    wxTimer		mytimer;
+
+    /// Current count down in seconds
+    unsigned int	countdown;
+
+    /// Display a differen text
+    unsigned int	buttonpressed;
+
+private:
+    // begin wxGlade: WLegalNotice::methods
+    void set_properties();
+    void do_layout();
+    // end wxGlade
+
+protected:
+    // begin wxGlade: WLegalNotice::attributes
+    wxStaticText* labelText;
+    wxStaticBitmap* bitmapWeb;
+    wxHyperlinkCtrl* hyperlink1;
+    wxButton* buttonOK;
+    // end wxGlade
+
+    DECLARE_EVENT_TABLE();
+
+public:
+    virtual void OnTimer(wxTimerEvent &event);
+    virtual void OnClose(wxCloseEvent &event);
+    virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 #endif // WPASS_H
