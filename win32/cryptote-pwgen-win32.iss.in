@@ -29,6 +29,7 @@ MinVersion=0,4.0
 ShowLanguageDialog=auto
 WizardImageFile=SetupModern20.bmp
 WizardSmallImageFile=SetupModernSmall20.bmp
+LicenseFile=COPYING.rtf
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl
