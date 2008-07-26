@@ -1,6 +1,7 @@
 // $Id$
 
 #include "enctain.h"
+#include "encios.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -192,38 +193,6 @@ static char testtext[2843] = {
     0x65,0x74,0x75,0x72,0x6e,0x20,0x30,0x3b,0x0a,0x7d,0x0a
 };
 
-struct DataOutputStream : public Enctain::DataOutput
-{
-    std::ostream&	os;
-
-    DataOutputStream(std::ostream& s)
-	: os(s)
-    {
-    }
-
-    virtual bool Output(const void* data, size_t datalen)
-    {
-	os.write((const char*)data, datalen).good();
-	os.flush();
-	return true;
-    }
-};
-
-struct DataInputStream : public Enctain::DataInput
-{
-    std::istream&	is;
-
-    DataInputStream(std::istream& s)
-	: is(s)
-    {
-    }
-
-    virtual unsigned int Input(void* data, size_t maxlen)
-    {
-	return is.read((char*)data, maxlen).gcount();
-    }
-};
-
 void test_enctain(const std::string& filedata, std::string filename)
 {
     std::ostringstream memfile;
@@ -298,10 +267,10 @@ void test_enctain(const std::string& filedata, std::string filename)
 	container.SetSubFileData(sf6, filedata.data(), filedata.size());
 
 #if WRITEFILE == 0
-	DataOutputStream dataout(memfile);
+	Enctain::DataOutputStream dataout(memfile);
 #else
 	std::ofstream outstream(filename.c_str());
-	DataOutputStream dataout(outstream);
+	Enctain::DataOutputStream dataout(outstream);
 #endif
 
 	container.Save(dataout);
@@ -316,7 +285,7 @@ void test_enctain(const std::string& filedata, std::string filename)
 	std::ifstream instream(filename.c_str());
 #endif
 
-	DataInputStream datain(instream);
+	Enctain::DataInputStream datain(instream);
 	container.Load(datain, "ELO0Eia9");
 
 	std::string key, val;
