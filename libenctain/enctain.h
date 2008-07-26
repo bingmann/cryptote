@@ -15,7 +15,7 @@ namespace Enctain {
  */
 enum error_type
 {
-    /// No Exception occured.
+    /// No Error occured.
     ETE_SUCCESS = 0,
 
     /// Exception with unknown error code, see plain text message.
@@ -139,14 +139,14 @@ public:
  * Second-Level Exception Class for all exceptions which indicate a transient
  * run-time like entering an invalid decryption key.
  */
-class RuntimeException : public Exception
+class RuntimeError : public Exception
 {
 public:
     /// Initializing constructor.
-    RuntimeException(error_type ec, const std::string& m);
+    RuntimeError(error_type ec, const std::string& m);
 
     /// Initializing constructor with automatic message text.
-    RuntimeException(error_type ec);
+    RuntimeError(error_type ec);
 };
 
 /**
@@ -154,28 +154,28 @@ public:
  * program error, like specifying wrong parameters or calling functions in an
  * invalid order.
  */
-class ProgramException : public Exception
+class ProgramError : public Exception
 {
 public:
     /// Initializing constructor.
-    ProgramException(error_type ec, const std::string& m);
+    ProgramError(error_type ec, const std::string& m);
 
     /// Initializing constructor with automatic message text.
-    ProgramException(error_type ec);
+    ProgramError(error_type ec);
 };
 
 /**
  * Second-Level Exception Class for all exceptions which indicate an internal
  * error which should never occur.
  */
-class InternalException : public Exception
+class InternalError : public Exception
 {
 public:
     /// Initializing constructor.
-    InternalException(error_type ec, const std::string& m);
+    InternalError(error_type ec, const std::string& m);
 
     /// Initializing constructor with automatic message text.
-    InternalException(error_type ec);
+    InternalError(error_type ec);
 };
 
 /**

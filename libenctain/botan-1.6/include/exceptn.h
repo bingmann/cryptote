@@ -16,11 +16,11 @@ namespace Botan {
 /*************************************************
 * Exception Base Class                           *
 *************************************************/
-class Exception : public InternalException
+class Exception : public InternalError
    {
    public:
        Exception(const std::string& m = "Unknown error")
-	  : InternalException(ETE_TEXT)
+	  : InternalError(ETE_TEXT)
        { set_msg(m); }
    protected:
        void set_msg(const std::string& m) { msg = "Enctain: <Botan> " + m; }
@@ -136,10 +136,10 @@ struct Encoding_Error : public Format_Error
 /*************************************************
 * Decoding_Error Exception                       *
 *************************************************/
-struct Decoding_Error : public Enctain::RuntimeException
+struct Decoding_Error : public Enctain::RuntimeError
    {
        Decoding_Error(const std::string& name)
-	   : Enctain::RuntimeException(ETE_TEXT, "Decoding error: " + name)
+	   : Enctain::RuntimeError(ETE_TEXT, "Decoding error: " + name)
        {}
    };
 

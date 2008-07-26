@@ -354,9 +354,9 @@ public:
     void		SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen);
 };
 
-// *** Assert which throws an InternalException  ***
+// *** Assert which throws an InternalError  ***
 
-#define ExceptionAssert(x)	do { if (!(x)) { throw(InternalException(ETE_TEXT, "Assertion failed: " #x)); } } while(0)
+#define AssertException(x)	do { if (!(x)) { throw(InternalError(ETE_TEXT, "Assertion failed: " #x)); } } while(0)
 
 // *** Constructor, Destructor and Reference Counter  ***
 
@@ -619,7 +619,7 @@ static inline uint32_t random_iterations()
 static inline uint32_t botan_crc32(Botan::byte* data, uint32_t datalen)
 {
     Botan::SecureVector<Botan::byte> crc = Botan::CRC32().process(data, datalen);
-    ExceptionAssert(crc.size() == 4);
+    AssertException(crc.size() == 4);
     return *(uint32_t*)crc.begin();
 }
 
@@ -656,7 +656,7 @@ public:
     void write(const Botan::byte out[], Botan::u32bit length)
     {
 	if (!dataout.Output(out, length))
-	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
 	written += length;
 	progress.Add(length);
@@ -735,7 +735,7 @@ void ContainerImpl::Save(DataOutput& dataout_)
     written = 0;
 
     if (keyslots.empty())
-	throw(ProgramException(ETE_SAVE_NO_KEYSLOTS));
+	throw(ProgramError(ETE_SAVE_NO_KEYSLOTS));
 
     // Estimate amount of data written to file
 
@@ -782,10 +782,10 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	header1.unc_metalen = unc_metadata.size();
 
 	if (!dataout.Output(&header1, sizeof(header1)))
-	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
 	if (!dataout.Output(unc_metadata.data(), unc_metadata.size()))
-	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
 	written += sizeof(header1) + unc_metadata.size();
 	progress.Update(written);
@@ -796,12 +796,12 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	header2.keyslots = keyslots.size();
 
 	if (!dataout.Output(&header2, sizeof(header2)))
-	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
 	for (unsigned int i = 0; i < keyslots.size(); ++i)
 	{
 	    if (!dataout.Output(&keyslots[i], sizeof(keyslots[i])))
-		throw(RuntimeException(ETE_OUTPUT_ERROR));
+		throw(RuntimeError(ETE_OUTPUT_ERROR));
 	}
     }
 
@@ -851,7 +851,7 @@ void ContainerImpl::Save(DataOutput& dataout_)
 
 	int ret = deflateInit(&zs, 9);
 	if (ret != Z_OK)
-	    throw(InternalException( ErrorCodeFromZLibError(ret) ));
+	    throw(InternalError( ErrorCodeFromZLibError(ret) ));
 
 	zs.next_in = metadata.data();
 	zs.avail_in = metadata.size();
@@ -875,7 +875,7 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	deflateEnd(&zs);
 
 	if (ret != Z_STREAM_END)
-	    throw(InternalException( ErrorCodeFromZLibError(ret) ));
+	    throw(InternalError( ErrorCodeFromZLibError(ret) ));
 
 	// append zeros to make output length a multiple of 16
 	metadata_compressed.align(16);
@@ -923,10 +923,10 @@ void ContainerImpl::Save(DataOutput& dataout_)
 
     for (unsigned int si = 0; si < subfiles.size(); ++si)
     {
-	ExceptionAssert(subfiles[si].storagesize == subfiles[si].data.size());
+	AssertException(subfiles[si].storagesize == subfiles[si].data.size());
 
 	if (!dataout.Output(subfiles[si].data.begin(), subfiles[si].data.size()))
-	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
 	written += subfiles[si].storagesize;
 
@@ -936,10 +936,10 @@ void ContainerImpl::Save(DataOutput& dataout_)
     // Append 4 bytes CRC32 value at end of file
     {
 	Botan::SecureVector<Botan::byte> crc32val = crc32all.final();
-	ExceptionAssert(crc32val.size() == 4);
+	AssertException(crc32val.size() == 4);
     
 	if (!dataout.Output(crc32val.begin(), crc32val.size()))
-	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
 	written += 4;
     }
@@ -955,16 +955,16 @@ void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
     struct Header1 header1;
 
     if (datain.Input(&header1, sizeof(header1)) != sizeof(header1))
-	throw(RuntimeException(ETE_LOAD_HEADER1));
+	throw(RuntimeError(ETE_LOAD_HEADER1));
 
     if (memcmp(header1.signature, fsignature, 8) != 0)
-	throw(RuntimeException(ETE_LOAD_HEADER1_SIGNATURE));
+	throw(RuntimeError(ETE_LOAD_HEADER1_SIGNATURE));
 
     if (header1.version == 0x00010000) {
 	Loadv00010000(datain, userkey, header1, progress);
     }
     else {
-	throw(RuntimeException(ETE_LOAD_HEADER1_VERSION));
+	throw(RuntimeError(ETE_LOAD_HEADER1_VERSION));
     }
 }
 
@@ -983,7 +983,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	unc_metadata.alloc(header1.unc_metalen);
 
 	if (datain.Input(unc_metadata.data(), header1.unc_metalen) != header1.unc_metalen)
-	    throw(RuntimeException(ETE_LOAD_HEADER1_METADATA));
+	    throw(RuntimeError(ETE_LOAD_HEADER1_METADATA));
 
 	readbyte += header1.unc_metalen;
 	unc_metadata.set_size(header1.unc_metalen);
@@ -1004,7 +1004,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	}
 	catch (std::underflow_error& e)
 	{
-	    throw(RuntimeException(ETE_LOAD_HEADER1_METADATA_PARSE));
+	    throw(RuntimeError(ETE_LOAD_HEADER1_METADATA_PARSE));
 	}
     }
 
@@ -1013,10 +1013,10 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
     // Read master key digest and user key slots
     {
 	if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
-	    throw(RuntimeException(ETE_LOAD_HEADER2));
+	    throw(RuntimeError(ETE_LOAD_HEADER2));
 	
 	if (header2.keyslots == 0)
-	    throw(RuntimeException(ETE_LOAD_HEADER2_NO_KEYSLOTS));
+	    throw(RuntimeError(ETE_LOAD_HEADER2_NO_KEYSLOTS));
 
 	for (unsigned int i = 0; i < header2.keyslots; ++i)
 	{
@@ -1024,7 +1024,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	    KeySlot& newkeyslot = keyslots.back();
 
 	    if (datain.Input(&newkeyslot, sizeof(newkeyslot)) != sizeof(newkeyslot))
-		throw(RuntimeException(ETE_LOAD_HEADER2_KEYSLOTS));
+		throw(RuntimeError(ETE_LOAD_HEADER2_KEYSLOTS));
 	}
 
 	readbyte += sizeof(header2) + header2.keyslots * sizeof(KeySlot);
@@ -1056,7 +1056,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	    pipe.process_msg((Botan::byte*)keyslot.emasterkey, sizeof(keyslot.emasterkey));
 
 	    Botan::SecureVector<Botan::byte> testmasterkey = pipe.read_all();
-	    ExceptionAssert(testmasterkey.size() == masterkey.size());
+	    AssertException(testmasterkey.size() == masterkey.size());
 
 	    // digest master key and compare to stored digest
 
@@ -1064,7 +1064,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	    pbkdf.change_salt(header2.mkd_salt, sizeof(header2.mkd_salt));
 	    Botan::OctetString digest = pbkdf.derive_key(32, testmasterkey);
 
-	    ExceptionAssert(digest.length() == sizeof(header2.mkd_digest));
+	    AssertException(digest.length() == sizeof(header2.mkd_digest));
 
 	    if (Botan::same_mem(digest.begin(), header2.mkd_digest, sizeof(header2.mkd_digest)))
 	    {
@@ -1076,14 +1076,14 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 
 	// User supplied key does not match any slot.
 	if (ks >= header2.keyslots)
-	    throw(RuntimeException(ETE_LOAD_HEADER2_INVALID_KEY));
+	    throw(RuntimeError(ETE_LOAD_HEADER2_INVALID_KEY));
     }
 
     // Read encrypted fixed Header3
     struct Header3 header3;
 
     if (datain.Input(&header3, sizeof(header3)) != sizeof(header3))
-	throw(RuntimeException(ETE_LOAD_HEADER3));
+	throw(RuntimeError(ETE_LOAD_HEADER3));
 
     readbyte += sizeof(header3);
 
@@ -1104,10 +1104,10 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
     pipe.process_msg((Botan::byte*)&header3, sizeof(header3));
 
     if (pipe.read((Botan::byte*)&header3, sizeof(header3)) != sizeof(header3))
-	throw(RuntimeException(ETE_LOAD_HEADER3_ENCRYPTION));
+	throw(RuntimeError(ETE_LOAD_HEADER3_ENCRYPTION));
 
     if (header3.test123 != 0x12345678)
-	throw(RuntimeException(ETE_LOAD_HEADER3_ENCRYPTION));
+	throw(RuntimeError(ETE_LOAD_HEADER3_ENCRYPTION));
 
     // Read compressed variable length metadata
 
@@ -1115,7 +1115,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
     metadata_compressed.alloc(header3.metacomplen);
 
     if (datain.Input(metadata_compressed.data(), header3.metacomplen) != header3.metacomplen)
-	throw(RuntimeException(ETE_LOAD_HEADER3_METADATA));
+	throw(RuntimeError(ETE_LOAD_HEADER3_METADATA));
 
     readbyte += header3.metacomplen;
     metadata_compressed.set_size(header3.metacomplen);
@@ -1123,7 +1123,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
     pipe.process_msg(metadata_compressed.data(), metadata_compressed.size());
 
     if (pipe.read(metadata_compressed.data(), metadata_compressed.size(), 1) != metadata_compressed.size())
-	throw(RuntimeException(ETE_LOAD_HEADER3_ENCRYPTION));
+	throw(RuntimeError(ETE_LOAD_HEADER3_ENCRYPTION));
 
     progress.Restart("Loading Container", PI_LOAD_CONTAINER,
 		     readbyte, readbyte * 10);
@@ -1138,7 +1138,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 
 	int ret = inflateInit(&zs);
 	if (ret != Z_OK)
-	    throw(RuntimeException( ErrorCodeFromZLibError(ret) ));
+	    throw(RuntimeError( ErrorCodeFromZLibError(ret) ));
 
 	zs.next_in = metadata_compressed.data();
 	zs.avail_in = metadata_compressed.size();
@@ -1158,13 +1158,13 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	}
 
 	if (ret != Z_STREAM_END)
-	    throw(RuntimeException( ErrorCodeFromZLibError(ret) ));
+	    throw(RuntimeError( ErrorCodeFromZLibError(ret) ));
 
 	inflateEnd(&zs);
 
 	uint32_t testcrc32 = botan_crc32(metadata.data(), metadata.size());
 	if (testcrc32 != header3.metacrc32)
-	    throw(RuntimeException(ETE_LOAD_HEADER3_METADATA_CHECKSUM));
+	    throw(RuntimeError(ETE_LOAD_HEADER3_METADATA_CHECKSUM));
     }
 
     try
@@ -1212,7 +1212,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
     }
     catch (std::underflow_error& e)
     {
-	throw(InternalException(ETE_LOAD_HEADER3_METADATA_PARSE));
+	throw(InternalError(ETE_LOAD_HEADER3_METADATA_PARSE));
     }
 
     // Now we can say how large the file actually is.
@@ -1237,7 +1237,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
 	unsigned int rb = datain.Input(subfile.data.begin(), subfile.storagesize);
 
 	if (rb != subfile.storagesize)
-	    throw(RuntimeException(ETE_LOAD_SUBFILE));
+	    throw(RuntimeError(ETE_LOAD_SUBFILE));
 
 	readbyte += rb;
 	progress.Update(readbyte);
@@ -1246,14 +1246,14 @@ void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey
     // check overall CRC32 value at end
     {
 	Botan::SecureVector<Botan::byte> crc32val = crc32all.final();
-	ExceptionAssert(crc32val.size() == 4);
+	AssertException(crc32val.size() == 4);
 
 	uint32_t crc32file;
 	if (datain.Input(&crc32file, sizeof(crc32file)) != sizeof(crc32file))
-	    throw(RuntimeException(ETE_LOAD_CHECKSUM));
+	    throw(RuntimeError(ETE_LOAD_CHECKSUM));
 
 	if (crc32file != *(uint32_t*)crc32val.begin())
-	    throw(RuntimeException(ETE_LOAD_CHECKSUM));
+	    throw(RuntimeError(ETE_LOAD_CHECKSUM));
     }
 }
 
@@ -1324,7 +1324,7 @@ unsigned int ContainerImpl::AddKeySlot(const std::string& key)
     pipe.process_msg(masterkey);
 
     Botan::SecureVector<Botan::byte> ciphertext = pipe.read_all();
-    ExceptionAssert(ciphertext.size() == sizeof(newslot.emasterkey));
+    AssertException(ciphertext.size() == sizeof(newslot.emasterkey));
 
     memcpy(newslot.emasterkey, ciphertext.begin(), sizeof(newslot.emasterkey));
     
@@ -1337,7 +1337,7 @@ void ContainerImpl::ChangeKeySlot(unsigned int slot, const std::string& key)
 {
     // Check that the user key slot is valid.
     if (slot >= keyslots.size())
-	throw(ProgramException(ETE_KEYSLOT_INVALID_INDEX));
+	throw(ProgramError(ETE_KEYSLOT_INVALID_INDEX));
 
     KeySlot& keyslot = keyslots[slot];
 
@@ -1359,7 +1359,7 @@ void ContainerImpl::ChangeKeySlot(unsigned int slot, const std::string& key)
     pipe.process_msg(masterkey);
 
     Botan::SecureVector<Botan::byte> ciphertext = pipe.read_all();
-    ExceptionAssert(ciphertext.size() == sizeof(keyslot.emasterkey));
+    AssertException(ciphertext.size() == sizeof(keyslot.emasterkey));
 
     memcpy(keyslot.emasterkey, ciphertext.begin(), sizeof(keyslot.emasterkey));
 }
@@ -1368,7 +1368,7 @@ void ContainerImpl::DeleteKeySlot(unsigned int slot)
 {
     // Check that the user key slot is valid.
     if (slot >= keyslots.size())
-	throw(ProgramException(ETE_KEYSLOT_INVALID_INDEX));
+	throw(ProgramError(ETE_KEYSLOT_INVALID_INDEX));
 
     // fixup numbering of used key slot
     if (usedkeyslot == (int)slot)
@@ -1507,7 +1507,7 @@ bool ContainerImpl::DeleteSubFile(unsigned int subfileindex)
 void ContainerImpl::SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value)
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     SubFile& subfile = subfiles[subfileindex];
     subfile.properties[ key ] = value;
@@ -1516,7 +1516,7 @@ void ContainerImpl::SetSubFileProperty(unsigned int subfileindex, const std::str
 const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     const SubFile& subfile = subfiles[subfileindex];
     propertymap_type::const_iterator pi = subfile.properties.find(key);
@@ -1533,7 +1533,7 @@ const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, 
 bool ContainerImpl::DeleteSubFileProperty(unsigned int subfileindex, const std::string& key)
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     SubFile& subfile = subfiles[subfileindex];
     return (subfile.properties.erase(key) > 0);
@@ -1542,7 +1542,7 @@ bool ContainerImpl::DeleteSubFileProperty(unsigned int subfileindex, const std::
 bool ContainerImpl::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     const SubFile& subfile = subfiles[subfileindex];
 
@@ -1563,7 +1563,7 @@ bool ContainerImpl::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned 
 uint32_t ContainerImpl::GetSubFileStorageSize(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     return subfiles[subfileindex].storagesize;
 }
@@ -1571,7 +1571,7 @@ uint32_t ContainerImpl::GetSubFileStorageSize(unsigned int subfileindex) const
 uint32_t ContainerImpl::GetSubFileSize(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     return subfiles[subfileindex].realsize;
 }
@@ -1579,7 +1579,7 @@ uint32_t ContainerImpl::GetSubFileSize(unsigned int subfileindex) const
 encryption_type ContainerImpl::GetSubFileEncryption(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     return (encryption_type)subfiles[subfileindex].encryption;
 }
@@ -1587,7 +1587,7 @@ encryption_type ContainerImpl::GetSubFileEncryption(unsigned int subfileindex) c
 compression_type ContainerImpl::GetSubFileCompression(unsigned int subfileindex) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     return (compression_type)subfiles[subfileindex].compression;
 }
@@ -1597,10 +1597,10 @@ compression_type ContainerImpl::GetSubFileCompression(unsigned int subfileindex)
 void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_type c)
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     if (c < 0 || c > ENCRYPTION_SERPENT256)
-	throw(ProgramException(ETE_SUBFILE_INVALID_ENCRYPTION));
+	throw(ProgramError(ETE_SUBFILE_INVALID_ENCRYPTION));
 
     // reencrypt if necessary
     if (subfiles[subfileindex].encryption != c)
@@ -1618,10 +1618,10 @@ void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_t
 void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression_type c)
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     if (c < 0 || c > COMPRESSION_BZIP2)
-	throw(ProgramException(ETE_SUBFILE_INVALID_COMPRESSION));
+	throw(ProgramError(ETE_SUBFILE_INVALID_COMPRESSION));
 
     // recompress if necessary
     if (subfiles[subfileindex].compression != c)
@@ -1639,13 +1639,13 @@ void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression
 void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_type comp, encryption_type enc)
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     if (comp < 0 || comp > COMPRESSION_BZIP2)
-	throw(ProgramException(ETE_SUBFILE_INVALID_COMPRESSION));
+	throw(ProgramError(ETE_SUBFILE_INVALID_COMPRESSION));
 
     if (enc < 0 || enc > ENCRYPTION_SERPENT256)
-	throw(ProgramException(ETE_SUBFILE_INVALID_ENCRYPTION));
+	throw(ProgramError(ETE_SUBFILE_INVALID_ENCRYPTION));
 
     // reencrypt and recompress if necessary
     if (subfiles[subfileindex].encryption != enc || subfiles[subfileindex].compression != comp)
@@ -1666,7 +1666,7 @@ void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, c
 void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     SubFile& subfile = subfiles[subfileindex];
 
@@ -1696,7 +1696,7 @@ void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, 
     }
     else
     {
-	throw(RuntimeException(ETE_SUBFILE_INVALID_ENCRYPTION));
+	throw(RuntimeError(ETE_SUBFILE_INVALID_ENCRYPTION));
     }
 
     // Setup compression context if requested
@@ -1720,7 +1720,7 @@ void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, 
     }
     else
     {
-	throw(RuntimeException(ETE_SUBFILE_INVALID_COMPRESSION));
+	throw(RuntimeError(ETE_SUBFILE_INVALID_COMPRESSION));
     }
 
     // Setup processing pipe
@@ -1750,7 +1750,7 @@ void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, 
     progress.Update(datalen);
 
     Botan::SecureVector<Botan::byte> crc32 = pipe.read_all(1);
-    ExceptionAssert(crc32.size() == 4);
+    AssertException(crc32.size() == 4);
     subfile.crc32 = *(const uint32_t*)crc32.begin();
 
     subfile.storagesize = subfile.data.size();
@@ -1775,7 +1775,7 @@ struct DataOutputString : public DataOutput
 void ContainerImpl::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     const SubFile& subfile = subfiles[subfileindex];
 
@@ -1790,13 +1790,13 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, std::string& outst
 void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
 {
     if (subfileindex >= subfiles.size())
-	throw(ProgramException(ETE_SUBFILE_INVALID_INDEX));
+	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     const SubFile& subfile = subfiles[subfileindex];
 
     if (subfile.data.size() == 0) return;
 
-    ExceptionAssert(subfile.data.size() == subfile.storagesize);
+    AssertException(subfile.data.size() == subfile.storagesize);
 
     ProgressTicker progress(*this,
 			    "Loading SubFile", PI_LOAD_SUBFILE,
@@ -1817,7 +1817,7 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& 
     }
     else
     {
-	throw(RuntimeException(ETE_SUBFILE_INVALID_ENCRYPTION));
+	throw(RuntimeError(ETE_SUBFILE_INVALID_ENCRYPTION));
     }
 
     // Setup decompression context if requested
@@ -1841,7 +1841,7 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& 
     }
     else
     {
-	throw(RuntimeException(ETE_SUBFILE_INVALID_COMPRESSION));
+	throw(RuntimeError(ETE_SUBFILE_INVALID_COMPRESSION));
     }
 
     // Setup processing pipe
@@ -1859,11 +1859,11 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& 
     pipe.process_msg(subfile.data);
 
     Botan::SecureVector<Botan::byte> crc32v = pipe.read_all(1);
-    ExceptionAssert(crc32v.size() == 4);
+    AssertException(crc32v.size() == 4);
 
     uint32_t crc32 = *(const uint32_t*)crc32v.begin();
     if (subfile.crc32 != crc32)
-	throw(RuntimeException(ETE_SUBFILE_CHECKSUM));
+	throw(RuntimeError(ETE_SUBFILE_CHECKSUM));
 }
 
 } // namespace internal
@@ -1874,33 +1874,33 @@ Exception::Exception(error_type ec, const std::string& m)
     : ecode(ec), msg("Enctain: " + m)
 { }
 
-RuntimeException::RuntimeException(error_type ec, const std::string& m)
-    : Exception(ec, "<RuntimeException> " + m)
+RuntimeError::RuntimeError(error_type ec, const std::string& m)
+    : Exception(ec, "<RuntimeError> " + m)
 {
 }
 
-RuntimeException::RuntimeException(error_type ec)
-    : Exception(ec, std::string("<RuntimeException> ") + Container::GetErrorString(ec))
+RuntimeError::RuntimeError(error_type ec)
+    : Exception(ec, std::string("<RuntimeError> ") + Container::GetErrorString(ec))
 {
 }
 
-ProgramException::ProgramException(error_type ec, const std::string& m)
-    : Exception(ec, "<ProgramException> " + m)
+ProgramError::ProgramError(error_type ec, const std::string& m)
+    : Exception(ec, "<ProgramError> " + m)
 {
 }
 
-ProgramException::ProgramException(error_type ec)
-    : Exception(ec, std::string("<ProgramException> ") + Container::GetErrorString(ec))
+ProgramError::ProgramError(error_type ec)
+    : Exception(ec, std::string("<ProgramError> ") + Container::GetErrorString(ec))
 {
 }
 
-InternalException::InternalException(error_type ec, const std::string& m)
-    : Exception(ec, "<InternalException> " + m)
+InternalError::InternalError(error_type ec, const std::string& m)
+    : Exception(ec, "<InternalError> " + m)
 {
 }
 
-InternalException::InternalException(error_type ec)
-    : Exception(ec, std::string("<InternalException> ") + Container::GetErrorString(ec))
+InternalError::InternalError(error_type ec)
+    : Exception(ec, std::string("<InternalError> ") + Container::GetErrorString(ec))
 {
 }
 
