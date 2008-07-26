@@ -223,8 +223,8 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
     case ETE_LOAD_HEADER3_METADATA:
 	return _("Error loading container: could not read data header, invalid metadata.");
 
-    case ETE_LOAD_HEADER3_METADATA_CRC32:
-	return _("Error loading container: could not read data header, metadata crc32 mismatch.");
+    case ETE_LOAD_HEADER3_METADATA_CHECKSUM:
+	return _("Error loading container: could not read data header, metadata CRC32 checksum mismatch.");
 
     case ETE_LOAD_HEADER3_METADATA_PARSE:
 	return _("Error loading container: could not read data header, metadata parse failed.");
@@ -232,14 +232,17 @@ const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
     case ETE_LOAD_SUBFILE:
 	return _("Error loading container: could not read encrypted subfile data.");
 
+    case ETE_LOAD_CHECKSUM:
+	return _("Error loading container: CRC32 checksum mismatch, file possibly corrupt.");
+
     case ETE_KEYSLOT_INVALID_INDEX:
 	return _("Invalid encryption key slot index.");
 
     case ETE_SUBFILE_INVALID_INDEX:
 	return _("Invalid subfile index.");
 
-    case ETE_SUBFILE_CRC32:
-	return _("Error in subfile: crc32 mismatch, data possibly corrupt.");
+    case ETE_SUBFILE_CHECKSUM:
+	return _("Error in subfile: CRC32 checksum mismatch, data possibly corrupt.");
 
     case ETE_SUBFILE_INVALID_COMPRESSION:
 	return _("Unknown subfile compression algorithm.");

@@ -9,6 +9,8 @@
 #include <fstream>
 #include <sstream>
 
+#define WRITEFILE	0
+
 static char testtext[2843] = {
     0x2f,0x2f,0x20,0x24,0x49,0x64,0x3a,0x20,0x74,0x65,0x73,0x74,0x5f,0x74,0x78,0x63,
     0x2e,0x63,0x70,0x70,0x20,0x34,0x33,0x20,0x32,0x30,0x30,0x37,0x2d,0x31,0x32,0x2d,
@@ -295,18 +297,24 @@ void test_enctain(const std::string& filedata, std::string filename)
 	container.SetSubFileProperty(sf6, "MIME-Type", "text/plain");
 	container.SetSubFileData(sf6, filedata.data(), filedata.size());
 
-//	std::ofstream outstream(filename.c_str());
-//	DataOutputStream dataout(outstream);
-
+#if WRITEFILE == 0
 	DataOutputStream dataout(memfile);
+#else
+	std::ofstream outstream(filename.c_str());
+	DataOutputStream dataout(outstream);
+#endif
+
 	container.Save(dataout);
     }
 
     {
 	Enctain::Container container;
 
-//	std::ifstream instream(filename.c_str());
+#if WRITEFILE == 0
 	std::istringstream instream(memfile.str());
+#else
+	std::ifstream instream(filename.c_str());
+#endif
 
 	DataInputStream datain(instream);
 	container.Load(datain, "ELO0Eia9");

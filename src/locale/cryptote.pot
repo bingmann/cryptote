@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-25 18:03+0200\n"
+"POT-Creation-Date: 2008-07-26 10:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -176,12 +176,12 @@ msgstr ""
 msgid "Saving container."
 msgstr ""
 
-#: ../cryptote/main.cpp:561 ../cryptote/wpass.cpp:613
-#: ../cryptote/wpass.cpp:736
+#: ../cryptote/main.cpp:561 ../cryptote/wpass.cpp:617
+#: ../cryptote/wpass.cpp:740
 msgid "OK"
 msgstr ""
 
-#: ../cryptote/wbinpage.cpp:81 ../cryptote/wcryptote.cpp:517
+#: ../cryptote/wbinpage.cpp:81 ../cryptote/wcryptote.cpp:520
 #: ../cryptote/wtextpage.cpp:198
 msgid "Importing"
 msgstr ""
@@ -311,7 +311,7 @@ msgstr ""
 msgid "Description:"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:61 ../cryptote/wcryptote.cpp:713
+#: ../cryptote/wcryptote.cpp:61 ../cryptote/wcryptote.cpp:716
 #: ../cryptote/wcryptote.cpp:3051
 #, c-format
 msgid "CryptoTE %s"
@@ -421,7 +421,8 @@ msgstr ""
 
 #: ../cryptote/wcryptote.cpp:227
 msgid ""
-"Error loading container: could not read data header, metadata crc32 mismatch."
+"Error loading container: could not read data header, metadata CRC32 checksum "
+"mismatch."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:230
@@ -434,701 +435,706 @@ msgid "Error loading container: could not read encrypted subfile data."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:236
-msgid "Invalid encryption key slot index."
+msgid ""
+"Error loading container: CRC32 checksum mismatch, file possibly corrupt."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:239
-msgid "Invalid subfile index."
+msgid "Invalid encryption key slot index."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:242
-msgid "Error in subfile: crc32 mismatch, data possibly corrupt."
+msgid "Invalid subfile index."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:245
-msgid "Unknown subfile compression algorithm."
+msgid "Error in subfile: CRC32 checksum mismatch, data possibly corrupt."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:248
-msgid "Unknown subfile encryption cipher."
+msgid "Unknown subfile compression algorithm."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:251
-msgid "Error in zlib: unknown error."
+msgid "Unknown subfile encryption cipher."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:254
-msgid "Error in zlib: success."
+msgid "Error in zlib: unknown error."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:257
-msgid "Error in zlib: need dictionary."
+msgid "Error in zlib: success."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:260
-msgid "Error in zlib: stream end."
+msgid "Error in zlib: need dictionary."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:263
-msgid "Error in zlib: file error."
+msgid "Error in zlib: stream end."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:266
-msgid "Error in zlib: stream error."
+msgid "Error in zlib: file error."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:269
-msgid "Error in zlib: data error."
+msgid "Error in zlib: stream error."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:272
-msgid "Error in zlib: insufficient memory."
+msgid "Error in zlib: data error."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:275
-msgid "Error in zlib: buffer error."
+msgid "Error in zlib: insufficient memory."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:278
-msgid "Error in zlib: incompatible version."
+msgid "Error in zlib: buffer error."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:281
+msgid "Error in zlib: incompatible version."
+msgstr ""
+
+#: ../cryptote/wcryptote.cpp:284
 msgid "Unknown error code."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:578
+#: ../cryptote/wcryptote.cpp:581
 #, c-format
 msgid "Imported %u bytes into %u new subfiles in container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:663
+#: ../cryptote/wcryptote.cpp:666
 msgid "Untitled.ect"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:752 ../cryptote/wcryptote.cpp:2000
+#: ../cryptote/wcryptote.cpp:755 ../cryptote/wcryptote.cpp:2000
 msgid "Untitled.txt"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:776
+#: ../cryptote/wcryptote.cpp:779
 msgid "New container initialized."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:796 ../cryptote/wcryptote.cpp:813
+#: ../cryptote/wcryptote.cpp:799 ../cryptote/wcryptote.cpp:816
 #, c-format
 msgid "Cannot open file '%s'"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:859
+#: ../cryptote/wcryptote.cpp:862
 msgid ""
 "Error loading container: could not read encrypted header.\n"
 "Encryption key probably invalid. Retry?"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:860 ../cryptote/wcryptote.cpp:3030
+#: ../cryptote/wcryptote.cpp:863 ../cryptote/wcryptote.cpp:3030
 #: ../cryptote/wmsgdlg.cpp:137
 msgid "CryptoTE"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:922
+#: ../cryptote/wcryptote.cpp:925
 #, c-format
 msgid "Loaded container with %u subfiles from %s"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:971 ../cryptote/wcryptote.cpp:985
-#: ../cryptote/wcryptote.cpp:997
+#: ../cryptote/wcryptote.cpp:974 ../cryptote/wcryptote.cpp:988
+#: ../cryptote/wcryptote.cpp:1000
 #, c-format
 msgid "-backup%d"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1016
+#: ../cryptote/wcryptote.cpp:1019
 #, c-format
 msgid "Cannot create file '%s'"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1062
+#: ../cryptote/wcryptote.cpp:1065
 #, c-format
 msgid "Saved container with %u subfiles to %s"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1186
+#: ../cryptote/wcryptote.cpp:1189
 msgid "Opening HTTP connection to idlebox.net..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1192
+#: ../cryptote/wcryptote.cpp:1195
 msgid "Error in WebUpdateCheck: could not create HTTP connection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1206
+#: ../cryptote/wcryptote.cpp:1209
 msgid "Error in WebUpdateCheck: unknown error while opening connection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1209
+#: ../cryptote/wcryptote.cpp:1212
 msgid "Error in WebUpdateCheck: no error while opening connection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1212
+#: ../cryptote/wcryptote.cpp:1215
 msgid ""
 "Error in WebUpdateCheck: a generic network error occurred while opening "
 "connection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1215
+#: ../cryptote/wcryptote.cpp:1218
 msgid ""
 "Error in WebUpdateCheck: an error occurred during connection negotiation."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1218
+#: ../cryptote/wcryptote.cpp:1221
 msgid "Error in WebUpdateCheck: failed to connect the server."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1221
+#: ../cryptote/wcryptote.cpp:1224
 msgid "Error in WebUpdateCheck: invalid value while opening connection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1224
+#: ../cryptote/wcryptote.cpp:1227
 msgid ""
 "Error in WebUpdateCheck: no protocol handler found while opening connection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1227
+#: ../cryptote/wcryptote.cpp:1230
 msgid "Error in WebUpdateCheck: remote file not found."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1230
+#: ../cryptote/wcryptote.cpp:1233
 msgid "Error in WebUpdateCheck: action aborted."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1233
+#: ../cryptote/wcryptote.cpp:1236
 msgid "Error in WebUpdateCheck: an error occurred during reconnection."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1248
+#: ../cryptote/wcryptote.cpp:1251
 msgid "Error in WebUpdateCheck: file is too large."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1266
+#: ../cryptote/wcryptote.cpp:1269
 msgid "Error in WebUpdateCheck: invalid version file."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1283
+#: ../cryptote/wcryptote.cpp:1286
 msgid "WebUpdateCheck: No new version available."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1289
+#: ../cryptote/wcryptote.cpp:1292
 msgid "WebUpdateCheck: Your version is never than the publicly available one."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1295
+#: ../cryptote/wcryptote.cpp:1298
 msgid "WebUpdateCheck: OK. New version is available!"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1349
+#: ../cryptote/wcryptote.cpp:1352
 msgid "&Open ...\tCtrl+O"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1350 ../cryptote/wcryptote.cpp:1662
+#: ../cryptote/wcryptote.cpp:1353 ../cryptote/wcryptote.cpp:1665
 msgid "Open an existing encrypted container in the editor."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1353
+#: ../cryptote/wcryptote.cpp:1356
 msgid "&Save\tCtrl+S"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1354 ../cryptote/wcryptote.cpp:1665
+#: ../cryptote/wcryptote.cpp:1357 ../cryptote/wcryptote.cpp:1668
 msgid "Save the current encrypted container to disk."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1357
+#: ../cryptote/wcryptote.cpp:1360
 msgid "Save &as ...\tCtrl+Shift+S"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1358 ../cryptote/wcryptote.cpp:1668
+#: ../cryptote/wcryptote.cpp:1361 ../cryptote/wcryptote.cpp:1671
 msgid "Choose a file name and save the current encrypted container to disk."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1361
+#: ../cryptote/wcryptote.cpp:1364
 msgid "&Revert\tCtrl+Shift+W"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1362
+#: ../cryptote/wcryptote.cpp:1365
 msgid ""
 "Revert the current container by reloading it from disk and losing all "
 "unsaved changes."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1365
+#: ../cryptote/wcryptote.cpp:1368
 msgid "&Close\tCtrl+Shift+N"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1366
+#: ../cryptote/wcryptote.cpp:1369
 msgid "Close the current encrypted container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1371
+#: ../cryptote/wcryptote.cpp:1374
 msgid "Show &SubFile List"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1372 ../cryptote/wcryptote.cpp:1671
+#: ../cryptote/wcryptote.cpp:1375 ../cryptote/wcryptote.cpp:1674
 msgid "Show list of subfiles contained in current encrypted container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1375
+#: ../cryptote/wcryptote.cpp:1378
 msgid "&Properties ...\tAlt+Enter"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1376
+#: ../cryptote/wcryptote.cpp:1379
 msgid "Show metadata properties of the encrypted container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1379
+#: ../cryptote/wcryptote.cpp:1382
 msgid "Password &List ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1380
+#: ../cryptote/wcryptote.cpp:1383
 msgid "List and modify encryption password slots of the current container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1385
+#: ../cryptote/wcryptote.cpp:1388
 msgid "Preferences ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1386
+#: ../cryptote/wcryptote.cpp:1389
 msgid "Show CryptoTE preferences."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1391
+#: ../cryptote/wcryptote.cpp:1394
 msgid "&Quit\tAlt+F4"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1392
+#: ../cryptote/wcryptote.cpp:1395
 msgid "Exit CryptoTE."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1394
+#: ../cryptote/wcryptote.cpp:1397
 msgid "&Container"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1401
+#: ../cryptote/wcryptote.cpp:1404
 msgid "&New Text SubFile\tCtrl+N"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1402
+#: ../cryptote/wcryptote.cpp:1405
 msgid "Create a new empty text subfile in encrypted container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1405
+#: ../cryptote/wcryptote.cpp:1408
 msgid "&Import SubFile ...\tCtrl+I"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1406
+#: ../cryptote/wcryptote.cpp:1409
 msgid "Import any file from disk into encrypted container."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1409
+#: ../cryptote/wcryptote.cpp:1412
 msgid "&Export SubFile ...\tCtrl+E"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1410 ../cryptote/wcryptote.cpp:2535
+#: ../cryptote/wcryptote.cpp:1413 ../cryptote/wcryptote.cpp:2535
 msgid "Export current subfile to disk."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1413
+#: ../cryptote/wcryptote.cpp:1416
 msgid "&Properties ...\tAlt+Shift+Enter"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1414 ../cryptote/wcryptote.cpp:2539
+#: ../cryptote/wcryptote.cpp:1417 ../cryptote/wcryptote.cpp:2539
 msgid "Show metadata properties of current subfile."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1417
+#: ../cryptote/wcryptote.cpp:1420
 msgid "&Close SubFile\tCtrl+W"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1418
+#: ../cryptote/wcryptote.cpp:1421
 msgid "Close the currently view subfile."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1420
+#: ../cryptote/wcryptote.cpp:1423
 msgid "&SubFile"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1429 ../cryptote/wtextpage.cpp:260
+#: ../cryptote/wcryptote.cpp:1432 ../cryptote/wtextpage.cpp:260
 msgid "&Undo\tCtrl+Z"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1430 ../cryptote/wcryptote.cpp:1682
+#: ../cryptote/wcryptote.cpp:1433 ../cryptote/wcryptote.cpp:1685
 #: ../cryptote/wtextpage.cpp:261
 msgid "Undo the last change."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1433 ../cryptote/wtextpage.cpp:264
+#: ../cryptote/wcryptote.cpp:1436 ../cryptote/wtextpage.cpp:264
 msgid "&Redo\tCtrl+Shift+Z"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1434 ../cryptote/wcryptote.cpp:1685
+#: ../cryptote/wcryptote.cpp:1437 ../cryptote/wcryptote.cpp:1688
 #: ../cryptote/wtextpage.cpp:265
 msgid "Redo the previously undone change."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1439 ../cryptote/wtextpage.cpp:270
+#: ../cryptote/wcryptote.cpp:1442 ../cryptote/wtextpage.cpp:270
 msgid "Cu&t\tCtrl+X"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1440 ../cryptote/wcryptote.cpp:1690
+#: ../cryptote/wcryptote.cpp:1443 ../cryptote/wcryptote.cpp:1693
 #: ../cryptote/wtextpage.cpp:271
 msgid "Cut selected text into clipboard."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1443 ../cryptote/wtextpage.cpp:274
+#: ../cryptote/wcryptote.cpp:1446 ../cryptote/wtextpage.cpp:274
 msgid "&Copy\tCtrl+C"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1444 ../cryptote/wcryptote.cpp:1693
+#: ../cryptote/wcryptote.cpp:1447 ../cryptote/wcryptote.cpp:1696
 #: ../cryptote/wtextpage.cpp:275
 msgid "Copy selected text into clipboard."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1447 ../cryptote/wtextpage.cpp:278
+#: ../cryptote/wcryptote.cpp:1450 ../cryptote/wtextpage.cpp:278
 msgid "&Paste\tCtrl+V"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1448 ../cryptote/wcryptote.cpp:1696
+#: ../cryptote/wcryptote.cpp:1451 ../cryptote/wcryptote.cpp:1699
 #: ../cryptote/wtextpage.cpp:279
 msgid "Paste clipboard contents at the current text position."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1451 ../cryptote/wtextpage.cpp:282
+#: ../cryptote/wcryptote.cpp:1454 ../cryptote/wtextpage.cpp:282
 msgid "&Delete\tDel"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1452 ../cryptote/wtextpage.cpp:283
+#: ../cryptote/wcryptote.cpp:1455 ../cryptote/wtextpage.cpp:283
 msgid "Delete selected text."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1457
+#: ../cryptote/wcryptote.cpp:1460
 msgid "&Quick-Find ...\tCtrl+F"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1458
+#: ../cryptote/wcryptote.cpp:1461
 msgid "Find a string in the buffer."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1461
+#: ../cryptote/wcryptote.cpp:1464
 msgid "&Find ...\tCtrl+Shift+F"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1462 ../cryptote/wcryptote.cpp:1701
+#: ../cryptote/wcryptote.cpp:1465 ../cryptote/wcryptote.cpp:1704
 msgid "Open find dialog to search for a string in the buffer."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1465
+#: ../cryptote/wcryptote.cpp:1468
 msgid "&Replace ...\tCtrl+H"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1466 ../cryptote/wcryptote.cpp:1704
+#: ../cryptote/wcryptote.cpp:1469 ../cryptote/wcryptote.cpp:1707
 msgid ""
 "Open find and replace dialog to search for and replace a string in the "
 "buffer."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1471
+#: ../cryptote/wcryptote.cpp:1474
 msgid "&Go to line ...\tCtrl+G"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1472 ../cryptote/wcryptote.cpp:1707
+#: ../cryptote/wcryptote.cpp:1475 ../cryptote/wcryptote.cpp:1710
 msgid "Jump to the entered line number."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1477 ../cryptote/wtextpage.cpp:288
+#: ../cryptote/wcryptote.cpp:1480 ../cryptote/wtextpage.cpp:288
 msgid "&Select all\tCtrl+A"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1478 ../cryptote/wtextpage.cpp:289
+#: ../cryptote/wcryptote.cpp:1481 ../cryptote/wtextpage.cpp:289
 msgid "Select all text in the current buffer."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1481 ../cryptote/wtextpage.cpp:292
+#: ../cryptote/wcryptote.cpp:1484 ../cryptote/wtextpage.cpp:292
 msgid "Select &line\tCtrl+L"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1482 ../cryptote/wtextpage.cpp:293
+#: ../cryptote/wcryptote.cpp:1485 ../cryptote/wtextpage.cpp:293
 msgid "Select whole line at the current cursor position."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1490
+#: ../cryptote/wcryptote.cpp:1493
 msgid "Open Generator Dialog ...\tCtrl+P"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1491 ../cryptote/wcryptote.cpp:2242
+#: ../cryptote/wcryptote.cpp:1494 ../cryptote/wcryptote.cpp:2242
 #: ../cryptote/wtextpage.cpp:299
 msgid "Open random generator dialog box and insert the generated password."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1498
+#: ../cryptote/wcryptote.cpp:1501
 msgid "Insert &Password"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1499 ../cryptote/wcryptote.cpp:1710
+#: ../cryptote/wcryptote.cpp:1502 ../cryptote/wcryptote.cpp:1713
 msgid ""
 "Insert random password from generator preset or open generator dialog box."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1510 ../cryptote/wcryptote.cpp:2309
+#: ../cryptote/wcryptote.cpp:1513 ../cryptote/wcryptote.cpp:2309
 msgid "YYYY-MM-DD HH:MM:SS"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1511 ../cryptote/wcryptote.cpp:2310
+#: ../cryptote/wcryptote.cpp:1514 ../cryptote/wcryptote.cpp:2310
 msgid ""
 "Insert current local date/time in YYYY-MM-DD HH:MM:SS (ISO 8601) format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1514 ../cryptote/wcryptote.cpp:2313
+#: ../cryptote/wcryptote.cpp:1517 ../cryptote/wcryptote.cpp:2313
 msgid "YYYY-MM-DD"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1515 ../cryptote/wcryptote.cpp:2314
+#: ../cryptote/wcryptote.cpp:1518 ../cryptote/wcryptote.cpp:2314
 msgid "Insert current local date in YYYY-MM-DD (ISO 8601) format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1518 ../cryptote/wcryptote.cpp:2317
+#: ../cryptote/wcryptote.cpp:1521 ../cryptote/wcryptote.cpp:2317
 msgid "HH:MM:SS"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1519 ../cryptote/wcryptote.cpp:2318
+#: ../cryptote/wcryptote.cpp:1522 ../cryptote/wcryptote.cpp:2318
 msgid "Insert current local time in HH:MM:SS (ISO 8601) format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1522 ../cryptote/wcryptote.cpp:2321
+#: ../cryptote/wcryptote.cpp:1525 ../cryptote/wcryptote.cpp:2321
 msgid "Text Date/Time"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1523 ../cryptote/wcryptote.cpp:2322
+#: ../cryptote/wcryptote.cpp:1526 ../cryptote/wcryptote.cpp:2322
 msgid "Insert current local date/time in text format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1526 ../cryptote/wcryptote.cpp:2325
+#: ../cryptote/wcryptote.cpp:1529 ../cryptote/wcryptote.cpp:2325
 msgid "Text Date"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1527 ../cryptote/wcryptote.cpp:2326
+#: ../cryptote/wcryptote.cpp:1530 ../cryptote/wcryptote.cpp:2326
 msgid "Insert current local date in text format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1530 ../cryptote/wcryptote.cpp:2329
+#: ../cryptote/wcryptote.cpp:1533 ../cryptote/wcryptote.cpp:2329
 msgid "Text Time"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1531 ../cryptote/wcryptote.cpp:2330
+#: ../cryptote/wcryptote.cpp:1534 ../cryptote/wcryptote.cpp:2330
 msgid "Insert current local time in text format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1534 ../cryptote/wcryptote.cpp:2333
+#: ../cryptote/wcryptote.cpp:1537 ../cryptote/wcryptote.cpp:2333
 msgid "RFC 822 Date/Time"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1535 ../cryptote/wcryptote.cpp:2334
+#: ../cryptote/wcryptote.cpp:1538 ../cryptote/wcryptote.cpp:2334
 msgid "Insert current local date/time in RFC 822 format."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1540
+#: ../cryptote/wcryptote.cpp:1543
 msgid "Insert &Date/Time"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1541 ../cryptote/wcryptote.cpp:1713
+#: ../cryptote/wcryptote.cpp:1544 ../cryptote/wcryptote.cpp:1716
 msgid "Insert current date/time."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1547 ../cryptote/wcryptote.cpp:1618
+#: ../cryptote/wcryptote.cpp:1550 ../cryptote/wcryptote.cpp:1621
 msgid "&Edit"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1554
+#: ../cryptote/wcryptote.cpp:1557
 msgid "&Wrap long lines"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1555
+#: ../cryptote/wcryptote.cpp:1558
 msgid "Wrap long lines in editor."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1558
+#: ../cryptote/wcryptote.cpp:1561
 msgid "Show line &numbers"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1559
+#: ../cryptote/wcryptote.cpp:1562
 msgid "Show line numbers on left margin."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1562
+#: ../cryptote/wcryptote.cpp:1565
 msgid "Show white&space"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1563
+#: ../cryptote/wcryptote.cpp:1566
 msgid "Show white space (space and tab) in buffer."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1566
+#: ../cryptote/wcryptote.cpp:1569
 msgid "Show &end of line symbols"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1567
+#: ../cryptote/wcryptote.cpp:1570
 msgid "Show end of line symbols (new-line and carriage-return) in buffer."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1570
+#: ../cryptote/wcryptote.cpp:1573
 msgid "Show &indent guide lines"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1571
+#: ../cryptote/wcryptote.cpp:1574
 msgid "Show guide lines following the indention depth."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1574
+#: ../cryptote/wcryptote.cpp:1577
 msgid "Show guide line at &column 80"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1575
+#: ../cryptote/wcryptote.cpp:1578
 msgid "Show guide line at column 80 to display over-long lines."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1585
+#: ../cryptote/wcryptote.cpp:1588
 msgid "&Increase Zoom +1pt\tCtrl++"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1586
+#: ../cryptote/wcryptote.cpp:1589
 msgid "Increase the font zoom size by one point."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1589
+#: ../cryptote/wcryptote.cpp:1592
 msgid "&Decrease Zoom -1pt\tCtrl+-"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1590
+#: ../cryptote/wcryptote.cpp:1593
 msgid "Decrease the font zoom size by one point."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1593
+#: ../cryptote/wcryptote.cpp:1596
 msgid "&Reset Zoom\tCtrl+0"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1594
+#: ../cryptote/wcryptote.cpp:1597
 msgid "Reset the font zoom size to the normal pointsize."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1598
+#: ../cryptote/wcryptote.cpp:1601
 msgid "&Zoom Level ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1599
+#: ../cryptote/wcryptote.cpp:1602
 msgid "Change zoom level of text. Added or substracted to font point size."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1605 ../cryptote/wfilelist.cpp:305
+#: ../cryptote/wcryptote.cpp:1608 ../cryptote/wfilelist.cpp:305
 msgid "&View"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1615
+#: ../cryptote/wcryptote.cpp:1618
 msgid "&Go to Offset ...\tCtrl+G"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1616 ../cryptote/wcryptote.cpp:1723
+#: ../cryptote/wcryptote.cpp:1619 ../cryptote/wcryptote.cpp:1726
 msgid "Jump to the entered offset."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1626
+#: ../cryptote/wcryptote.cpp:1629
 msgid "&Check for Update ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1627
+#: ../cryptote/wcryptote.cpp:1630
 msgid "Check online web page for updates to CryptoTE."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1630
+#: ../cryptote/wcryptote.cpp:1633
 msgid "&About ...\tShift+F1"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1631
+#: ../cryptote/wcryptote.cpp:1634
 msgid "Show some information about CryptoTE."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1633
+#: ../cryptote/wcryptote.cpp:1636
 msgid "&Help"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1661 ../cryptote/wcryptote.cpp:1830
+#: ../cryptote/wcryptote.cpp:1664 ../cryptote/wcryptote.cpp:1833
 msgid "Open Container"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1664 ../cryptote/wcryptote.cpp:1861
+#: ../cryptote/wcryptote.cpp:1667 ../cryptote/wcryptote.cpp:1864
 msgid "Save Container"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1667
+#: ../cryptote/wcryptote.cpp:1670
 msgid "Save Container as ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1670
+#: ../cryptote/wcryptote.cpp:1673
 msgid "Show SubFile List"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1681
+#: ../cryptote/wcryptote.cpp:1684
 msgid "Undo Operation"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1684
+#: ../cryptote/wcryptote.cpp:1687
 msgid "Redo Operation"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1689
+#: ../cryptote/wcryptote.cpp:1692
 msgid "Cut Selection"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1692
+#: ../cryptote/wcryptote.cpp:1695
 msgid "Copy Selection"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1695
+#: ../cryptote/wcryptote.cpp:1698
 msgid "Paste Clipboard"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1700
+#: ../cryptote/wcryptote.cpp:1703
 msgid "Find Text ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1703
+#: ../cryptote/wcryptote.cpp:1706
 msgid "Find and Replace Text ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1706
+#: ../cryptote/wcryptote.cpp:1709
 msgid "Goto to Line ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1709
+#: ../cryptote/wcryptote.cpp:1712
 msgid "Insert Password ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1712
+#: ../cryptote/wcryptote.cpp:1715
 msgid "Insert Date/Time ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1722
+#: ../cryptote/wcryptote.cpp:1725
 msgid "Goto to Offset ..."
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1778
+#: ../cryptote/wcryptote.cpp:1781
 #, c-format
 msgid "Save modified container \"%s\"?"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1780
+#: ../cryptote/wcryptote.cpp:1783
 msgid "Save untitled modified container?"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1782
+#: ../cryptote/wcryptote.cpp:1785
 msgid "Close CryptoTE"
 msgstr ""
 
-#: ../cryptote/wcryptote.cpp:1831 ../cryptote/wcryptote.cpp:1862
+#: ../cryptote/wcryptote.cpp:1834 ../cryptote/wcryptote.cpp:1865
 msgid "Encrypted Container (*.ect)|*.ect"
 msgstr ""
 
@@ -1255,7 +1261,7 @@ msgid "Visit http://idlebox.net/2008/cryptote/"
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:2996 ../cryptote/wcryptote.cpp:3061
-#: ../cryptote/wpass.cpp:612 ../pwgen/wpassgen.cpp:898
+#: ../cryptote/wpass.cpp:616 ../pwgen/wpassgen.cpp:898
 msgid "http://idlebox.net/2008/cryptote/"
 msgstr ""
 
@@ -1625,24 +1631,24 @@ msgstr ""
 msgid "Enter password again:"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:529
+#: ../cryptote/wpass.cpp:533
 msgid "Entered passwords no not match."
 msgstr ""
 
-#: ../cryptote/wpass.cpp:545
+#: ../cryptote/wpass.cpp:549
 msgid "Enter Password for abc.ect:"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:555
+#: ../cryptote/wpass.cpp:559
 #, c-format
 msgid "Enter Password for \"%s\":"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:563
+#: ../cryptote/wpass.cpp:567
 msgid "Enter Password - CryptoTE"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:619
+#: ../cryptote/wpass.cpp:623
 msgid ""
 "The password you just entered will be hashed and used to encrypt all "
 "subfiles\n"
@@ -1666,29 +1672,29 @@ msgid ""
 "report it on"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:646 ../cryptote/wpass.cpp:707
-#: ../cryptote/wpass.cpp:727
+#: ../cryptote/wpass.cpp:650 ../cryptote/wpass.cpp:711
+#: ../cryptote/wpass.cpp:731
 #, c-format
 msgid "Wait %d %s ..."
 msgstr ""
 
-#: ../cryptote/wpass.cpp:646 ../cryptote/wpass.cpp:705
-#: ../cryptote/wpass.cpp:707 ../cryptote/wpass.cpp:725
-#: ../cryptote/wpass.cpp:727
+#: ../cryptote/wpass.cpp:650 ../cryptote/wpass.cpp:709
+#: ../cryptote/wpass.cpp:711 ../cryptote/wpass.cpp:729
+#: ../cryptote/wpass.cpp:731
 msgid "second"
 msgid_plural "seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../cryptote/wpass.cpp:658
+#: ../cryptote/wpass.cpp:662
 msgid "Legal Notice - CryptoTE"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:668
+#: ../cryptote/wpass.cpp:672
 msgid "Legal Notice"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:705 ../cryptote/wpass.cpp:725
+#: ../cryptote/wpass.cpp:709 ../cryptote/wpass.cpp:729
 #, c-format
 msgid "Wait %d %s (Yes, I know it sucks. Sorry) ..."
 msgstr ""

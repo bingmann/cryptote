@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <iostream>
 
 #include <zlib.h>
 
@@ -529,8 +530,8 @@ char ContainerImpl::fsignature[8] =
     case ETE_LOAD_HEADER3_METADATA:
 	return "Error loading container: could not read data header, invalid metadata.";
 
-    case ETE_LOAD_HEADER3_METADATA_CRC32:
-	return "Error loading container: could not read data header, metadata crc32 mismatch.";
+    case ETE_LOAD_HEADER3_METADATA_CHECKSUM:
+	return "Error loading container: could not read data header, metadata CRC32 checksum mismatch.";
 
     case ETE_LOAD_HEADER3_METADATA_PARSE:
 	return "Error loading container: could not read data header, metadata parse failed.";
@@ -538,14 +539,17 @@ char ContainerImpl::fsignature[8] =
     case ETE_LOAD_SUBFILE:
 	return "Error loading container: could not read encrypted subfile data.";
 
+    case ETE_LOAD_CHECKSUM:
+	return "Error loading container: CRC32 checksum mismatch, file possibly corrupt.";
+
     case ETE_KEYSLOT_INVALID_INDEX:
 	return "Invalid encryption key slot index.";
 
     case ETE_SUBFILE_INVALID_INDEX:
 	return "Invalid subfile index.";
 
-    case ETE_SUBFILE_CRC32:
-	return "Error in subfile: crc32 mismatch, data possibly corrupt.";
+    case ETE_SUBFILE_CHECKSUM:
+	return "Error in subfile: CRC32 checksum mismatch, data possibly corrupt.";
 
     case ETE_SUBFILE_INVALID_COMPRESSION:
 	return "Unknown subfile compression algorithm.";
@@ -682,9 +686,52 @@ protected:
     }
 };
 
+// *** DataOutput and DataInput Hashing Helpers ***
+
+class DataOutputHashChain : public DataOutput
+{
+public:
+    /// DataOutput to received data
+    DataOutput&			chain;
+
+    /// Hash object to update
+    Botan::HashFunction&	hash;
+
+    DataOutputHashChain(DataOutput& c, Botan::HashFunction& h)
+	: chain(c), hash(h)
+    { }
+
+    bool Output(const void* data, size_t datalen)
+    {
+	hash.update((const Botan::byte*)data, datalen);
+	return chain.Output(data, datalen);
+    }
+};
+
+class DataInputHashChain : public DataInput
+{
+public:
+    /// DataInput to received data from
+    DataInput&			chain;
+
+    /// Hash object to update
+    Botan::HashFunction&	hash;
+
+    DataInputHashChain(DataInput& c, Botan::HashFunction& h)
+	: chain(c), hash(h)
+    { }
+
+    unsigned int Input(void* data, size_t maxlen)
+    {
+	unsigned int rb = chain.Input(data, maxlen);
+	hash.update((Botan::byte*)data, rb);
+	return rb;
+    }
+};
+
 // *** Load/Save Operations ***
 
-void ContainerImpl::Save(DataOutput& dataout)
+void ContainerImpl::Save(DataOutput& dataout_)
 {
     written = 0;
 
@@ -711,6 +758,9 @@ void ContainerImpl::Save(DataOutput& dataout)
     ProgressTicker progress(*this,
 			    "Saving Container", PI_SAVE_CONTAINER,
 			    0, esttotal);
+
+    Botan::CRC32 crc32all;
+    DataOutputHashChain dataout(dataout_, crc32all);
 
     // Write out unencrypted fixed Header1 and unencrypted metadata
     {
@@ -876,12 +926,23 @@ void ContainerImpl::Save(DataOutput& dataout)
     {
 	ExceptionAssert(subfiles[si].storagesize == subfiles[si].data.size());
 
-	if (!dataout.Output(subfiles[si].data.begin(), subfiles[si].storagesize))
+	if (!dataout.Output(subfiles[si].data.begin(), subfiles[si].data.size()))
 	    throw(RuntimeException(ETE_OUTPUT_ERROR));
 
 	written += subfiles[si].storagesize;
 
 	progress.Update(written);
+    }
+
+    // Append 4 bytes CRC32 value at end of file
+    {
+	Botan::SecureVector<Botan::byte> crc32val = crc32all.final();
+	ExceptionAssert(crc32val.size() == 4);
+    
+	if (!dataout.Output(crc32val.begin(), crc32val.size()))
+	    throw(RuntimeException(ETE_OUTPUT_ERROR));
+
+	written += 4;
     }
 }
 
@@ -908,9 +969,14 @@ void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
     }
 }
 
-void ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userkey, const Header1& header1, class ProgressTicker& progress)
+void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey, const Header1& header1, class ProgressTicker& progress)
 {
     unsigned int readbyte = sizeof(Header1);
+
+    Botan::CRC32 crc32all;
+    crc32all.update((Botan::byte*)&header1, sizeof(header1)); // update hash with already read header bytes.
+
+    DataInputHashChain datain(datain_, crc32all);
 
     // Read unencrypted metadata length
     {
@@ -1099,7 +1165,7 @@ void ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userkey,
 
 	uint32_t testcrc32 = botan_crc32(metadata.data(), metadata.size());
 	if (testcrc32 != header3.metacrc32)
-	    throw(RuntimeException(ETE_LOAD_HEADER3_METADATA_CRC32));
+	    throw(RuntimeException(ETE_LOAD_HEADER3_METADATA_CHECKSUM));
     }
 
     try
@@ -1176,6 +1242,19 @@ void ContainerImpl::Loadv00010000(DataInput& datain, const std::string& userkey,
 
 	readbyte += rb;
 	progress.Update(readbyte);
+    }
+
+    // check overall CRC32 value at end
+    {
+	Botan::SecureVector<Botan::byte> crc32val = crc32all.final();
+	ExceptionAssert(crc32val.size() == 4);
+
+	uint32_t crc32file;
+	if (datain.Input(&crc32file, sizeof(crc32file)) != sizeof(crc32file))
+	    throw(RuntimeException(ETE_LOAD_CHECKSUM));
+
+	if (crc32file != *(uint32_t*)crc32val.begin())
+	    throw(RuntimeException(ETE_LOAD_CHECKSUM));
     }
 }
 
@@ -1785,7 +1864,7 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& 
 
     uint32_t crc32 = *(const uint32_t*)crc32v.begin();
     if (subfile.crc32 != crc32)
-	throw(RuntimeException(ETE_SUBFILE_CRC32));
+	throw(RuntimeException(ETE_SUBFILE_CHECKSUM));
 }
 
 } // namespace internal
