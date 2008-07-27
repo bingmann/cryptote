@@ -1,0 +1,787 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org" />
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
+
+  <title>CryptoTE/Enctain File Format v1.0</title>
+  <meta content="Timo Bingmann" name="author" />
+<style type="text/css">
+/*<![CDATA[*/
+table { border-collapse: collapse }
+td { padding: 0.5ex }
+td.f { border: 1px solid black; white-space: nowrap }
+td.fcm { border-top: 0; border-bottom: 0; }
+td.c { text-align: center }
+table.ff { border: 1px solid black; }
+table.ff td { border: 1px solid black; }
+table.vt td { vertical-align: top }
+code { font-size: 130% }
+/*]]>*/
+</style>
+</head>
+
+<body>
+  <h1>CryptoTE / Enctain File Format v1.0</h1>
+
+  <h2>Introduction</h2>
+
+  <p>This HTML document describes the file format used by <a href="http://idlebox.net/2008/cryptote/">CryptoTE</a>. The editor saves text documents in an encrypted container file using the libenctain library. Enctain is short for ENCrypted conTAINer. An encrypted container can hold a set of enumerated binary subfiles with associated application-defined metadata.</p>
+
+  <h2>Format Overview</h2>
+
+  <p>Each encrypted container file contains the following sections:</p>
+
+  <table>
+    <tr>
+      <td>1</td>
+
+      <td class="f c">Unencrypted Header1</td>
+
+      <td>Fixed-length header data. Contains a magic signature to identify file format and version. Implicitly specifies the metadata encryption cipher and method.</td>
+    </tr>
+
+    <tr>
+      <td>2</td>
+
+      <td class="f c">Unencrypted Metadata</td>
+
+      <td>Variable-length key-value properties. They are application-defined and publicly readable. Thus they can be displayed e.g. in file listings without requiring the encryption key.</td>
+    </tr>
+
+    <tr>
+      <td>3</td>
+
+      <td class="f c">Encrypted Master KeySlots</td>
+
+      <td>Encryption Key Central: contains a master key which is encrypted using different user password-keys. Any valid user password can be used to open the container. Lots of parameters are needed to make the encryption key derivation secure.</td>
+    </tr>
+
+    <tr>
+      <td>4</td>
+
+      <td class="f c">Encrypted Header3</td>
+
+      <td>Fixed-length header containing metadata length, CRC32 checksum and the number of subfiles in the container.</td>
+    </tr>
+
+    <tr>
+      <td>5</td>
+
+      <td class="f c">Encrypted Compressed Metadata</td>
+
+      <td>Variable-length key-value properties. Contains two distinct parts: global metadata properties and (local) SubFile metadata properties. Both global and SubFile-local allow any number of application-defined properties. Besides the application-defined properties, the metadata also contains some fixed properties: the SubFile's compressed and uncompressed size, encryption and compression methods, CRC32 checksum and possibly encryption key and initialization vector.</td>
+    </tr>
+
+    <tr>
+      <td>6</td>
+
+      <td class="f c">SubFile1 Data<br />
+      ...</td>
+
+      <td>SubFile binary data, possibly encrypted and compressed. No separators are needed anymore.</td>
+    </tr>
+  </table>
+
+  <h2>Detailed Format v1.0</h2>
+
+  <p>All binary numbers are stored in little-endian encoding. uint is short for unsigned integer.</p>
+
+  <h3>Unencrypted Header1</h3>
+
+  <p>Header1 is an unencrypted fixed-length header at offset 0 to identify the file format and version.</p>
+
+  <table>
+    <tr>
+      <td>1</td>
+
+      <td class="f">8 bytes</td>
+
+      <td class="f c">Signature</td>
+
+      <td>An eight byte string or binary magic signature to identify the file's type. The CryptoTE editor uses "CryptoTE" (without NULL string termination). The value used by Enctain can be changed using the function <code>SetSignature()</code>.</td>
+    </tr>
+
+    <tr>
+      <td>2</td>
+
+      <td class="f">16 bit uint</td>
+
+      <td class="f c">Version Major</td>
+
+      <td rowspan="2">Currently (major = 1, minor = 0) which means v1.0. This version number also implicitly defines the following sections including encryption cipher and compression methods.</td>
+    </tr>
+
+    <tr>
+      <td>3</td>
+
+      <td class="f">16 bit uint</td>
+
+      <td class="f c">Version Minor</td>
+    </tr>
+
+    <tr>
+      <td>4</td>
+
+      <td class="f">32 bit uint</td>
+
+      <td class="f c">Unencrypted Metadata Length</td>
+
+      <td>Length of the following unencrypted metadata in bytes.</td>
+    </tr>
+
+    <tr>
+      <td>&nbsp;</td>
+
+      <td colspan="2">16 bytes Total</td>
+
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+
+  <h3>Unencrypted Metadata</h3>
+
+  <p>The first variable-length section of the file contains application-defined unencrypted metadata properties. These key-value pairs can be set, retrieved and enumerated using the functions <code>SetGlobalUnencryptedProperty()</code>, <code>SetGlobalUnencryptedProperty()</code>, <code>EraseGlobalUnencryptedProperty()</code> and <code>EraseGlobalUnencryptedProperty()</code>. This section can also be omitted (Header1.MetadataLength == 0), if no properties are defined by the application.</p>
+
+  <p>Application-defined metadata properties are key-value pairs of opaque binary strings. Enctain will store any data values (including NULLs) and any amount (&lt; 4GB in total). This way data like current window position and other dialog settings can be stored using some private binary structure.</p>
+
+  <p>These key-value lists are stored by Enctain using the following format. Each properties key-value consists of two (possibly binary) strings, the key and the value. The string binary data is prefixed with it's length encoded in a single byte:</p>
+
+  <p>Example:<br />
+  The value "string" is encoded into the hexbytes <code>06 73 74 72 69 6e 67</code>. Note the <code>06</code> string length at the beginning.</p>
+
+  <p>This encoding makes the functions to read and write variable-length strings very simple. Furthermore binary NULL (0 bytes) can also be stored in the strings, as they are not NULL-terminated.</p>
+
+  <p>If a string is longer than 255 bytes the length does not fit into the prefix byte. Therefore an "escape length" is introduced: <code>0xFF</code> in the length field means "long string". The <code>0xFF</code> is then followed by a 32-bit unsigned integer specifying the full length of the string. Therefore all strings with 255 bytes or longer have 5 prefix bytes specifying their length.</p>
+
+  <p>Example:<br />
+  A string containing 'a' 1022 times is encoded: <code>FF FE 03 00 00 61 61 <em>(1018(decimal) more 61s)</em> 61 61</code>.</p>
+
+  <p>The variable-length unencrypted metadata section contains a list of concatenated key-value pairs, which represent the global properties of the container. The number of key-value pairs (!) is stored as a 32-bit uint as the beginning of the variable length structure. The total length of this section is defined by Header1.UnencryptedMetadataLength. The actual key-value pairs used are completely left up to the application.</p>
+
+  <p>CryptoTE currently uses the following unencrypted key-value properties:</p>
+
+  <table class="ff">
+    <tr>
+      <td>Subject</td>
+
+      <td>User-defined&nbsp;subject text string from the container properties dialog.</td>
+    </tr>
+
+    <tr>
+      <td>Author</td>
+
+      <td>User-defined author text string from the container properties dialog. Initialized with the user's login name for new containers.</td>
+    </tr>
+
+    <tr>
+      <td>Description</td>
+
+      <td>User-defined description multi-line string from the container properties dialog.</td>
+    </tr>
+  </table>
+
+  <h4>Example</h4>
+
+  <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+    <tr>
+      <td><span style="color: rgb(153, 0, 0);">Subject</span></td>
+
+      <td><span style="color: rgb(153, 0, 0);">Test Example</span></td>
+
+      <td colspan="1" rowspan="3"><tt>0000000000 <span style="color: rgb(51, 51, 255);">43 72 79 70 74 6f 54 45 00 00 01 00 41 00 00 00</span> <span style="color: rgb(51, 51, 255);">CryptoTE....A...</span><br />
+      0000000016 <span style="color: rgb(255, 102, 0);">03 00 00 00</span> <span style="color: rgb(0, 153, 0);">06 41 75 74 68 6f 72 02 54 42</span> <span style="color: rgb(153, 153, 0);">0b 44</span> <span style="color: rgb(255, 102, 0);">....</span><span style="color: rgb(0, 153, 0);">.Author.TB</span><span style="color: rgb(153, 153, 0);">.D</span><br />
+      0000000032 <span style="color: rgb(153, 153, 0);">65 73 63 72 69 70 74 69 6f 6e 11 53 6f 6d 65 20</span> <span style="color: rgb(153, 153, 0);">escription.Some</span><br />
+      0000000048 <span style="color: rgb(153, 153, 0);">6c 6f 6e 67 65 72 20 74 65 78 74 2e</span> <span style="color: rgb(153, 0, 0);">07 53 75 62</span> <span style="color: rgb(153, 153, 0);">longer text.</span><span style="color: rgb(153, 0, 0);">.Sub</span><br />
+      0000000064 <span style="color: rgb(153, 0, 0);">6a 65 63 74 0c 54 65 73 74 20 45 78 61 6d 70 6c</span> <span style="color: rgb(153, 0, 0);">ject.Test Exampl</span><br />
+      0000000080 <span style="color: rgb(153, 0, 0);">65</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <span style="color: rgb(153, 0, 0);">e</span><br /></tt></td>
+    </tr>
+
+    <tr>
+      <td><span style="color: rgb(0, 153, 0);">Author</span></td>
+
+      <td><span style="color: rgb(0, 153, 0);">TB</span></td>
+    </tr>
+
+    <tr>
+      <td><span style="color: rgb(153, 153, 0);">Description</span></td>
+
+      <td><span style="color: rgb(153, 153, 0);">Some longer text.</span></td>
+    </tr>
+  </table>
+
+  <h3>KeySlots Header</h3>
+
+  <p>The KeySlots header section contains all information needed to validate and decrypt the master key material from a user's secret password. Ultimately the master key is used to decrypt the following two encrypted header sections. This section is the Achilles' heel of the file's encryption security.</p>
+
+  <p>The container format supports multiple user password slots. Each slot can be used to decrypt the file. As the user password data is hashed (repeatedly), the original passwords cannot be reconstructed from the information in the container. They are also not stored.</p>
+
+  <p>For password hashing Enctain currently uses the PBKDF2 (Password-Based Key Derivation Function) from PKCS#5 v2 [<a href="http://www.ietf.org/rfc/rfc2898.txt">RFC2898</a>] with HMAC(SHA256) as hash function. All three algorithms are implemented by the mini-Botan library contained in Enctain.</p>
+
+  <p><code>PBKDF2</code> requires an amount of random salt data and an iteration count. Random salt data is always 32 bytes long and stored in the header. Iteration count is also stored and randomized in the range 1000 - 11000.</p>
+
+  <p>The "master key" material is 64 bytes of random data. It is generated by mini-Botan's random number generator modules. The master key material is generated by Enctain when the first user key slot is added to the container.</p>
+
+  <p>Three <code>PBKDF2</code>-derivations of the master key material are calculated by Enctain. For both derivations the salt data and iterations count is stored in the header. The first derivation is 32 bytes of digest data which is stored in the container and used by Enctain to detect that the entered user password is correct. The second and third derivation is not stored: they initialize the encryption cipher of the following metadata section. The second derivation is 32 bytes long and is used as encryption key for the Serpent cipher; the third derivation, only 16 bytes long, is used as CBC-IV (Initialization Vector).</p>
+
+  <h3>Encrypted KeySlots Header2</h3>
+
+  <table>
+    <tr>
+      <td colspan="2">1</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Number of KeySlots</td>
+
+      <td>Number of user KeySlots: number of times block 9 is repeated. Must be &gt;= 1, otherwise container is not decryptable.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">2</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Iterations for Digest</td>
+
+      <td rowspan="3">These three fields (2, 3, 4) are used for a "digest check" of the master key: <code>PBKDF2(masterkey, salt, iterations)</code> is used to calculate 32 bytes of digest data. This digest must be equal to the field "digest value". While loading of the container this digest is compared to detect a valid user password.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">3</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Salt for Digest</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">4</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Digest Value</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">5</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Iterations for Metadata Key</td>
+
+      <td rowspan="2">These two fields (5 and 6) are the parameters for another calculation of <code>PBKDF2(masterkey, salt, iterations)</code>. Again a 32 bytes key is derived and is used as the Serpent cipher key for the following encrypted metadata section.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">6</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Salt for Metadata Key</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">7</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Iterations for Metadata IV</td>
+
+      <td rowspan="2">These two fields (7 and 8) are the parameters for yet another calculation of <code>PBKDF2(masterkey, salt, iterations)</code>. This time 16 bytes of key material is derived and is used as the CBC initialization vector for the following encrypted metadata section.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">8</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Salt for Metadata IV</td>
+    </tr>
+
+    <tr>
+      <td rowspan="3">9</td>
+
+      <td class="f fcm">1</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">User KeySlot <code>PBKDF2</code><br />
+      Iterations</td>
+
+      <td rowspan="2">Lastly the most interesting part: The two fields (9.1 and 9.2) again initialize <code>PBKDF2</code>, but this time the password is the user-given "password string" entered in the dialog box. This <code>PBKDF2(user-password, salt, iterations)</code> calculates 32 bytes of key data. This key is used to initialize the Serpent cipher (256 bits) which is then used to decrypt the following encrypted copy of the master key (in ECB mode). After decryption the possibly-correct master key can be verified using the <code>PBKDF2</code> Digest Iterations, Salt and Values (field 2,3 and 4).</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">2</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">User KeySlot <code>PBKDF2</code><br />
+      Salt</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">3</td>
+
+      <td class="f">64 bytes</td>
+
+      <td class="f c">User KeySlot<br />
+      Encrypted Master Key</td>
+
+      <td>Encrypted copy of the master key material.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">&nbsp;</td>
+
+      <td colspan="2">160 + n * 100 bytes Total</td>
+
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+
+  <h3>Diagrams</h3>
+
+  <p>The following diagram shows how the user pasword string is used to decrypt the master key material.</p>
+
+  <table style="text-align: center; border: 1px solid black; margin: 0 auto" class="vt">
+    <tr>
+      <td colspan="4"></td>
+
+      <td>Encrypted Master Key<br />
+      (field 9.3)</td>
+
+      <td colspan="2"></td>
+    </tr>
+
+    <tr>
+      <td colspan="4"></td>
+
+      <td>&darr;</td>
+
+      <td colspan="2"></td>
+    </tr>
+
+    <tr>
+      <td>user password</td>
+
+      <td>&mdash;&mdash;&rarr;</td>
+
+      <td><code>PBKDF2</code><br />
+      (salt field 9.2,<br />
+      iterations field 9.1)</td>
+
+      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      32 bytes</td>
+
+      <td>Serpent Cipher<br />
+      (ECB mode)<br /></td>
+
+      <td>&mdash;&rarr;</td>
+
+      <td>Master Key<br />
+      (64 bytes)</td>
+    </tr>
+  </table>
+
+  <p>And once the (possibly incorrect) master key material is decrypted, it must be checked against the digest value. If it is detected to be correct, then the Serpent cipher parameters are derived from it.</p>
+
+  <table style="text-align: center; border: 1px solid black; margin: 0 auto" class="vt">
+    <tr>
+      <td></td>
+
+      <td></td>
+
+      <td style="text-align: left">+&mdash;&rarr;<br />
+      &nbsp;|<br />
+      &nbsp;|<br />
+      &nbsp;|</td>
+
+      <td><code>PBKDF2</code><br />
+      (salt field 3,<br />
+      iterations field 2)</td>
+
+      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      32 bytes</td>
+
+      <td>Compare to<br />
+      Digest Value<br />
+      (field 4)</td>
+    </tr>
+
+    <tr>
+      <td>Master Key<br />
+      (64 bytes)</td>
+
+      <td>&mdash;&mdash;</td>
+
+      <td style="text-align: left">+&mdash;&rarr;<br />
+      &nbsp;|<br />
+      &nbsp;|<br />
+      &nbsp;|</td>
+
+      <td><code>PBKDF2</code><br />
+      (salt field 6,<br />
+      iterations field 5)</td>
+
+      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      32 bytes</td>
+
+      <td>Serpent<br />
+      Cipher Key</td>
+    </tr>
+
+    <tr>
+      <td></td>
+
+      <td></td>
+
+      <td style="text-align: left">+&mdash;&rarr;</td>
+
+      <td><code>PBKDF2</code><br />
+      (salt field 8,<br />
+      iterations field 7)</td>
+
+      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      16 bytes</td>
+
+      <td>Serpent<br />
+      CBC IV</td>
+    </tr>
+  </table>
+
+  <h3>Encrypted Header3</h3>
+
+  <p>Following the variable unencrypted metadata is the first encrypted header. This header is 16-byte long, exactly the block-size of the Serpent cipher, which is used to encrypt it. Thus to read this block, the user must be queried for the encryption key, the Serpent cipher must be initialized with CBC-mode filter and the correct initialization vector set. The encryption key (256 bits) and CBC-IV are derived from the master key as described in the previous section.</p>
+
+  <table>
+    <tr>
+      <td>1</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Metadata Compressed Length</td>
+
+      <td>The length of the following variable metadata block. Because this metadata block is compressed using zlib, this value specifies the compressed length.</td>
+    </tr>
+
+    <tr>
+      <td>2</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Metadata CRC32</td>
+
+      <td>CRC32 of the following variable metadata block. This is actually duplicated by zlib at the end of&nbsp;the compressed stream and may be removed in a future version.</td>
+    </tr>
+
+    <tr>
+      <td>3</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Padding 1</td>
+
+      <td>Zero.</td>
+    </tr>
+
+    <tr>
+      <td>4</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Padding 2</td>
+
+      <td>Zero.</td>
+    </tr>
+  </table>
+
+  <h3>Encrypted Metadata</h3>
+
+  <p>Following the encrypted header is a variable-length block of properties. The length of this section is defined in Header3. This section is encrypted using the Serpent cipher and compressed using zlib. The CBC-IV context continues from the the header.</p>
+
+  <p>The compressed metadata contains two main parts: global metadata properties and (local) subfile metadata properties. These are combined into one section to make compression more efficient. Furthermore SubFile metadata was detached from the file data itself so that it is possible to read and display the metadata properties of all subfiles without reading the complete subfile data.</p>
+
+  <p>Special about this section is that fixed and variable data is mixed.</p>
+
+  <table>
+    <tr>
+      <td colspan="2">1</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Number of Global Properties</td>
+
+      <td>Number of global property key-value pairs in the following variable length section.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">2</td>
+
+      <td class="f">variable</td>
+
+      <td class="f c">Global Metadata</td>
+
+      <td>Section holding all global encrypted properties. They are simply concatenated and their number is known from the previous field. These properties are completely application-defined.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">3</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Number of SubFiles</td>
+
+      <td>Number of SubFiles in the container, also number of times block 4 is repeated.</td>
+    </tr>
+
+    <tr>
+      <td rowspan="8">4</td>
+
+      <td class="f fcm">1</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">SubFile Storage Size</td>
+
+      <td>Size of the SubFile as stored in the container. This includes eventual encryption padding. Used to read the concatenated subfiles.</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">2</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">SubFile Real Size</td>
+
+      <td>Size of the SubFile after decryption and decompression.</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">3</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">SubFile Flags</td>
+
+      <td>
+        Compound field holding the subfile's encryption cipher number and compression algorithm.<br />
+
+        <table style="text-align: left;" border="1" cellpadding="2" cellspacing="2">
+          <tr>
+            <td>8-bit uint</td>
+
+            <td>Compression Algorithm:<br />
+            0 = none<br />
+            1 = ZLib<br />
+            2 = BZ2</td>
+          </tr>
+
+          <tr>
+            <td>8-bit uint</td>
+
+            <td>Encryption Algorithm:<br />
+            0 = none<br />
+            1 = Serpent</td>
+          </tr>
+
+          <tr>
+            <td>16-bit uint</td>
+
+            <td>reserved</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">4</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">SubFile CRC32</td>
+
+      <td>CRC32 value of the SubFile's real data. Used to verify decryption and decompression.</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">5</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Length of SubFile Cipher Data</td>
+
+      <td>Length of the following field 4.6.</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">6</td>
+
+      <td class="f">variable</td>
+
+      <td class="f c">SubFile Cipher Data</td>
+
+      <td>This field contains the encryption key data and CBC-IV for the subfile's cipher context. This field fulled defines the encryption cipher parameters and is filled usually with random data. Thus a change in the master key / user key slots does not effect the encryption parameters of SubFiles. The length is stored in field 4.5 and is dependent on the encryption/compression flags:<br />
+      For <code>NONE</code>For Serpent encryption the length is 48 bytes: first 32 bytes of random key data, followed by 16 bytes random CBC-IV.</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">7</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Number of SubFile Properties</td>
+
+      <td>Number of (local) subfile properties.</td>
+    </tr>
+
+    <tr>
+      <td class="f fcm">8</td>
+
+      <td class="f">variable</td>
+
+      <td class="f c">SubFile Properties</td>
+
+      <td>Variable length block holding all subfile properties. They are simply concatentated. Again these properties are completely application-defined.</td>
+    </tr>
+  </table><br />
+
+  <p>CryptoTE currently uses the following global key-value properties:</p>
+
+  <table class="ff">
+    <tr>
+      <td>CTime</td>
+
+      <td>Creation Time of the container. Stored as 4-byte time_t value.</td>
+    </tr>
+
+    <tr>
+      <td>MTime</td>
+
+      <td>Last Modification Time of the container. Stored as 4-byte time_t value.</td>
+    </tr>
+
+    <tr>
+      <td>DefaultCompression</td>
+
+      <td>Default compression algorithm for new SubFiles.</td>
+    </tr>
+
+    <tr>
+      <td>DefaultEncryption</td>
+
+      <td>Default encryption cipher for new SubFiles.</td>
+    </tr>
+
+    <tr>
+      <td>FileListDisplayMode</td>
+
+      <td>Private binary structure used to save the display mode of the file list.</td>
+    </tr>
+
+    <tr>
+      <td>FileListColumns</td>
+
+      <td>Private binary structure used to save the currently displayed columns in report file list mode.</td>
+    </tr>
+
+    <tr>
+      <td>RestoreView</td>
+
+      <td>Flag from global properties whether to restore text editor display settings.</td>
+    </tr>
+
+    <tr>
+      <td>SubFilesOpened</td>
+
+      <td>Array of SubFiles indexes opened in editor when the container was saved. Used to re-open the SubFiles on container reload.</td>
+    </tr>
+
+    <tr>
+      <td>KeySlot-<em>number</em>-CTime</td>
+
+      <td>Creation Time of the user KeySlot <em>number</em>. Stored as 4-byte time_t value.</td>
+    </tr>
+
+    <tr>
+      <td>KeySlot-<em>number</em>-ATime</td>
+
+      <td>Last Match Time of the user KeySlot <em>number</em>. Stored as 4-byte time_t value.</td>
+    </tr>
+
+    <tr>
+      <td>KeySlot-<em>number</em>-Description</td>
+
+      <td>User-defined description of KeySlot <em>number</em>. Note that the Enctain format does not directly support "usernames" or other metadata for key slots. This is emulated by setting global properties.</td>
+    </tr>
+  </table>
+
+  <p>CryptoTE currently uses the following local SubFile key-value properties:</p>
+
+  <table class="ff">
+    <tr>
+      <td>Name</td>
+
+      <td>Filename as displayed in file list. Note that this is a just a property and no lookup key. Thus file names are not required to be unique and cannot be searched for directly.</td>
+    </tr>
+
+    <tr>
+      <td>CTime</td>
+
+      <td>Creation Time of the SubFile. Stored as 4-byte time_t value.</td>
+    </tr>
+
+    <tr>
+      <td>MTime</td>
+
+      <td>Last Modification Time of the SubFile. Stored as 4-byte time_t value.</td>
+    </tr>
+
+    <tr>
+      <td>Filetype</td>
+
+      <td>Currently either "text" or anything else. If it is "text" the SubFile is opened using the text editor page, otherwise it is shown using a simple hexdump.</td>
+    </tr>
+
+    <tr>
+      <td>Author</td>
+
+      <td>Used-defined string in properties. Initialized with the login name upon SubFile creation.</td>
+    </tr>
+
+    <tr>
+      <td>Subject</td>
+
+      <td>Used-defined string in properties.</td>
+    </tr>
+
+    <tr>
+      <td>Description</td>
+
+      <td>Used-defined multi-line string in properties.</td>
+    </tr>
+
+    <tr>
+      <td>WTextPageSettings</td>
+
+      <td>Private binary structure used by the text editor page to save various display options like line-wrapping and line-numbers.</td>
+    </tr>
+  </table>
+
+  <h3>SubFile Data</h3>
+
+  <p>Finally after all the headers and metadata the actual SubFile data is located. Each SubFile's storage length, encryption cipher and compression algorithm are defined in the compressed and encryption metadata section. Thus no additional structuring is required. All SubFiles are simply stored concatenated.</p>
+
+  <p>To locate a specific SubFile's data it is necessary to know the beginning offset of all SubFile Data. To this offset all preceding SubFile's StorageSize field must be added.</p>
+</body>
+</html>
