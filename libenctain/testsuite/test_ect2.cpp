@@ -38,13 +38,31 @@ void test_frozen1_ect()
     // Test Global Data
 
     assert( container.GetGlobalUnencryptedProperty("Author") == "tb" );
-    assert( container.GetGlobalUnencryptedProperty("Subject") == "Test data for testsuite" );
+    assert( container.GetGlobalUnencryptedProperty("Subject") == "File for test case" );
 
     assert( container.GetGlobalEncryptedProperty("DefaultEncryption") == "1" );
     assert( container.GetGlobalEncryptedProperty("DefaultCompression") == "1" );
 
     assert(container.CountSubFile() == 3);
 
+#if 0
+    for(unsigned int pi = 0; ; ++pi)
+    {
+	std::string key, val;
+	if (!container.GetGlobalUnencryptedPropertyIndex(pi, key, val)) break;
+
+	std::cout << key << " => " << val << "\n";
+    }
+#endif
+#if 0
+    for(unsigned int pi = 0; ; ++pi)
+    {
+	std::string key, val;
+	if (!container.GetGlobalEncryptedPropertyIndex(pi, key, val)) break;
+
+	std::cout << key << " => " << val << "\n";
+    }
+#endif
 #if 0
     for(unsigned int pi = 0; ; ++pi)
     {

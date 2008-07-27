@@ -1248,7 +1248,7 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
     }
 
     // check overall CRC32 value at end
-    if (0) {
+    {
 	Botan::SecureVector<Botan::byte> crc32val = crc32all.final();
 	AssertException(crc32val.size() == 4);
 
