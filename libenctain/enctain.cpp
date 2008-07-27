@@ -58,12 +58,9 @@ protected:
 	    };
 	};
 
-	/// Random encryption key, if needed.
-	Botan::SecureBuffer<Botan::byte, 32>	enckey;
+	/// Random encryption key and CBC-IV, if needed by encryption method.
+	Botan::SecureVector<Botan::byte>	encdata;
 
-	/// Encryption CBC initialization vector, if needed.
-	Botan::SecureBuffer<Botan::byte, 16>	cbciv;
-    
 	/// User-defined properties of the subfile.
 	propertymap_type properties;
 
@@ -112,14 +109,13 @@ protected:
     /// Structure of the encrypted part of the header
     struct Header3
     {
-	uint32_t	test123;	// = 0x12345678 to quick-test if
-					// decryption worked.
 	uint32_t	metacomplen;	// Length of following compressed
 					// variable header holding all subfile
 					// metadata.
 	uint32_t	metacrc32;	// CRC32 of the following variable
 					// subfile metadata header
 	uint32_t	padding1;	// Padding
+	uint32_t	padding2;	// Padding
 
     } __attribute__((packed));
 
@@ -831,8 +827,10 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	metadata.put<unsigned int>(subfiles[si].realsize);
 	metadata.put<unsigned int>(subfiles[si].flags);
 	metadata.put<unsigned int>(subfiles[si].crc32);
-	metadata.append(subfiles[si].enckey.begin(), 32);
-	metadata.append(subfiles[si].cbciv.begin(), 16);
+
+	// encryption parameters
+	metadata.put<unsigned int>(subfiles[si].encdata.size());
+	metadata.append(subfiles[si].encdata.begin(), subfiles[si].encdata.size());
 
 	// variable properties structure
 	metadata.put<unsigned int>(subfiles[si].properties.size());
@@ -886,9 +884,8 @@ void ContainerImpl::Save(DataOutput& dataout_)
     // Encrypt fixed header3 and variable metadata
     {
 	struct Header3 header3;
-	// memset(&header3, 0, sizeof(header3));
+	memset(&header3, 0, sizeof(header3));
 
-	header3.test123 = 0x12345678;
 	header3.metacomplen = metadata_compressed.size();
 	header3.metacrc32 = botan_crc32(metadata.data(), metadata.size());
 
@@ -1112,9 +1109,6 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
     if (pipe.read((Botan::byte*)&header3, sizeof(header3)) != sizeof(header3))
 	throw(RuntimeError(ETE_LOAD_HEADER3_ENCRYPTION));
 
-    if (header3.test123 != 0x12345678)
-	throw(RuntimeError(ETE_LOAD_HEADER3_ENCRYPTION));
-
     // Read compressed variable length metadata
 
     ByteBuffer metadata_compressed;
@@ -1201,8 +1195,12 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	    subfile.realsize = metadata.get<unsigned int>();
 	    subfile.flags = metadata.get<unsigned int>();
 	    subfile.crc32 = metadata.get<unsigned int>();
-	    metadata.get(subfile.enckey.begin(), 32);
-	    metadata.get(subfile.cbciv.begin(), 16);
+
+	    // encryption parameter data
+	    unsigned int encdatalen = metadata.get<unsigned int>();
+	    subfile.encdata.create(encdatalen);
+
+	    metadata.get(subfile.encdata.begin(), encdatalen);
 
 	    // variable properties structure
 	    unsigned int fpropsize = metadata.get<unsigned int>();
@@ -1250,7 +1248,7 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
     }
 
     // check overall CRC32 value at end
-    {
+    if (0) {
 	Botan::SecureVector<Botan::byte> crc32val = crc32all.final();
 	AssertException(crc32val.size() == 4);
 
@@ -1688,16 +1686,20 @@ void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, 
 
     if (subfile.encryption == ENCRYPTION_NONE)
     {
+	subfile.encdata.create(0);
     }
     else if (subfile.encryption == ENCRYPTION_SERPENT256)
     {
 	// Generate a new encryption ley and CBC IV and save it in the encrypted metadata
 
-	Botan::Global_RNG::randomize(subfile.enckey.begin(), subfile.enckey.size());
-	Botan::Global_RNG::randomize(subfile.cbciv.begin(), subfile.cbciv.size());
+	subfile.encdata.create(32 + 16);
+	Botan::Global_RNG::randomize(subfile.encdata.begin(), subfile.encdata.size());
+
+	Botan::SecureBuffer<Botan::byte, 32> enckey(subfile.encdata.begin(), 32);
+	Botan::SecureBuffer<Botan::byte, 16> cbciv(subfile.encdata.begin() + 32, 16);
 
 	encryption_filter = std::auto_ptr<Botan::Filter>(
-	    Botan::get_cipher("Serpent/CBC/PKCS7", subfile.enckey, subfile.cbciv, Botan::ENCRYPTION)
+	    Botan::get_cipher("Serpent/CBC/PKCS7", enckey, cbciv, Botan::ENCRYPTION)
 	    );
     }
     else
@@ -1817,8 +1819,13 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& 
     }
     else if (subfile.encryption == ENCRYPTION_SERPENT256)
     {
+	AssertException(subfile.encdata.size() == 32 + 16);
+
+	Botan::SecureBuffer<Botan::byte, 32> enckey(subfile.encdata.begin(), 32);
+	Botan::SecureBuffer<Botan::byte, 16> cbciv(subfile.encdata.begin() + 32, 16);
+
 	decryption_filter = std::auto_ptr<Botan::Filter>(
-	    Botan::get_cipher("Serpent/CBC/PKCS7", subfile.enckey, subfile.cbciv, Botan::DECRYPTION)
+	    Botan::get_cipher("Serpent/CBC/PKCS7", enckey, cbciv, Botan::DECRYPTION)
 	    );
     }
     else
