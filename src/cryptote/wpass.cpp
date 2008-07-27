@@ -364,7 +364,7 @@ static inline std::string checkRepetition(unsigned int plen, const std::string& 
     return out;
 }
 
-static inline bool isspecial(char c)
+static inline bool my_isspecial(char c)
 {
     switch(c)
     {
@@ -413,7 +413,7 @@ static int calcPasswordStrength(const std::string& str)
 	if (isdigit(*si)) numbers++;
 	if (islower(*si)) lowerchars++;
 	if (isupper(*si)) upperchars++;
-	if (isspecial(*si)) specialchars++;
+	if (my_isspecial(*si)) specialchars++;
     }
 
     // +5 for passwords with >= 3 numbers

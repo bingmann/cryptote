@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/select.h>
 
 namespace Enctain {
 namespace Botan {
