@@ -81,12 +81,13 @@ protected:
     struct Header1
     {
 	char    	signature[8];	// "CryptoTE"
-	uint32_t	version;	// Currently 0x00010000 = v1.0
+	uint16_t	version_major;	// Currently 0x0001
+	uint16_t	version_minor;	// Currently 0x0000 = v1.0
 	uint32_t	unc_metalen;	// Unencrypted Metadata Length
 
     } __attribute__((packed));
 
-    /// Structure of the disk file's header
+    /// Structure of the file's keyslots header
     struct Header2
     {
 	uint32_t	keyslots;	// Number of key slots following.
@@ -198,8 +199,8 @@ public:
     /// Load a new container from an input stream and parse the subfile index.
     void		Load(DataInput& datain, const std::string& userkey);
 
-    /// Load a container version v1.0
-    void		Loadv00010000(DataInput& datain, const std::string& userkey, const Header1& header1, class ProgressTicker& progress);
+    /// Load a container version v1.x
+    void		Loadv1(DataInput& datain, const std::string& userkey, const Header1& header1, class ProgressTicker& progress);
 
 
     // *** Container Info Operations ***
@@ -778,7 +779,8 @@ void ContainerImpl::Save(DataOutput& dataout_)
 
 	struct Header1 header1;
 	memcpy(header1.signature, fsignature, 8);
-	header1.version = 0x00010000;
+	header1.version_major = 1;
+	header1.version_minor = 0;
 	header1.unc_metalen = unc_metadata.size();
 
 	if (!dataout.Output(&header1, sizeof(header1)))
@@ -960,16 +962,20 @@ void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
     if (memcmp(header1.signature, fsignature, 8) != 0)
 	throw(RuntimeError(ETE_LOAD_HEADER1_SIGNATURE));
 
-    if (header1.version == 0x00010000) {
-	Loadv00010000(datain, userkey, header1, progress);
+    if (header1.version_major == 1) {
+	Loadv1(datain, userkey, header1, progress);
     }
     else {
 	throw(RuntimeError(ETE_LOAD_HEADER1_VERSION));
     }
 }
 
-void ContainerImpl::Loadv00010000(DataInput& datain_, const std::string& userkey, const Header1& header1, class ProgressTicker& progress)
+void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const Header1& header1, class ProgressTicker& progress)
 {
+    if (header1.version_minor != 0) {
+	throw(RuntimeError(ETE_LOAD_HEADER1_VERSION));
+    }
+
     unsigned int readbyte = sizeof(Header1);
 
     Botan::CRC32 crc32all;
