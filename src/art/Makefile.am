@@ -18,10 +18,6 @@ noinst_HEADERS = \
 	pwgen-22.h \
 	pwgen-32.h \
 	pwgen-48.h \
-	pwtutor-16.h \
-	pwtutor-22.h \
-	pwtutor-32.h \
-	pwtutor-48.h \
 	cryptote-16.h \
 	cryptote-32.h \
 	cryptote-48.h \
@@ -40,13 +36,6 @@ EXTRA_DIST = \
 	pwgen-48.png \
 	pwgen-128.png \
 	pwgen.ico \
-	pwtutor-16.png \
-	pwtutor-22.png \
-	pwtutor-32.png \
-	pwtutor-48.png \
-	pwtutor-128.png \
-	pwtutor-128.xcf \
-	pwtutor.ico \
 	cryptote-16.png \
 	cryptote-32.png \
 	cryptote-48.png \
