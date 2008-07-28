@@ -87,21 +87,21 @@ protected:
     /// Structure of the file's keyslots header
     struct Header2
     {
+	uint32_t	mkd_iterations;	// mk-PBKDF2 digest iterations
+	uint8_t		mkd_salt[32];	// mk-PBKDF2 digest salt
+	uint8_t		mkd_digest[32];	// mk-PBKDF2 digest
+	uint32_t	mkk_iterations;	// mk-PBKDF2 metadata key iterations
+	uint8_t		mkk_salt[32];	// mk-PBKDF2 metadata key salt
+	uint32_t	mki_iterations;	// mk-PBKDF2 metadata iv iterations
+	uint8_t		mki_salt[32];	// mk-PBKDF2 metadata iv salt
 	uint32_t	keyslots;	// Number of key slots following.
-	uint32_t	mkd_iterations;	// PBKDF2 digest iterations
-	uint8_t		mkd_salt[32];	// PBKDF2 digest salt
-	uint8_t		mkd_digest[32];	// PBKDF2 digest
-	uint32_t	mkk_iterations;	// PBKDF2 metadata key iterations
-	uint8_t		mkk_salt[32];	// PBKDF2 metadata key salt
-	uint32_t	mki_iterations;	// PBKDF2 metadata iv iterations
-	uint8_t		mki_salt[32];	// PBKDF2 metadata iv salt
 
     } __attribute__((packed));
 
     struct KeySlot
     {
-	uint32_t	iterations;	// PBKDF2 iterations
-	uint8_t		salt[32];	// PBKDF2 random salt
+	uint32_t	iterations;	// uk-PBKDF2 iterations
+	uint8_t		salt[32];	// uk-PBKDF2 random salt
 	uint8_t		emasterkey[64];	// Encrypted master key
 
     } __attribute__((packed));
@@ -122,7 +122,7 @@ protected:
     // *** Status and Container Contents Variables ***
 
     /// Signature possibly changed by SetSignature()
-    static char		fsignature[8];
+    static char		filesignature[8];
 
     /// Number of references to this object
     unsigned int	references;
@@ -455,18 +455,18 @@ public:
 
 // *** Settings ***
 
-char ContainerImpl::fsignature[8] =
+char ContainerImpl::filesignature[8] =
 { 'C', 'r', 'y', 'p', 't', 'o', 'T', 'E' };
 
 /* static */ void ContainerImpl::SetSignature(const char* sign)
 {
     unsigned int i = 0;
     while(sign[i] != 0 && i < 8) {
-	fsignature[i] = sign[i];
+	filesignature[i] = sign[i];
 	++i;
     }
     while(i < 8) {
-	fsignature[i] = 0;
+	filesignature[i] = 0;
 	++i;
     }
 }
@@ -774,7 +774,7 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	}
 
 	struct Header1 header1;
-	memcpy(header1.signature, fsignature, 8);
+	memcpy(header1.signature, filesignature, 8);
 	header1.version_major = 1;
 	header1.version_minor = 0;
 	header1.unc_metalen = unc_metadata.size();
@@ -956,7 +956,7 @@ void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
     if (datain.Input(&header1, sizeof(header1)) != sizeof(header1))
 	throw(RuntimeError(ETE_LOAD_HEADER1));
 
-    if (memcmp(header1.signature, fsignature, 8) != 0)
+    if (memcmp(header1.signature, filesignature, 8) != 0)
 	throw(RuntimeError(ETE_LOAD_HEADER1_SIGNATURE));
 
     if (header1.version_major == 1) {
