@@ -10,7 +10,8 @@
 
 --- Necessary ---
 
-  * No entries
+  * Create "directories" in container by grouping subfiles. Must all be stored
+    in metadata.
 
 --- Somewhen ---
 
