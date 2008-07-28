@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -10,15 +10,19 @@
   <meta content="Timo Bingmann" name="author" />
 <style type="text/css">
 /*<![CDATA[*/
+p { text-align: justify }
 table { border-collapse: collapse }
-td { padding: 0.5ex }
-td.f { border: 1px solid black; white-space: nowrap }
-td.fcm { border-top: 0; border-bottom: 0; }
+td { padding: 0.5ex; text-align: justify }
+table.f { border: 1px solid #444444 }
+td.f { border: 1px solid #444444; white-space: nowrap }
+td.fl { border-left: 1px solid #444444; white-space: nowrap }
 td.c { text-align: center }
-table.ff { border: 1px solid black; }
-table.ff td { border: 1px solid black; }
+table.ff { border: 1px solid #444444; }
+table.ff td { border: 1px solid #444444; }
 table.vt td { vertical-align: top }
-code { font-size: 130% }
+table.tc td { text-align: center }
+code { font-family: Courier, monospace }
+tt { font-family: Courier, monospace; font-weight: bold }
 /*]]>*/
 </style>
 </head>
@@ -32,7 +36,7 @@ code { font-size: 130% }
 
   <h2>Format Overview</h2>
 
-  <p>Each encrypted container file contains the following sections:</p>
+  <p>Each encrypted container file consists of the following sections:</p>
 
   <table>
     <tr>
@@ -56,7 +60,7 @@ code { font-size: 130% }
 
       <td class="f c">Encrypted Master KeySlots</td>
 
-      <td>Encryption Key Central: contains a master key which is encrypted using different user password-keys. Any valid user password can be used to open the container. Lots of parameters are needed to make the encryption key derivation secure.</td>
+      <td>Encryption context parameters: contains a master key which is encrypted using different user password-keys. Any valid user password can be used to open the container. Lots of parameters are needed to make the encryption key derivation secure.</td>
     </tr>
 
     <tr>
@@ -64,7 +68,7 @@ code { font-size: 130% }
 
       <td class="f c">Encrypted Header3</td>
 
-      <td>Fixed-length header containing metadata length, CRC32 checksum and the number of subfiles in the container.</td>
+      <td>Fixed-length header containing metadata length and CRC32 checksum.</td>
     </tr>
 
     <tr>
@@ -87,7 +91,7 @@ code { font-size: 130% }
 
   <h2>Detailed Format v1.0</h2>
 
-  <p>All binary numbers are stored in little-endian encoding. uint is short for unsigned integer.</p>
+  <p>All binary numbers are stored in little-endian encoding. uint is an abbreviation for unsigned integer.</p>
 
   <h3>Unencrypted Header1</h3>
 
@@ -143,7 +147,7 @@ code { font-size: 130% }
 
   <h3>Unencrypted Metadata</h3>
 
-  <p>The first variable-length section of the file contains application-defined unencrypted metadata properties. These key-value pairs can be set, retrieved and enumerated using the functions <code>SetGlobalUnencryptedProperty()</code>, <code>SetGlobalUnencryptedProperty()</code>, <code>EraseGlobalUnencryptedProperty()</code> and <code>EraseGlobalUnencryptedProperty()</code>. This section can also be omitted (Header1.MetadataLength == 0), if no properties are defined by the application.</p>
+  <p>The first variable-length section of the file contains application-defined unencrypted metadata properties. These key-value pairs can be set, retrieved and enumerated using the functions <code>Set&shy;Global&shy;Unencrypted&shy;Property()</code>, <code>Set&shy;Global&shy;Unencrypted&shy;Property()</code>, <code>Erase&shy;Global&shy;Unencrypted&shy;Property()</code> and <code>Erase&shy;Global&shy;Unencrypted&shy;Property()</code>. This section can also be omitted (Header1.MetadataLength == 0), if no properties are defined by the application.</p>
 
   <p>Application-defined metadata properties are key-value pairs of opaque binary strings. Enctain will store any data values (including NULLs) and any amount (&lt; 4GB in total). This way data like current window position and other dialog settings can be stored using some private binary structure.</p>
 
@@ -183,54 +187,94 @@ code { font-size: 130% }
     </tr>
   </table>
 
-  <h4>Example</h4>
+  <h3>Encrypted KeySlots Header2</h3>
 
-  <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
-    <tr>
-      <td><span style="color: rgb(153, 0, 0);">Subject</span></td>
-
-      <td><span style="color: rgb(153, 0, 0);">Test Example</span></td>
-
-      <td colspan="1" rowspan="3"><tt>0000000000 <span style="color: rgb(51, 51, 255);">43 72 79 70 74 6f 54 45 00 00 01 00 41 00 00 00</span> <span style="color: rgb(51, 51, 255);">CryptoTE....A...</span><br />
-      0000000016 <span style="color: rgb(255, 102, 0);">03 00 00 00</span> <span style="color: rgb(0, 153, 0);">06 41 75 74 68 6f 72 02 54 42</span> <span style="color: rgb(153, 153, 0);">0b 44</span> <span style="color: rgb(255, 102, 0);">....</span><span style="color: rgb(0, 153, 0);">.Author.TB</span><span style="color: rgb(153, 153, 0);">.D</span><br />
-      0000000032 <span style="color: rgb(153, 153, 0);">65 73 63 72 69 70 74 69 6f 6e 11 53 6f 6d 65 20</span> <span style="color: rgb(153, 153, 0);">escription.Some</span><br />
-      0000000048 <span style="color: rgb(153, 153, 0);">6c 6f 6e 67 65 72 20 74 65 78 74 2e</span> <span style="color: rgb(153, 0, 0);">07 53 75 62</span> <span style="color: rgb(153, 153, 0);">longer text.</span><span style="color: rgb(153, 0, 0);">.Sub</span><br />
-      0000000064 <span style="color: rgb(153, 0, 0);">6a 65 63 74 0c 54 65 73 74 20 45 78 61 6d 70 6c</span> <span style="color: rgb(153, 0, 0);">ject.Test Exampl</span><br />
-      0000000080 <span style="color: rgb(153, 0, 0);">65</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <span style="color: rgb(153, 0, 0);">e</span><br /></tt></td>
-    </tr>
-
-    <tr>
-      <td><span style="color: rgb(0, 153, 0);">Author</span></td>
-
-      <td><span style="color: rgb(0, 153, 0);">TB</span></td>
-    </tr>
-
-    <tr>
-      <td><span style="color: rgb(153, 153, 0);">Description</span></td>
-
-      <td><span style="color: rgb(153, 153, 0);">Some longer text.</span></td>
-    </tr>
-  </table>
-
-  <h3>KeySlots Header</h3>
-
-  <p>The KeySlots header section contains all information needed to validate and decrypt the master key material from a user's secret password. Ultimately the master key is used to decrypt the following two encrypted header sections. This section is the Achilles' heel of the file's encryption security.</p>
+  <p>The KeySlots header section contains all information needed to decrypt and validate the master key material when a valid user secret password is provided. Ultimately the master key is used to decrypt the following two encrypted header sections. This section is the Achilles' heel of the file's encryption security.</p>
 
   <p>The container format supports multiple user password slots. Each slot can be used to decrypt the file. As the user password data is hashed (repeatedly), the original passwords cannot be reconstructed from the information in the container. They are also not stored.</p>
 
-  <p>For password hashing Enctain currently uses the PBKDF2 (Password-Based Key Derivation Function) from PKCS#5 v2 [<a href="http://www.ietf.org/rfc/rfc2898.txt">RFC2898</a>] with HMAC(SHA256) as hash function. All three algorithms are implemented by the mini-Botan library contained in Enctain.</p>
+  <p>For password hashing Enctain currently uses the <code>PBKDF2</code> (Password-Based Key Derivation Function) from PKCS#5 v2 [<a href="http://www.ietf.org/rfc/rfc2898.txt">RFC2898</a>] with <code>HMAC(SHA256)</code> as hash function. All three algorithms are implemented by the mini-Botan library contained in Enctain.</p>
 
-  <p><code>PBKDF2</code> requires an amount of random salt data and an iteration count. Random salt data is always 32 bytes long and stored in the header. Iteration count is also stored and randomized in the range 1000 - 11000.</p>
+  <p><code>PBKDF2</code> requires an arbitrary amount of random salt data and an iteration count. Random salt data in libenctain is always 32 bytes long and stored in the file. Iteration count is also stored and randomized in the range 1000 - 11000.</p>
 
   <p>The "master key" material is 64 bytes of random data. It is generated by mini-Botan's random number generator modules. The master key material is generated by Enctain when the first user key slot is added to the container.</p>
 
-  <p>Three <code>PBKDF2</code>-derivations of the master key material are calculated by Enctain. For both derivations the salt data and iterations count is stored in the header. The first derivation is 32 bytes of digest data which is stored in the container and used by Enctain to detect that the entered user password is correct. The second and third derivation is not stored: they initialize the encryption cipher of the following metadata section. The second derivation is 32 bytes long and is used as encryption key for the Serpent cipher; the third derivation, only 16 bytes long, is used as CBC-IV (Initialization Vector).</p>
+  <p>Three <code>PBKDF2</code>-derivations of the master key material are calculated by Enctain. For all derivations the salt data and iterations count is stored in the header. The first derivation is 32 bytes of digest data which is stored in the container and used by Enctain to detect that the entered user password is correct. The second and third derivation is not stored: they initialize the encryption cipher of the following metadata section. The second derivation is 32 bytes long and is used as encryption key for the Serpent cipher; the third derivation, only 16 bytes long, is used as CBC-IV (Initialization Vector).</p>
 
-  <h3>Encrypted KeySlots Header2</h3>
+  <h4>Structure</h4>
 
   <table>
     <tr>
       <td colspan="2">1</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Iterations for Digest</td>
+
+      <td rowspan="3">These three fields (1, 2, 3) are used for a "digest check" of the master key: <code>PBKDF2(masterkey, salt, iterations)</code> is used to calculate 32 bytes of digest data. This digest must be equal to the field "digest value". While loading a container this digest is compared to detect a valid user password.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">2</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Salt for Digest</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">3</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Digest Value</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">4</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Iterations for Metadata Key</td>
+
+      <td rowspan="2">These two fields (4 and 5) are the parameters for another calculation of <code>PBKDF2(masterkey, salt, iterations)</code>. Again a 32 bytes key is derived and is used as the Serpent cipher key for the following encrypted metadata section.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">5</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Salt for Metadata Key</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">6</td>
+
+      <td class="f">4 bytes uint</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Iterations for Metadata IV</td>
+
+      <td rowspan="2">These two fields (6 and 7) are the parameters for yet another calculation of <code>PBKDF2(masterkey, salt, iterations)</code>. This time 16 bytes of key material is derived and is used as the CBC initialization vector for the following encrypted metadata section.</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">7</td>
+
+      <td class="f">32 bytes</td>
+
+      <td class="f c">Master Key <code>PBKDF2</code><br />
+      Salt for Metadata IV</td>
+    </tr>
+
+    <tr>
+      <td colspan="2">8</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -240,78 +284,9 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td colspan="2">2</td>
-
-      <td class="f">4 bytes uint</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Iterations for Digest</td>
-
-      <td rowspan="3">These three fields (2, 3, 4) are used for a "digest check" of the master key: <code>PBKDF2(masterkey, salt, iterations)</code> is used to calculate 32 bytes of digest data. This digest must be equal to the field "digest value". While loading of the container this digest is compared to detect a valid user password.</td>
-    </tr>
-
-    <tr>
-      <td colspan="2">3</td>
-
-      <td class="f">32 bytes</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Salt for Digest</td>
-    </tr>
-
-    <tr>
-      <td colspan="2">4</td>
-
-      <td class="f">32 bytes</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Digest Value</td>
-    </tr>
-
-    <tr>
-      <td colspan="2">5</td>
-
-      <td class="f">4 bytes uint</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Iterations for Metadata Key</td>
-
-      <td rowspan="2">These two fields (5 and 6) are the parameters for another calculation of <code>PBKDF2(masterkey, salt, iterations)</code>. Again a 32 bytes key is derived and is used as the Serpent cipher key for the following encrypted metadata section.</td>
-    </tr>
-
-    <tr>
-      <td colspan="2">6</td>
-
-      <td class="f">32 bytes</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Salt for Metadata Key</td>
-    </tr>
-
-    <tr>
-      <td colspan="2">7</td>
-
-      <td class="f">4 bytes uint</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Iterations for Metadata IV</td>
-
-      <td rowspan="2">These two fields (7 and 8) are the parameters for yet another calculation of <code>PBKDF2(masterkey, salt, iterations)</code>. This time 16 bytes of key material is derived and is used as the CBC initialization vector for the following encrypted metadata section.</td>
-    </tr>
-
-    <tr>
-      <td colspan="2">8</td>
-
-      <td class="f">32 bytes</td>
-
-      <td class="f c">Master Key <code>PBKDF2</code><br />
-      Salt for Metadata IV</td>
-    </tr>
-
-    <tr>
       <td rowspan="3">9</td>
 
-      <td class="f fcm">1</td>
+      <td class="fl">1</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -322,7 +297,7 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">2</td>
+      <td class="fl">2</td>
 
       <td class="f">32 bytes</td>
 
@@ -331,7 +306,7 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">3</td>
+      <td class="fl">3</td>
 
       <td class="f">64 bytes</td>
 
@@ -350,11 +325,11 @@ code { font-size: 130% }
     </tr>
   </table>
 
-  <h3>Diagrams</h3>
+  <h4>Diagrams</h4>
 
   <p>The following diagram shows how the user pasword string is used to decrypt the master key material.</p>
 
-  <table style="text-align: center; border: 1px solid black; margin: 0 auto" class="vt">
+  <table style="border: 1px solid black; margin: 0 auto" class="vt tc">
     <tr>
       <td colspan="4"></td>
 
@@ -367,7 +342,8 @@ code { font-size: 130% }
     <tr>
       <td colspan="4"></td>
 
-      <td>&darr;</td>
+      <td><code>|<br />
+      v</code></td>
 
       <td colspan="2"></td>
     </tr>
@@ -375,19 +351,19 @@ code { font-size: 130% }
     <tr>
       <td>user password</td>
 
-      <td>&mdash;&mdash;&rarr;</td>
+      <td><code>&mdash;&mdash;&mdash;&mdash;&gt;</code></td>
 
       <td><code>PBKDF2</code><br />
       (salt field 9.2,<br />
       iterations field 9.1)</td>
 
-      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      <td><code>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&gt;</code><br />
       32 bytes</td>
 
       <td>Serpent Cipher<br />
       (ECB mode)<br /></td>
 
-      <td>&mdash;&rarr;</td>
+      <td><code>&mdash;&mdash;&mdash;&mdash;&gt;</code></td>
 
       <td>Master Key<br />
       (64 bytes)</td>
@@ -396,27 +372,27 @@ code { font-size: 130% }
 
   <p>And once the (possibly incorrect) master key material is decrypted, it must be checked against the digest value. If it is detected to be correct, then the Serpent cipher parameters are derived from it.</p>
 
-  <table style="text-align: center; border: 1px solid black; margin: 0 auto" class="vt">
+  <table style="border: 1px solid black; margin: 0 auto" class="vt tc">
     <tr>
       <td></td>
 
       <td></td>
 
-      <td style="text-align: left">+&mdash;&rarr;<br />
-      &nbsp;|<br />
-      &nbsp;|<br />
-      &nbsp;|</td>
+      <td style="text-align: left"><code>+&mdash;&mdash;&mdash;&mdash;&gt;<br />
+      |<br />
+      |<br />
+      |</code></td>
 
       <td><code>PBKDF2</code><br />
-      (salt field 3,<br />
-      iterations field 2)</td>
+      (salt field 2,<br />
+      iterations field 1)</td>
 
-      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      <td><code>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&gt;</code><br />
       32 bytes</td>
 
       <td>Compare to<br />
       Digest Value<br />
-      (field 4)</td>
+      (field 3)</td>
     </tr>
 
     <tr>
@@ -425,16 +401,16 @@ code { font-size: 130% }
 
       <td>&mdash;&mdash;</td>
 
-      <td style="text-align: left">+&mdash;&rarr;<br />
-      &nbsp;|<br />
-      &nbsp;|<br />
-      &nbsp;|</td>
+      <td style="text-align: left"><code>+&mdash;&mdash;&mdash;&mdash;&gt;<br />
+      |<br />
+      |<br />
+      |</code></td>
 
       <td><code>PBKDF2</code><br />
-      (salt field 6,<br />
-      iterations field 5)</td>
+      (salt field 5,<br />
+      iterations field 4)</td>
 
-      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      <td><code>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&gt;</code><br />
       32 bytes</td>
 
       <td>Serpent<br />
@@ -446,13 +422,13 @@ code { font-size: 130% }
 
       <td></td>
 
-      <td style="text-align: left">+&mdash;&rarr;</td>
+      <td style="text-align: left"><code>+&mdash;&mdash;&mdash;&mdash;&gt;</code></td>
 
       <td><code>PBKDF2</code><br />
-      (salt field 8,<br />
-      iterations field 7)</td>
+      (salt field 7,<br />
+      iterations field 6)</td>
 
-      <td>&mdash;&mdash;&mdash;&mdash;&rarr;<br />
+      <td><code>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&gt;</code><br />
       16 bytes</td>
 
       <td>Serpent<br />
@@ -462,7 +438,7 @@ code { font-size: 130% }
 
   <h3>Encrypted Header3</h3>
 
-  <p>Following the variable unencrypted metadata is the first encrypted header. This header is 16-byte long, exactly the block-size of the Serpent cipher, which is used to encrypt it. Thus to read this block, the user must be queried for the encryption key, the Serpent cipher must be initialized with CBC-mode filter and the correct initialization vector set. The encryption key (256 bits) and CBC-IV are derived from the master key as described in the previous section.</p>
+  <p>Following the KeySlots is the first encrypted header. This header is 16-bytes long, exactly the block-size of the Serpent cipher which is used to encrypt it. Thus to read this block, the user must be queried for the encryption key, the Serpent cipher must be initialized with CBC-mode filter and the correct initialization vector set. The encryption key (256 bits) and CBC-IV are derived from the master key as described in the previous section.</p>
 
   <table>
     <tr>
@@ -482,7 +458,7 @@ code { font-size: 130% }
 
       <td class="f c">Metadata CRC32</td>
 
-      <td>CRC32 of the following variable metadata block. This is actually duplicated by zlib at the end of&nbsp;the compressed stream and may be removed in a future version.</td>
+      <td>CRC32 of the following variable metadata block. This is actually duplicated by zlib at the end of&nbsp;the compressed stream and though zlib uses the adler32 checksum.</td>
     </tr>
 
     <tr>
@@ -508,7 +484,7 @@ code { font-size: 130% }
 
   <h3>Encrypted Metadata</h3>
 
-  <p>Following the encrypted header is a variable-length block of properties. The length of this section is defined in Header3. This section is encrypted using the Serpent cipher and compressed using zlib. The CBC-IV context continues from the the header.</p>
+  <p>Following the encrypted header is a variable-length block of properties. The length of this section is defined in Header3. This section is encrypted using the Serpent cipher and compressed using zlib. The CBC-IV context continues from the the header. The compressed metadata stream is padded to the block length of the cipher; this is no problem because zlib ignores all data beyond the compressed image's end.</p>
 
   <p>The compressed metadata contains two main parts: global metadata properties and (local) subfile metadata properties. These are combined into one section to make compression more efficient. Furthermore SubFile metadata was detached from the file data itself so that it is possible to read and display the metadata properties of all subfiles without reading the complete subfile data.</p>
 
@@ -548,7 +524,7 @@ code { font-size: 130% }
     <tr>
       <td rowspan="8">4</td>
 
-      <td class="f fcm">1</td>
+      <td class="fl">1</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -558,7 +534,7 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">2</td>
+      <td class="fl">2</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -568,7 +544,7 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">3</td>
+      <td class="fl">3</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -605,7 +581,7 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">4</td>
+      <td class="fl">4</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -615,28 +591,30 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">5</td>
+      <td class="fl">5</td>
 
       <td class="f">4 bytes uint</td>
 
-      <td class="f c">Length of SubFile Cipher Data</td>
+      <td class="f c">Length of SubFile<br />
+      Cipher Parameters</td>
 
       <td>Length of the following field 4.6.</td>
     </tr>
 
     <tr>
-      <td class="f fcm">6</td>
+      <td class="fl">6</td>
 
       <td class="f">variable</td>
 
-      <td class="f c">SubFile Cipher Data</td>
+      <td class="f c">SubFile Cipher Parameters</td>
 
-      <td>This field contains the encryption key data and CBC-IV for the subfile's cipher context. This field fulled defines the encryption cipher parameters and is filled usually with random data. Thus a change in the master key / user key slots does not effect the encryption parameters of SubFiles. The length is stored in field 4.5 and is dependent on the encryption/compression flags:<br />
-      For <code>NONE</code>For Serpent encryption the length is 48 bytes: first 32 bytes of random key data, followed by 16 bytes random CBC-IV.</td>
+      <td>This field contains the encryption key data and CBC-IV for the subfile's cipher context. This field fully defines the encryption cipher parameters and is usually initialized with random data. Thus a change in the master key / user key slots does not effect the encryption parameters of SubFiles. The length is stored in field 4.5 and is dependent on the encryption/compression flags:<br />
+      For <code>NONE</code> encryption the length is 0 byte.<br />
+      For Serpent encryption the length is 48 bytes: first 32 bytes of random key data, followed by 16 bytes random CBC-IV.</td>
     </tr>
 
     <tr>
-      <td class="f fcm">7</td>
+      <td class="fl">7</td>
 
       <td class="f">4 bytes uint</td>
 
@@ -646,7 +624,7 @@ code { font-size: 130% }
     </tr>
 
     <tr>
-      <td class="f fcm">8</td>
+      <td class="fl">8</td>
 
       <td class="f">variable</td>
 
@@ -654,7 +632,7 @@ code { font-size: 130% }
 
       <td>Variable length block holding all subfile properties. They are simply concatentated. Again these properties are completely application-defined.</td>
     </tr>
-  </table><br />
+  </table>
 
   <p>CryptoTE currently uses the following global key-value properties:</p>
 
@@ -662,13 +640,13 @@ code { font-size: 130% }
     <tr>
       <td>CTime</td>
 
-      <td>Creation Time of the container. Stored as 4-byte time_t value.</td>
+      <td>Creation Time of the container. Stored as 4-byte <code>time_t</code> value.</td>
     </tr>
 
     <tr>
       <td>MTime</td>
 
-      <td>Last Modification Time of the container. Stored as 4-byte time_t value.</td>
+      <td>Last Modification Time of the container. Stored as 4-byte <code>time_t</code> value.</td>
     </tr>
 
     <tr>
@@ -708,21 +686,21 @@ code { font-size: 130% }
     </tr>
 
     <tr>
+      <td>KeySlot-<em>number</em>-Description</td>
+
+      <td>User-defined description of KeySlot <em>number</em>. Note that the Enctain format does not directly support "usernames" or other metadata for key slots. This is emulated by setting global properties.</td>
+    </tr>
+
+    <tr>
       <td>KeySlot-<em>number</em>-CTime</td>
 
-      <td>Creation Time of the user KeySlot <em>number</em>. Stored as 4-byte time_t value.</td>
+      <td>Creation Time of the user KeySlot <em>number</em>. Stored as 4-byte <code>time_t</code> value.</td>
     </tr>
 
     <tr>
       <td>KeySlot-<em>number</em>-ATime</td>
 
-      <td>Last Match Time of the user KeySlot <em>number</em>. Stored as 4-byte time_t value.</td>
-    </tr>
-
-    <tr>
-      <td>KeySlot-<em>number</em>-Description</td>
-
-      <td>User-defined description of KeySlot <em>number</em>. Note that the Enctain format does not directly support "usernames" or other metadata for key slots. This is emulated by setting global properties.</td>
+      <td>Last Match Time of the user KeySlot <em>number</em>. Stored as 4-byte <code>time_t</code> value.</td>
     </tr>
   </table>
 
@@ -738,13 +716,13 @@ code { font-size: 130% }
     <tr>
       <td>CTime</td>
 
-      <td>Creation Time of the SubFile. Stored as 4-byte time_t value.</td>
+      <td>Creation Time of the SubFile. Stored as 4-byte <code>time_t</code> value.</td>
     </tr>
 
     <tr>
       <td>MTime</td>
 
-      <td>Last Modification Time of the SubFile. Stored as 4-byte time_t value.</td>
+      <td>Last Modification Time of the SubFile. Stored as 4-byte <code>time_t</code> value.</td>
     </tr>
 
     <tr>
@@ -780,8 +758,129 @@ code { font-size: 130% }
 
   <h3>SubFile Data</h3>
 
-  <p>Finally after all the headers and metadata the actual SubFile data is located. Each SubFile's storage length, encryption cipher and compression algorithm are defined in the compressed and encryption metadata section. Thus no additional structuring is required. All SubFiles are simply stored concatenated.</p>
+  <p>Finally after all headers and metadata the actual SubFile data is located. Each SubFile's storage length, encryption cipher and compression algorithm are defined in the compressed and encrypted metadata section. Thus no additional structuring is required. All SubFiles are simply stored concatenated.</p>
 
   <p>To locate a specific SubFile's data it is necessary to know the beginning offset of all SubFile Data. To this offset all preceding SubFile's StorageSize field must be added.</p>
+
+  <h2>Example</h2>
+
+  <p>The following table contains a hexadecimal dump of the beginning of an encrypted container file. The different header fields are color coded for better distinction in the explanation below:</p>
+
+  <table class="f">
+    <tr>
+      <td><code>Offset</code></td>
+
+      <td><code>Hexadecimal</code></td>
+
+      <td><code>ASCII</code></td>
+    </tr>
+
+    <tr>
+      <td><tt>00000000<br />
+      00000016<br />
+      00000032<br />
+      00000048<br />
+      00000064<br />
+      00000080<br />
+      00000096<br />
+      00000112<br />
+      00000128<br />
+      00000144<br />
+      00000160<br />
+      00000176<br />
+      00000192<br />
+      00000208<br />
+      00000224<br />
+      00000240<br />
+      00000256<br />
+      00000272<br />
+      00000288<br />
+      00000304<br />
+      00000320<br />
+      00000336<br />
+      00000352<br />
+      00000368</tt></td>
+
+      <td><tt><span style="color: #3333ff">43 72 79 70 74 6f 54 45</span>&nbsp; <span style="color: #3366ff">01 00 00 00</span> <span style="color: #6633FF">41 00 00 00</span><br />
+      <span style="color: #ff3333">03 00 00 00</span> <span style="color: #009900">06 41 75 74&nbsp; 68 6f 72 02 54 42</span> <span style="color: #AAAA00">0b 44</span><br />
+      <span style="color: #AAAA00">65 73 63 72 69 70 74 69&nbsp; 6f 6e 11 53 6f 6d 65 20</span><br />
+      <span style="color: #AAAA00">6c 6f 6e 67 65 72 20 74&nbsp; 65 78 74 2e</span> <span style="color: #990000">07 53 75 62</span><br />
+      <span style="color: #990000">6a 65 63 74 0c 54 65 73&nbsp; 74 20 45 78 61 6d 70 6c</span><br />
+      <span style="color: #990000">65</span> <span style="color: #FF9900">ac 04 00 00</span> <span style="color: #FF6622">86 b4 6c&nbsp; c7 0f 4c 30 36 f7 73 69</span><br />
+      <span style="color: #FF6622">e2 0a 76 64 99 e1 55 c7&nbsp; 04 17 a3 43 d6 a3 37 2b</span><br />
+      <span style="color: #FF6622">f7 f7 5c 26 89</span> <span style="color: #FFBB22">f9 74 93&nbsp; 00 ef d1 4c 6b 68 73 11</span><br />
+      <span style="color: #FFBB22">f8 54 e9 42 e4 b1 83 06&nbsp; 10 7c 35 47 3f 22 00 2c</span><br />
+      <span style="color: #FFBB22">7f 82 a7 39 0a</span> <span style="color: #9933FF">89 0e 00&nbsp; 00 20 dd c6 99 74 b2 a0</span><br />
+      <span style="color: #9933FF">64 6c 01 e0 db 9c af 20&nbsp; 41 e9 1e 9a 8c 95 46 1d</span><br />
+      <span style="color: #9933FF">8a 2b d8 87 16 70 00 8a&nbsp; 20</span> <span style="color: #C233FF">e1 16 00 00 c7 97 dc</span><br />
+      <span style="color: #C233FF">24 82 6f a4 4a 18 45 a4&nbsp; 71 7a 78 7f e7 56 9d 13</span><br />
+      <span style="color: #C233FF">56 6b f8 0b a3 c8 ed 52&nbsp; 72 d8 51 4e 2a</span> <span style="color: #70B60D">01 00 00</span><br />
+      <span style="color: #70B60D">00</span> <span style="color: #16926D">a0 0c 00 00</span> <span style="color: #168E92">a9 6b de&nbsp; d6 f1 59 0b 99 d1 f8 40</span><br />
+      <span style="color: #168E92">50 aa 2e 55 0e d1 9b b0&nbsp; 5b da 52 82 35 02 aa 10</span><br />
+      <span style="color: #168E92">98 60 0d 51 03</span> <span style="color: #166392">ac b3 09&nbsp; cb 96 41 ee 12 dc e4 c3</span><br />
+      <span style="color: #166392">dc 37 6a 04 4c 13 ed e7&nbsp; d5 3d 2c 59 f4 4f f4 f5</span><br />
+      <span style="color: #166392">f5 9f 21 ec 8f e0 6b 10&nbsp; e9 b5 5a 95 0e f5 6f 5b</span><br />
+      <span style="color: #166392">14 83 12 d3 b2 d6 6d 0b&nbsp; df ad a0 dd e9 9d 77 2d</span><br />
+      <span style="color: #166392">f6 4e 1a 60 81</span> <span style="color: #F03989">41 73 ad&nbsp; 71 0a 1d 0b d0 51 ff 73</span><br />
+      <span style="color: #F03989">40 f9 ca a2 09</span> <span style="color: #F0393C">b5 41 5e&nbsp; e0 2b 91 c1 d1 b4 8a 7c</span><br />
+      <span style="color: #F0393C">cc de 74 95 4c 21 49 fd&nbsp; cb 24 92 61 4e e0 06 33</span><br />
+      <span style="color: #F0393C">1c 52 54 53 24 1a 7e 6e&nbsp; 09 dc 14 10 27 0a 89 0d</span></tt></td>
+
+      <td><tt><span style="color: #3333ff">CryptoTE</span><span style="color: #3366ff">....</span><span style="color: #6633ff">A...</span><br />
+      <span style="color: #ff3333">....</span><span style="color: #009900">.Author.TB</span><span style="color: #AAAA00">.D</span><br />
+      <span style="color: #AAAA00">escription.Some</span><br />
+      <span style="color: #AAAA00">longer text.</span><span style="color: #990000">.Sub</span><br />
+      <span style="color: #990000">ject.Test Exampl</span><br />
+      <span style="color: #990000">e</span><span style="color: #FF9900">....</span><span style="color: #FF6622">..l..L06.si</span><br />
+      <span style="color: #FF6622">..vd..U....C..7+</span><br />
+      <span style="color: #FF6622">..\&amp;.</span><span style="color: #FFBB22">.t....Lkhs.</span><br />
+      <span style="color: #FFBB22">.T.B.....|5G?".,</span><br />
+      <span style="color: #FFBB22">...9.</span><span style="color: #9933FF">.... ...t..</span><br />
+      <span style="color: #9933FF">dl..... A.....F.</span><br />
+      <span style="color: #9933FF">.+...p..</span> <span style="color: #C233FF">.......</span><br />
+      <span style="color: #C233FF">$.o.J.E.qzx..V..</span><br />
+      <span style="color: #C233FF">Vk.....Rr.QN*</span><span style="color: #70B60D">...</span><br />
+      <span style="color: #70B60D">.</span><span style="color: #16926D">....</span><span style="color: #168E92">.k...Y....@</span><br />
+      <span style="color: #168E92">P..U....[.R.5...</span><br />
+      <span style="color: #168E92">.`.Q.</span><span style="color: #166392">.....A.....</span><br />
+      <span style="color: #166392">.7j.L....=,Y.O..</span><br />
+      <span style="color: #166392">..!...k...Z...o[</span><br />
+      <span style="color: #166392">......m.......w-</span><br />
+      <span style="color: #166392">.N.`.</span><span style="color: #F03989">As.q....Q.s</span><br />
+      <span style="color: #F03989">@....</span><span style="color: #F0393C">.A^.+.....</span><br />
+      <span style="color: #F0393C">..t.L!I..$.aN..3</span><br />
+      <span style="color: #F0393C">.RTS$.~n....'...</span></tt></td>
+    </tr>
+  </table>
+
+  <p>Header1 shows <span style="color: #3333ff">the signature</span> and <span style="color: #3366ff">version number v1.0</span>. Following Header1 are <span style="color: #6633ff">65 bytes</span> of unencrypted metadata.</p>
+
+  <p>The unencrypted metadata contains the following <span style="color: #ff3333">3 key-value pairs</span>:</p>
+
+  <table class="ff">
+    <tr>
+      <td><span style="color: #990000">Subject</span></td>
+
+      <td><span style="color: #990000">Test Example</span></td>
+    </tr>
+
+    <tr>
+      <td><span style="color: #009900">Author</span></td>
+
+      <td><span style="color: #009900">TB</span></td>
+    </tr>
+
+    <tr>
+      <td><span style="color: #AAAA00">Description</span></td>
+
+      <td><span style="color: #AAAA00">Some longer text.</span></td>
+    </tr>
+  </table>
+
+  <p>After the unencrypted metadata the KeySlots header2 begins. The master key digest <span style="color: #FF9900">PBKDF2 iterations count is 1196</span> followed by <span style="color: #FF6622">32 bytes of random salt</span> and another <span style="color: #FFBB22">32 bytes which are the value of the digest</span>. After the digest the PBKDF2 parameters for <span style="color: #9933FF">Serpent key</span> and <span style="color: #C233FF">CBC-IV</span> are stored: 4 bytes iteration and 32 bytes salt. Iterations count for the key are 3721 and for the CBC-IV 5827.</p>
+
+  <p>Last block in the keyslots header holds the <span style="color: #70B60D">1 user key slot</span>: it contains an <span style="color: #16926D">iteration count of 334</span>, <span style="color: #168E92">32 bytes of random salt</span> and the <span style="color: #166392">encrypted master key copy</span>.</p>
+
+  <p>Now the encrypted part begins. Here the data is not random salt and keys, but actual data though unreadable. The first 16 bytes are the <span style="color: #F03989">encrypted header3</span> followed by the <span style="color: #F0393C">encrypted and compressed metadata</span>. The example dump stops here, because all following data is encrypted and thus incomprehensible.</p>
 </body>
 </html>
