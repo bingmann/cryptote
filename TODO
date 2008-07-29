@@ -6,7 +6,8 @@
 
 --- Important ---
 
-  * No entries
+  * Write a short help document and add Info -> Help. Probably use
+    wxRichTextCtrl for displaying.
 
 --- Necessary ---
 

@@ -361,7 +361,22 @@ libstc_a_SOURCES = \
 EXTRA_DIST = README.txt \
 	scintilla/README \
 	scintilla/License.txt \
-	scintilla/doc/*
+	scintilla/doc/Design.html \
+	scintilla/doc/Icons.html \
+	scintilla/doc/Lexer.txt \
+	scintilla/doc/SciBreak.jpg \
+	scintilla/doc/SciCoding.html \
+	scintilla/doc/SciRest.jpg \
+	scintilla/doc/SciTEIco.png \
+	scintilla/doc/SciWord.jpg \
+	scintilla/doc/ScintillaDoc.html \
+	scintilla/doc/ScintillaDownload.html \
+	scintilla/doc/ScintillaHistory.html \
+	scintilla/doc/ScintillaRelated.html \
+	scintilla/doc/ScintillaToDo.html \
+	scintilla/doc/ScintillaUsage.html \
+	scintilla/doc/Steps.html \
+	scintilla/doc/index.html
 
 AM_CFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CFLAGS)
 AM_CXXFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CXXFLAGS)
