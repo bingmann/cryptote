@@ -647,7 +647,7 @@ WLegalNotice::WLegalNotice(wxWindow* parent, int id, const wxString& title, cons
     mytimer.SetOwner(this);
     mytimer.Start(1000, wxTIMER_CONTINUOUS);
 
-    buttonOK->SetLabel( wxString::Format(_("Wait %d seconds ..."), countdown) );
+    buttonOK->SetLabel( wxString::Format(wxPLURAL("Wait %d second ...", "Wait %d seconds ...", countdown), countdown) );
 
     buttonpressed = 0;
 
@@ -706,9 +706,9 @@ void WLegalNotice::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	buttonpressed = countdown;
 
 	if (buttonpressed < countdown +3 && buttonpressed >= countdown)
-	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s (Yes, I know it sucks. Sorry) ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+	    buttonOK->SetLabel( wxString::Format(wxPLURAL("Wait %d second (Yes, I know it sucks. Sorry) ...", "Wait %d seconds (Yes, I know it sucks. Sorry) ...", countdown), countdown) );
 	else
-	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+	    buttonOK->SetLabel( wxString::Format(wxPLURAL("Wait %d second ...", "Wait %d seconds ...", countdown), countdown) );
 
 	Layout();
     }
@@ -726,9 +726,9 @@ void WLegalNotice::OnTimer(wxTimerEvent& WXUNUSED(event))
 	--countdown;
 
 	if (buttonpressed < countdown +3 && buttonpressed >= countdown)
-	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s (Yes, I know it sucks. Sorry) ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+	    buttonOK->SetLabel( wxString::Format(wxPLURAL("Wait %d second (Yes, I know it sucks. Sorry) ...", "Wait %d seconds (Yes, I know it sucks. Sorry) ...", countdown), countdown) );
 	else
-	    buttonOK->SetLabel( wxString::Format(_("Wait %d %s ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+	    buttonOK->SetLabel( wxString::Format(wxPLURAL("Wait %d second ...", "Wait %d seconds ...", countdown), countdown) );
 
 	Layout();
     }
