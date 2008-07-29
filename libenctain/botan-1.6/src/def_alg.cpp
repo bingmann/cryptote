@@ -28,7 +28,7 @@
 // #include "botan-1.6/include/skipjack.h"
 // #include "botan-1.6/include/square.h"
 // #include "botan-1.6/include/tea.h"
-#include "botan-1.6/include/twofish.h"
+// #include "botan-1.6/include/twofish.h"
 // #include "botan-1.6/include/xtea.h"
 
 // #include "botan-1.6/include/arc4.h"
@@ -140,7 +140,7 @@ Default_Engine::find_block_cipher(const std::string& algo_spec) const
    // HANDLE_TYPE_NO_ARGS("Skipjack", Skipjack);
    // HANDLE_TYPE_NO_ARGS("Square", Square);
    // HANDLE_TYPE_NO_ARGS("TEA", TEA);
-   HANDLE_TYPE_NO_ARGS("Twofish", Twofish);
+   // HANDLE_TYPE_NO_ARGS("Twofish", Twofish);
    // HANDLE_TYPE_NO_ARGS("XTEA", XTEA);
 
    // if(algo_name == "Lion")

@@ -81,7 +81,6 @@ libenctain_a_SOURCES = \
 	botan-1.6/include/tm_posix.h \
 	botan-1.6/include/tm_unix.h \
 	botan-1.6/include/tm_win32.h \
-	botan-1.6/include/twofish.h \
 	botan-1.6/include/types.h \
 	botan-1.6/include/ui.h \
 	botan-1.6/include/unix_cmd.h \
@@ -119,7 +118,6 @@ libenctain_a_SOURCES = \
 	botan-1.6/src/filters.cpp \
 	botan-1.6/src/fips140.cpp \
 	botan-1.6/src/get_algo.cpp \
-	botan-1.6/src/get_enc.cpp \
 	botan-1.6/src/hex.cpp \
 	botan-1.6/src/hmac.cpp \
 	botan-1.6/src/inifile.cpp \
@@ -150,8 +148,6 @@ libenctain_a_SOURCES = \
 	botan-1.6/src/sha256.cpp \
 	botan-1.6/src/symkey.cpp \
 	botan-1.6/src/timers.cpp \
-	botan-1.6/src/two_tab.cpp \
-	botan-1.6/src/twofish.cpp \
 	botan-1.6/src/ui.cpp \
 	botan-1.6/src/util.cpp \
 	botan-1.6/src/x931_rng.cpp \
