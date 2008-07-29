@@ -40,7 +40,7 @@ int main()
     Botan::OctetString derived_key, derived_iv;
 
     {
-	Botan::PKCS5_PBKDF2 pbkdf("SHA-512");
+	Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
 	pbkdf.set_iterations(4128);
 
 	Botan::OctetString testsalt1((Botan::byte*)"CC3u7ZuhbfnAKVbCCkyvXJRaVnC1QhpL", 32);
@@ -52,10 +52,10 @@ int main()
 	pbkdf.change_salt(testsalt2.bits_of());
 	derived_iv = pbkdf.derive_key(16, masterkey.bits_of());
 	
-	Botan::OctetString cmp1("B6A5AF1F3C1EF8756D4B40F43A19D1F7852A73E5AF593D3CAB8486AC119CF23A");
+	Botan::OctetString cmp1("622392946C51C5490A2226DB102F46377B87DEBAE8CA3F07BB91E716293A6944");
 	assert(derived_key == cmp1);
 
-	Botan::OctetString cmp2("ED7A6FAB2344D18E675D357C50B795F8");
+	Botan::OctetString cmp2("A7D32472113CB2069FA53FD2E241ADCE");
 	assert(derived_iv == cmp2);
     }
 
