@@ -647,7 +647,7 @@ WLegalNotice::WLegalNotice(wxWindow* parent, int id, const wxString& title, cons
     mytimer.SetOwner(this);
     mytimer.Start(1000, wxTIMER_CONTINUOUS);
 
-    buttonOK->SetLabel( wxString::Format(_("Wait %d %s ..."), countdown, wxPLURAL("second", "seconds", countdown)) );
+    buttonOK->SetLabel( wxString::Format(_("Wait %d seconds ..."), countdown) );
 
     buttonpressed = 0;
 

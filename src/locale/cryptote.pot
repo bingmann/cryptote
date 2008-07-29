@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-26 10:37+0200\n"
+"POT-Creation-Date: 2008-07-29 23:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1672,19 +1672,10 @@ msgid ""
 "report it on"
 msgstr ""
 
-#: ../cryptote/wpass.cpp:650 ../cryptote/wpass.cpp:711
-#: ../cryptote/wpass.cpp:731
+#: ../cryptote/wpass.cpp:650
 #, c-format
-msgid "Wait %d %s ..."
+msgid "Wait %d seconds ..."
 msgstr ""
-
-#: ../cryptote/wpass.cpp:650 ../cryptote/wpass.cpp:709
-#: ../cryptote/wpass.cpp:711 ../cryptote/wpass.cpp:729
-#: ../cryptote/wpass.cpp:731
-msgid "second"
-msgid_plural "seconds"
-msgstr[0] ""
-msgstr[1] ""
 
 #: ../cryptote/wpass.cpp:662
 msgid "Legal Notice - CryptoTE"
@@ -1697,6 +1688,18 @@ msgstr ""
 #: ../cryptote/wpass.cpp:709 ../cryptote/wpass.cpp:729
 #, c-format
 msgid "Wait %d %s (Yes, I know it sucks. Sorry) ..."
+msgstr ""
+
+#: ../cryptote/wpass.cpp:709 ../cryptote/wpass.cpp:711
+#: ../cryptote/wpass.cpp:729 ../cryptote/wpass.cpp:731
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../cryptote/wpass.cpp:711 ../cryptote/wpass.cpp:731
+#, c-format
+msgid "Wait %d %s ..."
 msgstr ""
 
 #: ../cryptote/wprefs.cpp:23
