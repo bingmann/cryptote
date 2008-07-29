@@ -101,44 +101,43 @@ am__libenctain_a_SOURCES_DIST = bytebuff.h encios.h enctain.cpp \
 	botan-1.6/include/s2k.h botan-1.6/include/secmem.h \
 	botan-1.6/include/secqueue.h botan-1.6/include/serpent.h \
 	botan-1.6/include/sha160.h botan-1.6/include/sha256.h \
-	botan-1.6/include/sha_64.h botan-1.6/include/stl_util.h \
-	botan-1.6/include/symkey.h botan-1.6/include/timers.h \
-	botan-1.6/include/tm_hard.h botan-1.6/include/tm_posix.h \
-	botan-1.6/include/tm_unix.h botan-1.6/include/tm_win32.h \
-	botan-1.6/include/twofish.h botan-1.6/include/types.h \
-	botan-1.6/include/ui.h botan-1.6/include/unix_cmd.h \
-	botan-1.6/include/util.h botan-1.6/include/version.h \
-	botan-1.6/include/x931_rng.h botan-1.6/include/zlib.h \
-	botan-1.6/src/aes.cpp botan-1.6/src/aes_tab.cpp \
-	botan-1.6/src/base.cpp botan-1.6/src/base64.cpp \
-	botan-1.6/src/basefilt.cpp botan-1.6/src/bit_ops.cpp \
-	botan-1.6/src/buf_es.cpp botan-1.6/src/buf_filt.cpp \
-	botan-1.6/src/cbc.cpp botan-1.6/src/charset.cpp \
-	botan-1.6/src/config.cpp botan-1.6/src/crc32.cpp \
-	botan-1.6/src/data_snk.cpp botan-1.6/src/data_src.cpp \
-	botan-1.6/src/def_alg.cpp botan-1.6/src/def_char.cpp \
-	botan-1.6/src/def_mode.cpp botan-1.6/src/defalloc.cpp \
-	botan-1.6/src/des.cpp botan-1.6/src/des_tab.cpp \
-	botan-1.6/src/ecb.cpp botan-1.6/src/eng_base.cpp \
-	botan-1.6/src/engine.cpp botan-1.6/src/es_file.cpp \
-	botan-1.6/src/exceptn.cpp botan-1.6/src/filter.cpp \
-	botan-1.6/src/filters.cpp botan-1.6/src/fips140.cpp \
-	botan-1.6/src/get_algo.cpp botan-1.6/src/get_enc.cpp \
-	botan-1.6/src/hex.cpp botan-1.6/src/hmac.cpp \
-	botan-1.6/src/inifile.cpp botan-1.6/src/init_def.cpp \
-	botan-1.6/src/init_opt.cpp botan-1.6/src/libstate.cpp \
-	botan-1.6/src/md5.cpp botan-1.6/src/mdx_hash.cpp \
-	botan-1.6/src/mem_pool.cpp botan-1.6/src/mlock.cpp \
-	botan-1.6/src/mode_pad.cpp botan-1.6/src/modebase.cpp \
-	botan-1.6/src/modules.cpp botan-1.6/src/mutex.cpp \
-	botan-1.6/src/out_buf.cpp botan-1.6/src/parsing.cpp \
-	botan-1.6/src/pipe.cpp botan-1.6/src/pipe_io.cpp \
-	botan-1.6/src/pipe_rw.cpp botan-1.6/src/pkcs5.cpp \
-	botan-1.6/src/policy.cpp botan-1.6/src/randpool.cpp \
-	botan-1.6/src/rng.cpp botan-1.6/src/s2k.cpp \
-	botan-1.6/src/secqueue.cpp botan-1.6/src/serpent.cpp \
-	botan-1.6/src/sha160.cpp botan-1.6/src/sha256.cpp \
-	botan-1.6/src/sha_64.cpp botan-1.6/src/symkey.cpp \
+	botan-1.6/include/stl_util.h botan-1.6/include/symkey.h \
+	botan-1.6/include/timers.h botan-1.6/include/tm_hard.h \
+	botan-1.6/include/tm_posix.h botan-1.6/include/tm_unix.h \
+	botan-1.6/include/tm_win32.h botan-1.6/include/twofish.h \
+	botan-1.6/include/types.h botan-1.6/include/ui.h \
+	botan-1.6/include/unix_cmd.h botan-1.6/include/util.h \
+	botan-1.6/include/version.h botan-1.6/include/x931_rng.h \
+	botan-1.6/include/zlib.h botan-1.6/src/aes.cpp \
+	botan-1.6/src/aes_tab.cpp botan-1.6/src/base.cpp \
+	botan-1.6/src/base64.cpp botan-1.6/src/basefilt.cpp \
+	botan-1.6/src/bit_ops.cpp botan-1.6/src/buf_es.cpp \
+	botan-1.6/src/buf_filt.cpp botan-1.6/src/cbc.cpp \
+	botan-1.6/src/charset.cpp botan-1.6/src/config.cpp \
+	botan-1.6/src/crc32.cpp botan-1.6/src/data_snk.cpp \
+	botan-1.6/src/data_src.cpp botan-1.6/src/def_alg.cpp \
+	botan-1.6/src/def_char.cpp botan-1.6/src/def_mode.cpp \
+	botan-1.6/src/defalloc.cpp botan-1.6/src/des.cpp \
+	botan-1.6/src/des_tab.cpp botan-1.6/src/ecb.cpp \
+	botan-1.6/src/eng_base.cpp botan-1.6/src/engine.cpp \
+	botan-1.6/src/es_file.cpp botan-1.6/src/exceptn.cpp \
+	botan-1.6/src/filter.cpp botan-1.6/src/filters.cpp \
+	botan-1.6/src/fips140.cpp botan-1.6/src/get_algo.cpp \
+	botan-1.6/src/get_enc.cpp botan-1.6/src/hex.cpp \
+	botan-1.6/src/hmac.cpp botan-1.6/src/inifile.cpp \
+	botan-1.6/src/init_def.cpp botan-1.6/src/init_opt.cpp \
+	botan-1.6/src/libstate.cpp botan-1.6/src/md5.cpp \
+	botan-1.6/src/mdx_hash.cpp botan-1.6/src/mem_pool.cpp \
+	botan-1.6/src/mlock.cpp botan-1.6/src/mode_pad.cpp \
+	botan-1.6/src/modebase.cpp botan-1.6/src/modules.cpp \
+	botan-1.6/src/mutex.cpp botan-1.6/src/out_buf.cpp \
+	botan-1.6/src/parsing.cpp botan-1.6/src/pipe.cpp \
+	botan-1.6/src/pipe_io.cpp botan-1.6/src/pipe_rw.cpp \
+	botan-1.6/src/pkcs5.cpp botan-1.6/src/policy.cpp \
+	botan-1.6/src/randpool.cpp botan-1.6/src/rng.cpp \
+	botan-1.6/src/s2k.cpp botan-1.6/src/secqueue.cpp \
+	botan-1.6/src/serpent.cpp botan-1.6/src/sha160.cpp \
+	botan-1.6/src/sha256.cpp botan-1.6/src/symkey.cpp \
 	botan-1.6/src/timers.cpp botan-1.6/src/two_tab.cpp \
 	botan-1.6/src/twofish.cpp botan-1.6/src/ui.cpp \
 	botan-1.6/src/util.cpp botan-1.6/src/x931_rng.cpp \
@@ -189,9 +188,9 @@ am_libenctain_a_OBJECTS = enctain.$(OBJEXT) initrng.$(OBJEXT) \
 	pipe_rw.$(OBJEXT) pkcs5.$(OBJEXT) policy.$(OBJEXT) \
 	randpool.$(OBJEXT) rng.$(OBJEXT) s2k.$(OBJEXT) \
 	secqueue.$(OBJEXT) serpent.$(OBJEXT) sha160.$(OBJEXT) \
-	sha256.$(OBJEXT) sha_64.$(OBJEXT) symkey.$(OBJEXT) \
-	timers.$(OBJEXT) two_tab.$(OBJEXT) twofish.$(OBJEXT) \
-	ui.$(OBJEXT) util.$(OBJEXT) x931_rng.$(OBJEXT) bzip2.$(OBJEXT) \
+	sha256.$(OBJEXT) symkey.$(OBJEXT) timers.$(OBJEXT) \
+	two_tab.$(OBJEXT) twofish.$(OBJEXT) ui.$(OBJEXT) \
+	util.$(OBJEXT) x931_rng.$(OBJEXT) bzip2.$(OBJEXT) \
 	zlib.$(OBJEXT) $(am__objects_1) $(am__objects_2)
 libenctain_a_OBJECTS = $(am_libenctain_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -373,44 +372,43 @@ libenctain_a_SOURCES = bytebuff.h encios.h enctain.cpp enctain.h \
 	botan-1.6/include/s2k.h botan-1.6/include/secmem.h \
 	botan-1.6/include/secqueue.h botan-1.6/include/serpent.h \
 	botan-1.6/include/sha160.h botan-1.6/include/sha256.h \
-	botan-1.6/include/sha_64.h botan-1.6/include/stl_util.h \
-	botan-1.6/include/symkey.h botan-1.6/include/timers.h \
-	botan-1.6/include/tm_hard.h botan-1.6/include/tm_posix.h \
-	botan-1.6/include/tm_unix.h botan-1.6/include/tm_win32.h \
-	botan-1.6/include/twofish.h botan-1.6/include/types.h \
-	botan-1.6/include/ui.h botan-1.6/include/unix_cmd.h \
-	botan-1.6/include/util.h botan-1.6/include/version.h \
-	botan-1.6/include/x931_rng.h botan-1.6/include/zlib.h \
-	botan-1.6/src/aes.cpp botan-1.6/src/aes_tab.cpp \
-	botan-1.6/src/base.cpp botan-1.6/src/base64.cpp \
-	botan-1.6/src/basefilt.cpp botan-1.6/src/bit_ops.cpp \
-	botan-1.6/src/buf_es.cpp botan-1.6/src/buf_filt.cpp \
-	botan-1.6/src/cbc.cpp botan-1.6/src/charset.cpp \
-	botan-1.6/src/config.cpp botan-1.6/src/crc32.cpp \
-	botan-1.6/src/data_snk.cpp botan-1.6/src/data_src.cpp \
-	botan-1.6/src/def_alg.cpp botan-1.6/src/def_char.cpp \
-	botan-1.6/src/def_mode.cpp botan-1.6/src/defalloc.cpp \
-	botan-1.6/src/des.cpp botan-1.6/src/des_tab.cpp \
-	botan-1.6/src/ecb.cpp botan-1.6/src/eng_base.cpp \
-	botan-1.6/src/engine.cpp botan-1.6/src/es_file.cpp \
-	botan-1.6/src/exceptn.cpp botan-1.6/src/filter.cpp \
-	botan-1.6/src/filters.cpp botan-1.6/src/fips140.cpp \
-	botan-1.6/src/get_algo.cpp botan-1.6/src/get_enc.cpp \
-	botan-1.6/src/hex.cpp botan-1.6/src/hmac.cpp \
-	botan-1.6/src/inifile.cpp botan-1.6/src/init_def.cpp \
-	botan-1.6/src/init_opt.cpp botan-1.6/src/libstate.cpp \
-	botan-1.6/src/md5.cpp botan-1.6/src/mdx_hash.cpp \
-	botan-1.6/src/mem_pool.cpp botan-1.6/src/mlock.cpp \
-	botan-1.6/src/mode_pad.cpp botan-1.6/src/modebase.cpp \
-	botan-1.6/src/modules.cpp botan-1.6/src/mutex.cpp \
-	botan-1.6/src/out_buf.cpp botan-1.6/src/parsing.cpp \
-	botan-1.6/src/pipe.cpp botan-1.6/src/pipe_io.cpp \
-	botan-1.6/src/pipe_rw.cpp botan-1.6/src/pkcs5.cpp \
-	botan-1.6/src/policy.cpp botan-1.6/src/randpool.cpp \
-	botan-1.6/src/rng.cpp botan-1.6/src/s2k.cpp \
-	botan-1.6/src/secqueue.cpp botan-1.6/src/serpent.cpp \
-	botan-1.6/src/sha160.cpp botan-1.6/src/sha256.cpp \
-	botan-1.6/src/sha_64.cpp botan-1.6/src/symkey.cpp \
+	botan-1.6/include/stl_util.h botan-1.6/include/symkey.h \
+	botan-1.6/include/timers.h botan-1.6/include/tm_hard.h \
+	botan-1.6/include/tm_posix.h botan-1.6/include/tm_unix.h \
+	botan-1.6/include/tm_win32.h botan-1.6/include/twofish.h \
+	botan-1.6/include/types.h botan-1.6/include/ui.h \
+	botan-1.6/include/unix_cmd.h botan-1.6/include/util.h \
+	botan-1.6/include/version.h botan-1.6/include/x931_rng.h \
+	botan-1.6/include/zlib.h botan-1.6/src/aes.cpp \
+	botan-1.6/src/aes_tab.cpp botan-1.6/src/base.cpp \
+	botan-1.6/src/base64.cpp botan-1.6/src/basefilt.cpp \
+	botan-1.6/src/bit_ops.cpp botan-1.6/src/buf_es.cpp \
+	botan-1.6/src/buf_filt.cpp botan-1.6/src/cbc.cpp \
+	botan-1.6/src/charset.cpp botan-1.6/src/config.cpp \
+	botan-1.6/src/crc32.cpp botan-1.6/src/data_snk.cpp \
+	botan-1.6/src/data_src.cpp botan-1.6/src/def_alg.cpp \
+	botan-1.6/src/def_char.cpp botan-1.6/src/def_mode.cpp \
+	botan-1.6/src/defalloc.cpp botan-1.6/src/des.cpp \
+	botan-1.6/src/des_tab.cpp botan-1.6/src/ecb.cpp \
+	botan-1.6/src/eng_base.cpp botan-1.6/src/engine.cpp \
+	botan-1.6/src/es_file.cpp botan-1.6/src/exceptn.cpp \
+	botan-1.6/src/filter.cpp botan-1.6/src/filters.cpp \
+	botan-1.6/src/fips140.cpp botan-1.6/src/get_algo.cpp \
+	botan-1.6/src/get_enc.cpp botan-1.6/src/hex.cpp \
+	botan-1.6/src/hmac.cpp botan-1.6/src/inifile.cpp \
+	botan-1.6/src/init_def.cpp botan-1.6/src/init_opt.cpp \
+	botan-1.6/src/libstate.cpp botan-1.6/src/md5.cpp \
+	botan-1.6/src/mdx_hash.cpp botan-1.6/src/mem_pool.cpp \
+	botan-1.6/src/mlock.cpp botan-1.6/src/mode_pad.cpp \
+	botan-1.6/src/modebase.cpp botan-1.6/src/modules.cpp \
+	botan-1.6/src/mutex.cpp botan-1.6/src/out_buf.cpp \
+	botan-1.6/src/parsing.cpp botan-1.6/src/pipe.cpp \
+	botan-1.6/src/pipe_io.cpp botan-1.6/src/pipe_rw.cpp \
+	botan-1.6/src/pkcs5.cpp botan-1.6/src/policy.cpp \
+	botan-1.6/src/randpool.cpp botan-1.6/src/rng.cpp \
+	botan-1.6/src/s2k.cpp botan-1.6/src/secqueue.cpp \
+	botan-1.6/src/serpent.cpp botan-1.6/src/sha160.cpp \
+	botan-1.6/src/sha256.cpp botan-1.6/src/symkey.cpp \
 	botan-1.6/src/timers.cpp botan-1.6/src/two_tab.cpp \
 	botan-1.6/src/twofish.cpp botan-1.6/src/ui.cpp \
 	botan-1.6/src/util.cpp botan-1.6/src/x931_rng.cpp \
@@ -557,7 +555,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/serpent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha160.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha256.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha_64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symkey.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tm_hard.Po@am__quote@
@@ -1398,20 +1395,6 @@ sha256.obj: botan-1.6/src/sha256.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/src/sha256.cpp' object='sha256.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sha256.obj `if test -f 'botan-1.6/src/sha256.cpp'; then $(CYGPATH_W) 'botan-1.6/src/sha256.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/src/sha256.cpp'; fi`
-
-sha_64.o: botan-1.6/src/sha_64.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sha_64.o -MD -MP -MF $(DEPDIR)/sha_64.Tpo -c -o sha_64.o `test -f 'botan-1.6/src/sha_64.cpp' || echo '$(srcdir)/'`botan-1.6/src/sha_64.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/sha_64.Tpo $(DEPDIR)/sha_64.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/src/sha_64.cpp' object='sha_64.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sha_64.o `test -f 'botan-1.6/src/sha_64.cpp' || echo '$(srcdir)/'`botan-1.6/src/sha_64.cpp
-
-sha_64.obj: botan-1.6/src/sha_64.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sha_64.obj -MD -MP -MF $(DEPDIR)/sha_64.Tpo -c -o sha_64.obj `if test -f 'botan-1.6/src/sha_64.cpp'; then $(CYGPATH_W) 'botan-1.6/src/sha_64.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/src/sha_64.cpp'; fi`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/sha_64.Tpo $(DEPDIR)/sha_64.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='botan-1.6/src/sha_64.cpp' object='sha_64.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sha_64.obj `if test -f 'botan-1.6/src/sha_64.cpp'; then $(CYGPATH_W) 'botan-1.6/src/sha_64.cpp'; else $(CYGPATH_W) '$(srcdir)/botan-1.6/src/sha_64.cpp'; fi`
 
 symkey.o: botan-1.6/src/symkey.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT symkey.o -MD -MP -MF $(DEPDIR)/symkey.Tpo -c -o symkey.o `test -f 'botan-1.6/src/symkey.cpp' || echo '$(srcdir)/'`botan-1.6/src/symkey.cpp

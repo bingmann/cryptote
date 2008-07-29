@@ -33,8 +33,8 @@ AC_ARG_ENABLE(optimize,
 		       [Build with full optimization @<:@default=no@:>@]),
         [ case "${enableval}" in
           yes)
-                CFLAGS="$CFLAGS -O3 -DNDEBUG";
-                CXXFLAGS="$CXXFLAGS -O3 -DNDEBUG";
+                CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -DNDEBUG";
+                CXXFLAGS="$CXXFLAGS -O3 -fomit-frame-pointer -DNDEBUG";
           ;;
           no) ;;
           *) AC_MSG_ERROR(bad value ${enableval} for --enable-optimize) ;;

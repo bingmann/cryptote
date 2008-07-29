@@ -47,7 +47,7 @@
 // #include "botan-1.6/include/rmd160.h"
 #include "botan-1.6/include/sha160.h"
 #include "botan-1.6/include/sha256.h"
-#include "botan-1.6/include/sha_64.h"
+// #include "botan-1.6/include/sha_64.h"
 // #include "botan-1.6/include/tiger.h"
 // #include "botan-1.6/include/whrlpool.h"
 // #include "botan-1.6/include/par_hash.h"
@@ -194,8 +194,8 @@ Default_Engine::find_hash(const std::string& algo_spec) const
    // HANDLE_TYPE_NO_ARGS("RIPEMD-160", RIPEMD_160);
    HANDLE_TYPE_NO_ARGS("SHA-160", SHA_160);
    HANDLE_TYPE_NO_ARGS("SHA-256", SHA_256);
-   HANDLE_TYPE_NO_ARGS("SHA-384", SHA_384);
-   HANDLE_TYPE_NO_ARGS("SHA-512", SHA_512);
+   // HANDLE_TYPE_NO_ARGS("SHA-384", SHA_384);
+   // HANDLE_TYPE_NO_ARGS("SHA-512", SHA_512);
    // HANDLE_TYPE_TWO_U32BIT("Tiger", Tiger, 24);
    // HANDLE_TYPE_NO_ARGS("Whirlpool", Whirlpool);
 

@@ -74,7 +74,6 @@ libenctain_a_SOURCES = \
 	botan-1.6/include/serpent.h \
 	botan-1.6/include/sha160.h \
 	botan-1.6/include/sha256.h \
-	botan-1.6/include/sha_64.h \
 	botan-1.6/include/stl_util.h \
 	botan-1.6/include/symkey.h \
 	botan-1.6/include/timers.h \
@@ -149,7 +148,6 @@ libenctain_a_SOURCES = \
 	botan-1.6/src/serpent.cpp \
 	botan-1.6/src/sha160.cpp \
 	botan-1.6/src/sha256.cpp \
-	botan-1.6/src/sha_64.cpp \
 	botan-1.6/src/symkey.cpp \
 	botan-1.6/src/timers.cpp \
 	botan-1.6/src/two_tab.cpp \
