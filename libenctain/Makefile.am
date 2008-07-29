@@ -190,6 +190,23 @@ libenctain_a_SOURCES += \
 endif
 
 EXTRA_DIST = \
+	format.html \
+	format.pdf \
 	botan-1.6/README \
 	botan-1.6/license.txt \
-	botan-1.6/modules/*/modinfo.txt
+	botan-1.6/modules/alloc_mmap/modinfo.txt \
+	botan-1.6/modules/comp_bzip2/modinfo.txt \
+	botan-1.6/modules/comp_zlib/modinfo.txt \
+	botan-1.6/modules/es_capi/modinfo.txt \
+	botan-1.6/modules/es_egd/modinfo.txt \
+	botan-1.6/modules/es_ftw/modinfo.txt \
+	botan-1.6/modules/es_unix/modinfo.txt \
+	botan-1.6/modules/es_win32/modinfo.txt \
+	botan-1.6/modules/ml_unix/modinfo.txt \
+	botan-1.6/modules/ml_win32/modinfo.txt \
+	botan-1.6/modules/mux_pthr/modinfo.txt \
+	botan-1.6/modules/mux_win32/modinfo.txt \
+	botan-1.6/modules/tm_hard/modinfo.txt \
+	botan-1.6/modules/tm_posix/modinfo.txt \
+	botan-1.6/modules/tm_unix/modinfo.txt \
+	botan-1.6/modules/tm_win32/modinfo.txt
