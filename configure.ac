@@ -1,7 +1,7 @@
 # $Id$ -*- mode: autoconf -*-
 
 AC_PREREQ(2.59)
-AC_INIT(cryptote, 0.0.0)
+AC_INIT(cryptote, 0.0.330)
 AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 
