@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 
 AM_INIT_AUTOMAKE
-# AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE
 
 # Check for Win32 system and set compilation flag.
 
