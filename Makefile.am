@@ -13,7 +13,6 @@ EXTRA_DIST = \
 
 strip:
 	strip -s src/cryptote/cryptote$(EXEEXT)
-	strip -s src/pwtutor/cryptote-pwtutor$(EXEEXT)
 	strip -s src/pwgen/cryptote-pwgen$(EXEEXT)
 
 if GCOV

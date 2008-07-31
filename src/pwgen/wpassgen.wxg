@@ -429,7 +429,7 @@
                                 <option>0</option>
                                 <object class="wxStaticText" name="label2" base="EditStaticText">
                                     <attribute>0</attribute>
-                                    <label>This is a stand-alone program containing only the\nrandom password generator found in CryptoTE\ntext editor and CryptoTE password tutor components.</label>
+                                    <label>This is a stand-alone program containing only the\nrandom password generator found in CryptoTE\ntext editor component.</label>
                                 </object>
                             </object>
                             <object class="sizeritem">

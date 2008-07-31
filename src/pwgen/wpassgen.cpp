@@ -932,7 +932,7 @@ void PGWAbout::do_layout()
     wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("CryptoTE\nPassword Generator"));
     label1->SetFont(wxFont(18, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
     sizer_3->Add(label1, 0, wxALL, 6);
-    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("This is a stand-alone program containing only the\nrandom password generator found in CryptoTE\ntext editor and CryptoTE password tutor components."));
+    wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("This is a stand-alone program containing only the\nrandom password generator found in CryptoTE\ntext editor component."));
     sizer_3->Add(label2, 0, wxALL, 6);
     wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("The random password generator can generate\npronounceable English passwords or general upper-\nand/or lowercase letter and digit combinations.\nIt also displays the theoretic strength in key bits of\nthe chosen generator settings."));
     sizer_3->Add(label3, 0, wxALL, 6);

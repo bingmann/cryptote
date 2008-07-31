@@ -628,7 +628,6 @@ uninstall-am:
 
 strip:
 	strip -s src/cryptote/cryptote$(EXEEXT)
-	strip -s src/pwtutor/cryptote-pwtutor$(EXEEXT)
 	strip -s src/pwgen/cryptote-pwgen$(EXEEXT)
 
 @GCOV_TRUE@clean-local:
