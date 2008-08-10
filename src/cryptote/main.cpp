@@ -630,7 +630,7 @@ public:
 #ifdef __WXMSW__
 
 // This implements WinMain() or something. Always starts in graphics mode.
-IMPLEMENT_APP
+IMPLEMENT_APP(App)
 
 #else
 
