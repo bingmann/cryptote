@@ -325,6 +325,9 @@ public:
 
     // *** Container Info Operations ***
 
+    /// Return whether the subfiles or properties were changed since the last load/save.
+    bool		GetModified() const;
+
     /// Return number of bytes written to data sink during last Save()
     /// operation.
     size_t		GetLastWritten() const;

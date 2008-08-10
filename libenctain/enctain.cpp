@@ -201,6 +201,9 @@ public:
 
     // *** Container Info Operations ***
 
+    /// Return whether the subfiles or properties were changed since the last load/save.
+    bool		GetModified() const;
+
     /// Return number of bytes written to data sink during last Save()
     /// operation.
     size_t		GetLastWritten() const;
@@ -942,6 +945,8 @@ void ContainerImpl::Save(DataOutput& dataout_)
 
 	written += 4;
     }
+
+    modified = false;
 }
 
 void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
@@ -972,6 +977,8 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
     if (header1.version_minor != 0) {
 	throw(RuntimeError(ETE_LOAD_HEADER1_VERSION));
     }
+
+    modified = true; // set even when loading failed.
 
     unsigned int readbyte = sizeof(Header1);
 
@@ -1259,9 +1266,16 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	if (crc32file != *(uint32_t*)crc32val.begin())
 	    throw(RuntimeError(ETE_LOAD_CHECKSUM));
     }
+
+    modified = false;
 }
 
 // *** Container Info Operations ***
+
+bool ContainerImpl::GetModified() const
+{
+    return modified;
+}
 
 size_t ContainerImpl::GetLastWritten() const
 {
@@ -1334,6 +1348,8 @@ unsigned int ContainerImpl::AddKeySlot(const std::string& key)
     
     keyslots.push_back(newslot);
 
+    modified = true;
+
     return keyslots.size() - 1;
 }
 
@@ -1366,6 +1382,8 @@ void ContainerImpl::ChangeKeySlot(unsigned int slot, const std::string& key)
     AssertException(ciphertext.size() == sizeof(keyslot.emasterkey));
 
     memcpy(keyslot.emasterkey, ciphertext.begin(), sizeof(keyslot.emasterkey));
+
+    modified = true;
 }
 
 void ContainerImpl::DeleteKeySlot(unsigned int slot)
@@ -1381,6 +1399,8 @@ void ContainerImpl::DeleteKeySlot(unsigned int slot)
 	--usedkeyslot;
 
     keyslots.erase(keyslots.begin() + slot);
+
+    modified = true;
 }
 
 int ContainerImpl::GetUsedKeySlot() const
@@ -1393,6 +1413,8 @@ int ContainerImpl::GetUsedKeySlot() const
 void ContainerImpl::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
 {
     unc_properties[key] = value;
+
+    modified = true;
 }
 
 const std::string& ContainerImpl::GetGlobalUnencryptedProperty(const std::string& key) const
@@ -1410,7 +1432,7 @@ const std::string& ContainerImpl::GetGlobalUnencryptedProperty(const std::string
 
 bool ContainerImpl::DeleteGlobalUnencryptedProperty(const std::string& key)
 {
-    return (unc_properties.erase(key) > 0);
+    return (unc_properties.erase(key) > 0) && (modified = true);
 }
 
 bool ContainerImpl::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
@@ -1432,6 +1454,8 @@ bool ContainerImpl::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, st
 void ContainerImpl::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
 {
     enc_properties[key] = value;
+
+    modified = true;
 }
 
 const std::string& ContainerImpl::GetGlobalEncryptedProperty(const std::string& key) const
@@ -1449,7 +1473,7 @@ const std::string& ContainerImpl::GetGlobalEncryptedProperty(const std::string& 
 
 bool ContainerImpl::DeleteGlobalEncryptedProperty(const std::string& key)
 {
-    return (enc_properties.erase(key) > 0);
+    return (enc_properties.erase(key) > 0) && (modified = true);
 }
 
 bool ContainerImpl::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
@@ -1475,6 +1499,8 @@ unsigned int ContainerImpl::CountSubFile() const
 
 unsigned int ContainerImpl::AppendSubFile()
 {
+    modified = true;
+
     unsigned int si = subfiles.size();
     subfiles.push_back( SubFile() );
     return si;
@@ -1482,6 +1508,8 @@ unsigned int ContainerImpl::AppendSubFile()
 
 unsigned int ContainerImpl::InsertSubFile(unsigned int subfileindex)
 {
+    modified = true;
+
     if (subfileindex < subfiles.size())
     {
 	subfiles.insert(subfiles.begin() + subfileindex, SubFile());
@@ -1498,6 +1526,8 @@ bool ContainerImpl::DeleteSubFile(unsigned int subfileindex)
     if (subfileindex < subfiles.size())
     {
 	subfiles.erase(subfiles.begin() + subfileindex);
+
+	modified = true;
 	return true;
     }
     else
@@ -1515,6 +1545,8 @@ void ContainerImpl::SetSubFileProperty(unsigned int subfileindex, const std::str
 
     SubFile& subfile = subfiles[subfileindex];
     subfile.properties[ key ] = value;
+
+    modified = true;
 }
 
 const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
@@ -1538,6 +1570,8 @@ bool ContainerImpl::DeleteSubFileProperty(unsigned int subfileindex, const std::
 {
     if (subfileindex >= subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
+
+    modified = true;
 
     SubFile& subfile = subfiles[subfileindex];
     return (subfile.properties.erase(key) > 0);
@@ -1762,6 +1796,8 @@ void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, 
     subfile.crc32 = *(const uint32_t*)crc32.begin();
 
     subfile.storagesize = subfile.data.size();
+
+    modified = true;
 }
 
 struct DataOutputString : public DataOutput
@@ -1972,6 +2008,11 @@ void Container::Load(DataInput& datain, const std::string& userkey)
 void Container::Clear()
 {
     return pimpl->Clear();
+}
+
+bool Container::GetModified() const
+{
+    return pimpl->GetModified();
 }
 
 size_t Container::GetLastWritten() const
