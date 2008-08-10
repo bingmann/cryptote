@@ -1,5 +1,5 @@
 ." $Id$
-.TH cryptote 1  "April 18, 2008" "version 0.1" "USER COMMANDS"
+.TH cryptote 1  "April 18, 2008" "version 0.0.0" "USER COMMANDS"
 .SH NAME
 cryptote \- Text editor with built-in strong cryptographic functions.
 .SH SYNOPSIS
@@ -8,7 +8,7 @@ cryptote \- Text editor with built-in strong cryptographic functions.
 Launch graphical text editor interface.
 .TP 4
 \fBcryptote\fR \fI[OPTIONS]\fR \fI<OPERATION>\fR \fI<container>\fR
-Console-based editing operations on a container file.
+Console-based operations on a container file.
 .TP 4
 \fBcryptote\fR \fI[OPTIONS]\fR -pwgen
 Launch graphical password generator dialog.
@@ -47,6 +47,9 @@ the environment variable $EDITOR, which is set by the distribution. Note that
 the contents of the subfile is first written to a temporary file. Other
 applications can also read this temporary file while it is edited. Use the
 built-in graphical editor for higher security.
+.TP 4
+\fB\-s\fR, \fB\--shell\fR
+Start a simple command line shell to list / edit subfiles in loaded container.
 .SH EXAMPLES
 .TP 4
 Launch wxWidgets text editor interface:
@@ -54,6 +57,9 @@ Launch wxWidgets text editor interface:
 .TP 4
 Open the container \fItest.ect\fR with password \fI"abcde"\fR and edit the second subfile:
 \fBcryptote\fR -p "abcde" -e 2 test.ect
+.TP 4
+Launch shell for container \fItest.ect\fR:
+\fBcryptote\fR -s test.ect
 .SH AUTHOR
 Timo Bingmann (tb (at) idlebox <dot> net)
 .SH COPYRIGHT
