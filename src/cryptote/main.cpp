@@ -66,6 +66,9 @@ public:
 class App : public wxApp
 {
 private:
+    /// Flag if the program is in console mode
+    bool		consolemode;
+
     /// CryptoTE main dialog
     class WCryptoTE*	wcryptote;
 
@@ -86,11 +89,22 @@ private:
 
 public:
 
-    App()
-	: wxApp(), wcryptote(NULL),
+    App(bool _consolemode = false)
+	: wxApp(),
+	  consolemode(_consolemode),
+	  wcryptote(NULL),
 	  run_pwgen(false),
 	  locale(NULL)
     {
+    }
+
+    /// Virtual override function to switch between console and gui mode
+    virtual bool Initialize(int &argc, wxChar **argv)
+    {
+	if (consolemode)
+	    return wxAppBase::Initialize(argc, argv);
+	else
+	    return wxApp::Initialize(argc, argv);
     }
 
     /// This function is called during application start-up.
@@ -404,6 +418,13 @@ public:
 	    }
 	    
 	    return false;
+	} // parser.Found(_T("l")) || parser.Found(_T("d"))  || parser.Found(_T("e")) )
+	else if (consolemode)
+	{
+	    wxPuts(_("Graphical Interface not available: check DISPLAY environment variable."));
+	  
+	    parser.Usage();
+	    return false;
 	}
 
 	return true;
@@ -602,5 +623,43 @@ public:
     }
 };
 
-// This implements main(), WinMain() or whatever
-IMPLEMENT_APP(App)
+// This code starts up the application. Implements main() or WinMain(). Special
+// code here to allow the program to function as a console program on Unix
+// without X11 DISPLAY environment set.
+
+#ifdef __WXMSW__
+
+// This implements WinMain() or something. Always starts in graphics mode.
+IMPLEMENT_APP
+
+#else
+
+wxAppConsole *wxCreateAppGui()
+{
+    wxAppConsole::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "CryptoTE");
+    return new App;
+}
+
+wxAppConsole *wxCreateAppConsole()
+{
+    wxAppConsole::CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "CryptoTE");
+    return new App(true);
+}
+
+// Implement main() ourselves: check for DISPLAY and fall back to console mode
+// when it is missing.
+
+int main(int argc, char **argv)
+{
+    wxAppInitializerFunction createfunc = wxCreateAppGui;
+
+    if (!getenv("DISPLAY"))
+    {
+	createfunc = wxCreateAppConsole;
+    }
+
+    wxAppInitializer wxTheAppInitializer(createfunc);
+    return wxEntry(argc, argv);
+}
+
+#endif
