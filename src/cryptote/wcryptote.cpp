@@ -1289,7 +1289,7 @@ void WCryptoTE::WebUpdateCheck()
     }
     else if (cmp < 0)
     {
-	UpdateStatusBar(_("WebUpdateCheck: Your version is never than the publicly available one."));
+	UpdateStatusBar(_("WebUpdateCheck: Your version is newer than the publicly available one."));
 	webupdatecheck_running = false;
 	return;
     }

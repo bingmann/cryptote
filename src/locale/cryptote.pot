@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-31 11:01+0200\n"
+"POT-Creation-Date: 2008-08-10 16:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -622,7 +622,7 @@ msgid "WebUpdateCheck: No new version available."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:1292
-msgid "WebUpdateCheck: Your version is never than the publicly available one."
+msgid "WebUpdateCheck: Your version is newer than the publicly available one."
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:1298
