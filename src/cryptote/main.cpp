@@ -2,6 +2,7 @@
 
 #include <wx/wx.h>
 #include <wx/cmdline.h>
+#include <wx/tokenzr.h>
 #include <memory>
 
 #include "wcryptote.h"
@@ -31,17 +32,10 @@ static MyLocaleMemoryCatalog wxstd_catalogs[] =
 class DataOutputStdout : public Enctain::DataOutput
 {
 public:
-    wxFileOutputStream	fstdout;
-
-    DataOutputStdout()
-	: fstdout(wxFile::fd_stdout)
-    {
-    }
-
     /// Virtual callback function.
     virtual bool Output(const void* data, size_t datalen)
     {
-	return fstdout.Write(data, datalen).IsOk();
+	return ( wxWrite(wxFile::fd_stdout, data, datalen) == (int)datalen );
     }
 };
 
@@ -198,6 +192,10 @@ public:
 			 _("Edit subfile <num> using the default (console) editor."),
 			 wxCMD_LINE_VAL_NUMBER, 0);
 
+        parser.AddSwitch(_T("s"), _T("shell"),
+			 _("Start a simple shell to list and edit subfiles in container."),
+			 0);
+
 	parser.AddParam(_("container-file"),
 			wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 
@@ -261,10 +259,10 @@ public:
 	    return false;
 	}
 
-	if ( parser.Found(_T("l")) || parser.Found(_T("d"))  || parser.Found(_T("e")) )
+	if ( parser.Found(_T("l")) || parser.Found(_T("d")) || parser.Found(_T("e")) || parser.Found(_T("s")) )
 	{
 	    if (cmdlinefile.IsEmpty()) {
-		wxPuts(_("Operation --decrypt, --edit oder --list requires a container file on the command line."));
+		wxPuts(_("Operation --decrypt, --edit, --list or --shell requires a container file on the command line."));
 		return false;
 	    }
 
@@ -347,7 +345,8 @@ public:
 			return false;
 		    }
 
-		    try {
+		    try
+		    {
 			fh->Seek(0, wxFromStart);
 			wxFileInputStream stream(*fh.get());
 			if (!stream.IsOk()) return false;
@@ -377,47 +376,41 @@ public:
 	    long subfileindex;
 	    if (parser.Found(_T("l")))
 	    {
-		wxPrintf(_("Container has %d subfiles:\n"), container->CountSubFile());
-
-		for(unsigned int sfid = 0; sfid < container->CountSubFile(); ++ sfid)
-		{
-		    wxPrintf(_("  %d: %s (%d bytes)\n"),
-			     sfid,
-			     strSTL2WX(container->GetSubFileProperty(sfid, "Name")).c_str(),
-			     container->GetSubFileSize(sfid)
-			);
-		}
-
-		return false;
+		OnCmdLineList(container.get());
 	    }
 	    else if (parser.Found(_T("d"), &subfileindex))
 	    {
 		if (subfileindex >= 0 && (unsigned int)subfileindex < container->CountSubFile())
 		{
-		    try {
-			DataOutputStdout dataout;
-			container->GetSubFileData(subfileindex, dataout);
-		    }
-		    catch (Enctain::Exception& e)
-		    {
-			wxPuts(WCryptoTE::EnctainExceptionString(e));
-			return false;
-		    }
+		    OnCmdLineDecryptCat(container.get(), subfileindex);
 		}
 		else
 		{
 		    wxPuts(_("Error during --decrypt: Invalid subfile index."));
-		    return false;
 		}
 	    }
 	    else if (parser.Found(_T("e"), &subfileindex))
 	    {
-		OnCmdLineEdit(container.get(), subfileindex, cmdlinefile);
+		if (subfileindex >= 0 && (unsigned int)subfileindex < container->CountSubFile())
+		{
+		    bool ed = OnCmdLineEdit(container.get(), subfileindex);
 
-		return false;
+		    if (ed) {
+			OnCmdLineSaveContainer(container.get());
+		    }
+		}
+		else
+		{
+		    wxPuts(_("Error during --edit: Invalid subfile index."));
+		}
+	    }
+	    else if (parser.Found(_T("s")))
+	    {
+		OnCmdLineShell(container.get());
 	    }
 	    
 	    return false;
+
 	} // parser.Found(_T("l")) || parser.Found(_T("d"))  || parser.Found(_T("e")) )
 	else if (consolemode)
 	{
@@ -430,12 +423,72 @@ public:
 	return true;
     }
 
-    void	OnCmdLineEdit(Enctain::Container *container, int subfileindex, const wxString& cmdlinefile)
+    void	OnCmdLineList(Enctain::Container *container)
+    {
+	wxPrintf(_("Container has %d subfiles:\n"), container->CountSubFile());
+
+	for(unsigned int sfid = 0; sfid < container->CountSubFile(); ++ sfid)
+	{
+	    wxPrintf(_("  %d: %s (%d bytes)\n"),
+		     sfid,
+		     strSTL2WX(container->GetSubFileProperty(sfid, "Name")).c_str(),
+		     container->GetSubFileSize(sfid)
+		);
+	}
+    }
+
+    void	OnCmdLineDecryptCat(Enctain::Container *container, int subfileindex)
     {
 	if (subfileindex < 0 || (unsigned int)subfileindex >= container->CountSubFile())
 	{
-	    wxPuts(_("Error during --edit: Invalid subfile index."));
+	    wxPuts(_("Error during cat: Invalid subfile index."));
 	    return;
+	}
+
+	try
+	{
+	    DataOutputStdout dataout;
+	    container->GetSubFileData(subfileindex, dataout);
+	}
+	catch (Enctain::Exception& e)
+	{
+	    wxPuts(WCryptoTE::EnctainExceptionString(e));
+	}
+    }
+
+    void	OnCmdLineSaveContainer(Enctain::Container *container)
+    {
+	wxPuts(_("Saving container."));
+
+	wxFile fh;
+
+	if (!fh.Create(cmdlinefile.c_str(), true, wxS_DEFAULT))
+	    return;
+
+	try
+	{
+	    wxFileOutputStream stream(fh);
+	    if (!stream.IsOk()) return;
+
+	    container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
+
+	    DataOutputStream dataout(stream);
+	    container->Save(dataout);
+
+	    wxPuts(_("OK"));
+	}
+	catch (Enctain::Exception& e)
+	{
+	    wxPuts(WCryptoTE::EnctainExceptionString(e));
+	}
+    }
+
+    bool	OnCmdLineEdit(Enctain::Container *container, int subfileindex)
+    {
+	if (subfileindex < 0 || (unsigned int)subfileindex >= container->CountSubFile())
+	{
+	    wxPuts(_("Error during edit: Invalid subfile index."));
+	    return false;
 	}
 
 	// Write data out into a temporary file
@@ -443,18 +496,16 @@ public:
 	wxString filename = strSTL2WX(container->GetSubFileProperty(subfileindex, "Name"));
 	wxString tempname = wxString::Format(_T("temp-%d-%s"), (int)wxGetProcessId(), filename.c_str());
 
-	{
-	    try {
-		DataOutputTempFile dataout(tempname);
-		if (!dataout.filestream.IsOk()) return;
+	try {
+	    DataOutputTempFile dataout(tempname);
+	    if (!dataout.filestream.IsOk()) return false;
 
-		container->GetSubFileData(subfileindex, dataout);
-	    }
-	    catch (Enctain::Exception& e)
-	    {
-		wxPuts(WCryptoTE::EnctainExceptionString(e));
-		return;
-	    }
+	    container->GetSubFileData(subfileindex, dataout);
+	}
+	catch (Enctain::Exception& e)
+	{
+	    wxPuts(WCryptoTE::EnctainExceptionString(e));
+	    return false;
 	}
 
 	// Start editor
@@ -479,7 +530,7 @@ public:
 		wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 	    }
 
-	    return;
+	    return false;
 	}
 	else if (retcode != 0)
 	{
@@ -489,7 +540,7 @@ public:
 		wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 	    }
 
-	    return;
+	    return false;
 	}
 
 	time_t after_modtime = wxFileModificationTime(tempname);
@@ -504,7 +555,7 @@ public:
 		wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 	    }
 
-	    return;
+	    return false;
 	}
 
 	// Read file back from disk
@@ -516,7 +567,7 @@ public:
 		    wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 		}
 
-		return;
+		return false;
 	    }
 
 	    size_t fsize = after_size.GetLo();
@@ -530,12 +581,13 @@ public:
 		    wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 		}
 
-		return;
+		return false;
 	    }
 
 	    wxPrintf(_("Saving changed data of subfile %d into container: %+d bytes\n"), subfileindex, (after_size - before_size).GetLo());
 
-	    try {
+	    try
+	    {
 		container->SetSubFileData(subfileindex, fdata.GetData(), fsize);
 	    }
 	    catch (Enctain::Exception& e)
@@ -546,7 +598,7 @@ public:
 		    wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 		}
 
-		return;
+		return false;
 	    }
 	}
 	
@@ -554,32 +606,111 @@ public:
 	    wxPrintf(_("Error removing temporary file %s. It contains your sensitive data!\n"), tempname.c_str());
 	}
 
-	// Write container to disk
+	return true;
+    }
+
+    void	OnCmdLineShell(Enctain::Container *container)
+    {
+	wxPrintf(_("Loaded container with %d subfiles.\n"), container->CountSubFile());
+	wxPrintf(_("Launching shell: enter help if needed.\n"));
+
+	while(1)
 	{
-	    wxPuts(_("Saving container."));
+	    wxPrintf(_T("cryptote> "));
 
-	    wxFile fh;
+	    wxChar linebuff[260];
+	    wxFgets(linebuff, sizeof(linebuff), stdin);
 
-	    if (!fh.Create(cmdlinefile.c_str(), true, wxS_DEFAULT))
-		return;
+	    wxString line(linebuff);
+	    line.Truncate( line.Length() - 1 );
 
-	    try {
-		wxFileOutputStream stream(fh);
-		if (!stream.IsOk()) return;
+	    wxStringTokenizer linetokens(line, _T(" "));
 
-		container->SetGlobalEncryptedProperty("MTime", strTimeStampNow());
+	    wxString token = linetokens.GetNextToken();
 
-		DataOutputStream dataout(stream);
-		container->Save(dataout);
-	    }
-	    catch (Enctain::Exception& e)
+	    if (token == _T("h") || token == _T("?") || token == _T("help"))
 	    {
-		wxPuts(WCryptoTE::EnctainExceptionString(e));
-		return;
+		wxPrintf(_("Shell commands:\n"));
+		wxPrintf(_("    help        Show this shell command help.\n"));
+		wxPrintf(_("    quit        Exit shell and possibly save changes to container.\n"));
+		wxPrintf(_("    save        Save changes to container.\n"));
+		wxPrintf(_("    list        List subfiles in opened container.\n"));
+		wxPrintf(_("    cat <num>   Dump subfile number onto the console.\n"));
+		wxPrintf(_("    edit <num>  Edit subfile number using standard editor.\n"));
+	    }
+	    else if (token == _T("quit") || token == _T("q") || token == _T("exit"))
+	    {
+		break;
+	    }
+	    else if (token == _T("save") || token == _T("s"))
+	    {
+		OnCmdLineSaveContainer(container);
+	    }
+	    else if (token == _T("list") || token == _T("l"))
+	    {
+		OnCmdLineList(container);
+	    }
+	    else if (token == _T("cat") || token == _T("c"))
+	    {
+		wxString sfstr = linetokens.GetNextToken();
+		unsigned long subfileindex;
+
+		if (!sfstr.ToULong(&subfileindex))
+		{
+		    wxPrintf(_("Error dumping subfile: command requires a subfile index.\n"));
+		}
+		else
+		{
+		    OnCmdLineDecryptCat(container, subfileindex);
+		    wxPrintf(_T("\n"));
+		}
+	    }
+	    else if (token == _T("edit") || token == _T("e"))
+	    {
+		wxString sfstr = linetokens.GetNextToken();
+		unsigned long subfileindex;
+
+		if (!sfstr.ToULong(&subfileindex))
+		{
+		    wxPrintf(_("Error editing subfile: command requires a subfile index.\n"));
+		}
+		else
+		{
+		    OnCmdLineEdit(container, subfileindex);
+		    wxPrintf(_T("\n"));
+		}
+	    }
+	    else
+	    {
+		wxPrintf(_("Unrecognized command '%s': see 'help'.\n"), token.c_str());
 	    }
 	}
 
-	wxPuts(_("OK"));
+	if (container->GetModified())
+	{
+	    while(1)
+	    {
+		wxPrintf(_("Container was modified. Save? (y/n) "));
+
+		wxChar linebuff[260];
+		wxFgets(linebuff, sizeof(linebuff), stdin);
+
+		wxString line(linebuff);
+		line.Truncate( line.Length() - 1 );
+		
+		if (line == _("y")) {
+		    OnCmdLineSaveContainer(container);
+		    break;
+		}
+		else if (line == _("n")) {
+		    break;
+		}
+	    }
+	}
+	else
+	{
+	    wxPrintf(_("Container was not modified.\n"));
+	}
     }
 
     virtual int OnExit()

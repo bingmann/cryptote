@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-10 18:14+0200\n"
+"POT-Creation-Date: 2008-08-10 22:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,148 +41,226 @@ msgstr ""
 msgid "Gnome with small toolbar icons"
 msgstr ""
 
-#: ../cryptote/main.cpp:174
+#: ../cryptote/main.cpp:168
 msgid "Display help for the command line parameters."
 msgstr ""
 
-#: ../cryptote/main.cpp:178
+#: ../cryptote/main.cpp:172
 msgid "Set language for messages. Example: de or de_DE."
 msgstr ""
 
-#: ../cryptote/main.cpp:182
+#: ../cryptote/main.cpp:176
 msgid "Start stand-alone password generator dialog instead of the editor."
 msgstr ""
 
-#: ../cryptote/main.cpp:186
+#: ../cryptote/main.cpp:180
 msgid "Use the given password to decrypt the initially loaded container."
 msgstr ""
 
-#: ../cryptote/main.cpp:190
+#: ../cryptote/main.cpp:184
 msgid "List subfiles in container."
 msgstr ""
 
-#: ../cryptote/main.cpp:194
+#: ../cryptote/main.cpp:188
 msgid "Decrypt subfile <num> and output it to stdout."
 msgstr ""
 
-#: ../cryptote/main.cpp:198
+#: ../cryptote/main.cpp:192
 msgid "Edit subfile <num> using the default (console) editor."
 msgstr ""
 
-#: ../cryptote/main.cpp:201
+#: ../cryptote/main.cpp:196
+msgid "Start a simple shell to list and edit subfiles in container."
+msgstr ""
+
+#: ../cryptote/main.cpp:199
 msgid "container-file"
 msgstr ""
 
-#: ../cryptote/main.cpp:222 ../pwgen/main.cpp:104
+#: ../cryptote/main.cpp:220 ../pwgen/main.cpp:104
 msgid "Invalid language identifier specified with --lang."
 msgstr ""
 
-#: ../cryptote/main.cpp:230 ../cryptote/main.cpp:237 ../cryptote/main.cpp:244
+#: ../cryptote/main.cpp:228 ../cryptote/main.cpp:235 ../cryptote/main.cpp:242
 #: ../pwgen/main.cpp:112 ../pwgen/main.cpp:119 ../pwgen/main.cpp:126
 msgid "This language is not supported by the program."
 msgstr ""
 
-#: ../cryptote/main.cpp:260
+#: ../cryptote/main.cpp:258
 msgid "The parameter --decrypt, --edit and --list cannot be combined."
 msgstr ""
 
-#: ../cryptote/main.cpp:267
+#: ../cryptote/main.cpp:265
 msgid ""
-"Operation --decrypt, --edit oder --list requires a container file on the "
-"command line."
+"Operation --decrypt, --edit, --list or --shell requires a container file on "
+"the command line."
 msgstr ""
 
-#: ../cryptote/main.cpp:275
+#: ../cryptote/main.cpp:273
 msgid "Cannot --edit subfile: $EDITOR environment variable not set."
 msgstr ""
 
-#: ../cryptote/main.cpp:313
+#: ../cryptote/main.cpp:311
 msgid "Cannot get terminal attributes (tcgetattr)"
 msgstr ""
 
-#: ../cryptote/main.cpp:321
+#: ../cryptote/main.cpp:319
 msgid "Cannot set terminal attributes (tcsetattr)"
 msgstr ""
 
-#: ../cryptote/main.cpp:326
+#: ../cryptote/main.cpp:324
 msgid "Container password: "
 msgstr ""
 
-#: ../cryptote/main.cpp:338
+#: ../cryptote/main.cpp:336
 msgid "Cannot restore terminal attributes (tcsetattr)"
 msgstr ""
 
-#: ../cryptote/main.cpp:346
+#: ../cryptote/main.cpp:344
 msgid "Aborted.\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:362
+#: ../cryptote/main.cpp:361
 msgid ""
 "Error loading container: cannot decrypt header. Possibly wrong password."
 msgstr ""
 
-#: ../cryptote/main.cpp:363
+#: ../cryptote/main.cpp:362
 msgid "Try again? Abort with an empty line."
 msgstr ""
 
-#: ../cryptote/main.cpp:380
+#: ../cryptote/main.cpp:389
+msgid "Error during --decrypt: Invalid subfile index."
+msgstr ""
+
+#: ../cryptote/main.cpp:404
+msgid "Error during --edit: Invalid subfile index."
+msgstr ""
+
+#: ../cryptote/main.cpp:417
+msgid "Graphical Interface not available: check DISPLAY environment variable."
+msgstr ""
+
+#: ../cryptote/main.cpp:428
 #, c-format
 msgid "Container has %d subfiles:\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:384
+#: ../cryptote/main.cpp:432
 #, c-format
 msgid "  %d: %s (%d bytes)\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:409
-msgid "Error during --decrypt: Invalid subfile index."
+#: ../cryptote/main.cpp:444
+msgid "Error during cat: Invalid subfile index."
 msgstr ""
 
-#: ../cryptote/main.cpp:424
-msgid "Graphical Interface not available: check DISPLAY environment variable."
+#: ../cryptote/main.cpp:461
+msgid "Saving container."
 msgstr ""
 
-#: ../cryptote/main.cpp:437
-msgid "Error during --edit: Invalid subfile index."
+#: ../cryptote/main.cpp:478 ../cryptote/wpass.cpp:617
+#: ../cryptote/wpass.cpp:740
+msgid "OK"
 msgstr ""
 
-#: ../cryptote/main.cpp:476
+#: ../cryptote/main.cpp:490
+msgid "Error during edit: Invalid subfile index."
+msgstr ""
+
+#: ../cryptote/main.cpp:527
 msgid "Could not launch console editor, check $EDITOR environment variable."
 msgstr ""
 
-#: ../cryptote/main.cpp:479 ../cryptote/main.cpp:489 ../cryptote/main.cpp:504
-#: ../cryptote/main.cpp:516 ../cryptote/main.cpp:530 ../cryptote/main.cpp:546
-#: ../cryptote/main.cpp:554
+#: ../cryptote/main.cpp:530 ../cryptote/main.cpp:540 ../cryptote/main.cpp:555
+#: ../cryptote/main.cpp:567 ../cryptote/main.cpp:581 ../cryptote/main.cpp:598
+#: ../cryptote/main.cpp:606
 #, c-format
 msgid "Error removing temporary file %s. It contains your sensitive data!\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:486
+#: ../cryptote/main.cpp:537
 #, c-format
 msgid "Editor returned error code %d. Possible problem with editor.\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:501
+#: ../cryptote/main.cpp:552
 msgid "File unchanged. Nothing to save."
 msgstr ""
 
-#: ../cryptote/main.cpp:527
+#: ../cryptote/main.cpp:578
 msgid "Error reading back temporary file data. Changes discarded."
 msgstr ""
 
-#: ../cryptote/main.cpp:536
+#: ../cryptote/main.cpp:587
 #, c-format
 msgid "Saving changed data of subfile %d into container: %+d bytes\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:559
-msgid "Saving container."
+#: ../cryptote/main.cpp:614
+#, c-format
+msgid "Loaded container with %d subfiles.\n"
 msgstr ""
 
-#: ../cryptote/main.cpp:582 ../cryptote/wpass.cpp:617
-#: ../cryptote/wpass.cpp:740
-msgid "OK"
+#: ../cryptote/main.cpp:615
+msgid "Launching shell: enter help if needed.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:633
+msgid "Shell commands:\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:634
+msgid "    help        Show this shell command help.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:635
+msgid "    quit        Exit shell and possibly save changes to container.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:636
+msgid "    save        Save changes to container.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:637
+msgid "    list        List subfiles in opened container.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:638
+msgid "    cat <num>   Dump subfile number onto the console.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:639
+msgid "    edit <num>  Edit subfile number using standard editor.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:660
+msgid "Error dumping subfile: command requires a subfile index.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:675
+msgid "Error editing subfile: command requires a subfile index.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:685
+#, c-format
+msgid "Unrecognized command '%s': see 'help'.\n"
+msgstr ""
+
+#: ../cryptote/main.cpp:693
+msgid "Container was modified. Save? (y/n) "
+msgstr ""
+
+#: ../cryptote/main.cpp:701
+msgid "y"
+msgstr ""
+
+#: ../cryptote/main.cpp:705
+msgid "n"
+msgstr ""
+
+#: ../cryptote/main.cpp:712
+msgid "Container was not modified.\n"
 msgstr ""
 
 #: ../cryptote/wbinpage.cpp:81 ../cryptote/wcryptote.cpp:520
