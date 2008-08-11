@@ -88,12 +88,6 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     auinotebook = new wxAuiNotebook(this, myID_AUINOTEBOOK, wxDefaultPosition, wxDefaultSize,
 				    wxAUI_NB_DEFAULT_STYLE | wxNO_BORDER);
 
-    quickfindbar = new WQuickFindBar(this);
-
-    quickgotobar = new WQuickGotoBar(this);
-
-    findreplacedlg = NULL;
-
     filelistpane = new WFileList(this);
 
     wpassgen = new WPassGen(this, false);
@@ -115,34 +109,17 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
 		   Name(wxT("notebook")).Caption(_("Notebook")).
 		   CenterPane().PaneBorder(false));
 
-    auimgr.AddPane(quickfindbar, wxAuiPaneInfo().Hide().
-		   Name(wxT("quickfindbar")).Caption(_("Quick-Find")).
-		   CaptionVisible(false).PaneBorder(false).Row(10).
-		   Bottom().Gripper().
-#if wxCHECK_VERSION(2,8,7)
-		   DockFixed().
-#else
-		   Dock().
-#endif
-		   LeftDockable(false).RightDockable(false));
-
-    auimgr.AddPane(quickgotobar, wxAuiPaneInfo().Hide().
-		   Name(wxT("quickgotobar")).Caption(_("Quick-Goto")).
-		   CaptionVisible(false).PaneBorder(false).Row(10).
-		   Bottom().Gripper().
-#if wxCHECK_VERSION(2,8,7)
-		   DockFixed().
-#else
-		   Dock().
-#endif
-		   LeftDockable(false).RightDockable(false));
-
     auimgr.AddPane(filelistpane, wxAuiPaneInfo().
 		   Name(wxT("filelist")).Caption(_("Container")).
 		   Bottom());
 
     // "commit" all changes made to wxAuiManager
     auimgr.Update();
+
+    quickfindbar = NULL;
+    quickgotobar = NULL;
+
+    findreplacedlg = NULL;
 
     quickfindbar_visible = false;
     quickgotobar_visible = false;
@@ -687,7 +664,7 @@ void WCryptoTE::ShowFilelistPane(bool on)
 void WCryptoTE::HideQuickBars()
 {
     // Hide Quick-Find Bar
-    if (quickfindbar_visible) {
+    if (quickfindbar_visible && quickfindbar) {
 	auimgr.GetPane(quickfindbar).Hide();
 	auimgr.Update();
 
@@ -695,7 +672,7 @@ void WCryptoTE::HideQuickBars()
     }
 
     // Hide Quick-Goto Bar
-    if (quickgotobar_visible) {
+    if (quickgotobar_visible && quickgotobar) {
 	auimgr.GetPane(quickgotobar).Hide();
 	auimgr.Update();
 
@@ -1965,8 +1942,8 @@ void WCryptoTE::OnMenuContainerPreferences(wxCommandEvent& WXUNUSED(event))
 
 	    // QuickFind and Goto Panes
 
-	    quickfindbar->set_bitmaps();
-	    quickgotobar->set_bitmaps();
+	    if (quickfindbar) quickfindbar->set_bitmaps();
+	    if (quickgotobar) quickgotobar->set_bitmaps();
 
 	    filelistpane->BuildImageList();
 	}
@@ -2135,10 +2112,28 @@ void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
     }
     else
     {
+	if (!quickfindbar)
+	{
+	    // create Quick-Find bar
+
+	    quickfindbar = new WQuickFindBar(this);
+
+	    auimgr.AddPane(quickfindbar, wxAuiPaneInfo().Hide().
+			   Name(wxT("quickfindbar")).Caption(_("Quick-Find")).
+			   CaptionVisible(false).PaneBorder(false).Row(10).
+			   Bottom().Gripper().
+#if wxCHECK_VERSION(2,8,7)
+			   DockFixed().
+#else
+			   Dock().
+#endif
+			   LeftDockable(false).RightDockable(false));
+	}
+
 	// make Quick-Find bar visible
 
 	auimgr.GetPane(quickfindbar).Show();
-	auimgr.GetPane(quickgotobar).Hide();
+	if (quickgotobar) auimgr.GetPane(quickgotobar).Hide();
 	auimgr.Update();
 
 	quickgotobar_visible = false;
@@ -2153,21 +2148,41 @@ void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
 {
-    if (!quickgotobar_visible)
+    if (quickgotobar_visible)
     {
+	quickgotobar->textctrlGoto->SetFocus();
+    }
+    else
+    {
+	if (!quickgotobar)
+	{
+	    // create Quick-Goto bar
+
+	    quickgotobar = new WQuickGotoBar(this);
+
+	    auimgr.AddPane(quickgotobar, wxAuiPaneInfo().Hide().
+			   Name(wxT("quickgotobar")).Caption(_("Quick-Goto")).
+			   CaptionVisible(false).PaneBorder(false).Row(10).
+			   Bottom().Gripper().
+#if wxCHECK_VERSION(2,8,7)
+			   DockFixed().
+#else
+			   Dock().
+#endif
+			   LeftDockable(false).RightDockable(false));
+	}
+
+	// make Quick-Goto bar visible
+
 	auimgr.GetPane(quickgotobar).Show();
-	auimgr.GetPane(quickfindbar).Hide();
+	if (quickfindbar) auimgr.GetPane(quickfindbar).Hide();
 	auimgr.Update();
 
 	quickfindbar_visible = false;
 	quickgotobar_visible = true;
 
 	quickgotobar->textctrlGoto->SetFocus();
-	quickfindbar->textctrlQuickFind->SetValue(wxT(""));
-    }
-    else
-    {
-	quickgotobar->textctrlGoto->SetFocus();
+	if (quickfindbar) quickfindbar->textctrlQuickFind->SetValue(wxT(""));
     }
 }
 
@@ -2549,6 +2564,8 @@ void WCryptoTE::OnNotebookPageRightDown(wxAuiNotebookEvent& WXUNUSED(event))
 
 void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
 {
+    wxCHECK_RET(quickfindbar, _T("Program Error: QuickFindBar was not created."));
+
     if (quickfindbar_visible)
     {
 	auimgr.GetPane(quickfindbar).Hide();
@@ -2562,6 +2579,8 @@ void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
 {
+    wxCHECK_RET(quickfindbar, _T("Program Error: QuickFindBar was not created."));
+
     WTextPage* page = wxDynamicCast(cpage, WTextPage);
     if (!page) return;
 
@@ -2572,6 +2591,8 @@ void WCryptoTE::OnTextQuickFind(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
 {
+    wxCHECK_RET(quickfindbar, _T("Program Error: QuickFindBar was not created."));
+
     WTextPage* page = wxDynamicCast(cpage, WTextPage);
     if (!page) return;
 
@@ -2584,6 +2605,8 @@ void WCryptoTE::OnButtonQuickFindNext(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
 {
+    wxCHECK_RET(quickfindbar, _T("Program Error: QuickFindBar was not created."));
+
     WTextPage* page = wxDynamicCast(cpage, WTextPage);
     if (!page) return;
 
@@ -2597,6 +2620,8 @@ void WCryptoTE::OnButtonQuickFindPrev(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
 {
+    wxCHECK_RET(quickgotobar, _T("Program Error: QuickGotoBar was not created."));
+
     if (quickgotobar_visible)
     {
 	auimgr.GetPane(quickgotobar).Hide();
@@ -2610,6 +2635,8 @@ void WCryptoTE::OnButtonGotoClose(wxCommandEvent& WXUNUSED(event))
 
 void WCryptoTE::OnButtonGotoGo(wxCommandEvent& WXUNUSED(event))
 {
+    wxCHECK_RET(quickgotobar, _T("Program Error: QuickGotoBar was not created."));
+
     if (cpage)
     {
 	bool r = cpage->DoQuickGoto( quickgotobar->textctrlGoto->GetValue() );
