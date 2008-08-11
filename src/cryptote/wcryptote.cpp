@@ -1778,7 +1778,11 @@ void WCryptoTE::LoadPreferences()
 
     cfg->Read(_T("sharelock"), &prefs_sharelock, default_sharelock);
 
+#ifndef DISABLE_WEBUPDATECHECK
     cfg->Read(_T("webupdatecheck"), &prefs_webupdatecheck, true);
+#else
+    cfg->Read(_T("webupdatecheck"), &prefs_webupdatecheck, false);
+#endif
     cfg->Read(_T("webupdatecheck_time"), &prefs_webupdatecheck_time, 0);
     cfg->Read(_T("webupdatecheck_version"), &prefs_webupdatecheck_version);
 }

@@ -83,6 +83,27 @@ if test "x$gcov" = "xtrue"; then
     CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
 fi
 
+# configure switch to disable WebUpdateCheck by default
+
+AC_MSG_CHECKING(whether to disable WebUpdateCheck by default)
+
+AC_ARG_ENABLE(default-webupdatecheck,
+	AS_HELP_STRING([--disable-default-webupdatecheck],
+		       [Disable WebUpdateCheck by default. @<:@default=no@:>@]),
+        [ case "${enableval}" in
+          yes) disable_webupdatecheck=0 ;;
+          no) disable_webupdatecheck=1 ;;
+          *) AC_MSG_ERROR(bad value ${enableval} for --disable-default-webupdatecheck) ;;
+          esac ],
+        [ disable_webupdatecheck=0 ])
+
+if test "$disable_webupdatecheck" != 0; then
+    AC_DEFINE(DISABLE_WEBUPDATECHECK, 1)
+    AC_MSG_RESULT(yes)
+else
+    AC_MSG_RESULT(no)
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Check for wxWidgets 2.8.0 or later
@@ -174,6 +195,7 @@ then
 fi
 
 AC_MSG_CHECKING(bzlib in ${BZLIB_HOME})
+AC_MSG_RESULT()
 
 BZLIB_OLD_LDFLAGS=$LDFLAGS
 BZLIB_OLD_CPPFLAGS=$CPPFLAGS
