@@ -2,6 +2,7 @@
 
 #include <wx/wx.h>
 #include <wx/cmdline.h>
+#include <wx/config.h>
 
 #include "wpassgen.h"
 #include "enctain.h"
@@ -74,6 +75,12 @@ public:
 	// Create main window frame
 	wmain = new WPassGen(NULL, true);
 	SetTopWindow(wmain);
+
+	// Load config presets and settings from registry/user-configfile
+	wxConfigBase* cfg = wxConfigBase::Get();
+	wmain->LoadSettings(cfg);
+
+	// Show Dialog
 	wmain->Show();
 
 	return true;

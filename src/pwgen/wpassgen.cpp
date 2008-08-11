@@ -74,94 +74,6 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
 	choiceType->Append( GetTypeName((pass_type)pt) );
     }
 
-    // load settings from wxConfig
-    {
-	wxConfigBase* cfg = wxConfigBase::Get();
-
-	cfg->SetPath(_T("/pwgen"));
-
-	int preset, type, length;
-	bool skip_similar, skip_swapped, enumerate;
-	wxString extrachar;
-
-	cfg->Read(_T("preset"), &preset, PT_ALPHANUMERIC);
-	cfg->Read(_T("type"), &type, 0);
-	cfg->Read(_T("skip_similar"), &skip_similar, false);
-	cfg->Read(_T("skip_swapped"), &skip_swapped, false);
-	cfg->Read(_T("extrachar"), &extrachar);
-	cfg->Read(_T("length"), &length, 12);
-	cfg->Read(_T("enumerate"), &enumerate, false);
-
-	choicePreset->SetSelection(preset);
-	choiceType->SetSelection(type);
-	checkboxSkipSimilarChar->SetValue(skip_similar);
-	checkboxSkipSwappedChar->SetValue(skip_swapped);
-	textctrlExtraChar->SetValue(extrachar);
-	spinctrlLength->SetValue(length);
-	checkboxEnumerate->SetValue(enumerate);
-
-	if (cfg->Exists(_T("/pwgen/presets")))
-	{
-	    cfg->SetPath(_T("/pwgen/presets"));
-
-	    for (unsigned int pi = 0; cfg->HasGroup(wxString::Format(_T("%d"), pi)) ; ++pi)
-	    {
-		cfg->SetPath( wxString::Format(_T("%d"), pi) );
-
-		Preset preset;
-
-		cfg->Read(_T("name"), &preset.name, _("<unknown>"));
-		cfg->Read(_T("type"), (int*)&preset.type, 0);
-		cfg->Read(_T("skip_similar"), &preset.skip_similar, false);
-		cfg->Read(_T("skip_swapped"), &preset.skip_swapped, false);
-		cfg->Read(_T("extrachar"), &preset.extrachar);
-		cfg->Read(_T("length"), &preset.length, 12);
-
-		presetlist.push_back(preset);
-
-		cfg->SetPath(_T(".."));
-	    }
-	}
-	else
-	{
-	    // Load a list of default presets if none are defined in the config
-	    // storage.
-
-	    presetlist.push_back(Preset(_("8 Char AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, _T(""), 8));
-
-	    presetlist.push_back(Preset(_("12 Char AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, _T(""), 12));
-
-	    presetlist.push_back(Preset(_("12 Letter Pronounceable"),
-					PT_PRONOUNCEABLE, false, false, _T(""), 12));
-
-	    presetlist.push_back(Preset(_("16 Char AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, _T(""), 16));
-
-	    presetlist.push_back(Preset(_("16 Letter Pronounceable"),
-					PT_PRONOUNCEABLE, false, false, _T(""), 16));
-
-	    presetlist.push_back(Preset(_("128 Keybits AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, _T(""), 22));
-
-	    presetlist.push_back(Preset(_("256 Keybits AlPhANuM"),
-					PT_ALPHANUMERIC, false, false, _T(""), 43));
-
-	    presetlist.push_back(Preset(_("IP Port Number"),
-					PT_PORTNUMBER, false, false, _T(""), 5));
-
-	    presetlist.push_back(Preset(_("64-bit WEP Key (40 keybits)"),
-					PT_HEXADECIMAL, false, false, _T(""), 10));
-
-	    presetlist.push_back(Preset(_("128-bit WEP Key (104 keybits)"),
-					PT_HEXADECIMAL, false, false, _T(""), 26));
-	    
-	    presetlist.push_back(Preset(_("256-bit WEP Key (232 keybits)"),
-					PT_HEXADECIMAL, false, false, _T(""), 58));
-	}
-    }
-
     // update dialog logic
     ResetPresetChoice();
     UpdateCheckboxes();
@@ -285,10 +197,140 @@ BEGIN_EVENT_TABLE(WPassGen, wxDialog)
     EVT_CLOSE(WPassGen::OnClose)
 END_EVENT_TABLE();
 
-void WPassGen::SaveSettings()
+void WPassGen::LoadDefaultPresets()
 {
-    wxConfigBase* cfg = wxConfigBase::Get();
+    presetlist.clear();
 
+    presetlist.push_back(Preset(_("8 Char AlPhANuM"),
+				PT_ALPHANUMERIC, false, false, _T(""), 8));
+
+    presetlist.push_back(Preset(_("12 Char AlPhANuM"),
+				PT_ALPHANUMERIC, false, false, _T(""), 12));
+
+    presetlist.push_back(Preset(_("12 Char alpha"),
+				PT_ALPHALOWER, false, false, _T(""), 12));
+
+    presetlist.push_back(Preset(_("12 Letter Pronounceable"),
+				PT_PRONOUNCEABLE, false, false, _T(""), 12));
+
+    presetlist.push_back(Preset(_("16 Char AlPhANuM"),
+				PT_ALPHANUMERIC, false, false, _T(""), 16));
+
+    presetlist.push_back(Preset(_("16 Char alpha"),
+				PT_ALPHALOWER, false, false, _T(""), 16));
+
+    presetlist.push_back(Preset(_("16 Letter Pronounceable"),
+				PT_PRONOUNCEABLE, false, false, _T(""), 16));
+
+    presetlist.push_back(Preset(_("128 Keybits AlPhANuM"),
+				PT_ALPHANUMERIC, false, false, _T(""), 22));
+
+    presetlist.push_back(Preset(_("256 Keybits AlPhANuM"),
+				PT_ALPHANUMERIC, false, false, _T(""), 43));
+
+    presetlist.push_back(Preset(_("IP Port Number"),
+				PT_PORTNUMBER, false, false, _T(""), 5));
+
+    presetlist.push_back(Preset(_("64-bit WEP Key (40 keybits)"),
+				PT_HEXADECIMAL, false, false, _T(""), 10));
+
+    presetlist.push_back(Preset(_("128-bit WEP Key (104 keybits)"),
+				PT_HEXADECIMAL, false, false, _T(""), 26));
+	    
+    presetlist.push_back(Preset(_("256-bit WEP Key (232 keybits)"),
+				PT_HEXADECIMAL, false, false, _T(""), 58));
+}
+
+void WPassGen::LoadDefaultSettings()
+{
+    choicePreset->SetSelection(PT_ALPHANUMERIC);
+    choiceType->SetSelection(0);
+    checkboxSkipSimilarChar->SetValue(false);
+    checkboxSkipSwappedChar->SetValue(false);
+    textctrlExtraChar->SetValue(_T(""));
+    spinctrlLength->SetValue(12);
+    checkboxEnumerate->SetValue(false);
+
+    LoadDefaultPresets();
+
+    // update dialog logic
+    ResetPresetChoice();
+    UpdateCheckboxes();
+    UpdateKeyStrength();
+    GenerateList();
+
+    buttonOK->Disable();
+}
+
+void WPassGen::LoadSettings(class wxConfigBase* cfg)
+{
+    // load settings from wxConfig
+
+    cfg->SetPath(_T("/pwgen"));
+
+    int preset, type, length;
+    bool skip_similar, skip_swapped, enumerate;
+    wxString extrachar;
+
+    cfg->Read(_T("preset"), &preset, PT_ALPHANUMERIC);
+    cfg->Read(_T("type"), &type, 0);
+    cfg->Read(_T("skip_similar"), &skip_similar, false);
+    cfg->Read(_T("skip_swapped"), &skip_swapped, false);
+    cfg->Read(_T("extrachar"), &extrachar);
+    cfg->Read(_T("length"), &length, 12);
+    cfg->Read(_T("enumerate"), &enumerate, false);
+
+    choicePreset->SetSelection(preset);
+    choiceType->SetSelection(type);
+    checkboxSkipSimilarChar->SetValue(skip_similar);
+    checkboxSkipSwappedChar->SetValue(skip_swapped);
+    textctrlExtraChar->SetValue(extrachar);
+    spinctrlLength->SetValue(length);
+    checkboxEnumerate->SetValue(enumerate);
+
+    if (cfg->Exists(_T("/pwgen/presets")))
+    {
+	presetlist.clear();
+
+	cfg->SetPath(_T("/pwgen/presets"));
+
+	for (unsigned int pi = 0; cfg->HasGroup(wxString::Format(_T("%d"), pi)) ; ++pi)
+	{
+	    cfg->SetPath( wxString::Format(_T("%d"), pi) );
+
+	    Preset preset;
+
+	    cfg->Read(_T("name"), &preset.name, _("<unknown>"));
+	    cfg->Read(_T("type"), (int*)&preset.type, 0);
+	    cfg->Read(_T("skip_similar"), &preset.skip_similar, false);
+	    cfg->Read(_T("skip_swapped"), &preset.skip_swapped, false);
+	    cfg->Read(_T("extrachar"), &preset.extrachar);
+	    cfg->Read(_T("length"), &preset.length, 12);
+
+	    presetlist.push_back(preset);
+
+	    cfg->SetPath(_T(".."));
+	}
+    }
+    else
+    {
+	// Load a list of default presets if none are defined in the config
+	// storage.
+
+	LoadDefaultPresets();
+    }
+
+    // update dialog logic
+    ResetPresetChoice();
+    UpdateCheckboxes();
+    UpdateKeyStrength();
+    GenerateList();
+
+    buttonOK->Disable();
+}
+
+void WPassGen::SaveSettings(class wxConfigBase* cfg)
+{
     cfg->SetPath(_T("/pwgen"));
 
     cfg->Write(_T("preset"), choicePreset->GetSelection());
@@ -321,12 +363,19 @@ void WPassGen::SaveSettings()
 
 void WPassGen::OnClose(wxCloseEvent& WXUNUSED(event))
 {
-    SaveSettings();
-
     if (IsModal())
+    {
 	EndModal(wxID_CANCEL);
+    }
     else
+    {
+	// Automatically save settings to global config file when closed in
+	// non-modal mode.
+	wxConfigBase* cfg = wxConfigBase::Get();
+	SaveSettings(cfg);
+
 	Destroy();
+    }
 }
 
 void WPassGen::OnChoicePreset(wxCommandEvent& WXUNUSED(event))
@@ -437,7 +486,6 @@ void WPassGen::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
     selpass = listctrlPasslist->GetItemText(sel);
 
-    SaveSettings();
     EndModal(wxID_OK);
 }
 
@@ -445,7 +493,6 @@ void WPassGen::OnButtonCancel(wxCommandEvent& WXUNUSED(event))
 {
     if (!IsModal()) return;
 
-    SaveSettings();
     EndModal(wxID_CANCEL);
 }
 

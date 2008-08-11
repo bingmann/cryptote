@@ -106,8 +106,18 @@ public:
     /// (Re)Generate Password list
     void		GenerateList();
 
+    /// Load default settings for all dialog elements
+    void		LoadDefaultSettings();
+
+    /// Load a list of default password presets when none are defined in the
+    /// config file.
+    void		LoadDefaultPresets();
+
+    /// Load current settings from config file/registry
+    void		LoadSettings(class wxConfigBase* cfg);
+
     /// Save current settings to config file/registry
-    void		SaveSettings();
+    void		SaveSettings(class wxConfigBase* cfg);
 
     /// Return true if the options skip similar characters is available with
     /// the selected generator type.

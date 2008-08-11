@@ -14,6 +14,7 @@
 #include "pwgen/wpassgen.h"
 
 #include <wx/config.h>
+#include <wx/fileconf.h>
 #include <wx/tokenzr.h>
 #include <wx/url.h>
 #include <wx/protocol/http.h>
@@ -726,6 +727,11 @@ void WCryptoTE::ContainerNew()
 
     container.SetGlobalEncryptedProperty("CTime", strTimeStampNow());
 
+    // Set up default config settings in container
+
+    wpassgen->LoadDefaultSettings();
+    UpdateMenuInsertPassword();
+
     // Set up one empty text file in the container
     unsigned int sf1 = container.AppendSubFile();
 
@@ -875,6 +881,19 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
     if (container.GetUsedKeySlot() >= 0)
 	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString( container.GetUsedKeySlot() ) + "-ATime", strTimeStampNow());
 
+    // load settings from global metadata
+    {
+	// get settings into a wxMemoryInputStream
+	const std::string& cfgstr = container.GetGlobalEncryptedProperty("Settings");
+
+	wxMemoryInputStream meminput(cfgstr.c_str(), cfgstr.size());
+	wxFileConfig memcfg(meminput);
+
+	// load all settings from the memory object
+	wpassgen->LoadSettings(&memcfg);
+	UpdateMenuInsertPassword();
+    }
+
     // close all notebook pages
     while( auinotebook->GetPageCount() > 0 )
     {
@@ -930,6 +949,25 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
 	// Add key slot metadata.
 	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-CTime", strTimeStampNow());
 	container.SetGlobalEncryptedProperty("KeySlot-" + toSTLString(newslot) + "-Description", strWX2STL(passdlg.GetDescription()));
+    }
+   
+    // save settings to global metadata
+    {
+	// create wxFileConfig object in memory
+	wxMemoryInputStream memzero(NULL, 0);
+	wxFileConfig memcfg(memzero);
+
+	// save all settings to the memory object
+	wpassgen->SaveSettings(&memcfg);
+
+	// save config memory output to global properties
+	wxMemoryOutputStream memout;
+	memcfg.Save(memout);
+
+	wxStreamBuffer *outstream = memout.GetOutputStreamBuffer();
+	std::string cfgstr((char*)outstream->GetBufferStart(), outstream->Tell());
+
+	container.SetGlobalEncryptedProperty("Settings", cfgstr);
     }
 
     // release share lock
