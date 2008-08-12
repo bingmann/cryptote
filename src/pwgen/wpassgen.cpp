@@ -197,48 +197,53 @@ BEGIN_EVENT_TABLE(WPassGen, wxDialog)
     EVT_CLOSE(WPassGen::OnClose)
 END_EVENT_TABLE();
 
-void WPassGen::LoadDefaultPresets()
+const std::vector<WPassGen::Preset>& WPassGen::GetDefaultPresets()
 {
-    presetlist.clear();
+    static std::vector<Preset> default_presets;
 
-    presetlist.push_back(Preset(_("8 Char AlPhANuM"),
-				PT_ALPHANUMERIC, false, false, _T(""), 8));
+    if (default_presets.empty())
+    {
+	default_presets.push_back(Preset(_("8 Char AlPhANuM"),
+					 PT_ALPHANUMERIC, false, false, _T(""), 8));
 
-    presetlist.push_back(Preset(_("12 Char AlPhANuM"),
-				PT_ALPHANUMERIC, false, false, _T(""), 12));
+	default_presets.push_back(Preset(_("12 Char AlPhANuM"),
+					 PT_ALPHANUMERIC, false, false, _T(""), 12));
 
-    presetlist.push_back(Preset(_("12 Char alpha"),
-				PT_ALPHALOWER, false, false, _T(""), 12));
+	default_presets.push_back(Preset(_("12 Char alpha"),
+					 PT_ALPHALOWER, false, false, _T(""), 12));
 
-    presetlist.push_back(Preset(_("12 Letter Pronounceable"),
-				PT_PRONOUNCEABLE, false, false, _T(""), 12));
+	default_presets.push_back(Preset(_("12 Letter Pronounceable"),
+					 PT_PRONOUNCEABLE, false, false, _T(""), 12));
 
-    presetlist.push_back(Preset(_("16 Char AlPhANuM"),
-				PT_ALPHANUMERIC, false, false, _T(""), 16));
+	default_presets.push_back(Preset(_("16 Char AlPhANuM"),
+					 PT_ALPHANUMERIC, false, false, _T(""), 16));
 
-    presetlist.push_back(Preset(_("16 Char alpha"),
-				PT_ALPHALOWER, false, false, _T(""), 16));
+	default_presets.push_back(Preset(_("16 Char alpha"),
+					 PT_ALPHALOWER, false, false, _T(""), 16));
 
-    presetlist.push_back(Preset(_("16 Letter Pronounceable"),
-				PT_PRONOUNCEABLE, false, false, _T(""), 16));
+	default_presets.push_back(Preset(_("16 Letter Pronounceable"),
+					 PT_PRONOUNCEABLE, false, false, _T(""), 16));
 
-    presetlist.push_back(Preset(_("128 Keybits AlPhANuM"),
-				PT_ALPHANUMERIC, false, false, _T(""), 22));
+	default_presets.push_back(Preset(_("128 Keybits AlPhANuM"),
+					 PT_ALPHANUMERIC, false, false, _T(""), 22));
 
-    presetlist.push_back(Preset(_("256 Keybits AlPhANuM"),
-				PT_ALPHANUMERIC, false, false, _T(""), 43));
+	default_presets.push_back(Preset(_("256 Keybits AlPhANuM"),
+					 PT_ALPHANUMERIC, false, false, _T(""), 43));
 
-    presetlist.push_back(Preset(_("IP Port Number"),
-				PT_PORTNUMBER, false, false, _T(""), 5));
+	default_presets.push_back(Preset(_("IP Port Number"),
+					 PT_PORTNUMBER, false, false, _T(""), 5));
 
-    presetlist.push_back(Preset(_("64-bit WEP Key (40 keybits)"),
-				PT_HEXADECIMAL, false, false, _T(""), 10));
+	default_presets.push_back(Preset(_("64-bit WEP Key (40 keybits)"),
+					 PT_HEXADECIMAL, false, false, _T(""), 10));
 
-    presetlist.push_back(Preset(_("128-bit WEP Key (104 keybits)"),
-				PT_HEXADECIMAL, false, false, _T(""), 26));
+	default_presets.push_back(Preset(_("128-bit WEP Key (104 keybits)"),
+					 PT_HEXADECIMAL, false, false, _T(""), 26));
 	    
-    presetlist.push_back(Preset(_("256-bit WEP Key (232 keybits)"),
-				PT_HEXADECIMAL, false, false, _T(""), 58));
+	default_presets.push_back(Preset(_("256-bit WEP Key (232 keybits)"),
+					 PT_HEXADECIMAL, false, false, _T(""), 58));
+    }
+
+    return default_presets;
 }
 
 void WPassGen::LoadDefaultSettings()
@@ -251,7 +256,7 @@ void WPassGen::LoadDefaultSettings()
     spinctrlLength->SetValue(12);
     checkboxEnumerate->SetValue(false);
 
-    LoadDefaultPresets();
+    presetlist = GetDefaultPresets();
 
     // update dialog logic
     ResetPresetChoice();
@@ -317,7 +322,7 @@ void WPassGen::LoadSettings(class wxConfigBase* cfg)
 	// Load a list of default presets if none are defined in the config
 	// storage.
 
-	LoadDefaultPresets();
+	presetlist = GetDefaultPresets();
     }
 
     // update dialog logic
@@ -342,20 +347,24 @@ void WPassGen::SaveSettings(class wxConfigBase* cfg)
     cfg->Write(_T("enumerate"), checkboxEnumerate->GetValue());
 
     cfg->DeleteGroup(_T("/pwgen/presets"));
-    cfg->SetPath(_T("/pwgen/presets"));
 
-    for (unsigned int pi = 0; pi < presetlist.size(); ++pi)
+    if (presetlist != GetDefaultPresets())
     {
-	cfg->SetPath( wxString::Format(_T("%d"), pi) );
+	cfg->SetPath(_T("/pwgen/presets"));
 
-	cfg->Write(_T("name"), presetlist[pi].name);
-	cfg->Write(_T("type"), presetlist[pi].type);
-	cfg->Write(_T("skip_similar"), presetlist[pi].skip_similar);
-	cfg->Write(_T("skip_swapped"), presetlist[pi].skip_swapped);
-	cfg->Write(_T("extrachar"), presetlist[pi].extrachar);
-	cfg->Write(_T("length"), presetlist[pi].length);
+	for (unsigned int pi = 0; pi < presetlist.size(); ++pi)
+	{
+	    cfg->SetPath( wxString::Format(_T("%d"), pi) );
 
-	cfg->SetPath(_T(".."));
+	    cfg->Write(_T("name"), presetlist[pi].name);
+	    cfg->Write(_T("type"), presetlist[pi].type);
+	    cfg->Write(_T("skip_similar"), presetlist[pi].skip_similar);
+	    cfg->Write(_T("skip_swapped"), presetlist[pi].skip_swapped);
+	    cfg->Write(_T("extrachar"), presetlist[pi].extrachar);
+	    cfg->Write(_T("length"), presetlist[pi].length);
+
+	    cfg->SetPath(_T(".."));
+	}
     }
 
     cfg->Flush();

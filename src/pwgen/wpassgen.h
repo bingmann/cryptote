@@ -83,6 +83,16 @@ public:
 	      extrachar(_extrachar),
 	      length(_length)
 	{}
+
+	bool operator==(const Preset& o) const
+	{
+	    return (name == o.name)
+		&& (type == o.type)
+		&& (skip_similar == o.skip_similar)
+		&& (skip_swapped == o.skip_swapped)
+		&& (extrachar == o.extrachar)
+		&& (length == o.length);
+	}
     };
 
     typedef std::vector<Preset> presetlist_type;
@@ -111,7 +121,7 @@ public:
 
     /// Load a list of default password presets when none are defined in the
     /// config file.
-    void		LoadDefaultPresets();
+    static const std::vector<Preset>& GetDefaultPresets();
 
     /// Load current settings from config file/registry
     void		LoadSettings(class wxConfigBase* cfg);
