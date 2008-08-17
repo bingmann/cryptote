@@ -774,9 +774,9 @@ bool WCryptoTE::ContainerOpen(const wxString& filename, const wxString& defpass)
     if (prefs_sharelock)
     {
 #if wxUSE_UNICODE
-	int fd = _wsopen(filename.c_str(), _O_RDONLY | _O_BINARY, _SH_DENYRW);
+	int fd = _wsopen(filename.c_str(), _O_RDONLY | _O_BINARY | _O_SEQUENTIAL, _SH_DENYRW);
 #else
-	int fd = _sopen(filename.c_str(), _O_RDONLY | _O_BINARY, _SH_DENYRW);
+	int fd = _sopen(filename.c_str(), _O_RDONLY | _O_BINARY | _O_SEQUENTIAL, _SH_DENYRW);
 #endif
 	if (fd < 0) {
 	    wxLogSysError(_("Cannot open file '%s'"), filename.c_str());
@@ -1026,9 +1026,9 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     if (prefs_sharelock)
     {
 #if wxUSE_UNICODE
-	int fd = _wsopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY, _SH_DENYRW);
+	int fd = _wsopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY | _O_SEQUENTIAL, _SH_DENYRW, _S_IREAD | _S_IWRITE);
 #else
-	int fd = _sopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY, _SH_DENYRW);
+	int fd = _sopen(filename.c_str(), _O_WRONLY | _O_CREAT | _O_BINARY | _O_SEQUENTIAL, _SH_DENYRW, _S_IREAD | _S_IWRITE);
 #endif
 	if (fd < 0) {
 	    wxLogSysError(_("Cannot create file '%s'"), filename.c_str());
