@@ -167,8 +167,8 @@ void WPassGen::do_layout()
     }
     else
     {
-	sizer3->Hide(12);
-	sizer3->Hide(13);
+	sizer3->Hide(14);
+	sizer3->Hide(15);
 	sizer1->Hide(textctrlPasslist);
 	sizer1->Hide(sizer6);
     }
