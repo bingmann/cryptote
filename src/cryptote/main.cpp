@@ -3,6 +3,9 @@
 #include <wx/wx.h>
 #include <wx/cmdline.h>
 #include <wx/tokenzr.h>
+#include <wx/confbase.h>
+#include <wx/fileconf.h>
+#include <wx/stdpaths.h>
 #include <memory>
 
 #include "wcryptote.h"
@@ -56,6 +59,21 @@ public:
 	return filestream.Write(data, datalen).IsOk();
     }
 };
+
+#ifdef __WXMSW__
+/** Helper class to access protected function DoGetDirectory() to get Program
+ * Files directory on Windows */
+class myStandardPaths : public wxStandardPaths
+{
+public:
+    static const unsigned int myCSIDL_PROGRAM_FILES = 0x0026;
+
+    static wxString GetProgramFilesDir()
+    {
+	return DoGetDirectory(myCSIDL_PROGRAM_FILES);
+    }
+};
+#endif
 
 class App : public wxApp
 {
@@ -137,6 +155,37 @@ public:
 	wxImage::AddHandler(new wxPNGHandler());
 
 	wxLog::SetActiveTarget(NULL);
+
+#if defined(__WXMSW__) || defined(__UNIX__)
+	// Set up wxConfigBase storage: either to the system user-local storage
+	// or to a local INI-file if the portable application is not in the
+	// standard programs folder on Windows / Unix.
+	{
+#if defined(__WXMSW__)
+	    wxString exepath = wxStandardPaths::Get().GetExecutablePath().MakeLower();
+	    wxString stdpath = myStandardPaths::GetProgramFilesDir().MakeLower();
+#else
+	    wxString exepath = wxStandardPaths::Get().GetExecutablePath();
+	    wxString stdpath = _T("/usr");
+#endif
+
+	    if (!exepath.StartsWith(stdpath))
+	    {
+		// construct a configuration file name local to the current
+		// program's directory.
+
+		wxFileName cfgpath(exepath);
+		cfgpath.SetFullName(_T("CryptoTE.ini"));
+
+		wxFileConfig* filecfg = new wxFileConfig(wxEmptyString, wxEmptyString,
+                                                         cfgpath.GetFullPath(), cfgpath.GetFullPath());
+
+		wxConfigBase::Set(filecfg);
+	    }
+	}
+#endif
+	
+	// Run desired program
 
 	if (run_pwgen)
 	{
