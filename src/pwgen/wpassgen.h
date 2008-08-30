@@ -43,9 +43,6 @@ public:
     /// Set if running as stand-alone program: show passwords in text control.
     bool	standalone;
 
-    /// Return password selected by the user
-    const wxString&	GetSelectedPassword() const;
-
     /// Password generator types
     enum pass_type {
 	PT_ALPHANUMERICSYMBOL,
@@ -100,11 +97,29 @@ public:
     /// List of all password presets
     std::vector<Preset> presetlist;
 
-    /// Save selected password for calling dialog
-    wxString		selpass;
+public:
+
+    /// Return passwords selected by the user
+    wxArrayString	GetSelectedPassword() const;
+
+    /// Load a list of default password presets when none are defined in the
+    /// config file.
+    static const std::vector<Preset>& GetDefaultPresets();
+
+    /// Load default settings for all dialog elements
+    void		LoadDefaultSettings();
+
+    /// Load current settings from config file/registry
+    void		LoadSettings(class wxConfigBase* cfg);
+
+    /// Save current settings to config file/registry
+    void		SaveSettings(class wxConfigBase* cfg);
+
+protected:
 
     // *** Helper Functions ***
 
+    /// Search for a matching preset and set the wxChoice selection.
     void		ResetPresetChoice();
 
     /// Update the keybits text control
@@ -115,19 +130,6 @@ public:
 
     /// (Re)Generate Password list
     void		GenerateList();
-
-    /// Load default settings for all dialog elements
-    void		LoadDefaultSettings();
-
-    /// Load a list of default password presets when none are defined in the
-    /// config file.
-    static const std::vector<Preset>& GetDefaultPresets();
-
-    /// Load current settings from config file/registry
-    void		LoadSettings(class wxConfigBase* cfg);
-
-    /// Save current settings to config file/registry
-    void		SaveSettings(class wxConfigBase* cfg);
 
     /// Return true if the options skip similar characters is available with
     /// the selected generator type.
@@ -144,6 +146,7 @@ public:
     /// generator type.
     bool		IsAllowedLength() const;
 
+public:
     // *** Static Password Generator Functions ***
 
     /// Return ASCII Name for password generator type

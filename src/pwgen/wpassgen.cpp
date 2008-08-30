@@ -48,7 +48,7 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
     textctrlStrength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     checkboxEnumerate = new wxCheckBox(this, myID_ENUMERATE, _("Enumerate Passwords"));
     buttonGenerate = new wxButton(this, myID_GENERATE, _("&Generate"));
-    listctrlPasslist = new wxListCtrl(this, myID_PASSLIST, wxDefaultPosition, wxDefaultSize, wxLC_LIST|wxLC_SINGLE_SEL|wxSUNKEN_BORDER);
+    listctrlPasslist = new wxListCtrl(this, myID_PASSLIST, wxDefaultPosition, wxDefaultSize, wxLC_LIST|wxSUNKEN_BORDER);
     textctrlPasslist = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
@@ -490,11 +490,6 @@ void WPassGen::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 {
     if (!IsModal()) return;
 
-    int sel = listctrlPasslist->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-    if (sel < 0) return;
-
-    selpass = listctrlPasslist->GetItemText(sel);
-
     EndModal(wxID_OK);
 }
 
@@ -613,9 +608,17 @@ void WPassGen::GenerateList()
     buttonOK->Disable();
 }
 
-const wxString& WPassGen::GetSelectedPassword() const
+wxArrayString WPassGen::GetSelectedPassword() const
 {
-    return selpass;
+    wxArrayString arrstr;
+
+    long item = -1;
+    while( (item = listctrlPasslist->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) >= 0 )
+    {
+	arrstr.Add( listctrlPasslist->GetItemText(item) );
+    }
+
+    return arrstr;
 }
 
 bool WPassGen::IsAllowedSimilar() const

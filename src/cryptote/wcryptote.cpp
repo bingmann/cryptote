@@ -2236,7 +2236,19 @@ void WCryptoTE::OnMenuEditInsertPassword(wxCommandEvent& WXUNUSED(event))
     wpassgen->Centre();
     if (wpassgen->ShowModal() == wxID_OK)
     {
-	page->AddText(wpassgen->GetSelectedPassword());
+	wxArrayString arrstr = wpassgen->GetSelectedPassword();
+
+	if (arrstr.GetCount() == 1)
+	{
+	    page->AddText(arrstr[0]);
+	}
+	else
+	{
+	    for (size_t pi = 0; pi < arrstr.GetCount(); ++pi)
+	    {
+		page->AddText(wxString::Format(_T("%d %s\n"), pi, arrstr[pi].c_str()));
+	    }
+	}
     }
 
     UpdateMenuInsertPassword();
