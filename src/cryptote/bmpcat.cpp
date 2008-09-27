@@ -296,7 +296,7 @@ wxBitmap BitmapCatalog::_GetBitmap(int id)
 	    return bitmaplist[i].current;
     }
 
-    printf("Bitmap request for unknown identifier %u general usage\n", id);
+    wxLogDebug(_T("Bitmap request for unknown identifier %u general usage."), id);
 
     return wxNullBitmap;
 }
@@ -309,7 +309,7 @@ wxBitmap BitmapCatalog::_GetMenuBitmap(int id)
 	    return bitmaplist[i].current;
     }
 
-    printf("Bitmap request for unknown identifier %u menu usage\n", id);
+    wxLogDebug(_T("Bitmap request for unknown identifier %u menu usage."), id);
 
     return _GetBitmap(id);
 }
@@ -322,7 +322,7 @@ wxBitmap BitmapCatalog::_GetToolbarBitmap(int id)
 	    return bitmaplist[i].current;
     }
 
-    printf("Bitmap request for unknown identifier %u toolbar usage\n", id);
+    wxLogDebug(_T("Bitmap request for unknown identifier %u toolbar usage."), id);
 
     return _GetMenuBitmap(id);
 }
@@ -336,7 +336,7 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 	    return bitmaplist[i].current;
     }
 
-    printf("Bitmap request for unknown identifier %u filetype usage\n", id);
+    wxLogDebug(_T("Bitmap request for unknown identifier %u filetype usage."), id);
 
     return wxNullBitmap;
 }

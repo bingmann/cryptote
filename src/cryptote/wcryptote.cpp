@@ -129,7 +129,9 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     idlechecktimer.SetOwner(this, myID_TIMER_IDLECHECK);
     idlechecktimer.Start(1000, wxTIMER_CONTINUOUS);
 
+#ifdef __WXMSW__
     Centre();
+#endif
 
     ContainerNew();
 }
@@ -2509,7 +2511,7 @@ void WCryptoTE::OnAuiManagerPaneClose(wxAuiManagerEvent& event)
 
 void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 {
-    // printf("Debug: OnNotebookPageChanged() to %d event\n", event.GetSelection());
+    wxLogDebug(_T("Debug: OnNotebookPageChanged() to %d event."), event.GetSelection());
 
     WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
 
@@ -2525,7 +2527,7 @@ void WCryptoTE::OnNotebookPageChanged(wxAuiNotebookEvent& event)
 
 void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 {
-    printf("Debug: OnNotebookPageClose() event\n");
+    wxLogDebug(_T("Debug: OnNotebookPageClose() event."));
 
     WNotePage* sel = wxDynamicCast(auinotebook->GetPage( event.GetSelection() ), WNotePage);
 
@@ -2543,7 +2545,7 @@ void WCryptoTE::OnNotebookPageClose(wxAuiNotebookEvent& event)
 
 void WCryptoTE::UpdateNotebookPageChanged(int pageid, WNotePage* page)
 {
-    printf("Debug: UpdateNotebookPageChanged() event for %d page %p\n", pageid, page);
+    wxLogDebug(_T("Debug: UpdateNotebookPageChanged() event for %d page %p."), pageid, page);
 
     if (cpageid == pageid && cpage == page) return;
 
@@ -3040,11 +3042,12 @@ void WStatusBar::ProgressStart(const char* text, Enctain::progress_indicator_typ
 
 void WStatusBar::ProgressUpdate(size_t value)
 {
-    if ((int)value > gaugeProgress->GetRange()) {
-	printf("Debug: Progress out of range: %d - %d = %d\n", 
-	       value, gaugeProgress->GetRange(),
-	       gaugeProgress->GetRange() - value);
-	       
+    if ((int)value > gaugeProgress->GetRange())
+    {
+	wxLogDebug(_T("gaugeProgress out of range: %d - %d = %d."),
+		   value, gaugeProgress->GetRange(),
+		   gaugeProgress->GetRange() - value);
+
 	value = gaugeProgress->GetRange();
     }
 
