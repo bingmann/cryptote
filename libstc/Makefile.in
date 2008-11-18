@@ -66,21 +66,21 @@ am_libstc_a_OBJECTS = AutoComplete.$(OBJEXT) CallTip.$(OBJEXT) \
 	LexKix.$(OBJEXT) LexLisp.$(OBJEXT) LexLout.$(OBJEXT) \
 	LexLua.$(OBJEXT) LexMagik.$(OBJEXT) LexMMIXAL.$(OBJEXT) \
 	LexMPT.$(OBJEXT) LexMSSQL.$(OBJEXT) LexMatlab.$(OBJEXT) \
-	LexMetapost.$(OBJEXT) LexNsis.$(OBJEXT) LexOpal.$(OBJEXT) \
-	LexOthers.$(OBJEXT) LexPB.$(OBJEXT) LexPLM.$(OBJEXT) \
-	LexPOV.$(OBJEXT) LexPowerShell.$(OBJEXT) LexPS.$(OBJEXT) \
-	LexPascal.$(OBJEXT) LexPerl.$(OBJEXT) LexProgress.$(OBJEXT) \
-	LexPython.$(OBJEXT) LexR.$(OBJEXT) LexRebol.$(OBJEXT) \
-	LexRuby.$(OBJEXT) LexSQL.$(OBJEXT) LexScriptol.$(OBJEXT) \
-	LexSmalltalk.$(OBJEXT) LexSpecman.$(OBJEXT) LexSpice.$(OBJEXT) \
-	LexTADS3.$(OBJEXT) LexTCL.$(OBJEXT) LexTeX.$(OBJEXT) \
-	LexVB.$(OBJEXT) LexVHDL.$(OBJEXT) LexVerilog.$(OBJEXT) \
-	LexYAML.$(OBJEXT) LineMarker.$(OBJEXT) PositionCache.$(OBJEXT) \
-	PropSet.$(OBJEXT) RESearch.$(OBJEXT) RunStyles.$(OBJEXT) \
-	ScintillaBase.$(OBJEXT) Style.$(OBJEXT) StyleContext.$(OBJEXT) \
-	UniConversion.$(OBJEXT) ViewStyle.$(OBJEXT) \
-	WindowAccessor.$(OBJEXT) XPM.$(OBJEXT) PlatWX.$(OBJEXT) \
-	ScintillaWX.$(OBJEXT) stc.$(OBJEXT)
+	LexMetapost.$(OBJEXT) LexMySQL.$(OBJEXT) LexNsis.$(OBJEXT) \
+	LexOpal.$(OBJEXT) LexOthers.$(OBJEXT) LexPB.$(OBJEXT) \
+	LexPLM.$(OBJEXT) LexPOV.$(OBJEXT) LexPowerShell.$(OBJEXT) \
+	LexPS.$(OBJEXT) LexPascal.$(OBJEXT) LexPerl.$(OBJEXT) \
+	LexProgress.$(OBJEXT) LexPython.$(OBJEXT) LexR.$(OBJEXT) \
+	LexRebol.$(OBJEXT) LexRuby.$(OBJEXT) LexSQL.$(OBJEXT) \
+	LexScriptol.$(OBJEXT) LexSmalltalk.$(OBJEXT) \
+	LexSpecman.$(OBJEXT) LexSpice.$(OBJEXT) LexTADS3.$(OBJEXT) \
+	LexTCL.$(OBJEXT) LexTeX.$(OBJEXT) LexVB.$(OBJEXT) \
+	LexVHDL.$(OBJEXT) LexVerilog.$(OBJEXT) LexYAML.$(OBJEXT) \
+	LineMarker.$(OBJEXT) PositionCache.$(OBJEXT) PropSet.$(OBJEXT) \
+	RESearch.$(OBJEXT) RunStyles.$(OBJEXT) ScintillaBase.$(OBJEXT) \
+	Style.$(OBJEXT) StyleContext.$(OBJEXT) UniConversion.$(OBJEXT) \
+	ViewStyle.$(OBJEXT) WindowAccessor.$(OBJEXT) XPM.$(OBJEXT) \
+	PlatWX.$(OBJEXT) ScintillaWX.$(OBJEXT) stc.$(OBJEXT)
 libstc_a_OBJECTS = $(am_libstc_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/acscripts/depcomp
@@ -299,6 +299,7 @@ libstc_a_SOURCES = \
 	scintilla/src/LexMSSQL.cxx \
 	scintilla/src/LexMatlab.cxx \
 	scintilla/src/LexMetapost.cxx \
+	scintilla/src/LexMySQL.cxx \
 	scintilla/src/LexNsis.cxx \
 	scintilla/src/LexOpal.cxx \
 	scintilla/src/LexOthers.cxx \
@@ -362,6 +363,7 @@ libstc_a_SOURCES = \
 EXTRA_DIST = README.txt \
 	scintilla/README \
 	scintilla/License.txt \
+	scintilla/version.txt \
 	scintilla/doc/Design.html \
 	scintilla/doc/Icons.html \
 	scintilla/doc/Lexer.txt \
@@ -483,6 +485,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMagik.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMatlab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMetapost.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexMySQL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexNsis.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexOpal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LexOthers.Po@am__quote@
@@ -1309,6 +1312,20 @@ LexMetapost.obj: scintilla/src/LexMetapost.cxx
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexMetapost.cxx' object='LexMetapost.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexMetapost.obj `if test -f 'scintilla/src/LexMetapost.cxx'; then $(CYGPATH_W) 'scintilla/src/LexMetapost.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexMetapost.cxx'; fi`
+
+LexMySQL.o: scintilla/src/LexMySQL.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexMySQL.o -MD -MP -MF $(DEPDIR)/LexMySQL.Tpo -c -o LexMySQL.o `test -f 'scintilla/src/LexMySQL.cxx' || echo '$(srcdir)/'`scintilla/src/LexMySQL.cxx
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexMySQL.Tpo $(DEPDIR)/LexMySQL.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexMySQL.cxx' object='LexMySQL.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexMySQL.o `test -f 'scintilla/src/LexMySQL.cxx' || echo '$(srcdir)/'`scintilla/src/LexMySQL.cxx
+
+LexMySQL.obj: scintilla/src/LexMySQL.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexMySQL.obj -MD -MP -MF $(DEPDIR)/LexMySQL.Tpo -c -o LexMySQL.obj `if test -f 'scintilla/src/LexMySQL.cxx'; then $(CYGPATH_W) 'scintilla/src/LexMySQL.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexMySQL.cxx'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/LexMySQL.Tpo $(DEPDIR)/LexMySQL.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scintilla/src/LexMySQL.cxx' object='LexMySQL.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LexMySQL.obj `if test -f 'scintilla/src/LexMySQL.cxx'; then $(CYGPATH_W) 'scintilla/src/LexMySQL.cxx'; else $(CYGPATH_W) '$(srcdir)/scintilla/src/LexMySQL.cxx'; fi`
 
 LexNsis.o: scintilla/src/LexNsis.cxx
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LexNsis.o -MD -MP -MF $(DEPDIR)/LexNsis.Tpo -c -o LexNsis.o `test -f 'scintilla/src/LexNsis.cxx' || echo '$(srcdir)/'`scintilla/src/LexNsis.cxx

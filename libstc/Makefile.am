@@ -85,6 +85,7 @@ libstc_a_SOURCES = \
 	scintilla/src/LexMSSQL.cxx \
 	scintilla/src/LexMatlab.cxx \
 	scintilla/src/LexMetapost.cxx \
+	scintilla/src/LexMySQL.cxx \
 	scintilla/src/LexNsis.cxx \
 	scintilla/src/LexOpal.cxx \
 	scintilla/src/LexOthers.cxx \
@@ -148,6 +149,7 @@ libstc_a_SOURCES = \
 EXTRA_DIST = README.txt \
 	scintilla/README \
 	scintilla/License.txt \
+	scintilla/version.txt \
 	scintilla/doc/Design.html \
 	scintilla/doc/Icons.html \
 	scintilla/doc/Lexer.txt \
