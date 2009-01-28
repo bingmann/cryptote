@@ -1028,6 +1028,8 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	if (header2.keyslots == 0)
 	    throw(RuntimeError(ETE_LOAD_HEADER2_NO_KEYSLOTS));
 
+        keyslots.clear();
+
 	for (unsigned int i = 0; i < header2.keyslots; ++i)
 	{
 	    keyslots.push_back(KeySlot());
