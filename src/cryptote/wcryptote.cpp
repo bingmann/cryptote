@@ -2777,8 +2777,31 @@ void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
 		if (prefs_autocloseexit) {
 		    Close();
 		}
-		else {
-		    ContainerNew();
+		else
+                {
+                    wxFileName closedfile = container_filename;
+                    ContainerNew();
+
+                    if (closedfile.IsOk())
+                    {
+                        // Allow direct reopen of the auto-closed container
+
+                        wxString msg = wxString::Format(_("Inactivity time elapsed.\n"
+                                                          "Loaded container \"%s\" was automatically closed.\n"
+                                                          "Reopen the container?"),
+                                                        closedfile.GetFullName().c_str());
+
+                        WMessageDialog dlg(this, msg, _("CryptoTE"),
+                                           wxICON_INFORMATION,
+                                           wxID_YES, wxID_NO, wxID_EXIT);
+
+                        int id = dlg.ShowModal();
+
+                        if (id == wxID_YES)
+                            ContainerOpen( closedfile.GetFullPath() );
+                        else if (id == wxID_EXIT)
+                            Close();
+                    }
 		}
 	    }
 	}

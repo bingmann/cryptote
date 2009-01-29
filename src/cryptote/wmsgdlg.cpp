@@ -92,6 +92,7 @@ wxButton* WMessageDialog::CreateButton(int id)
     case wxID_NO:
     case wxID_ABORT:
     case wxID_SAVE:
+    case wxID_EXIT:
 	return new wxButton(this, id, wxEmptyString);
 
     case wxID_IGNORE:
@@ -128,6 +129,7 @@ BEGIN_EVENT_TABLE(WMessageDialog, wxDialog)
     EVT_BUTTON	(wxID_RETRY,	WMessageDialog::OnButton)
     EVT_BUTTON	(wxID_IGNORE,	WMessageDialog::OnButton)
     EVT_BUTTON	(wxID_SAVE,	WMessageDialog::OnButton)
+    EVT_BUTTON	(wxID_EXIT,	WMessageDialog::OnButton)
 
 END_EVENT_TABLE();
 
