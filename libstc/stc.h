@@ -3357,7 +3357,7 @@ public:
 
 
 #ifndef SWIG
-protected:
+public:
     // Event handlers
     void OnPaint(wxPaintEvent& evt);
     void OnScrollWin(wxScrollWinEvent& evt);
