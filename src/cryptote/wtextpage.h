@@ -20,8 +20,13 @@ public:
 	myID_EDITCTRL,
     };
 
+    /// Styles Enumeration
+    enum StyleNum {
+        STYLE_FINDHIGHLIGHT = 16,
+    };
+
     /// Margins Enumeration
-    enum margin_num {
+    enum MarginNum {
 	MARGIN_LINENUMBER = 0
     };
 
@@ -54,7 +59,10 @@ public:
     void		PrepareQuickFind(bool backwards, bool reset);
 
     /// Execute Quick-Find for a search string.
-    void		DoQuickFind(bool backwards, const wxString& findtext);
+    void	        DoQuickFind(bool backwards, const wxString& findtext);
+
+    /// Terminate a quick find sequence.
+    virtual void        StopQuickFind();
 
     // *** Event Handlers ***
 
@@ -128,8 +136,9 @@ public:
 
 protected:
 
-    /// Current starting position for incremental Quick-Find
+    /// Current starting position and highlighted for incremental Quick-Find
     int		quickfind_startpos;
+    int		quickfind_length;
 
     /// Settings of current View Options
 

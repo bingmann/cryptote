@@ -668,6 +668,7 @@ void WCryptoTE::HideQuickBars()
 {
     // Hide Quick-Find Bar
     if (quickfindbar_visible && quickfindbar) {
+        if (cpage) cpage->StopQuickFind();
 	auimgr.GetPane(quickfindbar).Hide();
 	auimgr.Update();
 
@@ -2146,13 +2147,14 @@ void WCryptoTE::OnMenuEditQuickFind(wxCommandEvent& WXUNUSED(event))
     {
 	// pushing Ctrl+F again is equivalent to Search-Next
 
-	quickfindbar->textctrlQuickFind->SetFocus();
-	
-	wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
+        wxString findtext = quickfindbar->textctrlQuickFind->GetValue();
 
-	page->PrepareQuickFind(false, false);
+        page->PrepareQuickFind(false, false);
 
-	page->DoQuickFind(false, findtext);
+        page->DoQuickFind(false, findtext);
+
+        quickfindbar->textctrlQuickFind->SetFocus();
+        quickfindbar->textctrlQuickFind->SetSelection(-1,-1);
     }
     else
     {
@@ -2219,7 +2221,10 @@ void WCryptoTE::OnMenuEditGoto(wxCommandEvent& WXUNUSED(event))
 	// make Quick-Goto bar visible
 
 	auimgr.GetPane(quickgotobar).Show();
-	if (quickfindbar) auimgr.GetPane(quickfindbar).Hide();
+	if (quickfindbar_visible) {
+            if (cpage) cpage->StopQuickFind();
+            auimgr.GetPane(quickfindbar).Hide();
+        }
 	auimgr.Update();
 
 	quickfindbar_visible = false;
@@ -2624,6 +2629,8 @@ void WCryptoTE::OnButtonQuickFindClose(wxCommandEvent& WXUNUSED(event))
 
     if (quickfindbar_visible)
     {
+        if (cpage) cpage->StopQuickFind();
+
 	auimgr.GetPane(quickfindbar).Hide();
 	auimgr.Update();
 

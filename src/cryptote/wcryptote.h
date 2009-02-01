@@ -551,6 +551,9 @@ public:
     /// Write current data buffer to the output stream. Used by SubFile->Export.
     virtual void	ExportBuffer(wxOutputStream& outstream) = 0;
 
+    /// Terminate a quick find sequence
+    virtual void        StopQuickFind() = 0;
+
     /// Execute Quick-Goto for a given string or set an error message. The goto
     /// window will close if the function returns true.
     virtual bool	DoQuickGoto(const wxString& gototext) = 0;

@@ -164,6 +164,10 @@ void WBinaryPage::PageClosed()
     PageSaveData();
 }
 
+void WBinaryPage::StopQuickFind()
+{
+}
+
 bool WBinaryPage::DoQuickGoto(const wxString& gototext)
 {
     long offset;

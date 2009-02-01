@@ -117,9 +117,8 @@ void WFindReplace::OnButtonFind(wxCommandEvent& WXUNUSED(event))
     // directly access the wxStyledTextCtrl on the WTextPage, no other page
     // will ever use the find & replace dialog.
 
-    if (!wmain->cpage || !wmain->cpage->IsKindOf(CLASSINFO(WTextPage))) return;
-
-    WTextPage* wtextpage = (WTextPage*)wmain->cpage;
+    WTextPage* wtextpage = wxDynamicCast(wmain->cpage, WTextPage);
+    if (!wtextpage) return;
 
     wxString findtext = comboFind->GetValue();
 
@@ -213,8 +212,8 @@ void WFindReplace::OnButtonFind(wxCommandEvent& WXUNUSED(event))
 
 void WFindReplace::OnButtonReplace(wxCommandEvent& event)
 {
-    if (!wmain->cpage || !wmain->cpage->IsKindOf(CLASSINFO(WTextPage))) return;
-    WTextPage* wtextpage = (WTextPage*)wmain->cpage;
+    WTextPage* wtextpage = wxDynamicCast(wmain->cpage, WTextPage);
+    if (!wtextpage) return;
 
     wxString replacetext = comboReplace->GetValue();
 

@@ -59,6 +59,7 @@ public:
     virtual void	PageClosed();
 
     virtual bool	DoQuickGoto(const wxString& gototext);
+    virtual void        StopQuickFind();
 
     // *** Event Handlers ***
 

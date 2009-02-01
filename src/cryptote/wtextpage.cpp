@@ -23,6 +23,9 @@ WTextPage::WTextPage(class WCryptoTE* parent)
     cursor_xoffset = -1;
     cursor_currentpos = -1;
 
+    quickfind_startpos = -1;
+    quickfind_length = 0;
+
     // *** Create Control ***
 
     editctrl = new wxStyledTextCtrl(this, myID_EDITCTRL);
@@ -48,6 +51,7 @@ WTextPage::WTextPage(class WCryptoTE* parent)
     editctrl->StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(_T("DARK GREY")));
     editctrl->StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(250,250,250));
     editctrl->StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour(_T("DARK GREY")));
+    editctrl->StyleSetBackground(STYLE_FINDHIGHLIGHT, wxColour(255,255,0));
 
     // Set Default View Options
     editctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
@@ -459,6 +463,7 @@ void WTextPage::PageFocused()
 
 void WTextPage::PageBlurred()
 {
+    StopQuickFind();
 }
 
 void WTextPage::PageSaveData()
@@ -514,25 +519,42 @@ void WTextPage::PageClosed()
 
 void WTextPage::PrepareQuickFind(bool backwards, bool reset)
 {
+    // clear previous find styling
+    if (quickfind_length != 0)
+    {
+        editctrl->StartStyling(quickfind_startpos, 0x1F);
+        editctrl->SetStyling(quickfind_length, 0);
+    }
+
     if (reset)
     {
 	quickfind_startpos = editctrl->GetCurrentPos();
+        quickfind_length = 0;
     }
     else
     {
 	if (!backwards)
 	{
 	    quickfind_startpos = editctrl->GetSelectionEnd();
+            quickfind_startpos += quickfind_length;
 	}
 	else
 	{
 	    quickfind_startpos = editctrl->GetSelectionStart();
+            quickfind_startpos -= quickfind_length;
 	}
     }
 }
 
 void WTextPage::DoQuickFind(bool backwards, const wxString& findtext)
 {
+    // clear previous find styling
+    if (quickfind_length != 0)
+    {
+        editctrl->StartStyling(quickfind_startpos, 0x1F);
+        editctrl->SetStyling(quickfind_length, 0);
+    }
+
     if (findtext.IsEmpty())
     {
 	// move cursor and screen back to search start position
@@ -587,11 +609,15 @@ void WTextPage::DoQuickFind(bool backwards, const wxString& findtext)
     if (respos >= 0)
     {
 	found = true;
-	int start = editctrl->GetTargetStart();
-	int end = editctrl->GetTargetEnd();
+	quickfind_startpos = editctrl->GetTargetStart();
+	quickfind_length = editctrl->GetTargetEnd() - quickfind_startpos;
 
-	editctrl->EnsureVisible( editctrl->LineFromPosition(start) );
-	editctrl->SetSelection(start, end);
+	editctrl->EnsureVisible( editctrl->LineFromPosition(quickfind_startpos) );
+
+        editctrl->StartStyling(quickfind_startpos, 0x1F);
+        editctrl->SetStyling(quickfind_length, STYLE_FINDHIGHLIGHT);
+
+        editctrl->SetSelection(quickfind_startpos, quickfind_startpos);
     }
 
     if (found && !wrapped) {
@@ -613,6 +639,11 @@ void WTextPage::DoQuickFind(bool backwards, const wxString& findtext)
 
     wmain->quickfindbar->textctrlQuickFind->SetBackgroundColour(clr);
     wmain->quickfindbar->textctrlQuickFind->Refresh();
+}
+
+void WTextPage::StopQuickFind()
+{
+    PrepareQuickFind(false, true);
 }
 
 bool WTextPage::DoQuickGoto(const wxString& gototext)
