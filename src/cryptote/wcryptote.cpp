@@ -145,6 +145,12 @@ WCryptoTE::~WCryptoTE()
 {
     auimgr.UnInit();
 
+    if (m_htmlhelp)
+    {
+        m_htmlhelp->WriteCustomization(wxConfigBase::Get(), _T("htmlhelp"));
+        wxConfigBase::Get()->Flush();
+    }
+
     if (container_filehandle) {
 	delete container_filehandle;
 	container_filehandle = NULL;
@@ -2774,6 +2780,7 @@ wxHtmlHelpController* WCryptoTE::GetHtmlHelpController()
 
         m_htmlhelp = new wxHtmlHelpController(wxHF_FRAME | wxHF_TOOLBAR | wxHF_FLAT_TOOLBAR | wxHF_CONTENTS | wxHF_INDEX | wxHF_SEARCH | wxHF_PRINT, this);
 
+        m_htmlhelp->UseConfig(wxConfigBase::Get(), _T("htmlhelp"));
         m_htmlhelp->AddBook(_T("help:cryptote.hhp"));
     }
 

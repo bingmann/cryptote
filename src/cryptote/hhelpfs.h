@@ -4,6 +4,7 @@
 #define HHELPFS_H
 
 #include <wx/filesys.h>
+#include <string>
 
 /**
  * FileSystemHandler serving only the help: protocol with files from compressed
