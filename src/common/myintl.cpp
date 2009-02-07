@@ -19,6 +19,8 @@
 
 #include "myintl.h"
 
+#include "tools.h"
+
 #include "wx/log.h"
 #include "wx/hashmap.h"
 #include "wx/utils.h"
@@ -28,9 +30,7 @@
 #include "wx/file.h"
 #include "wx/filename.h"
 
-#include <zlib.h>
 #include <memory>
-#include <stdexcept>
 #include <sstream>
 
 // ----------------------------------------------------------------------------
@@ -888,52 +888,6 @@ private:
 // ============================================================================
 // implementation
 // ============================================================================
-
-/**
- * Decompress a string using zlib and return the original data. Throws
- * std::runtime_error if an error occurred during decompression.
- */
-static inline std::string decompress(const char* str, unsigned int slen, unsigned int possiblelen=0)
-{
-    z_stream zs;	// z_stream is zlib's control structure
-    memset(&zs, 0, sizeof(zs));
-
-    if (inflateInit(&zs) != Z_OK)
-	throw(std::runtime_error("inflateInit failed while decompressing."));
-
-    zs.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(str));
-    zs.avail_in = slen;
-
-    int ret;
-    char outbuffer[32768];
-    std::string outstring;
-    outstring.reserve(possiblelen);
-
-    // get the uncompressed bytes blockwise using repeated calls to inflate
-    do {
-	zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
-	zs.avail_out = sizeof(outbuffer);
-
-	ret = inflate(&zs, 0);
-
-	if (outstring.size() < zs.total_out) {
-	    outstring.append(outbuffer,
-			     zs.total_out - outstring.size());
-	}
-
-    } while (ret == Z_OK);
-
-    inflateEnd(&zs);
-
-    if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
-	std::ostringstream oss;
-	oss << "Exception during zlib uncompression: (" << ret << ") "
-	    << zs.msg;
-	throw(std::runtime_error(oss.str()));
-    }
-
-    return outstring;
-}
 
 // ----------------------------------------------------------------------------
 // MyMsgCatalogMemory class

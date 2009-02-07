@@ -5,9 +5,15 @@
 
 #include <wx/mstream.h>
 #include <wx/string.h>
-#include <string>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
+
 #include <time.h>
+#include <string>
 #include <sstream>
+#include <stdexcept>
+#include <zlib.h>
 
 // *** Missing in 2.8, but always added by wxGlade ***
 #ifndef wxTHICK_FRAME
@@ -65,37 +71,52 @@ static inline std::string strTimeStampNow() {
     return std::string((char*)&timenow, sizeof(timenow));
 }
 
-// *** Interpolate a color from the gradient given by support points.
+// *** Decompression with zlib ***
 
-struct GradientPoint
+/**
+ * Decompress a string using zlib and return the original data. Throws
+ * std::runtime_error if an error occurred during decompression.
+ */
+static inline std::string decompress(const char* str, unsigned int slen, unsigned int possiblelen=0)
 {
-    int		value;
-    wxColour	colour;
-};
+    z_stream zs;	// z_stream is zlib's control structure
+    memset(&zs, 0, sizeof(zs));
 
-static inline wxColour MixColours(double percent, const wxColour& c1, const wxColor& c2)
-{
-    return wxColour( (unsigned char)( percent * c1.Red()   + (1-percent) * c2.Red() ),
-		     (unsigned char)( percent * c1.Green() + (1-percent) * c2.Green() ),
-		     (unsigned char)( percent * c1.Blue()  + (1-percent) * c2.Blue() ) );
-}
+    if (inflateInit(&zs) != Z_OK)
+	throw(std::runtime_error("inflateInit failed while decompressing."));
 
-static inline wxColor InterpolateGradient(int value, const struct GradientPoint* gradient, int gradientsize)
-{
-    for(int gp = 0; gp < gradientsize; ++gp)
-    {
-	if (value <= gradient[gp].value)
-	{
-	    if (gp == 0) {
-		return gradient[gp].colour;
-	    }
-	    else {
-		double percent = double(value - gradient[gp-1].value) / double(gradient[gp].value - gradient[gp-1].value);
-		return MixColours(1.0 - percent, gradient[gp-1].colour, gradient[gp].colour);
-	    }
+    zs.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(str));
+    zs.avail_in = slen;
+
+    int ret;
+    char outbuffer[32768];
+    std::string outstring;
+    outstring.reserve(possiblelen);
+
+    // get the uncompressed bytes blockwise using repeated calls to inflate
+    do {
+	zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+	zs.avail_out = sizeof(outbuffer);
+
+	ret = inflate(&zs, 0);
+
+	if (outstring.size() < zs.total_out) {
+	    outstring.append(outbuffer,
+			     zs.total_out - outstring.size());
 	}
+
+    } while (ret == Z_OK);
+
+    inflateEnd(&zs);
+
+    if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
+	std::ostringstream oss;
+	oss << "Exception during zlib uncompression: (" << ret << ") "
+	    << zs.msg;
+	throw(std::runtime_error(oss.str()));
     }
-    return gradient[gradientsize-1].colour;
+
+    return outstring;
 }
 
 #endif // __TOOLS_H__
