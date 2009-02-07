@@ -174,7 +174,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . html
-EXTRA_DIST = intro.tex texhelp.sty
+EXTRA_DIST = cryptote.tex tex2rtf.ini texhelp.sty
 CLEANFILES = cryptote.aux cryptote.idx cryptote.log cryptote.toc cryptote.out cryptote.pdf
 all: all-recursive
 

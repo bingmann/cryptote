@@ -181,6 +181,7 @@ noinst_HEADERS = \
 	cryptote_features.html.h
 
 EXTRA_DIST = \
+	style.css \
 	back.gif \
 	contents.gif \
 	forward.gif \
