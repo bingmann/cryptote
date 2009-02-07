@@ -16,6 +16,7 @@ cryptote_SOURCES = main.cpp \
 	wpass.cpp wpass.h \
 	imaglbox.cpp imaglbox.h \
 	wprefs.cpp wprefs.h \
+	hhelpfs.cpp hhelpfs.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
 	../pwgen/fips181.cpp ../pwgen/fips181.h \
 	../common/myintl.cpp ../common/myintl.h

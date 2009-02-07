@@ -6,8 +6,9 @@
 #include <wx/wx.h>
 #include <wx/filename.h>
 #include <wx/hyperlink.h>
-#include <wx/aui/aui.h>
 #include <wx/wfstream.h>
+#include <wx/aui/aui.h>
+#include <wx/wxhtml.h>
 
 #include "enctain.h"
 
@@ -66,6 +67,7 @@ enum {
     myID_MENU_VIEW_LIST,
     myID_MENU_VIEW_REPORT,
 
+    myID_MENU_HELP_BROWSER,
     myID_MENU_HELP_WEBUPDATECHECK,
 
     // (Other) Main Window Accelerators
@@ -289,6 +291,7 @@ public:
     void	OnMenuViewZoomDecrease(wxCommandEvent& event);
     void	OnMenuViewZoomReset(wxCommandEvent& event);
 
+    void	OnMenuHelpBrowser(wxCommandEvent& event);
     void	OnMenuHelpWebUpdateCheck(wxCommandEvent& event);
     void	OnMenuHelpAbout(wxCommandEvent& event);
 
@@ -395,6 +398,12 @@ public:
     /// Reentry flag for WebUpdateCheck
     bool		webupdatecheck_running;
 
+    /// wxHtmlHelp displayer
+    wxHtmlHelpController* m_htmlhelp;
+
+    /// Return initialized help displayer
+    wxHtmlHelpController* GetHtmlHelpController();
+    
 public:
 
     // *** Idle-Timer ***

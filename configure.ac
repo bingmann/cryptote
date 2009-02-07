@@ -112,7 +112,7 @@ AC_LANG([C++])
 
 AM_OPTIONS_WXCONFIG
 
-AM_PATH_WXCONFIG(2.8.0, [wxWin=1], [wxWin=0], [aui,adv,net,core])
+AM_PATH_WXCONFIG(2.8.0, [wxWin=1], [wxWin=0], [aui,html,adv,net,core])
 
 if test "$wxWin" != 1; then
     AC_MSG_ERROR([
@@ -248,6 +248,8 @@ AC_CONFIG_FILES([Makefile
 		 src/art/gnome/Makefile
 		 src/locale/Makefile
 		 src/locale/wxstd/Makefile
+                 src/help-en/Makefile
+                 src/help-en/html/Makefile
 		 src/pwgen/Makefile
 		 src/cryptote/Makefile
 		 desktop/Makefile])

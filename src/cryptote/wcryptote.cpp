@@ -12,6 +12,7 @@
 #include "wpass.h"
 #include "wprefs.h"
 #include "pwgen/wpassgen.h"
+#include "hhelpfs.h"
 
 #include <wx/config.h>
 #include <wx/fileconf.h>
@@ -39,13 +40,17 @@ WCryptoTE::WCryptoTE(wxWindow* parent)
     webupdatecheck_running = false;
 
     copt_restoreview = true;
+    m_htmlhelp = NULL;
+
+    // General Initalizations
 
     LoadPreferences();
     BitmapCatalog::GetSingleton()->SetTheme(prefs_bitmaptheme);
 
     Enctain::Container::SetSignature("CryptoTE");
 
-    {	// Program Icon
+    // Program Icon
+    {
     
         #include "art/cryptote-16.h"
         #include "art/cryptote-32.h"
@@ -1643,6 +1648,10 @@ wxMenuBar* WCryptoTE::CreateMenuBar(const wxClassInfo* page)
 
     wxMenu *menuHelp = new wxMenu;
 
+    appendMenuItem(menuHelp, myID_MENU_HELP_BROWSER,
+		   _("Show &Help ..."),
+		   _("Show help document browser."));
+
     appendMenuItem(menuHelp, myID_MENU_HELP_WEBUPDATECHECK,
 		   _("&Check for Update ..."),
 		   _("Check online web page for updates to CryptoTE."));
@@ -2484,6 +2493,11 @@ void WCryptoTE::OnMenuViewZoomReset(wxCommandEvent& WXUNUSED(event))
     ctext->SetZoom(0);
 }
 
+void WCryptoTE::OnMenuHelpBrowser(wxCommandEvent& WXUNUSED(event))
+{
+    GetHtmlHelpController()->DisplayContents();
+}
+
 void WCryptoTE::OnMenuHelpWebUpdateCheck(wxCommandEvent& WXUNUSED(event))
 {
     WebUpdateCheck();
@@ -2752,6 +2766,20 @@ void WCryptoTE::OnMenuEditFindReplace(wxCommandEvent& WXUNUSED(event))
     auimgr.Update();
 }
 
+wxHtmlHelpController* WCryptoTE::GetHtmlHelpController()
+{
+    if (!m_htmlhelp)
+    {
+        wxFileSystem::AddHandler(new BuiltinHtmlHelpFSHandler);
+
+        m_htmlhelp = new wxHtmlHelpController(wxHF_FRAME | wxHF_TOOLBAR | wxHF_FLAT_TOOLBAR | wxHF_CONTENTS | wxHF_INDEX | wxHF_SEARCH | wxHF_PRINT, this);
+
+        m_htmlhelp->AddBook(_T("help:cryptote.hhp"));
+    }
+
+    return m_htmlhelp;
+}
+
 void WCryptoTE::OnIdleTimerCheck(wxTimerEvent& WXUNUSED(event))
 {
     if (lastuserevent == 0) return;
@@ -2931,6 +2959,7 @@ BEGIN_EVENT_TABLE(WCryptoTE, wxFrame)
     EVT_MENU	(myID_MENU_VIEW_ZOOM_RESET,	WCryptoTE::OnMenuViewZoomReset)
 
     // Help
+    EVT_MENU	(myID_MENU_HELP_BROWSER,	WCryptoTE::OnMenuHelpBrowser)
     EVT_MENU	(myID_MENU_HELP_WEBUPDATECHECK,	WCryptoTE::OnMenuHelpWebUpdateCheck)
     EVT_MENU	(wxID_ABOUT,			WCryptoTE::OnMenuHelpAbout)
 

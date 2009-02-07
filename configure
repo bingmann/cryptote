@@ -4540,7 +4540,7 @@ $as_echo_n "checking for wxWidgets version >= $min_wx_version... " >&6; }
 $as_echo_n "checking for wxWidgets version >= $min_wx_version ()... " >&6; }
     fi
 
-    WX_CONFIG_WITH_ARGS="$WX_CONFIG_PATH $wx_config_args  aui,adv,net,core"
+    WX_CONFIG_WITH_ARGS="$WX_CONFIG_PATH $wx_config_args  aui,html,adv,net,core"
 
     WX_VERSION=`$WX_CONFIG_WITH_ARGS --version 2>/dev/null`
     wx_config_major_version=`echo $WX_VERSION | \
@@ -5988,7 +5988,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/locale/Makefile src/locale/wxstd/Makefile src/pwgen/Makefile src/cryptote/Makefile desktop/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/locale/Makefile src/locale/wxstd/Makefile src/help-en/Makefile src/help-en/html/Makefile src/pwgen/Makefile src/cryptote/Makefile desktop/Makefile"
 
 
 if $ON_WIN32; then
@@ -6684,6 +6684,8 @@ do
     "src/art/gnome/Makefile") CONFIG_FILES="$CONFIG_FILES src/art/gnome/Makefile" ;;
     "src/locale/Makefile") CONFIG_FILES="$CONFIG_FILES src/locale/Makefile" ;;
     "src/locale/wxstd/Makefile") CONFIG_FILES="$CONFIG_FILES src/locale/wxstd/Makefile" ;;
+    "src/help-en/Makefile") CONFIG_FILES="$CONFIG_FILES src/help-en/Makefile" ;;
+    "src/help-en/html/Makefile") CONFIG_FILES="$CONFIG_FILES src/help-en/html/Makefile" ;;
     "src/pwgen/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwgen/Makefile" ;;
     "src/cryptote/Makefile") CONFIG_FILES="$CONFIG_FILES src/cryptote/Makefile" ;;
     "desktop/Makefile") CONFIG_FILES="$CONFIG_FILES desktop/Makefile" ;;

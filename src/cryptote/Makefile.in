@@ -51,8 +51,8 @@ am_cryptote_OBJECTS = main.$(OBJEXT) wcryptote.$(OBJEXT) \
 	bmpcat.$(OBJEXT) wtextpage.$(OBJEXT) wfind.$(OBJEXT) \
 	wfilelist.$(OBJEXT) wfileprop.$(OBJEXT) wcntprop.$(OBJEXT) \
 	wmsgdlg.$(OBJEXT) wbinpage.$(OBJEXT) wpass.$(OBJEXT) \
-	imaglbox.$(OBJEXT) wprefs.$(OBJEXT) wpassgen.$(OBJEXT) \
-	fips181.$(OBJEXT) myintl.$(OBJEXT)
+	imaglbox.$(OBJEXT) wprefs.$(OBJEXT) hhelpfs.$(OBJEXT) \
+	wpassgen.$(OBJEXT) fips181.$(OBJEXT) myintl.$(OBJEXT)
 cryptote_OBJECTS = $(am_cryptote_OBJECTS)
 cryptote_LDADD = $(LDADD)
 cryptote_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -208,6 +208,7 @@ cryptote_SOURCES = main.cpp \
 	wpass.cpp wpass.h \
 	imaglbox.cpp imaglbox.h \
 	wprefs.cpp wprefs.h \
+	hhelpfs.cpp hhelpfs.h \
 	../pwgen/wpassgen.cpp ../pwgen/wpassgen.h \
 	../pwgen/fips181.cpp ../pwgen/fips181.h \
 	../common/myintl.cpp ../common/myintl.h
@@ -290,6 +291,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bmpcat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fips181.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hhelpfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imaglbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/myintl.Po@am__quote@

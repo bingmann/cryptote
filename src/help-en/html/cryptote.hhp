@@ -1,0 +1,18 @@
+[OPTIONS]
+Compatibility=1.1
+Full-text search=Yes
+Contents file=cryptote.hhc
+Compiled file=cryptote.chm
+Default Window=cryptoteHelp
+Default topic=cryptote_contents.html
+Index file=cryptote.hhk
+Title=CryptoTE Help
+
+[WINDOWS]
+cryptoteHelp=,"cryptote.hhc","cryptote.hhk","cryptote_contents.html",,,,,,0x2420,,0x380e,,,,,0,,,
+
+[FILES]
+cryptote_contents.html
+cryptote_introduction.html
+cryptote_aboutencryption.html
+cryptote_features.html

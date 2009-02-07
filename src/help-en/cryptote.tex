@@ -1,0 +1,181 @@
+% $Id$
+
+\documentclass[a4paper,12pt,twoside]{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{lmodern}
+
+\usepackage{texhelp}
+\usepackage{makeidx}
+
+\usepackage[tmargin=2.5cm,bmargin=2.5cm,lmargin=2cm,rmargin=2cm]{geometry}
+
+\parskip 11pt
+\parindent 0pt
+
+\helpignore{ 
+  \usepackage{fancyhdr}
+  \headheight 16pt
+  \fancyhead{}
+  \fancyhead[LE,RO]{\textsc{\leftmark}}
+  \fancyfoot{}
+  \fancyfoot[LE,RO]{\thepage}
+  \pagestyle{fancy}
+}
+
+\usepackage[nobottomtitles]{titlesec}
+
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!70!black]{hyperref}
+
+\title{CryptoTE Help}
+\author{Timo Bingmann}
+\date{February 2009}
+
+\begin{document}
+
+\pagestyle{plain}
+\maketitle
+\tableofcontents
+
+\clearpage
+\pagestyle{fancy}
+
+\section{Introduction}\label{Introduction}
+
+\subsection{Summary}\label{Summary}
+
+CryptoTE is a text editor with integrated strong cryptography. It is based on
+the popular Scintilla widget and automatically stores text data in secure
+encrypted container files. Compared to other "Password Keeper" programs,
+CryptoTE does not force any structure upon your data: it works with plain ascii
+text and does not require you to fill in grids, key-value attributes,
+descriptions etc.
+
+\section{About Encryption}\label{AboutEncryption}
+
+\subsection{Weak Passwords}\label{WeakPasswords}
+
+Much advice can be given about choosing a password.
+
+First: do not think of passwords rather think of \textbf{pass-phrases}. No encryption program can keep your data safe if you set the password to an English word or, even worse, some word connected with your surroundings or identity.
+
+Confronted with having to choose a longer passphrase most people will want to write it down. Next bad thing to do is to keep the slip of paper directly at the computer. Do not to this!
+
+To give an idea of a good password: see that Serpent uses 256 keybits, that is 256 bits of random information. An average English text has 1.0 to 1.5 keybits per letter.
+
+So this whole sentence corresponds to only about 51 keybits!
+
+The keybits (that is entropy rate) can be increased by using names, special symbols and other non-natural language elements.
+
+\subsection{Advice on Choosing a Password}\label{AdvicePassword}
+
+My method to learn a new password is very simple: I use the random password generated built into CryptoTE and generate a string containing random letters. I never include z/y in the password because they are mixed on German vs. English keyboard layouts.
+
+Depending on the purpose I only use lowercase characters and choose a password length: the generator will show you the theoretic keybits of the password. Adapt the length to your needs.
+
+My container password is about 25 upper and lowercase letters. That is 139.6 keybits. Alot better than a simple sentence. Something like this: DUWHmnBunfVQNUeCdQxpHHdIJ
+
+You think you cannot learn 25 random letters? \textbf{Try it!} Your memory is way better than you think.
+
+I use CryptoTE daily to fetch some passwords and it always requires you to enter the password. Through this repetition \textbf{you too} will quickly learn your random letters. For the starting time (1 week or so) you can write the letters down on paper, but keep that paper slip safe! After two weeks: burn it.
+
+\subsection{Measures of Security}\label{MeasuresSecurity}
+
+CryptoTE can keep your text safe, but you must consider the suitablity of encryption for your purpose. Against whom are you keeping your passwords safe?
+
+\begin{itemize}
+  \item To keep them safe against your wife, children or roommates casually using your computer: OK.
+  \item To be sure that if your notebook or usb stick is stolen that no senstive data can be read: very good idea, also OK.
+  \item Against fishing or keyloggers: no chance, they will see the entered password.
+  \item Against police / law enforcement officials: not good! They'll jail you indefinately.
+  \item Against vicious, evil people: no chance! They will use a crowbar \textbf{on you} instead of your computer.
+\end{itemize}
+
+\section{Features}\label{Features}
+
+\subsection{Overview}\label{Overview}
+
+\begin{itemize}
+  \item User-friendly Scintilla text editing widget. The same as used by Notepad++.
+  \item Edits \helpref{secure private container files}{Containers} holding multiple text or binary files.
+  \item Highly-secure \helpref{Serpent (256 keybits) encryption}{Encryption} of sensitive data.
+  \item \helpref{Automatic compression}{Compression} using zlib or bzip2 to reduce container size.
+  \item \helpref{Multiple user passwords}{KeySlots} can be specified to access a container.
+  \item Fast user-interface: Quick-Find and Quick-Goto bars like Firefox's find. I use the program myself daily.
+  \item Auto-Close the container after a user-defined period of inactivity.
+  \item Built-in password generator to insert new passwords in the text.
+  \item Sleek wxAui tabbed interface from the newest \helpref{wxWidgets}{wxWidgets} version.
+  \item Also useable from the Unix/Linux \helpref{command line}{Commandline} on a text console e.g. via ssh.
+  \item Modularized and well-tested container processing library.
+  \item Translated into German (volunteers for more languages wanted).
+\end{itemize}
+
+\subsection{Encrypted Containers}\label{Containers}
+
+An encrypted container has the extension \texttt{.ect}. It can hold multiple text or binary subfiles. The contained files are encrypted using strong cryptographic ciphers and are unreadable by other programs than CryptoTE.
+
+Use multiple subfiles to structure your sensitive data like "\texttt{Web\-Site\-Passwords.txt}" and "\texttt{EMail\-Accounts.txt}".
+
+The container file format support \helpref{built-in encryption}{Encryption} and \helpref{built-in compression}{Compression}. It also supports multiple key slots for different password.
+
+\subsection{Built-in Encryption}\label{Encryption}
+
+CryptoTE contains built-in strong encryption. It uses a reduced version of the Botan cryptography library.
+
+While designing CryptoTE I decided not to burden a user (that is you) with a long list of encryption ciphers to select one. Instead I selected one for you, the strongest currently freely available one: \textbf{Serpent}.
+
+Why use Serpent? Well, Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will be (hopefully) still safe for a short time. Even though both are based on the same cryptography mechanisms more cryptoanalysis (read: attempts to break) will be directed at Rijndael/AES.
+
+However secure encryption does not end with selecting a cipher. Instead it starts there: the key material must be stored securely, the contained key hashes must be irreversible.
+
+One mistake in design of the container format can render the encryption weak or even breakable. Be aware that it is rather easy to make such a mistake and I am sure many other ``password keeper'' programs contain such errors.
+
+It is also \emph{very} easy to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE \textbf{does not contain such a backdoor}, there is \textbf{no way} to retrieve data without the password. I am sure many other ``password protectors'' contain such backdoors.
+
+The each subfile of the container is encrypted using Serpent/CBC with a different randomly generated IV (initialization vector). The IVs are stored in a global file table, which in turn is encrypted with a master key using Serpent/CBC. This master key is not stored in the container file.
+
+Instead a container supports multiple decryption keys: see Multiple Key Slots. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hash using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.
+
+More information about the container file format is available in the cryptote source code in libenctain/format.html.
+
+I ran an extensive cryptography speedtest before designing CryptoTE: see http://idlebox.net for details.
+
+\subsection{Built-in Compression}\label{Compression}
+
+As a bonus CryptoTE also contain automatic compression of text files. Nothing has to be activated: by default all files are compressed using zlib using the deflate algorithm.
+
+Compression can be deactivated in the SubFile Properties dialog.
+
+CryptoTE also contains bzip2 as alternative compression method. It generally really large compresses text files better, smaller text files are handled better my zlib.
+
+\subsection{Multiple Key Slots}\label{KeySlots}
+
+A container can be decrypted with multiple different passwords. This way multiple users can keep their password secret. This is called KeySlots in CryptoTE: a new password can be added in the menu entry ``Password List''.
+
+\subsection{wxWidgets}\label{wxWidgets}
+
+Why choose wxWidgets as toolkit? For many reasons:
+
+\begin{itemize}
+  \item It is cross-platform: versions of CryptoTE exist for Windows and Linux. MacOSX support is also possible.
+  \item It looks ``native'' on all platforms: the controls are like the user expect them to be.
+  \item It allows me to compile a self-sufficient single .exe file for Windows. Very useful for usb sticks.
+  \item It is released under a very liberal license.
+\end{itemize}
+
+\subsection{Commandline Interface}\label{Commandline}
+
+For Unix users and other power-users the CryptoTE program has a command line interface. This is very useful if you cannot start the graphical user interface, e.g. if logged in via ssh or if you are limited to the text console.
+
+The best way to use CryptoTE without gui is to start the ``shell'': \texttt{cryptote -s file.ect}.
+
+It will query for the container password and if decryption works a simple shell is started. Start using the shell by entering ``help'' for a list of command.
+
+Be warned that using the ``edit'' command requires CryptoTE to save the contents in a temporary file outside the container. This file can then be modified using any text editor. If you wish to implement a built-in console text editor in CryptoTE, contact me.
+
+\end{document}
