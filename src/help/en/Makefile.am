@@ -8,14 +8,18 @@ cryptote.pdf: cryptote.tex
 
 pdf: cryptote.pdf
 
+if GOT_TEX2RTF
+
 html/cryptote.hhp: cryptote.tex
 	tex2rtf cryptote.tex html/cryptote -html
 
 html: html/cryptote.hhp
 
-.PHONY: pdf html
-
 all-local: html/cryptote.hhp
+
+endif
+
+.PHONY: pdf html
 
 EXTRA_DIST =  cryptote.tex tex2rtf.ini texhelp.sty
 

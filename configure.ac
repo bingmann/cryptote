@@ -126,6 +126,12 @@ if test "$wxWin" != 1; then
     ])
 fi
 
+# Check for tex2rtf utility from wxWidgets to regenerate help.
+
+AC_CHECK_TOOL(TEX2RTF, tex2rtf)
+
+AM_CONDITIONAL(GOT_TEX2RTF, test x$TEX2RTF != x)
+
 # Check for zlib - based on CHECK_ZLIB()
 
 AC_ARG_WITH(zlib,

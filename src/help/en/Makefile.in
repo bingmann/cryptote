@@ -108,6 +108,7 @@ RESCOMP = @RESCOMP@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TEX2RTF = @TEX2RTF@
 VERSION = @VERSION@
 WX_CFLAGS = @WX_CFLAGS@
 WX_CFLAGS_ONLY = @WX_CFLAGS_ONLY@
@@ -384,6 +385,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
+@GOT_TEX2RTF_FALSE@all-local:
 all-am: Makefile all-local
 installdirs: installdirs-recursive
 installdirs-am:
@@ -423,6 +425,8 @@ distclean-am: clean-am distclean-generic distclean-tags
 dvi: dvi-recursive
 
 dvi-am:
+
+@GOT_TEX2RTF_FALSE@html: html-recursive
 
 info: info-recursive
 
@@ -485,14 +489,14 @@ cryptote.pdf: cryptote.tex
 
 pdf: cryptote.pdf
 
-html/cryptote.hhp: cryptote.tex
-	tex2rtf cryptote.tex html/cryptote -html
+@GOT_TEX2RTF_TRUE@html/cryptote.hhp: cryptote.tex
+@GOT_TEX2RTF_TRUE@	tex2rtf cryptote.tex html/cryptote -html
 
-html: html/cryptote.hhp
+@GOT_TEX2RTF_TRUE@html: html/cryptote.hhp
+
+@GOT_TEX2RTF_TRUE@all-local: html/cryptote.hhp
 
 .PHONY: pdf html
-
-all-local: html/cryptote.hhp
 
 clean-local:
 	rm -f *.con
