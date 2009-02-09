@@ -42,7 +42,7 @@
 <A NAME="Containers"></A>
 <H3>Encrypted Containers</H3>
 <P>
-An encrypted container has the extension <TT>.ect</TT>. It can hold multiple text or binary subfiles. The contained files are encrypted using strong cryptographic ciphers and are unreadable by other programs than CryptoTE.<P>
+An encrypted container has the extension <TT>.ect</TT>. It can hold multiple text or binary subfiles. The contained files are encrypted using strong cryptography and are unreadable by other programs than CryptoTE.<P>
 Use multiple subfiles to structure your sensitive data like "<TT>WebSitePasswords.txt</TT>" and "<TT>EMailAccounts.txt</TT>".<P>
 The container file format support <A HREF="cryptote_features.html#Encryption">built-in encryption</A> and <A HREF="cryptote_features.html#Compression">built-in compression</A>. It also supports multiple key slots for different password.<P>
 
@@ -50,24 +50,24 @@ The container file format support <A HREF="cryptote_features.html#Encryption">bu
 <A NAME="Encryption"></A>
 <H3>Built-in Encryption</H3>
 <P>
-CryptoTE contains built-in strong encryption. It uses a reduced version of the Botan cryptography library.<P>
+CryptoTE contains built-in strong encryption. It uses a custom version of the Botan cryptography library.<P>
 While designing CryptoTE I decided not to burden a user (that is you) with a long list of encryption ciphers to select one. Instead I selected one for you, the strongest currently freely available one: <B>Serpent</B>.<P>
-Why use Serpent? Well, Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will be (hopefully) still safe for a short time. Even though both are based on the same cryptography mechanisms more cryptoanalysis (read: attempts to break) will be directed at Rijndael/AES.<P>
+Why use Serpent? Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will (hopefully) still be safe for a short time. Even though both are based on the same cryptographic mechanisms more cryptoanalysis (read: attempts to break) will be directed at Rijndael/AES.<P>
 However secure encryption does not end with selecting a cipher. Instead it starts there: the key material must be stored securely, the contained key hashes must be irreversible.<P>
 One mistake in design of the container format can render the encryption weak or even breakable. Be aware that it is rather easy to make such a mistake and I am sure many other "password keeper'' programs contain such errors.<P>
 It is also <EM>very</EM> easy to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE <B>does not contain such a backdoor</B>, there is <B>no way</B> to retrieve data without the password. I am sure many other "password protectors'' contain such backdoors.<P>
-The each subfile of the container is encrypted using Serpent/CBC with a different randomly generated IV (initialization vector). The IVs are stored in a global file table, which in turn is encrypted with a master key using Serpent/CBC. This master key is not stored in the container file.<P>
-Instead a container supports multiple decryption keys: see Multiple Key Slots. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hash using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.<P>
+Each subfile of the container is encrypted using Serpent/CBC with a different randomly generated key and IV (initialization vector). The keys and IVs are stored in a global file table, which in turn is encrypted with a master key using Serpent/CBC. This master key is not stored in plain text within the container file.<P>
+Instead a container supports multiple decryption keys: <A HREF="cryptote_features.html#KeySlots">Multiple Key Slots</A>. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hash using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.<P>
 More information about the container file format is available in the cryptote source code in libenctain/format.html.<P>
-I ran an extensive cryptography speedtest before designing CryptoTE: see http://idlebox.net for details.<P>
+I ran an extensive cryptography speedtest before designing CryptoTE: see <A HREF="http://idlebox.net">http://idlebox.net</A> for details.<P>
 
 <HR>
 <A NAME="Compression"></A>
 <H3>Built-in Compression</H3>
 <P>
-As a bonus CryptoTE also contain automatic compression of text files. Nothing has to be activated: by default all files are compressed using zlib using the deflate algorithm.<P>
+As a bonus CryptoTE also contains automatic compression of text files. Nothing has to be activated: by default all files are compressed using zlib using the deflate algorithm.<P>
 Compression can be deactivated in the SubFile Properties dialog.<P>
-CryptoTE also contains bzip2 as alternative compression method. It generally really large compresses text files better, smaller text files are handled better my zlib.<P>
+CryptoTE also contains bzip2 as alternative compression method. It generally only compresses really large text files better, smaller text files are handled better by zlib.<P>
 
 <HR>
 <A NAME="KeySlots"></A>
@@ -83,7 +83,7 @@ Why choose wxWidgets as toolkit? For many reasons:<P>
 <UL>
 
   <LI> It is cross-platform: versions of CryptoTE exist for Windows and Linux. MacOSX support is also possible.
-  <LI> It looks "native'' on all platforms: the controls are like the user expect them to be.
+  <LI> It looks "native'' on all platforms: the frames and widgets look like the user expects them to look like.
   <LI> It allows me to compile a self-sufficient single .exe file for Windows. Very useful for usb sticks.
   <LI> It is released under a very liberal license.
 </UL>
@@ -93,7 +93,7 @@ Why choose wxWidgets as toolkit? For many reasons:<P>
 <A NAME="Commandline"></A>
 <H3>Commandline Interface</H3>
 <P>
-For Unix users and other power-users the CryptoTE program has a command line interface. This is very useful if you cannot start the graphical user interface, e.g. if logged in via ssh or if you are limited to the text console.<P>
+For Unix users and other power-users the CryptoTE program has a command line interface. This is very useful if you cannot start the graphical user interface, e.g. if logged in via ssh or if you are limited to a text console.<P>
 The best way to use CryptoTE without gui is to start the "shell'': <TT>cryptote -s file.ect</TT>.<P>
 It will query for the container password and if decryption works a simple shell is started. Start using the shell by entering "help'' for a list of command.<P>
 Be warned that using the "edit'' command requires CryptoTE to save the contents in a temporary file outside the container. This file can then be modified using any text editor. If you wish to implement a built-in console text editor in CryptoTE, contact me.<P>

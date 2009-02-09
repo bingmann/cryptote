@@ -6,12 +6,14 @@ cryptote.pdf: cryptote.tex
 	pdflatex -halt-on-error $<
 	pdflatex -halt-on-error $<
 
+pdf: cryptote.pdf
+
 html/cryptote.hhp: cryptote.tex
 	tex2rtf cryptote.tex html/cryptote -html
 
 html: html/cryptote.hhp
 
-.PHONY: html
+.PHONY: pdf html
 
 all-local: html/cryptote.hhp
 

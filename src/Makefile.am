@@ -1,3 +1,3 @@
 # $Id$
 
-SUBDIRS = art locale help-en pwgen cryptote
+SUBDIRS = art locale help pwgen cryptote

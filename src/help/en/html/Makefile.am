@@ -1,7 +1,7 @@
 # $Id$
 
 %.h: %
-	../../art/file2h -c -p "help-en-" $< > $@
+	../../../art/file2h -c -p "help-en-" $< > $@
 
 cryptote.hhp.cached: cryptote.hhp
 	hhp2cached $<

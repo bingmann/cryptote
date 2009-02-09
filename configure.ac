@@ -248,8 +248,9 @@ AC_CONFIG_FILES([Makefile
 		 src/art/gnome/Makefile
 		 src/locale/Makefile
 		 src/locale/wxstd/Makefile
-                 src/help-en/Makefile
-                 src/help-en/html/Makefile
+                 src/help/Makefile
+                 src/help/en/Makefile
+                 src/help/en/html/Makefile
 		 src/pwgen/Makefile
 		 src/cryptote/Makefile
 		 desktop/Makefile])

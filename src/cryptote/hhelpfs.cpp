@@ -64,18 +64,18 @@ BuiltinHtmlHelpFSHandler::OpenFile(wxFileSystem&, const wxString& location)
     return NULL;
 }
 
-#include "help-en/html/back.gif.h"
-#include "help-en/html/contents.gif.h"
-#include "help-en/html/forward.gif.h"
-#include "help-en/html/up.gif.h"
-#include "help-en/html/cryptote.hhc.h"
-#include "help-en/html/cryptote.hhk.h"
-#include "help-en/html/cryptote.hhp.h"
-#include "help-en/html/cryptote.hhp.cached.h"
-#include "help-en/html/cryptote_contents.html.h"
-#include "help-en/html/cryptote_introduction.html.h"
-#include "help-en/html/cryptote_aboutencryption.html.h"
-#include "help-en/html/cryptote_features.html.h"
+#include "help/en/html/back.gif.h"
+#include "help/en/html/contents.gif.h"
+#include "help/en/html/forward.gif.h"
+#include "help/en/html/up.gif.h"
+#include "help/en/html/cryptote.hhc.h"
+#include "help/en/html/cryptote.hhk.h"
+#include "help/en/html/cryptote.hhp.h"
+#include "help/en/html/cryptote.hhp.cached.h"
+#include "help/en/html/cryptote_contents.html.h"
+#include "help/en/html/cryptote_introduction.html.h"
+#include "help/en/html/cryptote_aboutencryption.html.h"
+#include "help/en/html/cryptote_features.html.h"
 
 #define FILE(path,buffer)       { wxString(wxT(path)), buffer, sizeof(buffer), buffer##_uncompressed, std::string() }
 
