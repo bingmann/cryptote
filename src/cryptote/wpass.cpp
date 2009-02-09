@@ -154,7 +154,7 @@ void WPasswordList::OnButtonAdd(wxCommandEvent& WXUNUSED(event))
 {
     Enctain::Container cnt = wmain->container;
 
-    WSetPassword passdlg(this, wmain->GetSavedFilename());
+    WSetPassword passdlg(wmain, this, wmain->GetSavedFilename());
     if (passdlg.ShowModal() != wxID_OK) return;
 
     unsigned int newslot = cnt.AddKeySlot( strWX2STL(passdlg.GetPass()) );
@@ -177,7 +177,7 @@ void WPasswordList::OnButtonChange(wxCommandEvent& WXUNUSED(event))
     if (slot < 0) return;
     if (slot >= (int)cnt.CountKeySlots()) return;
 
-    WSetPassword passdlg(this, wmain->GetSavedFilename());
+    WSetPassword passdlg(wmain, this, wmain->GetSavedFilename());
     passdlg.SetDescription(strSTL2WX( cnt.GetGlobalEncryptedProperty("KeySlot-" + toSTLString(slot) + "-Description") ));
     
     if (passdlg.ShowModal() != wxID_OK) return;
@@ -229,10 +229,9 @@ void WPasswordList::OnButtonOK(wxCommandEvent& WXUNUSED(event))
     EndModal(wxID_OK);
 }
 
-// wxGlade: add WPasswordList event handlers
-
-WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
-    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME)
+WSetPassword::WSetPassword(class WCryptoTE* _wmain, class wxWindow* parent, const wxString& filename, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long WXUNUSED(style))
+    : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME),
+      wmain(_wmain)
 {
     // begin wxGlade: WSetPassword::WSetPassword
     labelQuery = new wxStaticText(this, wxID_ANY, _("Set Password for \"abc.ect\":"));
@@ -240,6 +239,7 @@ WSetPassword::WSetPassword(class wxWindow* parent, const wxString& filename, int
     gaugeStrength = new wxGauge(this, wxID_ANY, 100, wxDefaultPosition, wxDefaultSize, wxGA_HORIZONTAL|wxGA_SMOOTH);
     textctrlVerify = new wxTextCtrl(this, myID_TEXTVERIFY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PASSWORD);
     textctrlDescription = new wxTextCtrl(this, myID_TEXTDESCRIPTION, wxEmptyString);
+    hyperlinkAdvice = new wxHyperlinkCtrl(this, myID_HYPERLINK_ADVICE, _("Advice on Choosing a Password"), _T(""));
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonCancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
 
@@ -287,8 +287,9 @@ void WSetPassword::do_layout()
 {
     // begin wxGlade: WSetPassword::do_layout
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
-    wxGridSizer* sizer5 = new wxGridSizer(1, 2, 0, 0);
+    wxGridSizer* sizer7 = new wxGridSizer(1, 2, 0, 0);
     wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer5 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer4 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer3 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer3_ = new wxBoxSizer(wxHORIZONTAL);
@@ -308,12 +309,18 @@ void WSetPassword::do_layout()
     wxStaticText* labelDescription = new wxStaticText(this, wxID_ANY, _("Description:"));
     sizer2->Add(labelDescription, 0, wxALL, 8);
     sizer2->Add(textctrlDescription, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 8);
+    sizer5->Add(1, 1, 1, 0, 0);
+    wxStaticText* labelConsider = new wxStaticText(this, wxID_ANY, _("Consider reading: "), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+    sizer5->Add(labelConsider, 0, wxRIGHT, 2);
+    sizer5->Add(hyperlinkAdvice, 0, 0, 0);
+    sizer5->Add(1, 1, 1, 0, 0);
+    sizer2->Add(sizer5, 0, wxALL|wxEXPAND, 8);
     sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 8);
     wxStaticLine* staticline1 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline1, 0, wxEXPAND, 0);
-    sizer5->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer5->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
-    sizer1->Add(sizer5, 0, wxEXPAND, 0);
+    sizer7->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer7->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer1->Add(sizer7, 0, wxEXPAND, 0);
     SetSizer(sizer1);
     sizer1->Fit(this);
     Layout();
@@ -331,6 +338,7 @@ BEGIN_EVENT_TABLE(WSetPassword, wxDialog)
     EVT_TEXT_ENTER(myID_TEXTVERIFY, WSetPassword::OnTextVerifyEnter)
     EVT_BUTTON(wxID_OK, WSetPassword::OnButtonOK)
     // end wxGlade
+    EVT_HYPERLINK(myID_HYPERLINK_ADVICE, WSetPassword::OnHyperlinkAdvice)
 END_EVENT_TABLE();
 
 // *** Password Strength Estimation ***
@@ -538,6 +546,11 @@ void WSetPassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 	    EndModal(wxID_OK);
 	}
     }
+}
+
+void WSetPassword::OnHyperlinkAdvice(wxHyperlinkEvent& WXUNUSED(event))
+{
+    wmain->GetHtmlHelpController()->Display(_T("cryptote_aboutencryption.html#AdvicePassword"));
 }
 
 // wxGlade: add WSetPassword event handlers

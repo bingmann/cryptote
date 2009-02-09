@@ -69,11 +69,12 @@ public:
     enum {
         myID_TEXTPASS = wxID_HIGHEST + 1005,
         myID_TEXTVERIFY = wxID_HIGHEST + 1007,
-        myID_TEXTDESCRIPTION = wxID_HIGHEST + 1009
+        myID_TEXTDESCRIPTION = wxID_HIGHEST + 1009,
+        myID_HYPERLINK_ADVICE = wxID_HIGHEST + 1010
     };
     // end wxGlade
 
-    WSetPassword(wxWindow* parent, const wxString& filename, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WSetPassword(class WCryptoTE* wmain, wxWindow* parent, const wxString& filename, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
     /// Return pass after user enters it.
     const wxString&	GetPass() const;
@@ -97,6 +98,7 @@ protected:
     wxGauge* gaugeStrength;
     wxTextCtrl* textctrlVerify;
     wxTextCtrl* textctrlDescription;
+    wxHyperlinkCtrl* hyperlinkAdvice;
     wxButton* buttonOK;
     wxButton* buttonCancel;
     // end wxGlade
@@ -108,6 +110,9 @@ protected:
     wxSizer*	sizerGauge;
     wxSizer*	sizerVerify;
 
+    /// Reference to main window
+    class WCryptoTE* wmain;
+
     DECLARE_EVENT_TABLE();
 
 public:
@@ -115,6 +120,7 @@ public:
     virtual void OnTextPass(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnTextVerifyEnter(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void OnButtonOK(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnHyperlinkAdvice(wxHyperlinkEvent& event);
 }; // wxGlade: end class
 
 class WGetPassword : public wxDialog
@@ -122,7 +128,7 @@ class WGetPassword : public wxDialog
 public:
     // begin wxGlade: WGetPassword::ids
     enum {
-        myID_TEXTPASS = wxID_HIGHEST + 1010
+        myID_TEXTPASS = wxID_HIGHEST + 1011
     };
     // end wxGlade
 

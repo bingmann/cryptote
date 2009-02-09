@@ -94,7 +94,7 @@ BuiltinHtmlHelpFSHandler::filelist[] =
     FILE("cryptote_contents.html", help_en_cryptote_contents_html),
     FILE("cryptote_introduction.html", help_en_cryptote_introduction_html),
     FILE("cryptote_aboutencryption.html", help_en_cryptote_aboutencryption_html),
-    FILE("cryptote_features.html", help_en_cryptote_features_html),
+    FILE("cryptote_features.html", help_en_cryptote_features_html)
 };
 
 unsigned int

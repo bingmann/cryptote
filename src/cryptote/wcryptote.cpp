@@ -955,7 +955,7 @@ bool WCryptoTE::ContainerSaveAs(const wxString& filename)
     // check that an encryption key is set
     if (container.CountKeySlots() == 0)
     {
-	WSetPassword passdlg(this, filename);
+	WSetPassword passdlg(this, this, filename);
 	if (passdlg.ShowModal() != wxID_OK) return false;
 
 	unsigned int newslot = container.AddKeySlot( strWX2STL(passdlg.GetPass()) );
