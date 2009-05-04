@@ -42,80 +42,11 @@ libstc_a_SOURCES = \
 	scintilla/src/KeyMap.cxx \
 	scintilla/src/KeyMap.h \
 	scintilla/src/KeyWords.cxx \
-	scintilla/src/LexAPDL.cxx \
-	scintilla/src/LexASY.cxx \
-	scintilla/src/LexAU3.cxx \
-	scintilla/src/LexAVE.cxx \
-	scintilla/src/LexAbaqus.cxx \
-	scintilla/src/LexAda.cxx \
-	scintilla/src/LexAsm.cxx \
-	scintilla/src/LexAsn1.cxx \
-	scintilla/src/LexBaan.cxx \
-	scintilla/src/LexBash.cxx \
-	scintilla/src/LexBasic.cxx \
-	scintilla/src/LexBullant.cxx \
-	scintilla/src/LexCLW.cxx \
-	scintilla/src/LexCPP.cxx \
-	scintilla/src/LexCSS.cxx \
-	scintilla/src/LexCaml.cxx \
-	scintilla/src/LexCmake.cxx \
-	scintilla/src/LexConf.cxx \
-	scintilla/src/LexCrontab.cxx \
-	scintilla/src/LexCsound.cxx \
-	scintilla/src/LexD.cxx \
-	scintilla/src/LexEScript.cxx \
-	scintilla/src/LexEiffel.cxx \
-	scintilla/src/LexErlang.cxx \
-	scintilla/src/LexFlagship.cxx \
-	scintilla/src/LexForth.cxx \
-	scintilla/src/LexFortran.cxx \
-	scintilla/src/LexGAP.cxx \
-	scintilla/src/LexGen.py \
-	scintilla/src/LexGui4Cli.cxx \
-	scintilla/src/LexHTML.cxx \
-	scintilla/src/LexHaskell.cxx \
-	scintilla/src/LexInno.cxx \
-	scintilla/src/LexKix.cxx \
-	scintilla/src/LexLisp.cxx \
-	scintilla/src/LexLout.cxx \
-	scintilla/src/LexLua.cxx \
-	scintilla/src/LexMagik.cxx \
-	scintilla/src/LexMMIXAL.cxx \
-	scintilla/src/LexMPT.cxx \
-	scintilla/src/LexMSSQL.cxx \
-	scintilla/src/LexMatlab.cxx \
-	scintilla/src/LexMetapost.cxx \
-	scintilla/src/LexMySQL.cxx \
-	scintilla/src/LexNsis.cxx \
-	scintilla/src/LexOpal.cxx \
-	scintilla/src/LexOthers.cxx \
-	scintilla/src/LexPB.cxx \
-	scintilla/src/LexPLM.cxx \
-	scintilla/src/LexPOV.cxx \
-	scintilla/src/LexPowerShell.cxx \
-	scintilla/src/LexPS.cxx \
-	scintilla/src/LexPascal.cxx \
-	scintilla/src/LexPerl.cxx \
-	scintilla/src/LexProgress.cxx \
-	scintilla/src/LexPython.cxx \
-	scintilla/src/LexR.cxx \
-	scintilla/src/LexRebol.cxx \
-	scintilla/src/LexRuby.cxx \
-	scintilla/src/LexSQL.cxx \
-	scintilla/src/LexScriptol.cxx \
-	scintilla/src/LexSmalltalk.cxx \
-	scintilla/src/LexSpecman.cxx \
-	scintilla/src/LexSpice.cxx \
-	scintilla/src/LexTADS3.cxx \
-	scintilla/src/LexTCL.cxx \
-	scintilla/src/LexTeX.cxx \
-	scintilla/src/LexVB.cxx \
-	scintilla/src/LexVHDL.cxx \
-	scintilla/src/LexVerilog.cxx \
-	scintilla/src/LexYAML.cxx \
 	scintilla/src/LineMarker.cxx \
 	scintilla/src/LineMarker.h \
 	scintilla/src/Partitioning.h \
+	scintilla/src/PerLine.cxx \
+	scintilla/src/PerLine.h \
 	scintilla/src/PositionCache.cxx \
 	scintilla/src/PositionCache.h \
 	scintilla/src/PropSet.cxx \
@@ -167,5 +98,5 @@ EXTRA_DIST = README.txt \
 	scintilla/doc/Steps.html \
 	scintilla/doc/index.html
 
-AM_CFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CFLAGS)
-AM_CXXFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DLINK_LEXERS -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CXXFLAGS)
+AM_CFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CFLAGS)
+AM_CXXFLAGS = -W -Wall -D__WX__ -DSCI_LEXER -DSCI_NAMESPACE -I$(srcdir)/scintilla/include -I$(srcdir)/scintilla/src $(WX_CXXFLAGS)

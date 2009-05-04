@@ -918,8 +918,8 @@ wxString WPassGen::MakePassword(const Preset& preset)
     {
 	FIPS181 fips181 (Enctain::RNG::random_uint);
 
-	std::string word, hypenated_word;
-	fips181.randomword(word, hypenated_word, preset.length, preset.length);
+	std::string word, hyphenated_word;
+	fips181.randomword(word, hyphenated_word, preset.length, preset.length);
 
 	return wxString(word.data(), wxConvUTF8, word.size());
     }
