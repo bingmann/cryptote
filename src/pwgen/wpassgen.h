@@ -32,9 +32,10 @@ public:
         myID_SKIPSWAPPEDCHAR = wxID_HIGHEST + 1010,
         myID_TEXT_EXTRACHAR = wxID_HIGHEST + 1012,
         myID_LENGTH = wxID_HIGHEST + 1014,
-        myID_ENUMERATE = wxID_HIGHEST + 1016,
-        myID_GENERATE = wxID_HIGHEST + 1018,
-        myID_PASSLIST = wxID_HIGHEST + 1020
+        myID_NUMBER = wxID_HIGHEST + 1016,
+        myID_ENUMERATE = wxID_HIGHEST + 1018,
+        myID_GENERATE = wxID_HIGHEST + 1020,
+        myID_PASSLIST = wxID_HIGHEST + 1022
     };
     // end wxGlade
 
@@ -185,6 +186,7 @@ protected:
     wxTextCtrl* textctrlExtraChar;
     wxSpinCtrl* spinctrlLength;
     wxTextCtrl* textctrlStrength;
+    wxSpinCtrl* spinctrlNumber;
     wxCheckBox* checkboxEnumerate;
     wxButton* buttonGenerate;
     wxListCtrl* listctrlPasslist;
@@ -205,6 +207,7 @@ public:
     void OnCheckSkipSwappedChar(wxCommandEvent &event); // wxGlade: <event_handler>
     void OnTextExtraCharChange(wxCommandEvent &event); // wxGlade: <event_handler>
     void OnSpinLength(wxSpinEvent &event); // wxGlade: <event_handler>
+    void OnSpinNumber(wxSpinEvent &event); // wxGlade: <event_handler>
     void OnCheckEnumerate(wxCommandEvent &event); // wxGlade: <event_handler>
     void OnButtonGenerate(wxCommandEvent &event); // wxGlade: <event_handler>
     void OnPasslistSelected(wxListEvent &event); // wxGlade: <event_handler>

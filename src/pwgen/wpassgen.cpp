@@ -9,6 +9,7 @@
 
 #include <wx/config.h>
 #include <wx/textdlg.h>
+#include <wx/tokenzr.h>
 
 // begin wxGlade: ::extracode
 // end wxGlade
@@ -46,7 +47,8 @@ WPassGen::WPassGen(wxWindow* parent, bool _standalone, int id, const wxString& t
     textctrlExtraChar = new wxTextCtrl(this, myID_TEXT_EXTRACHAR, wxEmptyString);
     spinctrlLength = new wxSpinCtrl(this, myID_LENGTH, wxT("12"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 6, 100);
     textctrlStrength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    checkboxEnumerate = new wxCheckBox(this, myID_ENUMERATE, _("Enumerate Passwords"));
+    spinctrlNumber = new wxSpinCtrl(this, myID_NUMBER, wxT("10"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 1000);
+    checkboxEnumerate = new wxCheckBox(this, myID_ENUMERATE, _("Enumerate"));
     buttonGenerate = new wxButton(this, myID_GENERATE, _("&Generate"));
     listctrlPasslist = new wxListCtrl(this, myID_PASSLIST, wxDefaultPosition, wxDefaultSize, wxLC_LIST|wxSUNKEN_BORDER);
     textctrlPasslist = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
@@ -87,7 +89,7 @@ void WPassGen::set_properties()
 {
     // begin wxGlade: WPassGen::set_properties
     SetTitle(_("CryptoTE Password Generator"));
-    SetSize(wxSize(400, 600));
+    SetSize(wxSize(502, 600));
     choicePreset->SetToolTip(_("Default or saved password generation presets."));
     buttonPresetAdd->SetToolTip(_("Save the current settings as a new preset."));
     buttonPresetAdd->SetSize(buttonPresetAdd->GetBestSize());
@@ -100,6 +102,7 @@ void WPassGen::set_properties()
     spinctrlLength->SetToolTip(_("Password length desired."));
     textctrlStrength->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
     textctrlStrength->SetToolTip(_("Theoretic number of keybits the entropy of the selected pass type generates."));
+    spinctrlNumber->SetToolTip(_("Number of passwords to generate."));
     checkboxEnumerate->SetToolTip(_("Add serial enumeration to each password line."));
     listctrlPasslist->SetFont(wxFont(10, wxMODERN, wxNORMAL, wxNORMAL, 0, wxT("")));
     textctrlPasslist->SetFont(wxFont(10, wxMODERN, wxNORMAL, wxNORMAL, 0, wxT("")));
@@ -110,10 +113,11 @@ void WPassGen::do_layout()
 {
     // begin wxGlade: WPassGen::do_layout
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+    wxGridSizer* sizer7 = new wxGridSizer(1, 2, 0, 0);
     wxGridSizer* sizer6 = new wxGridSizer(1, 2, 0, 0);
-    wxGridSizer* sizer5 = new wxGridSizer(1, 2, 0, 0);
     wxStaticBoxSizer* sizer2 = new wxStaticBoxSizer(sizer2_staticbox, wxVERTICAL);
     wxFlexGridSizer* sizer3 = new wxFlexGridSizer(8, 2, 0, 0);
+    wxBoxSizer* sizer5 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer4 = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* label1 = new wxStaticText(this, wxID_ANY, _("Preset:"));
     sizer3->Add(label1, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
@@ -137,8 +141,11 @@ void WPassGen::do_layout()
     wxStaticText* label5 = new wxStaticText(this, wxID_ANY, _("Theoretic Strength:"));
     sizer3->Add(label5, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
     sizer3->Add(textctrlStrength, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL, 6);
-    sizer3->Add(5, 5, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer3->Add(checkboxEnumerate, 0, wxLEFT|wxRIGHT|wxBOTTOM, 6);
+    wxStaticText* label6 = new wxStaticText(this, wxID_ANY, _("Number of Passwords:"));
+    sizer3->Add(label6, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer5->Add(spinctrlNumber, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 6);
+    sizer5->Add(checkboxEnumerate, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 6);
+    sizer3->Add(sizer5, 1, wxEXPAND, 0);
     sizer3->AddGrowableCol(1);
     sizer2->Add(sizer3, 1, wxEXPAND, 0);
     sizer2->Add(buttonGenerate, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
@@ -149,12 +156,12 @@ void WPassGen::do_layout()
     sizer1->Add(textctrlPasslist, 1, wxALL|wxEXPAND, 8);
     wxStaticLine* staticline2 = new wxStaticLine(this, wxID_ANY);
     sizer1->Add(staticline2, 0, wxEXPAND, 0);
-    sizer5->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer5->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
-    sizer1->Add(sizer5, 0, wxEXPAND, 0);
-    sizer6->Add(buttonAbout, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
-    sizer6->Add(buttonClose, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer6->Add(buttonOK, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer6->Add(buttonCancel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
     sizer1->Add(sizer6, 0, wxEXPAND, 0);
+    sizer7->Add(buttonAbout, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 6);
+    sizer7->Add(buttonClose, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
+    sizer1->Add(sizer7, 0, wxEXPAND, 0);
     SetSizer(sizer1);
     Layout();
     Centre();
@@ -163,14 +170,13 @@ void WPassGen::do_layout()
     if (standalone)
     {
 	sizer1->Hide(listctrlPasslist);
-	sizer1->Hide(sizer5);
+	sizer1->Hide(sizer6);
     }
     else
     {
-	sizer3->Hide(14);
-	sizer3->Hide(15);
+	sizer5->Hide(checkboxEnumerate);
 	sizer1->Hide(textctrlPasslist);
-	sizer1->Hide(sizer6);
+	sizer1->Hide(sizer7);
     }
 }
 
@@ -184,6 +190,7 @@ BEGIN_EVENT_TABLE(WPassGen, wxDialog)
     EVT_CHECKBOX(myID_SKIPSWAPPEDCHAR, WPassGen::OnCheckSkipSwappedChar)
     EVT_TEXT(myID_TEXT_EXTRACHAR, WPassGen::OnTextExtraCharChange)
     EVT_SPINCTRL(myID_LENGTH, WPassGen::OnSpinLength)
+    EVT_SPINCTRL(myID_NUMBER, WPassGen::OnSpinNumber)
     EVT_CHECKBOX(myID_ENUMERATE, WPassGen::OnCheckEnumerate)
     EVT_BUTTON(myID_GENERATE, WPassGen::OnButtonGenerate)
     EVT_LIST_ITEM_DESELECTED(myID_PASSLIST, WPassGen::OnPasslistSelected)
@@ -254,6 +261,7 @@ void WPassGen::LoadDefaultSettings()
     checkboxSkipSwappedChar->SetValue(false);
     textctrlExtraChar->SetValue(_T(""));
     spinctrlLength->SetValue(12);
+    spinctrlNumber->SetValue(10);
     checkboxEnumerate->SetValue(false);
 
     presetlist = GetDefaultPresets();
@@ -273,7 +281,7 @@ void WPassGen::LoadSettings(class wxConfigBase* cfg)
 
     cfg->SetPath(_T("/pwgen"));
 
-    int preset, type, length;
+    int preset, type, length, number;
     bool skip_similar, skip_swapped, enumerate;
     wxString extrachar;
 
@@ -283,6 +291,7 @@ void WPassGen::LoadSettings(class wxConfigBase* cfg)
     cfg->Read(_T("skip_swapped"), &skip_swapped, false);
     cfg->Read(_T("extrachar"), &extrachar);
     cfg->Read(_T("length"), &length, 12);
+    cfg->Read(_T("number"), &number, 10);
     cfg->Read(_T("enumerate"), &enumerate, false);
 
     choicePreset->SetSelection(preset);
@@ -291,6 +300,7 @@ void WPassGen::LoadSettings(class wxConfigBase* cfg)
     checkboxSkipSwappedChar->SetValue(skip_swapped);
     textctrlExtraChar->SetValue(extrachar);
     spinctrlLength->SetValue(length);
+    spinctrlNumber->SetValue(number);
     checkboxEnumerate->SetValue(enumerate);
 
     if (cfg->Exists(_T("/pwgen/presets")))
@@ -344,6 +354,7 @@ void WPassGen::SaveSettings(class wxConfigBase* cfg)
     cfg->Write(_T("skip_swapped"), checkboxSkipSwappedChar->GetValue());
     cfg->Write(_T("extrachar"), textctrlExtraChar->GetValue());
     cfg->Write(_T("length"), spinctrlLength->GetValue());
+    cfg->Write(_T("number"), spinctrlNumber->GetValue());
     cfg->Write(_T("enumerate"), checkboxEnumerate->GetValue());
 
     cfg->DeleteGroup(_T("/pwgen/presets"));
@@ -467,6 +478,64 @@ void WPassGen::OnSpinLength(wxSpinEvent& WXUNUSED(event))
     UpdateKeyStrength();
 }
 
+void WPassGen::OnSpinNumber(wxSpinEvent& event)
+{
+    pass_type passtype = (pass_type)choiceType->GetSelection();
+    bool skip_similar = checkboxSkipSimilarChar->GetValue();
+    bool skip_swapped = checkboxSkipSwappedChar->GetValue();
+    wxString extrachar = textctrlExtraChar->GetValue();
+    int passlen = spinctrlLength->GetValue();
+    bool enumerate = checkboxEnumerate->GetValue();
+    int passnumber = event.GetPosition();
+
+    Preset preset(_T(""), passtype, skip_similar, skip_swapped, extrachar, passlen);
+
+    if (standalone)
+    {
+	// Fill wxTextCtrl with passwords
+
+	wxString oldtext = textctrlPasslist->GetValue();
+        wxStringTokenizer oldtexttoken(oldtext, _T("\n"));
+
+        wxString newtext;
+
+	for(int i = 0; i < passnumber; i++)
+	{
+            if (oldtexttoken.HasMoreTokens())
+            {
+                newtext += oldtexttoken.GetNextToken() + _T("\n");
+            }
+            else
+            {
+                if (enumerate)
+                    newtext += wxString::Format(_T("%u "), i);
+
+                newtext += MakePassword(preset) + _T("\n");
+            }
+	}
+
+	textctrlPasslist->SetValue(newtext);
+    }
+    else
+    {
+	// Fill wxListCtrl with passwords
+
+	int oldcount = listctrlPasslist->GetItemCount();
+
+        for(int i = oldcount; i > passnumber; --i)
+        {
+            listctrlPasslist->DeleteItem(i-1);
+        }
+
+	for(int i = oldcount; i < passnumber; i++)
+	{
+	    listctrlPasslist->InsertItem(i, MakePassword(preset) );
+	}
+    }
+
+    buttonOK->Disable();
+}
+
 void WPassGen::OnCheckEnumerate(wxCommandEvent& WXUNUSED(event))
 {
 }
@@ -574,16 +643,17 @@ void WPassGen::GenerateList()
     wxString extrachar = textctrlExtraChar->GetValue();
     int passlen = spinctrlLength->GetValue();
     bool enumerate = checkboxEnumerate->GetValue();
+    int passnumber = spinctrlNumber->GetValue();
 
     Preset preset(_T(""), passtype, skip_similar, skip_swapped, extrachar, passlen);
 
     if (standalone)
     {
-	// Fill wxTextCtrl with password
+	// Fill wxTextCtrl with passwords
 
 	wxString text;
 
-	for(unsigned int i = 0; i < 10; i++)
+	for(int i = 0; i < passnumber; i++)
 	{
 	    if (enumerate)
 		text += wxString::Format(_T("%u "), i);
@@ -595,11 +665,11 @@ void WPassGen::GenerateList()
     }
     else
     {
-	// Fill wxListCtrl with password
+	// Fill wxListCtrl with passwords
 
 	listctrlPasslist->DeleteAllItems();
 
-	for(unsigned int i = 0; i < 10; i++)
+	for(int i = 0; i < passnumber; i++)
 	{
 	    listctrlPasslist->InsertItem(i, MakePassword(preset) );
 	}
