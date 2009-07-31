@@ -33,7 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/help
+subdir = src/help/de
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -174,7 +174,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = en de
+SUBDIRS = . html
+EXTRA_DIST = cryptote.tex tex2rtf.ini texhelp.sty
+CLEANFILES = cryptote.aux cryptote.idx cryptote.log cryptote.toc cryptote.out cryptote.pdf
 all: all-recursive
 
 .SUFFIXES:
@@ -187,9 +189,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/help/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/help/de/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/help/Makefile
+	  $(AUTOMAKE) --gnu  src/help/de/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -383,7 +385,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile
+@GOT_TEX2RTF_FALSE@all-local:
+all-am: Makefile all-local
 installdirs: installdirs-recursive
 installdirs-am:
 install: install-recursive
@@ -403,6 +406,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -412,7 +416,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-generic clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f Makefile
@@ -422,7 +426,7 @@ dvi: dvi-recursive
 
 dvi-am:
 
-html: html-recursive
+@GOT_TEX2RTF_FALSE@html: html-recursive
 
 info: info-recursive
 
@@ -454,8 +458,6 @@ mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-generic
 
-pdf: pdf-recursive
-
 pdf-am:
 
 ps: ps-recursive
@@ -468,10 +470,10 @@ uninstall-am:
 	install-strip
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am check check-am clean clean-generic ctags \
-	ctags-recursive distclean distclean-generic distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
+	all all-am all-local check check-am clean clean-generic \
+	clean-local ctags ctags-recursive distclean distclean-generic \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
 	install-pdf install-pdf-am install-ps install-ps-am \
@@ -480,6 +482,24 @@ uninstall-am:
 	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
 	tags-recursive uninstall uninstall-am
 
+
+cryptote.pdf: cryptote.tex
+	pdflatex -halt-on-error $<
+	pdflatex -halt-on-error $<
+
+pdf: cryptote.pdf
+
+@GOT_TEX2RTF_TRUE@html/cryptote.hhp: cryptote.tex
+@GOT_TEX2RTF_TRUE@	tex2rtf cryptote.tex html/cryptote -html
+
+@GOT_TEX2RTF_TRUE@html: html/cryptote.hhp
+
+@GOT_TEX2RTF_TRUE@all-local: html/cryptote.hhp
+
+.PHONY: pdf html
+
+clean-local:
+	rm -f *.con
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

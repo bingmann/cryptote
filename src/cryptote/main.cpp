@@ -94,7 +94,7 @@ private:
     bool		run_pwgen;
 
     /// Locale object holding translations
-    MyLocale*		locale;
+    MyLocale*		m_locale;
 
     /// Enctain Library Initializer
     Enctain::LibraryInitializer	enctain_init;
@@ -106,7 +106,7 @@ public:
 	  consolemode(_consolemode),
 	  wcryptote(NULL),
 	  run_pwgen(false),
-	  locale(NULL)
+	  m_locale(NULL)
     {
     }
 
@@ -129,20 +129,20 @@ public:
 
 	// Setup locale to system default
 
-	locale = new MyLocale(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+	m_locale = new MyLocale(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
 
         // Load and initialize the catalog
-	if (!locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
-	    !locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
+	if (!m_locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
+	    !m_locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
         {
 	    // Could not load message catalog for system language, falling back
 	    // to English.
 
-	    delete locale;
-	    locale = new MyLocale(wxLANGUAGE_ENGLISH, wxLOCALE_CONV_ENCODING);
+	    delete m_locale;
+	    m_locale = new MyLocale(wxLANGUAGE_ENGLISH, wxLOCALE_CONV_ENCODING);
 	    
-	    if (!locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
-		!locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
+	    if (!m_locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
+		!m_locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
 	    {
 		wxLogError(_T("Could not load message catalog for system or English language."));
 		return false;
@@ -197,7 +197,7 @@ public:
 	else
 	{
 	    // Create editor's main window frame
-	    wcryptote = new WCryptoTE(NULL);
+	    wcryptote = new WCryptoTE(NULL, m_locale);
 	    SetTopWindow(wcryptote);
 	    wcryptote->Show();
 
@@ -270,23 +270,23 @@ public:
 		return false;
 	    }
 
-	    if (locale) delete locale;
-	    locale = new MyLocale;
+	    if (m_locale) delete m_locale;
+	    m_locale = new MyLocale;
 
-	    if (!locale->Init(langinfo->Language, wxLOCALE_CONV_ENCODING)) {
+	    if (!m_locale->Init(langinfo->Language, wxLOCALE_CONV_ENCODING)) {
 		wxLogError(_("This language is not supported by the program."));
 		return false;
 	    }
 
 	    // Load and initialize the catalog
-	    if (!locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs))
+	    if (!m_locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs))
 	    {
 		wxLogError(_("This language is not supported by the program."));
 		return false;
 	    }
 
 	    // Load and initialize the catalog
-	    if (!locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
+	    if (!m_locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))
 	    {
 		wxLogError(_("This language is not supported by the program."));
 		return false;
@@ -809,7 +809,8 @@ public:
 
 #ifdef __WXMSW__
 
-// This implements WinMain() or something. Always starts in graphics mode.
+// This implements WinMain() or something. Always starts in graphics mode, ever
+// seen a Windows without GUI?
 IMPLEMENT_APP(App)
 
 #else

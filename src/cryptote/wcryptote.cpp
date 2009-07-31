@@ -11,8 +11,9 @@
 #include "wbinpage.h"
 #include "wpass.h"
 #include "wprefs.h"
-#include "pwgen/wpassgen.h"
 #include "hhelpfs.h"
+#include "pwgen/wpassgen.h"
+#include "common/myintl.h"
 
 #include <wx/config.h>
 #include <wx/fileconf.h>
@@ -27,9 +28,10 @@
 #include <share.h>
 #endif
 
-WCryptoTE::WCryptoTE(wxWindow* parent)
+WCryptoTE::WCryptoTE(wxWindow* parent, class MyLocale* locale)
     : wxFrame(parent, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(750, 550),
-	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE)
+	      wxDEFAULT_FRAME_STYLE | wxNO_FULL_REPAINT_ON_RESIZE),
+      m_locale(locale)
 {
     cpage = NULL;
     cpageid = -1;
@@ -2781,7 +2783,15 @@ wxHtmlHelpController* WCryptoTE::GetHtmlHelpController()
         m_htmlhelp = new wxHtmlHelpController(wxHF_FRAME | wxHF_TOOLBAR | wxHF_FLAT_TOOLBAR | wxHF_CONTENTS | wxHF_INDEX | wxHF_SEARCH | wxHF_PRINT, this);
 
         m_htmlhelp->UseConfig(wxConfigBase::Get(), _T("htmlhelp"));
-        m_htmlhelp->AddBook(_T("help:cryptote.hhp"));
+
+        if (m_locale->GetLanguage() == wxLANGUAGE_GERMAN)
+        {
+            m_htmlhelp->AddBook(_T("help:de/cryptote.hhp"));
+        }
+        else
+        {
+            m_htmlhelp->AddBook(_T("help:en/cryptote.hhp"));
+        }
     }
 
     return m_htmlhelp;

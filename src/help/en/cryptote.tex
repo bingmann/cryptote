@@ -4,6 +4,7 @@
 
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[english]{babel}
 
 \usepackage{lmodern}
 
@@ -60,9 +61,9 @@ descriptions etc.
 
 \subsection{Weak Passwords}\label{WeakPasswords}
 
-Much advice can be given about choosing a good password.
+Much advice can be given about choosing a good password. Following the advice is often more difficult.
 
-First: do not think of ``passwords'', rather think of \textbf{pass-phrases}. No encryption program can keep your data safe if you set the password to a plain English word or, even worse, some word connected with your surroundings or identity. There are many lists of bad passwords on the Internet: try search for ``top 100 passwords'' for some amusement.
+First: do not think of ``passwords'', rather think of \textbf{pass-phrases}. No encryption program can keep your data safe if you set the password to a plain English word or, even worse, some word connected with your surroundings or identity. There are many lists of bad but nevertheless frequently used passwords on the Internet: try search for ``top 100 passwords'' for some amusement.
 
 Confronted with having to choose a longer passphrase most people will want to write it down. Next bad thing to do is to keep the slip of paper directly at the computer. Do not to this!
 
@@ -82,7 +83,7 @@ My container password is about 25 upper and lowercase letters. That is 139.6 key
 
 You think you cannot learn 25 random letters? \textbf{Try it!} Your memory is way better than you think. Learn it by frequent repetition:
 
-I use CryptoTE daily to fetch some passwords and it always requires you to enter the password. Through this repetition \textbf{you too} will quickly learn your random letters. For the starting time (1 week or so) you can write the letters down on paper, but keep that paper slip safe! After two weeks: burn it.
+I use CryptoTE daily to fetch some passwords and it always requires you to enter the password. Through this repetition \textbf{you too} will quickly learn your random letters. For the starting time (1 week or so) you can write the letters down on paper, but keep that paper slip safe! My favorite place: my wallet. After two weeks: burn it.
 
 If you think 25 letters is way too much: try starting with 10, e.g. rZl2jXybem. That is already 57 keybits.
 
@@ -91,7 +92,7 @@ If you think 25 letters is way too much: try starting with 10, e.g. rZl2jXybem. 
 CryptoTE can keep your text safe, but you must consider the suitability of encryption for your purpose. Against whom are you keeping your passwords safe?
 
 \begin{itemize}
-  \item To keep them safe against your wife, children or roommates casually using your computer: OK.
+  \item To keep them safe against your children, roommates, co-workers or wife casually using your computer: OK.
   \item To be sure that if your notebook or usb stick is stolen that no sensitive data can be read: very good idea, also OK.
   \item Against fishing or keyloggers: no chance, they will see the entered password.
   \item Against police / law enforcement officials: not good! They'll jail you indefinitely.
@@ -111,6 +112,7 @@ CryptoTE can keep your text safe, but you must consider the suitability of encry
   \item Fast user-interface: Quick-Find and Quick-Goto bars like Firefox's find. I use the program myself daily.
   \item Auto-Close the container after a user-defined period of inactivity.
   \item Built-in password generator to insert new passwords in the text.
+  \item Portable, self-sufficient executable files for Windows and Linux available. Very useful for USB sticks.
   \item Sleek wxAui tabbed interface from the newest \helpref{wxWidgets}{wxWidgets} version.
   \item Also useable from the Unix/Linux \helpref{command line}{Commandline} on a text console e.g. via ssh.
   \item Modularized and well-tested container processing library.
@@ -137,13 +139,13 @@ However secure encryption does not end with selecting a cipher. Instead it start
 
 One mistake in design of the container format can render the encryption weak or even breakable. Be aware that it is rather easy to make such a mistake and I am sure many other ``password keeper'' programs contain such errors.
 
-It is also \emph{very} easy to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE \textbf{does not contain such a backdoor}, there is \textbf{no way} to retrieve data without the password. I am sure many other ``password protectors'' contain such backdoors.
+It is also \emph{very easy} to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE \textbf{does not contain such a backdoor}, there is \textbf{no viable method} to retrieve data without the password. I am sure many other ``password protectors'' contain such backdoors.
 
 Each subfile of the container is encrypted using Serpent/CBC with a different randomly generated key and IV (initialization vector). The keys and IVs are stored in a global file table, which in turn is encrypted with a master key using Serpent/CBC. This master key is not stored in plain text within the container file.
 
-Instead a container supports multiple decryption keys: \helpref{Multiple Key Slots}{KeySlots}. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hash using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.
+Instead a container supports multiple decryption keys: \helpref{Multiple Key Slots}{KeySlots}. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hashed using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.
 
-More information about the container file format is available in the cryptote source code in libenctain/format.html.
+More information about the container file format is available in the CryptoTE source code in libenctain/format.html.
 
 I ran an extensive cryptography speedtest before designing CryptoTE: see \urlref{http://idlebox.net}{http://idlebox.net} for details.
 
@@ -166,7 +168,7 @@ Why choose wxWidgets as toolkit? For many reasons:
 \begin{itemize}
   \item It is cross-platform: versions of CryptoTE exist for Windows and Linux. MacOSX support is also possible.
   \item It looks ``native'' on all platforms: the frames and widgets look like the user expects them to look like.
-  \item It allows me to compile a self-sufficient single .exe file for Windows. Very useful for usb sticks.
+  \item It allows me to compile a self-sufficient single .exe file for Windows. Very useful for USB sticks.
   \item It is released under a very liberal license.
 \end{itemize}
 

@@ -77,24 +77,51 @@ BuiltinHtmlHelpFSHandler::OpenFile(wxFileSystem&, const wxString& location)
 #include "help/en/html/cryptote_aboutencryption.html.h"
 #include "help/en/html/cryptote_features.html.h"
 
+#include "help/de/html/back.gif.h"
+#include "help/de/html/contents.gif.h"
+#include "help/de/html/forward.gif.h"
+#include "help/de/html/up.gif.h"
+#include "help/de/html/cryptote.hhc.h"
+#include "help/de/html/cryptote.hhk.h"
+#include "help/de/html/cryptote.hhp.h"
+#include "help/de/html/cryptote.hhp.cached.h"
+#include "help/de/html/cryptote_contents.html.h"
+#include "help/de/html/cryptote_einfuehrung.html.h"
+#include "help/de/html/cryptote_ueberverschluesselung.html.h"
+#include "help/de/html/cryptote_funktionsumfang.html.h"
+
 #define FILE(path,buffer)       { wxString(wxT(path)), buffer, sizeof(buffer), buffer##_uncompressed, std::string() }
 
 struct BuiltinHtmlHelpFSHandler::BuiltinFile
 BuiltinHtmlHelpFSHandler::filelist[] =
 {
-    FILE("back.gif", help_en_back_gif),
-    FILE("contents.gif", help_en_contents_gif),
-    FILE("forward.gif", help_en_forward_gif),
-    FILE("up.gif", help_en_up_gif),
+    FILE("en/back.gif", help_en_back_gif),
+    FILE("en/contents.gif", help_en_contents_gif),
+    FILE("en/forward.gif", help_en_forward_gif),
+    FILE("en/up.gif", help_en_up_gif),
 
-    FILE("cryptote.hhc", help_en_cryptote_hhc),
-    FILE("cryptote.hhk", help_en_cryptote_hhk),
-    FILE("cryptote.hhp", help_en_cryptote_hhp),
-    FILE("cryptote.hhp.cached", help_en_cryptote_hhp_cached),
-    FILE("cryptote_contents.html", help_en_cryptote_contents_html),
-    FILE("cryptote_introduction.html", help_en_cryptote_introduction_html),
-    FILE("cryptote_aboutencryption.html", help_en_cryptote_aboutencryption_html),
-    FILE("cryptote_features.html", help_en_cryptote_features_html)
+    FILE("en/cryptote.hhc", help_en_cryptote_hhc),
+    FILE("en/cryptote.hhk", help_en_cryptote_hhk),
+    FILE("en/cryptote.hhp", help_en_cryptote_hhp),
+    FILE("en/cryptote.hhp.cached", help_en_cryptote_hhp_cached),
+    FILE("en/cryptote_contents.html", help_en_cryptote_contents_html),
+    FILE("en/cryptote_introduction.html", help_en_cryptote_introduction_html),
+    FILE("en/cryptote_aboutencryption.html", help_en_cryptote_aboutencryption_html),
+    FILE("en/cryptote_features.html", help_en_cryptote_features_html),
+
+    FILE("de/back.gif", help_de_back_gif),
+    FILE("de/contents.gif", help_de_contents_gif),
+    FILE("de/forward.gif", help_de_forward_gif),
+    FILE("de/up.gif", help_de_up_gif),
+
+    FILE("de/cryptote.hhc", help_de_cryptote_hhc),
+    FILE("de/cryptote.hhk", help_de_cryptote_hhk),
+    FILE("de/cryptote.hhp", help_de_cryptote_hhp),
+    FILE("de/cryptote.hhp.cached", help_de_cryptote_hhp_cached),
+    FILE("de/cryptote_contents.html", help_de_cryptote_contents_html),
+    FILE("de/cryptote_einfuehrung.html", help_de_cryptote_einfuehrung_html),
+    FILE("de/cryptote_ueberverschluesselung.html", help_de_cryptote_ueberverschluesselung_html),
+    FILE("de/cryptote_funktionsumfang.html", help_de_cryptote_funktionsumfang_html)
 };
 
 unsigned int

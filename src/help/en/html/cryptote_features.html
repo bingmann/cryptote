@@ -31,6 +31,7 @@
   <LI> Fast user-interface: Quick-Find and Quick-Goto bars like Firefox's find. I use the program myself daily.
   <LI> Auto-Close the container after a user-defined period of inactivity.
   <LI> Built-in password generator to insert new passwords in the text.
+  <LI> Portable, self-sufficient executable files for Windows and Linux available. Very useful for USB sticks.
   <LI> Sleek wxAui tabbed interface from the newest <A HREF="cryptote_features.html#wxWidgets">wxWidgets</A> version.
   <LI> Also useable from the Unix/Linux <A HREF="cryptote_features.html#Commandline">command line</A> on a text console e.g. via ssh.
   <LI> Modularized and well-tested container processing library.
@@ -55,10 +56,10 @@ While designing CryptoTE I decided not to burden a user (that is you) with a lon
 Why use Serpent? Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will (hopefully) still be safe for a short time. Even though both are based on the same cryptographic mechanisms more cryptoanalysis (read: attempts to break) will be directed at Rijndael/AES.<P>
 However secure encryption does not end with selecting a cipher. Instead it starts there: the key material must be stored securely, the contained key hashes must be irreversible.<P>
 One mistake in design of the container format can render the encryption weak or even breakable. Be aware that it is rather easy to make such a mistake and I am sure many other "password keeper'' programs contain such errors.<P>
-It is also <EM>very</EM> easy to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE <B>does not contain such a backdoor</B>, there is <B>no way</B> to retrieve data without the password. I am sure many other "password protectors'' contain such backdoors.<P>
+It is also <EM>very easy</EM> to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE <B>does not contain such a backdoor</B>, there is <B>no viable method</B> to retrieve data without the password. I am sure many other "password protectors'' contain such backdoors.<P>
 Each subfile of the container is encrypted using Serpent/CBC with a different randomly generated key and IV (initialization vector). The keys and IVs are stored in a global file table, which in turn is encrypted with a master key using Serpent/CBC. This master key is not stored in plain text within the container file.<P>
-Instead a container supports multiple decryption keys: <A HREF="cryptote_features.html#KeySlots">Multiple Key Slots</A>. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hash using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.<P>
-More information about the container file format is available in the cryptote source code in libenctain/format.html.<P>
+Instead a container supports multiple decryption keys: <A HREF="cryptote_features.html#KeySlots">Multiple Key Slots</A>. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hashed using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.<P>
+More information about the container file format is available in the CryptoTE source code in libenctain/format.html.<P>
 I ran an extensive cryptography speedtest before designing CryptoTE: see <A HREF="http://idlebox.net">http://idlebox.net</A> for details.<P>
 
 <HR>
@@ -84,7 +85,7 @@ Why choose wxWidgets as toolkit? For many reasons:<P>
 
   <LI> It is cross-platform: versions of CryptoTE exist for Windows and Linux. MacOSX support is also possible.
   <LI> It looks "native'' on all platforms: the frames and widgets look like the user expects them to look like.
-  <LI> It allows me to compile a self-sufficient single .exe file for Windows. Very useful for usb sticks.
+  <LI> It allows me to compile a self-sufficient single .exe file for Windows. Very useful for USB sticks.
   <LI> It is released under a very liberal license.
 </UL>
 <P>

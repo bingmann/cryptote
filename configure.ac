@@ -257,6 +257,8 @@ AC_CONFIG_FILES([Makefile
                  src/help/Makefile
                  src/help/en/Makefile
                  src/help/en/html/Makefile
+                 src/help/de/Makefile
+                 src/help/de/html/Makefile
 		 src/pwgen/Makefile
 		 src/cryptote/Makefile
 		 desktop/Makefile])

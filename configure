@@ -6095,7 +6095,7 @@ fi
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/locale/Makefile src/locale/wxstd/Makefile src/help/Makefile src/help/en/Makefile src/help/en/html/Makefile src/pwgen/Makefile src/cryptote/Makefile desktop/Makefile"
+ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile libenctain/testsuite/Makefile src/Makefile src/art/Makefile src/art/crystal/Makefile src/art/slick/Makefile src/art/gnome/Makefile src/locale/Makefile src/locale/wxstd/Makefile src/help/Makefile src/help/en/Makefile src/help/en/html/Makefile src/help/de/Makefile src/help/de/html/Makefile src/pwgen/Makefile src/cryptote/Makefile desktop/Makefile"
 
 
 if $ON_WIN32; then
@@ -6801,6 +6801,8 @@ do
     "src/help/Makefile") CONFIG_FILES="$CONFIG_FILES src/help/Makefile" ;;
     "src/help/en/Makefile") CONFIG_FILES="$CONFIG_FILES src/help/en/Makefile" ;;
     "src/help/en/html/Makefile") CONFIG_FILES="$CONFIG_FILES src/help/en/html/Makefile" ;;
+    "src/help/de/Makefile") CONFIG_FILES="$CONFIG_FILES src/help/de/Makefile" ;;
+    "src/help/de/html/Makefile") CONFIG_FILES="$CONFIG_FILES src/help/de/html/Makefile" ;;
     "src/pwgen/Makefile") CONFIG_FILES="$CONFIG_FILES src/pwgen/Makefile" ;;
     "src/cryptote/Makefile") CONFIG_FILES="$CONFIG_FILES src/cryptote/Makefile" ;;
     "desktop/Makefile") CONFIG_FILES="$CONFIG_FILES desktop/Makefile" ;;

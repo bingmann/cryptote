@@ -112,7 +112,7 @@ enum {
 class WCryptoTE : public wxFrame
 {
 public:
-    WCryptoTE(wxWindow* parent);
+    WCryptoTE(wxWindow* parent, class MyLocale* locale);
     ~WCryptoTE();
 
     // *** Operations ***
@@ -327,10 +327,12 @@ public:
     void	OnButtonGotoClose(wxCommandEvent& event);
 
 protected:
-
-    // *** Menu, Tool and Status Bars of the Main Window ***
+    // *** Global System Objects ***
+    class MyLocale*     m_locale;
 
 public:
+    // *** Menu, Tool and Status Bars of the Main Window ***
+
     class wxMenuBar*	menubar_plain;
     class wxMenuBar*	menubar_textpage;
     class wxMenuBar*	menubar_binarypage;

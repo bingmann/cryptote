@@ -1,3 +1,3 @@
 # $Id$
 
-SUBDIRS = en
+SUBDIRS = en de
