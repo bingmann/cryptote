@@ -62,7 +62,7 @@ protected:
 	Botan::SecureVector<Botan::byte>	encdata;
 
 	/// User-defined properties of the subfile.
-	propertymap_type properties;
+	propertymap_type                        properties;
 
 	/// Compressed and encrypted data of subfile.
 	Botan::SecureVector<Botan::byte>	data;
@@ -122,41 +122,41 @@ protected:
     // *** Status and Container Contents Variables ***
 
     /// Signature possibly changed by SetSignature()
-    static char		filesignature[8];
+    static char		m_filesignature[8];
 
     /// Number of references to this object
-    unsigned int	references;
+    unsigned int	m_references;
 
     /// True if one of the subfiles was changed using SetSubFileData() and the
     /// container file was not saved yet.
-    bool		modified;
+    bool		m_modified;
 
     /// Header2 either loaded or filled on first user key added.
-    Header2		header2;
+    Header2		m_header2;
 
     /// Master key material used for metadata encryption.
-    Botan::SecureBuffer<Botan::byte, 64> masterkey;
+    Botan::SecureBuffer<Botan::byte, 64> m_masterkey;
 
     /// Vector of user key slots.
-    std::vector<KeySlot> keyslots;
+    std::vector<KeySlot> m_keyslots;
 
     /// Number of the correct key slot used while loading.
-    int			usedkeyslot;
+    int			m_usedkeyslot;
 
     /// Unencrypted global properties, completely user-defined.
-    propertymap_type	unc_properties;
+    propertymap_type	m_unc_properties;
 
     /// Encrypted global properties, completely user-defined.
-    propertymap_type	enc_properties;
+    propertymap_type	m_enc_properties;
 
     /// Vector of subfiles
-    std::vector<SubFile> subfiles;
+    std::vector<SubFile> m_subfiles;
 
     /// Bytes written to file during last Save() operation
-    size_t		written;
+    size_t		m_written;
 
     /// Progress indicator object receiving notifications.
-    ProgressIndicator*	progressindicator;
+    ProgressIndicator*	m_progressindicator;
 
     /// Friend class to access the progressindicator variable
     friend class ProgressTicker;
@@ -361,43 +361,43 @@ public:
 // *** Constructor, Destructor and Reference Counter  ***
 
 ContainerImpl::ContainerImpl()
-    : references(1),
-      modified(false),
-      usedkeyslot(-1),
-      written(0),
-      progressindicator(NULL)
+    : m_references(1),
+      m_modified(false),
+      m_usedkeyslot(-1),
+      m_written(0),
+      m_progressindicator(NULL)
 {
-    memset(&header2, 0, sizeof(header2));
+    memset(&m_header2, 0, sizeof(m_header2));
 }
 
 ContainerImpl::~ContainerImpl()
 {
-    masterkey.clear();
-    keyslots.clear();
-    memset(&header2, 0, sizeof(header2));
+    m_masterkey.clear();
+    m_keyslots.clear();
+    memset(&m_header2, 0, sizeof(m_header2));
 }
 
 void ContainerImpl::Clear()
 {
-    modified = false;
-    memset(&header2, 0, sizeof(header2));
-    masterkey.clear();
-    keyslots.clear();
-    usedkeyslot = -1;
-    unc_properties.clear();
-    enc_properties.clear();
-    subfiles.clear();
-    written = 0;
+    m_modified = false;
+    memset(&m_header2, 0, sizeof(m_header2));
+    m_masterkey.clear();
+    m_keyslots.clear();
+    m_usedkeyslot = -1;
+    m_unc_properties.clear();
+    m_enc_properties.clear();
+    m_subfiles.clear();
+    m_written = 0;
 }
 
 void ContainerImpl::IncReference()
 {
-    ++references;
+    ++m_references;
 }
 
 unsigned int ContainerImpl::DecReference()
 {
-    return --references;
+    return --m_references;
 }
 
 // *** Progress Indicator Wrappers ***
@@ -410,66 +410,66 @@ class ProgressTicker
 {
 private:
     /// Reference to the container implementation
-    const ContainerImpl& 	cnt;
+    const ContainerImpl& 	m_cnt;
 
     /// Current counter value
-    size_t			current;
+    size_t			m_current;
 
 public:
     ProgressTicker(const ContainerImpl& c,
 		   const char* pitext, progress_indicator_type pitype,
 		   size_t value, size_t limit)
-	: cnt(c)
+	: m_cnt(c)
     {
-	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressStart(pitext, pitype, value, limit);
-	current = value;
+	if (m_cnt.m_progressindicator)
+	    m_cnt.m_progressindicator->ProgressStart(pitext, pitype, value, limit);
+	m_current = value;
     }
 
     void Restart(const char* pitext, progress_indicator_type pitype,
 		 size_t value, size_t limit)
     {
-	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressStart(pitext, pitype, value, limit);
-	current = value;
+	if (m_cnt.m_progressindicator)
+	    m_cnt.m_progressindicator->ProgressStart(pitext, pitype, value, limit);
+	m_current = value;
     }
 
     void Update(size_t value)
     {
-	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressUpdate(value);
-	current = value;
+	if (m_cnt.m_progressindicator)
+	    m_cnt.m_progressindicator->ProgressUpdate(value);
+	m_current = value;
     }
     
     void Add(size_t increment)
     {
-	current += increment;
+	m_current += increment;
 
-	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressUpdate(current);
+	if (m_cnt.m_progressindicator)
+	    m_cnt.m_progressindicator->ProgressUpdate(m_current);
     }
 
     ~ProgressTicker()
     {
-	if (cnt.progressindicator)
-	    cnt.progressindicator->ProgressStop();
+	if (m_cnt.m_progressindicator)
+	    m_cnt.m_progressindicator->ProgressStop();
     }
 };
 
 // *** Settings ***
 
-char ContainerImpl::filesignature[8] =
+char ContainerImpl::m_filesignature[8] =
 { 'C', 'r', 'y', 'p', 't', 'o', 'T', 'E' };
 
 /* static */ void ContainerImpl::SetSignature(const char* sign)
 {
     unsigned int i = 0;
     while(sign[i] != 0 && i < 8) {
-	filesignature[i] = sign[i];
+	m_filesignature[i] = sign[i];
 	++i;
     }
     while(i < 8) {
-	filesignature[i] = 0;
+	m_filesignature[i] = 0;
 	++i;
     }
 }
@@ -628,56 +628,56 @@ static inline uint32_t botan_crc32(Botan::byte* data, uint32_t datalen)
 class DataSinkSecureVector : public Botan::DataSink
 {
 private:
-    Botan::SecureVector<Botan::byte>&	secmem;
+    Botan::SecureVector<Botan::byte>&	m_secmem;
 
 public:
-    DataSinkSecureVector(Botan::SecureVector<Botan::byte>& _secmem)
-	: secmem(_secmem)
+    DataSinkSecureVector(Botan::SecureVector<Botan::byte>& secmem)
+	: m_secmem(secmem)
     { }
 
     void write(const Botan::byte out[], Botan::u32bit length)
     {
-	secmem.append(out, length);
+	m_secmem.append(out, length);
     }
 };
 
 class DataSink2DataOutput : public Botan::DataSink
 {
 private:
-    DataOutput&		dataout;
-    uint32_t		written;
-    ProgressTicker&	progress;
+    DataOutput&		m_dataout;
+    uint32_t		m_written;
+    ProgressTicker&	m_progress;
 
 public:
-    DataSink2DataOutput(DataOutput& _do, ProgressTicker& _progress)
-	: dataout(_do), written(0), progress(_progress)
+    DataSink2DataOutput(DataOutput& do_, ProgressTicker& progress)
+	: m_dataout(do_), m_written(0), m_progress(progress)
     { }
 
     void write(const Botan::byte out[], Botan::u32bit length)
     {
-	if (!dataout.Output(out, length))
+	if (!m_dataout.Output(out, length))
 	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
-	written += length;
-	progress.Add(length);
+	m_written += length;
+	m_progress.Add(length);
     }
 
-    uint32_t get_written() const { return written; }
+    uint32_t get_written() const { return m_written; }
 };
 
 class NullBufferingFilter : public Botan::Buffering_Filter
 {
 public:
-    const unsigned int block_size;
+    const unsigned int m_blocksize;
 
     NullBufferingFilter(uint32_t blocksize)
-	: Buffering_Filter(blocksize), block_size(blocksize)
+	: Buffering_Filter(blocksize), m_blocksize(blocksize)
     { }
 
 protected:
     virtual void main_block(const Botan::byte input[])
     {
-	send(input, block_size);
+	send(input, m_blocksize);
     }
     virtual void final_block(const Botan::byte input[], Botan::u32bit length)
     {
@@ -691,19 +691,19 @@ class DataOutputHashChain : public DataOutput
 {
 public:
     /// DataOutput to received data
-    DataOutput&			chain;
+    DataOutput&			m_chain;
 
     /// Hash object to update
-    Botan::HashFunction&	hash;
+    Botan::HashFunction&	m_hash;
 
-    DataOutputHashChain(DataOutput& c, Botan::HashFunction& h)
-	: chain(c), hash(h)
+    DataOutputHashChain(DataOutput& chain, Botan::HashFunction& hash)
+	: m_chain(chain), m_hash(hash)
     { }
 
     bool Output(const void* data, size_t datalen)
     {
-	hash.update((const Botan::byte*)data, datalen);
-	return chain.Output(data, datalen);
+	m_hash.update((const Botan::byte*)data, datalen);
+	return m_chain.Output(data, datalen);
     }
 };
 
@@ -711,19 +711,19 @@ class DataInputHashChain : public DataInput
 {
 public:
     /// DataInput to received data from
-    DataInput&			chain;
+    DataInput&			m_chain;
 
     /// Hash object to update
-    Botan::HashFunction&	hash;
+    Botan::HashFunction&	m_hash;
 
-    DataInputHashChain(DataInput& c, Botan::HashFunction& h)
-	: chain(c), hash(h)
+    DataInputHashChain(DataInput& chain, Botan::HashFunction& hash)
+	: m_chain(chain), m_hash(hash)
     { }
 
     unsigned int Input(void* data, size_t maxlen)
     {
-	unsigned int rb = chain.Input(data, maxlen);
-	hash.update((Botan::byte*)data, rb);
+	unsigned int rb = m_chain.Input(data, maxlen);
+	m_hash.update((Botan::byte*)data, rb);
 	return rb;
     }
 };
@@ -732,26 +732,26 @@ public:
 
 void ContainerImpl::Save(DataOutput& dataout_)
 {
-    written = 0;
+    m_written = 0;
 
-    if (keyslots.empty())
+    if (m_keyslots.empty())
 	throw(ProgramError(ETE_SAVE_NO_KEYSLOTS));
 
     // Estimate amount of data written to file
 
     size_t subfiletotal = 0;
 
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    for (unsigned int si = 0; si < m_subfiles.size(); ++si)
     {
-	subfiletotal += subfiles[si].storagesize;
+	subfiletotal += m_subfiles[si].storagesize;
     }
 
     size_t esttotal = sizeof(Header1)
 	+ 100 // estimate for unencrypted metadata
 	+ sizeof(Header2)
-	+ keyslots.size() * sizeof(KeySlot)
+	+ m_keyslots.size() * sizeof(KeySlot)
 	+ sizeof(Header3)
-	+ subfiles.size() * 50 // estimate for encrypted metadata
+	+ m_subfiles.size() * 50 // estimate for encrypted metadata
 	+ subfiletotal;
 
     ProgressTicker progress(*this,
@@ -767,17 +767,17 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	// properties.
 	ByteBuffer unc_metadata;
 
-	unc_metadata.put<unsigned int>(unc_properties.size());
+	unc_metadata.put<unsigned int>(m_unc_properties.size());
 
-	for (propertymap_type::const_iterator pi = unc_properties.begin();
-	     pi != unc_properties.end(); ++pi)
+	for (propertymap_type::const_iterator pi = m_unc_properties.begin();
+	     pi != m_unc_properties.end(); ++pi)
 	{
 	    unc_metadata.put<std::string>(pi->first);
 	    unc_metadata.put<std::string>(pi->second);
 	}
 
 	struct Header1 header1;
-	memcpy(header1.signature, filesignature, 8);
+	memcpy(header1.signature, m_filesignature, 8);
 	header1.version_major = 1;
 	header1.version_minor = 0;
 	header1.unc_metalen = unc_metadata.size();
@@ -788,20 +788,20 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	if (!dataout.Output(unc_metadata.data(), unc_metadata.size()))
 	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
-	written += sizeof(header1) + unc_metadata.size();
-	progress.Update(written);
+	m_written += sizeof(header1) + unc_metadata.size();
+	progress.Update(m_written);
     }
 
     // Write out master key digest and all key slots
     {
-	header2.keyslots = keyslots.size();
+	m_header2.keyslots = m_keyslots.size();
 
-	if (!dataout.Output(&header2, sizeof(header2)))
+	if (!dataout.Output(&m_header2, sizeof(m_header2)))
 	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
-	for (unsigned int i = 0; i < keyslots.size(); ++i)
+	for (unsigned int i = 0; i < m_keyslots.size(); ++i)
 	{
-	    if (!dataout.Output(&keyslots[i], sizeof(keyslots[i])))
+	    if (!dataout.Output(&m_keyslots[i], sizeof(m_keyslots[i])))
 		throw(RuntimeError(ETE_OUTPUT_ERROR));
 	}
     }
@@ -811,35 +811,35 @@ void ContainerImpl::Save(DataOutput& dataout_)
     ByteBuffer metadata;
 
     // append global properties
-    metadata.put<unsigned int>(enc_properties.size());
+    metadata.put<unsigned int>(m_enc_properties.size());
 
-    for (propertymap_type::const_iterator pi = enc_properties.begin();
-	 pi != enc_properties.end(); ++pi)
+    for (propertymap_type::const_iterator pi = m_enc_properties.begin();
+	 pi != m_enc_properties.end(); ++pi)
     {
 	metadata.put<std::string>(pi->first);
 	metadata.put<std::string>(pi->second);
     }
 
     // append subfile metadata
-    metadata.put<unsigned int>(subfiles.size());
+    metadata.put<unsigned int>(m_subfiles.size());
 
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    for (unsigned int si = 0; si < m_subfiles.size(); ++si)
     {
 	// fixed structure
-	metadata.put<unsigned int>(subfiles[si].storagesize);
-	metadata.put<unsigned int>(subfiles[si].realsize);
-	metadata.put<unsigned int>(subfiles[si].flags);
-	metadata.put<unsigned int>(subfiles[si].crc32);
+	metadata.put<unsigned int>(m_subfiles[si].storagesize);
+	metadata.put<unsigned int>(m_subfiles[si].realsize);
+	metadata.put<unsigned int>(m_subfiles[si].flags);
+	metadata.put<unsigned int>(m_subfiles[si].crc32);
 
 	// encryption parameters
-	metadata.put<unsigned int>(subfiles[si].encdata.size());
-	metadata.append(subfiles[si].encdata.begin(), subfiles[si].encdata.size());
+	metadata.put<unsigned int>(m_subfiles[si].encdata.size());
+	metadata.append(m_subfiles[si].encdata.begin(), m_subfiles[si].encdata.size());
 
 	// variable properties structure
-	metadata.put<unsigned int>(subfiles[si].properties.size());
+	metadata.put<unsigned int>(m_subfiles[si].properties.size());
 
-	for (propertymap_type::const_iterator pi = subfiles[si].properties.begin();
-	     pi != subfiles[si].properties.end(); ++pi)
+	for (propertymap_type::const_iterator pi = m_subfiles[si].properties.begin();
+	     pi != m_subfiles[si].properties.end(); ++pi)
 	{
 	    metadata.put<std::string>(pi->first);
 	    metadata.put<std::string>(pi->second);
@@ -894,13 +894,13 @@ void ContainerImpl::Save(DataOutput& dataout_)
 
 	Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
 
-	pbkdf.set_iterations(header2.mkk_iterations);
-	pbkdf.change_salt(header2.mkk_salt, sizeof(header2.mkk_salt));
-	Botan::OctetString enckey = pbkdf.derive_key(32, masterkey);
+	pbkdf.set_iterations(m_header2.mkk_iterations);
+	pbkdf.change_salt(m_header2.mkk_salt, sizeof(m_header2.mkk_salt));
+	Botan::OctetString enckey = pbkdf.derive_key(32, m_masterkey);
 
-	pbkdf.set_iterations(header2.mki_iterations);
-	pbkdf.change_salt(header2.mki_salt, sizeof(header2.mki_salt));
-	Botan::OctetString enciv = pbkdf.derive_key(16, masterkey);
+	pbkdf.set_iterations(m_header2.mki_iterations);
+	pbkdf.change_salt(m_header2.mki_salt, sizeof(m_header2.mki_salt));
+	Botan::OctetString enciv = pbkdf.derive_key(16, m_masterkey);
 
 	DataSink2DataOutput* datasink;
 
@@ -914,25 +914,25 @@ void ContainerImpl::Save(DataOutput& dataout_)
 
 	pipe.process_msg(metadata_compressed.data(), metadata_compressed.size());
 
-	written += datasink->get_written();
+	m_written += datasink->get_written();
     }
 
     // Refine file target size because it is now exactly known.
-    esttotal = written + subfiletotal;
-    progress.Restart("Saving Container", PI_SAVE_CONTAINER, written, esttotal);
+    esttotal = m_written + subfiletotal;
+    progress.Restart("Saving Container", PI_SAVE_CONTAINER, m_written, esttotal);
 
     // Output data of all subfiles simply concatenated
 
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    for (unsigned int si = 0; si < m_subfiles.size(); ++si)
     {
-	AssertException(subfiles[si].storagesize == subfiles[si].data.size());
+	AssertException(m_subfiles[si].storagesize == m_subfiles[si].data.size());
 
-	if (!dataout.Output(subfiles[si].data.begin(), subfiles[si].data.size()))
+	if (!dataout.Output(m_subfiles[si].data.begin(), m_subfiles[si].data.size()))
 	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
-	written += subfiles[si].storagesize;
+	m_written += m_subfiles[si].storagesize;
 
-	progress.Update(written);
+	progress.Update(m_written);
     }
 
     // Append 4 bytes CRC32 value at end of file
@@ -943,10 +943,10 @@ void ContainerImpl::Save(DataOutput& dataout_)
 	if (!dataout.Output(crc32val.begin(), crc32val.size()))
 	    throw(RuntimeError(ETE_OUTPUT_ERROR));
 
-	written += 4;
+	m_written += 4;
     }
 
-    modified = false;
+    m_modified = false;
 }
 
 void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
@@ -961,7 +961,7 @@ void ContainerImpl::Load(DataInput& datain, const std::string& userkey)
     if (datain.Input(&header1, sizeof(header1)) != sizeof(header1))
 	throw(RuntimeError(ETE_LOAD_HEADER1));
 
-    if (memcmp(header1.signature, filesignature, 8) != 0)
+    if (memcmp(header1.signature, m_filesignature, 8) != 0)
 	throw(RuntimeError(ETE_LOAD_HEADER1_SIGNATURE));
 
     if (header1.version_major == 1) {
@@ -978,7 +978,7 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	throw(RuntimeError(ETE_LOAD_HEADER1_VERSION));
     }
 
-    modified = true; // set even when loading failed.
+    m_modified = true; // set even when loading failed.
 
     unsigned int readbyte = sizeof(Header1);
 
@@ -1002,14 +1002,14 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	{
 	    // parse global unencrypted properties
 	    unsigned int gpropsize = unc_metadata.get<unsigned int>();
-	    unc_properties.clear();
+	    m_unc_properties.clear();
 
 	    for (unsigned int pi = 0; pi < gpropsize; ++pi)
 	    {
 		std::string key = unc_metadata.get<std::string>();
 		std::string val = unc_metadata.get<std::string>();
 
-		unc_properties.insert( propertymap_type::value_type(key, val) );
+		m_unc_properties.insert( propertymap_type::value_type(key, val) );
 	    }
 	}
 	catch (std::underflow_error& e)
@@ -1022,24 +1022,24 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 
     // Read master key digest and user key slots
     {
-	if (datain.Input(&header2, sizeof(header2)) != sizeof(header2))
+	if (datain.Input(&m_header2, sizeof(m_header2)) != sizeof(m_header2))
 	    throw(RuntimeError(ETE_LOAD_HEADER2));
 	
-	if (header2.keyslots == 0)
+	if (m_header2.keyslots == 0)
 	    throw(RuntimeError(ETE_LOAD_HEADER2_NO_KEYSLOTS));
 
-        keyslots.clear();
+        m_keyslots.clear();
 
-	for (unsigned int i = 0; i < header2.keyslots; ++i)
+	for (unsigned int i = 0; i < m_header2.keyslots; ++i)
 	{
-	    keyslots.push_back(KeySlot());
-	    KeySlot& newkeyslot = keyslots.back();
+	    m_keyslots.push_back(KeySlot());
+	    KeySlot& newkeyslot = m_keyslots.back();
 
 	    if (datain.Input(&newkeyslot, sizeof(newkeyslot)) != sizeof(newkeyslot))
 		throw(RuntimeError(ETE_LOAD_HEADER2_KEYSLOTS));
 	}
 
-	readbyte += sizeof(header2) + header2.keyslots * sizeof(KeySlot);
+	readbyte += sizeof(m_header2) + m_header2.keyslots * sizeof(KeySlot);
     }
 
     progress.Update(readbyte);
@@ -1049,9 +1049,9 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	Botan::SecureVector<Botan::byte> userkeyvector((Botan::byte*)userkey.data(), userkey.size());
 	unsigned int ks;
 
-	for (ks = 0; ks < header2.keyslots; ++ks)
+	for (ks = 0; ks < m_header2.keyslots; ++ks)
 	{
-	    KeySlot& keyslot = keyslots[ks];
+	    KeySlot& keyslot = m_keyslots[ks];
 
 	    // calculate user encryption key from password
 
@@ -1068,26 +1068,26 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	    pipe.process_msg((Botan::byte*)keyslot.emasterkey, sizeof(keyslot.emasterkey));
 
 	    Botan::SecureVector<Botan::byte> testmasterkey = pipe.read_all();
-	    AssertException(testmasterkey.size() == masterkey.size());
+	    AssertException(testmasterkey.size() == m_masterkey.size());
 
 	    // digest master key and compare to stored digest
 
-	    pbkdf.set_iterations(header2.mkd_iterations);
-	    pbkdf.change_salt(header2.mkd_salt, sizeof(header2.mkd_salt));
+	    pbkdf.set_iterations(m_header2.mkd_iterations);
+	    pbkdf.change_salt(m_header2.mkd_salt, sizeof(m_header2.mkd_salt));
 	    Botan::OctetString digest = pbkdf.derive_key(32, testmasterkey);
 
-	    AssertException(digest.length() == sizeof(header2.mkd_digest));
+	    AssertException(digest.length() == sizeof(m_header2.mkd_digest));
 
-	    if (Botan::same_mem(digest.begin(), header2.mkd_digest, sizeof(header2.mkd_digest)))
+	    if (Botan::same_mem(digest.begin(), m_header2.mkd_digest, sizeof(m_header2.mkd_digest)))
 	    {
-		usedkeyslot = ks;
-		masterkey.set(testmasterkey.begin(), testmasterkey.size());
+		m_usedkeyslot = ks;
+		m_masterkey.set(testmasterkey.begin(), testmasterkey.size());
 		break;
 	    }
 	}
 
 	// User supplied key does not match any slot.
-	if (ks >= header2.keyslots)
+	if (ks >= m_header2.keyslots)
 	    throw(RuntimeError(ETE_LOAD_HEADER2_INVALID_KEY));
     }
 
@@ -1103,13 +1103,13 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 
     Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
 
-    pbkdf.set_iterations(header2.mkk_iterations);
-    pbkdf.change_salt(header2.mkk_salt, sizeof(header2.mkk_salt));
-    Botan::OctetString enckey = pbkdf.derive_key(32, masterkey);
+    pbkdf.set_iterations(m_header2.mkk_iterations);
+    pbkdf.change_salt(m_header2.mkk_salt, sizeof(m_header2.mkk_salt));
+    Botan::OctetString enckey = pbkdf.derive_key(32, m_masterkey);
 
-    pbkdf.set_iterations(header2.mki_iterations);
-    pbkdf.change_salt(header2.mki_salt, sizeof(header2.mki_salt));
-    Botan::OctetString enciv = pbkdf.derive_key(16, masterkey);
+    pbkdf.set_iterations(m_header2.mki_iterations);
+    pbkdf.change_salt(m_header2.mki_salt, sizeof(m_header2.mki_salt));
+    Botan::OctetString enciv = pbkdf.derive_key(16, m_masterkey);
 
     Botan::Pipe pipe( Botan::get_cipher("Serpent/CBC/NoPadding", enckey, enciv, Botan::DECRYPTION) );
 
@@ -1180,24 +1180,24 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
     {
 	// parse global encrypted properties
 	unsigned int gpropsize = metadata.get<unsigned int>();
-	enc_properties.clear();
+	m_enc_properties.clear();
 
 	for (unsigned int pi = 0; pi < gpropsize; ++pi)
 	{
 	    std::string key = metadata.get<std::string>();
 	    std::string val = metadata.get<std::string>();
 
-	    enc_properties.insert( propertymap_type::value_type(key, val) );
+	    m_enc_properties.insert( propertymap_type::value_type(key, val) );
 	}
 
 	// parse subfile metadata
 	unsigned int subfilenum = metadata.get<unsigned int>();
-	subfiles.clear();
+	m_subfiles.clear();
 
 	for (unsigned int si = 0; si < subfilenum; ++si)
 	{
-	    subfiles.push_back(SubFile());
-	    SubFile& subfile = subfiles.back();
+	    m_subfiles.push_back(SubFile());
+	    SubFile& subfile = m_subfiles.back();
 
 	    // fixed structure
 	    subfile.storagesize = metadata.get<unsigned int>();
@@ -1232,9 +1232,9 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 
     size_t subfiletotal = 0;
 
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    for (unsigned int si = 0; si < m_subfiles.size(); ++si)
     {
-	subfiletotal += subfiles[si].storagesize;
+	subfiletotal += m_subfiles[si].storagesize;
     }
 
     progress.Restart("Loading Container", PI_LOAD_CONTAINER,
@@ -1242,9 +1242,9 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 
     // load data of all subfiles which are simply concatenated
 
-    for (unsigned int si = 0; si < subfiles.size(); ++si)
+    for (unsigned int si = 0; si < m_subfiles.size(); ++si)
     {
-	SubFile& subfile = subfiles[si];
+	SubFile& subfile = m_subfiles[si];
 
 	subfile.data.create( subfile.storagesize );
 	unsigned int rb = datain.Input(subfile.data.begin(), subfile.storagesize);
@@ -1269,59 +1269,59 @@ void ContainerImpl::Loadv1(DataInput& datain_, const std::string& userkey, const
 	    throw(RuntimeError(ETE_LOAD_CHECKSUM));
     }
 
-    modified = false;
+    m_modified = false;
 }
 
 // *** Container Info Operations ***
 
 bool ContainerImpl::GetModified() const
 {
-    return modified;
+    return m_modified;
 }
 
 size_t ContainerImpl::GetLastWritten() const
 {
-    return written;
+    return m_written;
 }
 
 void ContainerImpl::SetProgressIndicator(ProgressIndicator* pi)
 {
-    progressindicator = pi;
+    m_progressindicator = pi;
 }
 
 // *** Container User KeySlots Operations ***
 
 unsigned int ContainerImpl::CountKeySlots() const
 {
-    return keyslots.size();
+    return m_keyslots.size();
 }
 
 unsigned int ContainerImpl::AddKeySlot(const std::string& key)
 {
-    if (keyslots.empty())
+    if (m_keyslots.empty())
     {
 	// Generate new master key and salt/iter for digest, enckey and enciv.
 
-	Botan::Global_RNG::randomize(masterkey.begin(), masterkey.size());
+	Botan::Global_RNG::randomize(m_masterkey.begin(), m_masterkey.size());
 
-	header2.mkd_iterations = random_iterations();
-	Botan::Global_RNG::randomize(header2.mkd_salt, sizeof(header2.mkd_salt));
+	m_header2.mkd_iterations = random_iterations();
+	Botan::Global_RNG::randomize(m_header2.mkd_salt, sizeof(m_header2.mkd_salt));
 
-	header2.mkk_iterations = random_iterations();
-	Botan::Global_RNG::randomize(header2.mkk_salt, sizeof(header2.mkk_salt));
+	m_header2.mkk_iterations = random_iterations();
+	Botan::Global_RNG::randomize(m_header2.mkk_salt, sizeof(m_header2.mkk_salt));
 
-	header2.mki_iterations = random_iterations();
-	Botan::Global_RNG::randomize(header2.mki_salt, sizeof(header2.mki_salt));
+	m_header2.mki_iterations = random_iterations();
+	Botan::Global_RNG::randomize(m_header2.mki_salt, sizeof(m_header2.mki_salt));
 
 	// Calculate master key digest
 
 	Botan::PKCS5_PBKDF2 pbkdf("SHA-256");
 
-	pbkdf.set_iterations(header2.mkd_iterations);
-	pbkdf.change_salt(header2.mkd_salt, sizeof(header2.mkd_salt));
-	Botan::OctetString digest = pbkdf.derive_key(32, masterkey);
+	pbkdf.set_iterations(m_header2.mkd_iterations);
+	pbkdf.change_salt(m_header2.mkd_salt, sizeof(m_header2.mkd_salt));
+	Botan::OctetString digest = pbkdf.derive_key(32, m_masterkey);
 
-	memcpy(header2.mkd_digest, digest.begin(), sizeof(header2.mkd_digest));
+	memcpy(m_header2.mkd_digest, digest.begin(), sizeof(m_header2.mkd_digest));
     }
 
     // Create cipher key from new random salt and iterations.
@@ -1341,27 +1341,27 @@ unsigned int ContainerImpl::AddKeySlot(const std::string& key)
 
     Botan::Pipe pipe( Botan::get_cipher("Serpent/ECB/NoPadding", enckey, Botan::ENCRYPTION) );
 
-    pipe.process_msg(masterkey);
+    pipe.process_msg(m_masterkey);
 
     Botan::SecureVector<Botan::byte> ciphertext = pipe.read_all();
     AssertException(ciphertext.size() == sizeof(newslot.emasterkey));
 
     memcpy(newslot.emasterkey, ciphertext.begin(), sizeof(newslot.emasterkey));
     
-    keyslots.push_back(newslot);
+    m_keyslots.push_back(newslot);
 
-    modified = true;
+    m_modified = true;
 
-    return keyslots.size() - 1;
+    return m_keyslots.size() - 1;
 }
 
 void ContainerImpl::ChangeKeySlot(unsigned int slot, const std::string& key)
 {
     // Check that the user key slot is valid.
-    if (slot >= keyslots.size())
+    if (slot >= m_keyslots.size())
 	throw(ProgramError(ETE_KEYSLOT_INVALID_INDEX));
 
-    KeySlot& keyslot = keyslots[slot];
+    KeySlot& keyslot = m_keyslots[slot];
 
     // Create cipher key from new random salt and iterations.
 
@@ -1378,52 +1378,52 @@ void ContainerImpl::ChangeKeySlot(unsigned int slot, const std::string& key)
 
     Botan::Pipe pipe( Botan::get_cipher("Serpent/ECB/NoPadding", enckey, Botan::ENCRYPTION) );
 
-    pipe.process_msg(masterkey);
+    pipe.process_msg(m_masterkey);
 
     Botan::SecureVector<Botan::byte> ciphertext = pipe.read_all();
     AssertException(ciphertext.size() == sizeof(keyslot.emasterkey));
 
     memcpy(keyslot.emasterkey, ciphertext.begin(), sizeof(keyslot.emasterkey));
 
-    modified = true;
+    m_modified = true;
 }
 
 void ContainerImpl::DeleteKeySlot(unsigned int slot)
 {
     // Check that the user key slot is valid.
-    if (slot >= keyslots.size())
+    if (slot >= m_keyslots.size())
 	throw(ProgramError(ETE_KEYSLOT_INVALID_INDEX));
 
     // fixup numbering of used key slot
-    if (usedkeyslot == (int)slot)
-	usedkeyslot = -1;
-    else if (usedkeyslot > (int)slot)
-	--usedkeyslot;
+    if (m_usedkeyslot == (int)slot)
+	m_usedkeyslot = -1;
+    else if (m_usedkeyslot > (int)slot)
+	--m_usedkeyslot;
 
-    keyslots.erase(keyslots.begin() + slot);
+    m_keyslots.erase(m_keyslots.begin() + slot);
 
-    modified = true;
+    m_modified = true;
 }
 
 int ContainerImpl::GetUsedKeySlot() const
 {
-    return usedkeyslot;
+    return m_usedkeyslot;
 }
 
 // *** Container Global Unencrypted Properties ***
 
 void ContainerImpl::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
 {
-    unc_properties[key] = value;
+    m_unc_properties[key] = value;
 
-    modified = true;
+    m_modified = true;
 }
 
 const std::string& ContainerImpl::GetGlobalUnencryptedProperty(const std::string& key) const
 {
-    propertymap_type::const_iterator pi = unc_properties.find(key);
+    propertymap_type::const_iterator pi = m_unc_properties.find(key);
 
-    if (pi != unc_properties.end()) {
+    if (pi != m_unc_properties.end()) {
 	return pi->second;
     }
     else {
@@ -1434,14 +1434,14 @@ const std::string& ContainerImpl::GetGlobalUnencryptedProperty(const std::string
 
 bool ContainerImpl::DeleteGlobalUnencryptedProperty(const std::string& key)
 {
-    return (unc_properties.erase(key) > 0) && (modified = true);
+    return (m_unc_properties.erase(key) > 0) && (m_modified = true);
 }
 
 bool ContainerImpl::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
-    if (propindex >= unc_properties.size()) return false;
+    if (propindex >= m_unc_properties.size()) return false;
 
-    propertymap_type::const_iterator pi = unc_properties.begin();
+    propertymap_type::const_iterator pi = m_unc_properties.begin();
 
     for(unsigned int i = 0; i < propindex; ++i)	++pi;
 
@@ -1455,16 +1455,16 @@ bool ContainerImpl::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, st
 
 void ContainerImpl::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
 {
-    enc_properties[key] = value;
+    m_enc_properties[key] = value;
 
-    modified = true;
+    m_modified = true;
 }
 
 const std::string& ContainerImpl::GetGlobalEncryptedProperty(const std::string& key) const
 {
-    propertymap_type::const_iterator pi = enc_properties.find(key);
+    propertymap_type::const_iterator pi = m_enc_properties.find(key);
 
-    if (pi != enc_properties.end()) {
+    if (pi != m_enc_properties.end()) {
 	return pi->second;
     }
     else {
@@ -1475,14 +1475,14 @@ const std::string& ContainerImpl::GetGlobalEncryptedProperty(const std::string& 
 
 bool ContainerImpl::DeleteGlobalEncryptedProperty(const std::string& key)
 {
-    return (enc_properties.erase(key) > 0) && (modified = true);
+    return (m_enc_properties.erase(key) > 0) && (m_modified = true);
 }
 
 bool ContainerImpl::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
-    if (propindex >= enc_properties.size()) return false;
+    if (propindex >= m_enc_properties.size()) return false;
 
-    propertymap_type::const_iterator pi = enc_properties.begin();
+    propertymap_type::const_iterator pi = m_enc_properties.begin();
 
     for(unsigned int i = 0; i < propindex; ++i)	++pi;
 
@@ -1496,25 +1496,25 @@ bool ContainerImpl::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std:
 
 unsigned int ContainerImpl::CountSubFile() const
 {
-    return subfiles.size();
+    return m_subfiles.size();
 }
 
 unsigned int ContainerImpl::AppendSubFile()
 {
-    modified = true;
+    m_modified = true;
 
-    unsigned int si = subfiles.size();
-    subfiles.push_back( SubFile() );
+    unsigned int si = m_subfiles.size();
+    m_subfiles.push_back( SubFile() );
     return si;
 }
 
 unsigned int ContainerImpl::InsertSubFile(unsigned int subfileindex)
 {
-    modified = true;
+    m_modified = true;
 
-    if (subfileindex < subfiles.size())
+    if (subfileindex < m_subfiles.size())
     {
-	subfiles.insert(subfiles.begin() + subfileindex, SubFile());
+	m_subfiles.insert(m_subfiles.begin() + subfileindex, SubFile());
 	return subfileindex;
     }
     else
@@ -1525,11 +1525,11 @@ unsigned int ContainerImpl::InsertSubFile(unsigned int subfileindex)
 
 bool ContainerImpl::DeleteSubFile(unsigned int subfileindex)
 {
-    if (subfileindex < subfiles.size())
+    if (subfileindex < m_subfiles.size())
     {
-	subfiles.erase(subfiles.begin() + subfileindex);
+	m_subfiles.erase(m_subfiles.begin() + subfileindex);
 
-	modified = true;
+	m_modified = true;
 	return true;
     }
     else
@@ -1542,21 +1542,21 @@ bool ContainerImpl::DeleteSubFile(unsigned int subfileindex)
 
 void ContainerImpl::SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value)
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    SubFile& subfile = subfiles[subfileindex];
+    SubFile& subfile = m_subfiles[subfileindex];
     subfile.properties[ key ] = value;
 
-    modified = true;
+    m_modified = true;
 }
 
 const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    const SubFile& subfile = subfiles[subfileindex];
+    const SubFile& subfile = m_subfiles[subfileindex];
     propertymap_type::const_iterator pi = subfile.properties.find(key);
 
     if (pi != subfile.properties.end()) {
@@ -1570,21 +1570,21 @@ const std::string& ContainerImpl::GetSubFileProperty(unsigned int subfileindex, 
 
 bool ContainerImpl::DeleteSubFileProperty(unsigned int subfileindex, const std::string& key)
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    modified = true;
+    m_modified = true;
 
-    SubFile& subfile = subfiles[subfileindex];
+    SubFile& subfile = m_subfiles[subfileindex];
     return (subfile.properties.erase(key) > 0);
 }
 
 bool ContainerImpl::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    const SubFile& subfile = subfiles[subfileindex];
+    const SubFile& subfile = m_subfiles[subfileindex];
 
     if (propindex >= subfile.properties.size()) return false;
 
@@ -1602,54 +1602,54 @@ bool ContainerImpl::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned 
 
 uint32_t ContainerImpl::GetSubFileStorageSize(unsigned int subfileindex) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    return subfiles[subfileindex].storagesize;
+    return m_subfiles[subfileindex].storagesize;
 }
 
 uint32_t ContainerImpl::GetSubFileSize(unsigned int subfileindex) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    return subfiles[subfileindex].realsize;
+    return m_subfiles[subfileindex].realsize;
 }
 
 encryption_type ContainerImpl::GetSubFileEncryption(unsigned int subfileindex) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    return (encryption_type)subfiles[subfileindex].encryption;
+    return (encryption_type)m_subfiles[subfileindex].encryption;
 }
 
 compression_type ContainerImpl::GetSubFileCompression(unsigned int subfileindex) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    return (compression_type)subfiles[subfileindex].compression;
+    return (compression_type)m_subfiles[subfileindex].compression;
 }
 
 // *** Container SubFiles - Set operations of subfile header fields ***
 
 void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_type c)
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     if (c < 0 || c > ENCRYPTION_SERPENT256)
 	throw(ProgramError(ETE_SUBFILE_INVALID_ENCRYPTION));
 
     // reencrypt if necessary
-    if (subfiles[subfileindex].encryption != c)
+    if (m_subfiles[subfileindex].encryption != c)
     {
 	std::string data;
 
 	GetSubFileData(subfileindex, data);
 
-	subfiles[subfileindex].encryption = c;
+	m_subfiles[subfileindex].encryption = c;
 
 	SetSubFileData(subfileindex, data.data(), data.size());
     }
@@ -1657,20 +1657,20 @@ void ContainerImpl::SetSubFileEncryption(unsigned int subfileindex, encryption_t
 
 void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression_type c)
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     if (c < 0 || c > COMPRESSION_BZIP2)
 	throw(ProgramError(ETE_SUBFILE_INVALID_COMPRESSION));
 
     // recompress if necessary
-    if (subfiles[subfileindex].compression != c)
+    if (m_subfiles[subfileindex].compression != c)
     {
 	std::string data;
 
 	GetSubFileData(subfileindex, data);
 
-	subfiles[subfileindex].compression = c;
+	m_subfiles[subfileindex].compression = c;
 
 	SetSubFileData(subfileindex, data.data(), data.size());
     }
@@ -1678,7 +1678,7 @@ void ContainerImpl::SetSubFileCompression(unsigned int subfileindex, compression
 
 void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_type comp, encryption_type enc)
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
     if (comp < 0 || comp > COMPRESSION_BZIP2)
@@ -1688,14 +1688,14 @@ void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, c
 	throw(ProgramError(ETE_SUBFILE_INVALID_ENCRYPTION));
 
     // reencrypt and recompress if necessary
-    if (subfiles[subfileindex].encryption != enc || subfiles[subfileindex].compression != comp)
+    if (m_subfiles[subfileindex].encryption != enc || m_subfiles[subfileindex].compression != comp)
     {
 	std::string data;
 
 	GetSubFileData(subfileindex, data);
 
-	subfiles[subfileindex].encryption = enc;
-	subfiles[subfileindex].compression = comp;
+	m_subfiles[subfileindex].encryption = enc;
+	m_subfiles[subfileindex].compression = comp;
 
 	SetSubFileData(subfileindex, data.data(), data.size());
     }
@@ -1705,10 +1705,10 @@ void ContainerImpl::SetSubFileCompressionEncryption(unsigned int subfileindex, c
 
 void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    SubFile& subfile = subfiles[subfileindex];
+    SubFile& subfile = m_subfiles[subfileindex];
 
     subfile.realsize = datalen;
 
@@ -1799,7 +1799,7 @@ void ContainerImpl::SetSubFileData(unsigned int subfileindex, const void* data, 
 
     subfile.storagesize = subfile.data.size();
 
-    modified = true;
+    m_modified = true;
 }
 
 struct DataOutputString : public DataOutput
@@ -1820,10 +1820,10 @@ struct DataOutputString : public DataOutput
 
 void ContainerImpl::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    const SubFile& subfile = subfiles[subfileindex];
+    const SubFile& subfile = m_subfiles[subfileindex];
 
     outstr.clear();
     outstr.reserve(subfile.realsize);
@@ -1835,10 +1835,10 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, std::string& outst
 
 void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
 {
-    if (subfileindex >= subfiles.size())
+    if (subfileindex >= m_subfiles.size())
 	throw(ProgramError(ETE_SUBFILE_INVALID_INDEX));
 
-    const SubFile& subfile = subfiles[subfileindex];
+    const SubFile& subfile = m_subfiles[subfileindex];
 
     if (subfile.data.size() == 0) return;
 
@@ -1922,7 +1922,7 @@ void ContainerImpl::GetSubFileData(unsigned int subfileindex, class DataOutput& 
 // *** Exception Constructors ***
 
 Exception::Exception(error_type ec, const std::string& m)
-    : ecode(ec), msg("Enctain: " + m)
+    : m_ecode(ec), m_msg("Enctain: " + m)
 { }
 
 RuntimeError::RuntimeError(error_type ec, const std::string& m)
@@ -1959,30 +1959,30 @@ InternalError::InternalError(error_type ec)
 
 Container::Container()
 {
-    pimpl = new internal::ContainerImpl();
+    m_pimpl = new internal::ContainerImpl();
 }
 
 Container::~Container()
 {
-    if (pimpl->DecReference() == 0)
-	delete pimpl;
+    if (m_pimpl->DecReference() == 0)
+	delete m_pimpl;
 }
 
 Container::Container(const Container &cnt)
 {
-    pimpl = cnt.pimpl;
-    pimpl->IncReference();
+    m_pimpl = cnt.m_pimpl;
+    m_pimpl->IncReference();
 }
 
 Container& Container::operator=(const Container &cnt)
 {
     if (&cnt == this) return *this;
 
-    if (pimpl->DecReference() == 0)
-	delete pimpl;
+    if (m_pimpl->DecReference() == 0)
+	delete m_pimpl;
     
-    pimpl = cnt.pimpl;
-    pimpl->IncReference();
+    m_pimpl = cnt.m_pimpl;
+    m_pimpl->IncReference();
 
     return *this;
 }
@@ -1999,187 +1999,187 @@ Container& Container::operator=(const Container &cnt)
 
 void Container::Save(DataOutput& dataout)
 {
-    return pimpl->Save(dataout);
+    return m_pimpl->Save(dataout);
 }
 
 void Container::Load(DataInput& datain, const std::string& userkey)
 {
-    return pimpl->Load(datain, userkey);
+    return m_pimpl->Load(datain, userkey);
 }
 
 void Container::Clear()
 {
-    return pimpl->Clear();
+    return m_pimpl->Clear();
 }
 
 bool Container::GetModified() const
 {
-    return pimpl->GetModified();
+    return m_pimpl->GetModified();
 }
 
 size_t Container::GetLastWritten() const
 {
-    return pimpl->GetLastWritten();
+    return m_pimpl->GetLastWritten();
 }
 
 void Container::SetProgressIndicator(ProgressIndicator* pi)
 {
-    return pimpl->SetProgressIndicator(pi);
+    return m_pimpl->SetProgressIndicator(pi);
 }
 
 unsigned int Container::CountKeySlots() const
 {
-    return pimpl->CountKeySlots();
+    return m_pimpl->CountKeySlots();
 }
 
 unsigned int Container::AddKeySlot(const std::string& key)
 {
-    return pimpl->AddKeySlot(key);
+    return m_pimpl->AddKeySlot(key);
 }
 
 void Container::ChangeKeySlot(unsigned int slot, const std::string& key)
 {
-    return pimpl->ChangeKeySlot(slot, key);
+    return m_pimpl->ChangeKeySlot(slot, key);
 }
 
 void Container::DeleteKeySlot(unsigned int slot)
 {
-    return pimpl->DeleteKeySlot(slot);
+    return m_pimpl->DeleteKeySlot(slot);
 }
 
 int Container::GetUsedKeySlot() const
 {
-    return pimpl->GetUsedKeySlot();
+    return m_pimpl->GetUsedKeySlot();
 }
 
 void Container::SetGlobalUnencryptedProperty(const std::string& key, const std::string& value)
 {
-    return pimpl->SetGlobalUnencryptedProperty(key, value);
+    return m_pimpl->SetGlobalUnencryptedProperty(key, value);
 }
 
 const std::string& Container::GetGlobalUnencryptedProperty(const std::string& key) const
 {
-    return pimpl->GetGlobalUnencryptedProperty(key);
+    return m_pimpl->GetGlobalUnencryptedProperty(key);
 }
 
 bool Container::DeleteGlobalUnencryptedProperty(const std::string& key)
 {
-    return pimpl->DeleteGlobalUnencryptedProperty(key);
+    return m_pimpl->DeleteGlobalUnencryptedProperty(key);
 }
 
 bool Container::GetGlobalUnencryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
-    return pimpl->GetGlobalUnencryptedPropertyIndex(propindex, key, value);
+    return m_pimpl->GetGlobalUnencryptedPropertyIndex(propindex, key, value);
 }
 
 void Container::SetGlobalEncryptedProperty(const std::string& key, const std::string& value)
 {
-    return pimpl->SetGlobalEncryptedProperty(key, value);
+    return m_pimpl->SetGlobalEncryptedProperty(key, value);
 }
 
 const std::string& Container::GetGlobalEncryptedProperty(const std::string& key) const
 {
-    return pimpl->GetGlobalEncryptedProperty(key);
+    return m_pimpl->GetGlobalEncryptedProperty(key);
 }
 
 bool Container::DeleteGlobalEncryptedProperty(const std::string& key)
 {
-    return pimpl->DeleteGlobalEncryptedProperty(key);
+    return m_pimpl->DeleteGlobalEncryptedProperty(key);
 }
 
 bool Container::GetGlobalEncryptedPropertyIndex(unsigned int propindex, std::string& key, std::string& value) const
 {
-    return pimpl->GetGlobalEncryptedPropertyIndex(propindex, key, value);
+    return m_pimpl->GetGlobalEncryptedPropertyIndex(propindex, key, value);
 }
 
 unsigned int Container::CountSubFile() const
 {
-    return pimpl->CountSubFile();
+    return m_pimpl->CountSubFile();
 }
 
 unsigned int Container::AppendSubFile()
 {
-    return pimpl->AppendSubFile();
+    return m_pimpl->AppendSubFile();
 }
 
 unsigned int Container::InsertSubFile(unsigned int subfileindex)
 {
-    return pimpl->InsertSubFile(subfileindex);
+    return m_pimpl->InsertSubFile(subfileindex);
 }
 
 bool Container::DeleteSubFile(unsigned int subfileindex)
 {
-    return pimpl->DeleteSubFile(subfileindex);
+    return m_pimpl->DeleteSubFile(subfileindex);
 }
 
 void Container::SetSubFileProperty(unsigned int subfileindex, const std::string& key, const std::string& value)
 {
-    return pimpl->SetSubFileProperty(subfileindex, key, value);
+    return m_pimpl->SetSubFileProperty(subfileindex, key, value);
 }
 
 const std::string& Container::GetSubFileProperty(unsigned int subfileindex, const std::string& key) const
 {
-    return pimpl->GetSubFileProperty(subfileindex, key);
+    return m_pimpl->GetSubFileProperty(subfileindex, key);
 }
 
 bool Container::DeleteSubFileProperty(unsigned int subfileindex, const std::string& key)
 {
-    return pimpl->DeleteSubFileProperty(subfileindex, key);
+    return m_pimpl->DeleteSubFileProperty(subfileindex, key);
 }
 
 bool Container::GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex, std::string& key, std::string& value) const
 {
-    return pimpl->GetSubFilePropertyIndex(subfileindex, propindex, key, value);
+    return m_pimpl->GetSubFilePropertyIndex(subfileindex, propindex, key, value);
 }
 
 uint32_t Container::GetSubFileStorageSize(unsigned int subfileindex) const
 {
-    return pimpl->GetSubFileStorageSize(subfileindex);
+    return m_pimpl->GetSubFileStorageSize(subfileindex);
 }
 
 uint32_t Container::GetSubFileSize(unsigned int subfileindex) const
 {
-    return pimpl->GetSubFileSize(subfileindex);
+    return m_pimpl->GetSubFileSize(subfileindex);
 }
 
 encryption_type Container::GetSubFileEncryption(unsigned int subfileindex) const
 {
-    return pimpl->GetSubFileEncryption(subfileindex);
+    return m_pimpl->GetSubFileEncryption(subfileindex);
 }
 
 compression_type Container::GetSubFileCompression(unsigned int subfileindex) const
 {
-    return pimpl->GetSubFileCompression(subfileindex);
+    return m_pimpl->GetSubFileCompression(subfileindex);
 }
 
 void Container::SetSubFileEncryption(unsigned int subfileindex, encryption_type c)
 {
-    return pimpl->SetSubFileEncryption(subfileindex, c);
+    return m_pimpl->SetSubFileEncryption(subfileindex, c);
 }
 
 void Container::SetSubFileCompression(unsigned int subfileindex, compression_type c)
 {
-    return pimpl->SetSubFileCompression(subfileindex, c);
+    return m_pimpl->SetSubFileCompression(subfileindex, c);
 }
 
 void Container::SetSubFileCompressionEncryption(unsigned int subfileindex, compression_type comp, encryption_type enc)
 {
-    return pimpl->SetSubFileCompressionEncryption(subfileindex, comp, enc);
+    return m_pimpl->SetSubFileCompressionEncryption(subfileindex, comp, enc);
 }
 
 void Container::SetSubFileData(unsigned int subfileindex, const void* data, unsigned int datalen)
 {
-    return pimpl->SetSubFileData(subfileindex, data, datalen);
+    return m_pimpl->SetSubFileData(subfileindex, data, datalen);
 }
 
 void Container::GetSubFileData(unsigned int subfileindex, std::string& outstr) const
 {
-    return pimpl->GetSubFileData(subfileindex, outstr);
+    return m_pimpl->GetSubFileData(subfileindex, outstr);
 }
 
 void Container::GetSubFileData(unsigned int subfileindex, class DataOutput& dataout) const
 {
-    return pimpl->GetSubFileData(subfileindex, dataout);
+    return m_pimpl->GetSubFileData(subfileindex, dataout);
 }
 
 } // namespace Enctain

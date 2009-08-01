@@ -27,35 +27,35 @@ class ByteBuffer
 {
 private:
     /// Allocated buffer pointer.
-    unsigned char*	data_;
+    unsigned char*	m_data;
 
     /// Size of valid data.
-    unsigned int	size_;
+    unsigned int	m_size;
 
     /// Total size of buffer.
-    unsigned int	buff_;
+    unsigned int	m_buff;
 
     /// Current read cursor.
-    unsigned int	curr_;
+    unsigned int	m_curr;
 
 public:
     /// Create a new empty object
     inline ByteBuffer() {
-	data_ = NULL;
-	size_ = buff_ = curr_ = 0;
+	m_data = NULL;
+	m_size = m_buff = m_curr = 0;
     }
 
     /// Create an object with n bytes preallocated
     inline ByteBuffer(unsigned int n) {
-	data_ = NULL;
-	size_ = buff_ = curr_ = 0;
+	m_data = NULL;
+	m_size = m_buff = m_curr = 0;
 	alloc(n);
     }
 
     /// Copy-Constructor, duplicate memory pointer.
     inline ByteBuffer(const ByteBuffer& other) {
-	data_ = NULL;
-	size_ = buff_ = curr_ = 0;
+	m_data = NULL;
+	m_size = m_buff = m_curr = 0;
 	assign(other);
     }
 
@@ -66,36 +66,36 @@ public:
 
     /// Return a pointer to the currently kept memory area.
     inline const unsigned char *data() const
-    { return data_; }
+    { return m_data; }
 
     /// Return a writeable pointer to the currently kept memory area.
     inline unsigned char *data()
-    { return data_; }
+    { return m_data; }
 
     /// Return the currently used length in bytes.
     inline unsigned int size() const
-    { return size_; }
+    { return m_size; }
 
     /// Return the currently allocated buffer size.
     inline unsigned int buffsize() const
-    { return buff_; }
+    { return m_buff; }
 
     /// Set the valid bytes in the buffer, used if the buffer is filled
     /// directly.
     inline void set_size(unsigned int n)
-    { assert(n <= buff_); size_ = n; }
+    { assert(n <= m_buff); m_size = n; }
 
     /// Explicit conversion to std::string (copies memory of course).
     inline std::string str() const
-    { return std::string(reinterpret_cast<const char*>(data_), size_); }
+    { return std::string(reinterpret_cast<const char*>(m_data), m_size); }
 
     /// Make sure that at least n bytes are allocated.
     inline void alloc(unsigned int n)
     {
-	if (buff_ < n)
+	if (m_buff < n)
 	{
-	    buff_ = n;
-	    data_ = static_cast<unsigned char*>(realloc(data_, buff_));
+	    m_buff = n;
+	    m_data = static_cast<unsigned char*>(realloc(m_data, m_buff));
 	}
     }
 
@@ -103,10 +103,10 @@ public:
     /// probably more to compensate future growth.
     inline void dynalloc(unsigned int n)
     {
-	if (buff_ < n)
+	if (m_buff < n)
 	{
 	    // place to adapt the buffer growing algorithm as need.
-	    unsigned int newsize = buff_;
+	    unsigned int newsize = m_buff;
 
 	    while(newsize < n) {
 		if (newsize < 256) newsize = 512;
@@ -120,23 +120,23 @@ public:
 
     /// Clears the memory contents, does not deallocate the memory.
     inline void clear()
-    { size_ = 0; }
+    { m_size = 0; }
 
     /// Deallocates the kept memory space (we use dealloc() instead of free()
     /// as a name, because sometimes "free" is replaced by the preprocessor)
     inline void dealloc()
     {
-	if (data_) free(data_);
-	data_ = NULL;
-	size_ = buff_ = curr_ = 0;
+	if (m_data) free(m_data);
+	m_data = NULL;
+	m_size = m_buff = m_curr = 0;
     }
 
     /// Detach the memory from the object, returns the memory pointer.
     inline const unsigned char* detach()
     {
-	const unsigned char* data = data_;
-	data_ = NULL;
-	size_ = buff_ = curr_ = 0;
+	const unsigned char* data = m_data;
+	m_data = NULL;
+	m_size = m_buff = m_curr = 0;
 	return data;
     }
 
@@ -144,10 +144,10 @@ public:
     /// data. Roughly equivalent to clear() followed by append().
     inline void assign(const void *indata, unsigned int inlen)
     {
-	if (inlen > buff_) alloc(inlen);
+	if (inlen > m_buff) alloc(inlen);
 
-	memcpy(data_, indata, inlen);
-	size_ = inlen;
+	memcpy(m_data, indata, inlen);
+	m_size = inlen;
     }
 
     /// Copy the contents of another buffer object into this buffer, overwrites
@@ -172,10 +172,10 @@ public:
     /// Append a memory range to the buffer
     inline void append(const void *indata, unsigned int inlen)
     {
-	if (size_ + inlen > buff_) dynalloc(size_ + inlen);
+	if (m_size + inlen > m_buff) dynalloc(m_size + inlen);
 
-	memcpy(data_ + size_, indata, inlen);
-	size_ += inlen;
+	memcpy(m_data + m_size, indata, inlen);
+	m_size += inlen;
     }
 
     /// Append the contents of a different buffer object to this one.
@@ -192,36 +192,36 @@ public:
     template <typename Tp>
     inline void put(const Tp item)
     {
-	if (size_ + sizeof(Tp) > buff_) dynalloc(size_ + sizeof(Tp));
+	if (m_size + sizeof(Tp) > m_buff) dynalloc(m_size + sizeof(Tp));
 
-	*reinterpret_cast<Tp*>(data_ + size_) = item;
-	size_ += sizeof(Tp);
+	*reinterpret_cast<Tp*>(m_data + m_size) = item;
+	m_size += sizeof(Tp);
     }
 
     /// Align the size of the buffer to a multiple of n. Fills up with 0s.
     void align(unsigned int n)
     {
 	assert(n > 0);
-	unsigned int rem = size_ % n;
+	unsigned int rem = m_size % n;
 	if (rem != 0)
 	{
 	    unsigned int add = n - rem;
-	    if (size_ + add > buff_) dynalloc(size_ + add);
-	    memset(data_ + size_, 0, add);
-	    size_ += add;
+	    if (m_size + add > m_buff) dynalloc(m_size + add);
+	    memset(m_data + m_size, 0, add);
+	    m_size += add;
 	}
-	assert((size_ % n) == 0);
+	assert((m_size % n) == 0);
     }
 
     // *** Cursor-Driven Read Functions ***
 
     /// Reset the read cursor.
     inline void rewind()
-    { curr_ = 0; }
+    { m_curr = 0; }
 
     /// Check that n bytes are available at the cursor.
     inline bool cursor_available(unsigned int n) const
-    { return (curr_ + n <= size_); }
+    { return (m_curr + n <= m_size); }
 
     /// Throws a std::underflow_error unless n bytes are available at the
     /// cursor.
@@ -237,8 +237,8 @@ public:
     {
 	check_available(sizeof(Tp));
 
-	Tp ret = *reinterpret_cast<Tp*>(data_ + curr_);
-	curr_ += sizeof(Tp);
+	Tp ret = *reinterpret_cast<Tp*>(m_data + m_curr);
+	m_curr += sizeof(Tp);
 
 	return ret;
     }
@@ -247,8 +247,8 @@ public:
     inline void get(void* outdata, unsigned int datalen)
     {
 	check_available(datalen);
-	memcpy(outdata, data_ + curr_, datalen);
-	curr_ += datalen;
+	memcpy(outdata, m_data + m_curr, datalen);
+	m_curr += datalen;
     }
 };
 
@@ -279,9 +279,9 @@ inline std::string ByteBuffer::get<std::string>()
     }
 
     check_available(slen);
-    std::string ret(reinterpret_cast<const char*>(data_ + curr_), slen);
+    std::string ret(reinterpret_cast<const char*>(m_data + m_curr), slen);
 
-    curr_ += slen;
+    m_curr += slen;
     return ret;
 }
 

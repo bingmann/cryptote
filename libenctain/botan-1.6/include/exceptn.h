@@ -23,7 +23,7 @@ class Exception : public InternalError
 	  : InternalError(ETE_TEXT)
        { set_msg(m); }
    protected:
-       void set_msg(const std::string& m) { msg = "Enctain: <Botan> " + m; }
+       void set_msg(const std::string& m) { m_msg = "Enctain: <Botan> " + m; }
    };
 
 /*************************************************

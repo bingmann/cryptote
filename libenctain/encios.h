@@ -17,19 +17,19 @@ struct DataOutputStream : public DataOutput
 {
 private:
     /// Output stream used.
-    std::ostream&	os;
+    std::ostream&	m_os;
 
 public:
     /// Constructor is passed the output stream.
-    DataOutputStream(std::ostream& s)
-	: os(s)
+    DataOutputStream(std::ostream& os)
+	: m_os(os)
     {
     }
 
     /// Virtual implementation writes out the data.
     virtual bool Output(const void* data, size_t datalen)
     {
-	return os.write((const char*)data, datalen).good();
+	return m_os.write((const char*)data, datalen).good();
     }
 };
 
@@ -41,19 +41,19 @@ struct DataInputStream : public DataInput
 {
 private:
     /// Input stream used.
-    std::istream&	is;
+    std::istream&	m_is;
 
 public:
     /// Constructor is passed the input stream.
-    DataInputStream(std::istream& s)
-	: is(s)
+    DataInputStream(std::istream& is)
+	: m_is(is)
     {
     }
 
     /// Virtual implementation attempts to read maxlen data.
     virtual unsigned int Input(void* data, size_t maxlen)
     {
-	return is.read((char*)data, maxlen).gcount();
+	return m_is.read((char*)data, maxlen).gcount();
     }
 };
 

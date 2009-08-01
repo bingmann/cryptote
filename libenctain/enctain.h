@@ -5,6 +5,7 @@
 
 #include <string>
 #include <exception>
+#include <stdint.h>
 
 /// Holds all public declarations and classes of Enctain.
 namespace Enctain {
@@ -109,10 +110,10 @@ class Exception : public std::exception
 {
 protected:
     /// Error code which can be used for translation.
-    error_type		ecode;
+    error_type		m_ecode;
 
     /// Error message in English plain text.
-    std::string		msg;
+    std::string		m_msg;
 
 public:
     /// Initializing constructor.
@@ -124,15 +125,15 @@ public:
 
     /// Return the English error message
     virtual const char* what() const throw()
-    { return msg.c_str(); }
+    { return m_msg.c_str(); }
 
     /// Return Enctain error message string
     virtual const std::string& str() const throw()
-    { return msg; }
+    { return m_msg; }
 
     /// Return Enctain error code
     virtual error_type code() const throw()
-    { return ecode; }
+    { return m_ecode; }
 };
 
 /**
@@ -281,7 +282,7 @@ class Container
 {
 protected:
 
-    class internal::ContainerImpl*	pimpl;
+    class internal::ContainerImpl*	m_pimpl;
 
 public:
     // *** Constructors, Destructor, Assignment ***
