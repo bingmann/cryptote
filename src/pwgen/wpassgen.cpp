@@ -630,7 +630,7 @@ void WPassGen::UpdateKeyStrength()
 
     if (IsAllowedLength()) keybits *= passlen;
 
-    wxString ss = wxString::Format(_T("%.1f keybits"), keybits);
+    wxString ss = wxString::Format(_("%.1f keybits"), keybits);
 
     textctrlStrength->SetValue(ss);
 }
