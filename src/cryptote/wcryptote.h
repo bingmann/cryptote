@@ -501,6 +501,7 @@ protected:
     wxStaticBitmap* bitmapIcon;
     wxStaticBitmap* bitmapWeb;
     wxHyperlinkCtrl* hyperlink1;
+    wxStaticText* labelBuildTime;
     wxButton* buttonOK;
     // end wxGlade
 }; // wxGlade: end class

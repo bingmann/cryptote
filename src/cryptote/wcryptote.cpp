@@ -3173,6 +3173,7 @@ WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& p
     bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
+    labelBuildTime = new wxStaticText(this, wxID_ANY, _("Binary compiled at "));
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
 
     set_properties();
@@ -3184,6 +3185,8 @@ WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& p
 
     #include "art/web-16.h"
     bitmapWeb->SetBitmap( wxBitmapFromMemory(web_16_png) );
+
+    labelBuildTime->SetLabel(wxString(_("Binary compiled at ")) + _T(MY_BUILDTIME));
 
     Layout();
     GetSizer()->Fit(this);
@@ -3219,6 +3222,7 @@ void WAbout::do_layout()
     sizer5->Add(label5, 0, wxALL, 0);
     sizer4->Add(sizer5, 1, wxEXPAND, 0);
     sizer3->Add(sizer4, 0, wxALL|wxEXPAND, 6);
+    sizer3->Add(labelBuildTime, 0, wxALL, 6);
     sizer2->Add(sizer3, 1, wxEXPAND, 0);
     sizer1->Add(sizer2, 1, wxALL|wxEXPAND, 6);
     sizer1->Add(buttonOK, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 6);
@@ -3322,3 +3326,5 @@ void WNotePage::SetModified(bool modified)
 }
 
 IMPLEMENT_ABSTRACT_CLASS(WNotePage, wxPanel);
+
+

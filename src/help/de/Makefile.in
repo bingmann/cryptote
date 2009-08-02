@@ -490,7 +490,7 @@ cryptote.pdf: cryptote.tex
 pdf: cryptote.pdf
 
 @GOT_TEX2RTF_TRUE@html/cryptote.hhp: cryptote.tex
-@GOT_TEX2RTF_TRUE@	tex2rtf cryptote.tex html/cryptote -html
+@GOT_TEX2RTF_TRUE@	LANG=de_DE tex2rtf cryptote.tex html/cryptote -html
 
 @GOT_TEX2RTF_TRUE@html: html/cryptote.hhp
 
