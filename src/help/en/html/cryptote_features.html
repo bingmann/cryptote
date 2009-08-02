@@ -14,7 +14,7 @@
 <A HREF="#Compression">Built-in Compression</A><BR>
 <A HREF="#KeySlots">Multiple Key Slots</A><BR>
 <A HREF="#wxWidgets">wxWidgets</A><BR>
-<A HREF="#Commandline">Commandline Interface</A><BR>
+<A HREF="#Commandline">Command Line Interface</A><BR>
 <P>
 
 <HR>
@@ -23,7 +23,7 @@
 <P>
 <UL>
 
-  <LI> User-friendly Scintilla text editing widget. The same as used by Notepad++.
+  <LI> User-friendly Scintilla text editing widget, the same as used by Notepad++.
   <LI> Edits <A HREF="cryptote_features.html#Containers">secure private container files</A> holding multiple text or binary files.
   <LI> Highly-secure <A HREF="cryptote_features.html#Encryption">Serpent (256 keybits) encryption</A> of sensitive data.
   <LI> <A HREF="cryptote_features.html#Compression">Automatic compression</A> using zlib or bzip2 to reduce container size.
@@ -31,9 +31,9 @@
   <LI> Fast user-interface: Quick-Find and Quick-Goto bars like Firefox's find. I use the program myself daily.
   <LI> Auto-Close the container after a user-defined period of inactivity.
   <LI> Built-in password generator to insert new passwords in the text.
-  <LI> Portable, self-sufficient executable files for Windows and Linux available. Very useful for USB sticks.
+  <LI> Portable, self-sufficient executable files for Windows and Linux available, very useful for USB sticks.
   <LI> Sleek wxAui tabbed interface from the newest <A HREF="cryptote_features.html#wxWidgets">wxWidgets</A> version.
-  <LI> Also useable from the Unix/Linux <A HREF="cryptote_features.html#Commandline">command line</A> on a text console e.g. via ssh.
+  <LI> Also usable from the Unix/Linux <A HREF="cryptote_features.html#Commandline">command line</A> on a text console e.g. via ssh.
   <LI> Modularized and well-tested container processing library.
   <LI> Translated into German (volunteers for more languages wanted).
 </UL>
@@ -45,7 +45,7 @@
 <P>
 An encrypted container has the extension <TT>.ect</TT>. It can hold multiple text or binary subfiles. The contained files are encrypted using strong cryptography and are unreadable by other programs than CryptoTE.<P>
 Use multiple subfiles to structure your sensitive data like "<TT>WebSitePasswords.txt</TT>" and "<TT>EMailAccounts.txt</TT>".<P>
-The container file format support <A HREF="cryptote_features.html#Encryption">built-in encryption</A> and <A HREF="cryptote_features.html#Compression">built-in compression</A>. It also supports multiple key slots for different password.<P>
+The container file format supports <A HREF="cryptote_features.html#Encryption">built-in encryption</A> and <A HREF="cryptote_features.html#Compression">built-in compression</A>. It also supports multiple key slots for different passwords.<P>
 
 <HR>
 <A NAME="Encryption"></A>
@@ -53,7 +53,7 @@ The container file format support <A HREF="cryptote_features.html#Encryption">bu
 <P>
 CryptoTE contains built-in strong encryption. It uses a custom version of the Botan cryptography library.<P>
 While designing CryptoTE I decided not to burden a user (that is you) with a long list of encryption ciphers to select one. Instead I selected one for you, the strongest currently freely available one: <B>Serpent</B>.<P>
-Why use Serpent? Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will (hopefully) still be safe for a short time. Even though both are based on the same cryptographic mechanisms more cryptoanalysis (read: attempts to break) will be directed at Rijndael/AES.<P>
+Why use Serpent? Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will (hopefully) still be safe for a short time. Even though both are based on the same cryptographic mechanisms, more cryptanalysis (read: attempts to break) will be directed at Rijndael/AES.<P>
 However secure encryption does not end with selecting a cipher. Instead it starts there: the key material must be stored securely, the contained key hashes must be irreversible.<P>
 One mistake in design of the container format can render the encryption weak or even breakable. Be aware that it is rather easy to make such a mistake and I am sure many other "password keeper'' programs contain such errors.<P>
 It is also <EM>very easy</EM> to design a container that has a backdoor, i.e. that can be decrypted without the password. CryptoTE <B>does not contain such a backdoor</B>, there is <B>no viable method</B> to retrieve data without the password. I am sure many other "password protectors'' contain such backdoors.<P>
@@ -85,19 +85,19 @@ Why choose wxWidgets as toolkit? For many reasons:<P>
 
   <LI> It is cross-platform: versions of CryptoTE exist for Windows and Linux. MacOSX support is also possible.
   <LI> It looks "native'' on all platforms: the frames and widgets look like the user expects them to look like.
-  <LI> It allows me to compile a self-sufficient single .exe file for Windows. Very useful for USB sticks.
+  <LI> It allows me to compile a self-sufficient single .exe file for Windows, very useful for USB sticks.
   <LI> It is released under a very liberal license.
 </UL>
 <P>
 
 <HR>
 <A NAME="Commandline"></A>
-<H3>Commandline Interface</H3>
+<H3>Command Line Interface</H3>
 <P>
 For Unix users and other power-users the CryptoTE program has a command line interface. This is very useful if you cannot start the graphical user interface, e.g. if logged in via ssh or if you are limited to a text console.<P>
-The best way to use CryptoTE without gui is to start the "shell'': <TT>cryptote -s file.ect</TT>.<P>
+The best way to use CryptoTE without GUI is to start the "shell'': <TT>cryptote -s file.ect</TT>.<P>
 It will query for the container password and if decryption works a simple shell is started. Start using the shell by entering "help'' for a list of command.<P>
 Be warned that using the "edit'' command requires CryptoTE to save the contents in a temporary file outside the container. This file can then be modified using any text editor. If you wish to implement a built-in console text editor in CryptoTE, contact me.<P>
-
+<P>
 
 </FONT></BODY></HTML>

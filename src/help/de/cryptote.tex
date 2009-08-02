@@ -1,6 +1,6 @@
 % $Id$
 
-\documentclass[a4paper,12pt,twoside]{article}
+\documentclass[a4paper,12pt,twoside,draft]{article}
 
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
@@ -31,7 +31,8 @@
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
 
 \usepackage{xcolor}
-\usepackage[colorlinks=true,linkcolor=blue!70!black,urlcolor=blue!70!black]{hyperref}
+\usepackage[final,colorlinks=true,linkcolor=blue!70!black,urlcolor=blue!70!black]{hyperref}
+\renewcommand{\UrlFont}{\fontfamily{lmtt}\selectfont{}\hyphenchar\font=`\-{}}
 
 \title{CryptoTE Hilfe}
 \author{Timo Bingmann}
@@ -50,19 +51,19 @@
 
 \subsection{Zusammenfassung}\label{Zusammenfassung}
 
-CryptoTE is ein Texteditor mit integrierter, starker Verschlüsselung. Es basiert auf dem bekannten Scintilla editing Widget und verschlüsselt automatisch alle gespeicherte Textdaten in sicheren Containerdateien. Verglichen mit anderen ``Passwortverwaltungs''-Programmen, zwingt CryptoTE dem Benutzer keine Organisation oder Struktur auf: es arbeitet mit einfachem ASCII Text und verlangt von Ihnen keine extra Tabellen, Attribute oder Bezeichnungen auszufüllen.
+CryptoTE ist ein Texteditor mit integrierter, starker Kryptographie. Das Programm basiert auf dem bekannten Scintilla Textverarbeitungswidget und verschlüsselt automatisch alle gespeicherte Textdaten in sicheren Containerdateien. Anders als vergleichbare Passwortverwaltungsprogrammen, zwingt CryptoTE dem Benutzer keine Organisation oder Struktur auf: Es arbeitet mit einfachem ASCII Text und verlangt von Ihnen keine extra Tabellen, Attribute oder Bezeichnungen auszufüllen.
 
 \section{Über Verschlüsselung}\label{UeberVerschluesselung}
 
 \subsection{Schlechte Passwörter}\label{SchlechtePasswoerter}
 
-Man kann viele Hinweise geben, wie man ein gutes Passwort aussucht. Den Ratschlägen zu folgen, ist aber oft schwer.
+Zur Verwendung von guten Passwörtern werden von vielen Seiten Ratschläge erteilt, die aber oft schwer umzusetzen und daher nicht befolgt werden. Im folgenden wird eine einfache Methode gezeigt, mit der Sie Ihre privaten Logindaten sicher schützen können.
 
-Zu Anfang: versuchen sie nicht an ``Pass-Wörter'' zu denken, sondern betrachten sie eher \textbf{Pass-Sätze}. Kein Verschlüsselungsprogramm kann Ihre Daten sichern, wenn Sie das Passwort auf ein einfaches englisches oder deutsches Wort setzen, oder noch schlimmer, ein kurzes Wort, dass mit ihrer Person oder Umgebung im Zusammenhang steht. Im Internet gibt es viele Listen schlechter und dennoch häufig verwendeter Passwörter: zur Erheiterung suchen sie bei Gelegenheit mal nach ``top 100 passwords''.
+Zu Anfang: versuchen Sie nicht an Pass\emph{wörter} zu denken, sondern betrachten Sie eher Pass\textbf{aus\-drücke}. Kein Verschlüsselungsprogramm kann Ihre Daten sichern, wenn Sie das Zugriffspasswort auf ein einfaches englisches oder deutsches Wort setzen, oder noch schlimmer, ein kurzes Wort, dass mit ihrer Person oder Umgebung im Zusammenhang steht. Im Internet findet man viele Listen schlechter und dennoch häufig verwendeter Passwörter: suchen einfach nach ,,top 100 passwords``.
 
-Mit dem Problem konfrontiert sich ein längeres Passwort merken zu müssen, wollen die meisten Menschen dieses natürlicherweise aufschreiben. Und im nächsten verhängnisvollen Schritt wird dieser Papierschnipsel dann direkt am Rechner aufbewahrt. Machen Sie das besser! 
+Mit dem Problem konfrontiert sich ein längeres Passwort merken zu müssen, wollen die meisten Menschen dies natürlicherweise aufschreiben. Und im nächsten verhängnisvollen Schritt wird dieser Papierschnipsel dann direkt am Rechner aufbewahrt. Machen Sie das besser! 
 
-Um Ihnen eine Vorstellung von einem guten Passwort zu geben: betrachten Sie, dass der Serpent Algorithmus 256 Schlüsselbits verwendet. Das sind 256 Bits zufälliger Information. Ein durchschnittlicher englischer oder deutscher Text hat 1.0 bis 1.5 Informationbits pro Buchstabe.
+Um Ihnen eine Vorstellung von einem guten Passwort zu geben: Betrachten Sie, dass der Serpent Algorithmus 256 Schlüsselbits verwendet. Das sind 256 Bits zufälliger Information. Ein durchschnittlicher englischer oder deutscher Text hat 1.0 bis 1.5 Informationbits pro Buchstabe.
 
 Dieser ganze Satz entspricht also nur ungefähr 47 Bits!
 
@@ -70,28 +71,28 @@ Die Schlüsselbits (genauer: Entropierate) kann mittels Namen, Symbolen und Sonde
 
 \subsection{Vorgehen um ein gutes Passwort zu lernen}\label{VorgehenPasswort}
 
-Mein Vorgehen, um ein neues sicheres Passwort zu lernen, ist einfach: ich benutze den Zufallsgenerator, der in CryptoTE integriert ist und lasse diesen ein Zufallszeichenkette generierten. Dieser bietet viele anpassbare Optionen; so verwende ich nie z/y in einem Passwort, da diese auf den deutschen und englischen Tastaturlayouts vertauscht sind. Kein z/y, keine Probleme.
+Mein Vorgehen, um ein neues, sicheres Passwort zu lernen, ist einfach: Ich benutze den Zufallsgenerator, der in CryptoTE integriert ist und lasse diesen ein Zufallszeichenkette generierten. Dieser bietet viele anpassbare Optionen. Insbesondere verwende ich nie z/y in einem Passwort, da diese auf den deutschen und englischen Tastaturlayouts vertauscht sind. Kein z/y, keine Probleme.
 
-Je nach Einsatz, verwende ich nur Kleinbuchstaben und wähle eine adäquate Passwortlänge: der Generator errechnet die theoretischen Schlüsselbits der angepassten Optionen. Passen Sie die Länge ihren Anforderungen an.
+Je nach Einsatz, verwende ich nur Kleinbuchstaben und wähle eine adäquate Passwortlänge: Der Generator errechnet die theoretischen Schlüsselbits der angepassten Optionen. Passen Sie die Länge ihren Anforderungen an.
 
 Mein Containerpasswort ist circa 25 Groß- oder Kleinbuchstaben lang. Das sind 139.6 Schlüsselbits. Viel mehr als ein einfacher Satz. Das Kennwort sieht etwa so aus: DUWHmnBunfVQNUeCdQxpHHdIJ.
 
-Sie denken sie können sich niemals 25 zufällige Zeichen merken? \textbf{Versuchen Sie es!} Ihr Gedächtnis ist weit besser also Sie es glauben. Lernen Sie die Zeichen durch Wiederholung:
+Sie denken Sie können sich niemals 25 zufällige Zeichen merken? \textbf{Versuchen Sie es!} Ihr Gedächtnis ist weit besser also Sie es glauben. Lernen Sie die Zeichen durch Wiederholung:
 
-Ich verwende CryptoTE jeden Tag, um auf irgendwelche Passwörter zu zugreifen, und er verlangt jedes mal das (lange) Passwort. Durch diese häufigen Wiederholungen werden \textbf{auch Sie} eine zufällige Zeichenfolge schnell lernen. In der Anfangsphase (1 Woche oder so) können Sie das Passwort auch auf einen Papierschnippsel aufschreiben, aber bewahren Sie den Zettel sicher auf! Mein Lieblingsort: der Geldbeutel. Nach zwei Wochen: verbrennen Sie ihn!
+Ich verwende CryptoTE jeden Tag, um auf irgendwelche Passwörter zu zugreifen, und er verlangt jedes mal das (lange) Passwort. Durch diese häufigen Wiederholungen werden \textbf{auch Sie} eine zufällige Zeichenfolge schnell lernen. In der Anfangsphase (Eine Woche oder so) können Sie das Passwort auch auf einen Papierschnippsel aufschreiben, aber bewahren Sie den Zettel sicher auf! Mein Lieblingsort: der Geldbeutel. Nach zwei Wochen: Verbrennen Sie ihn!
 
-Wenn Sie glauben 25 Buchstaben sind viel zu viele: versuchen Sie es erstmal mit 10, also etwa rZl2jXybem. Das sind immerhin schon 57 Schlüsselbits.
+Wenn Sie glauben 25 Buchstaben sind viel zu viele: Versuchen Sie es erstmal mit zehn, also etwa rZl2jXybem. Das sind immerhin schon 57 Schlüsselbits.
 
 \subsection{Maß an Sicherheit}\label{MassSicherheit}
 
 CryptoTE kann Ihren Text sichern, aber Sie müssen überlegen, ob der Einsatz von Verschlüsselung für Ihren Einsatzzweck wirklich angebracht ist. Vor wem wollen Sie ihre Passwörter sicher aufbewahren?
 
 \begin{itemize}
-  \item Sie vor Ihren Kindern, Mitbewohnern, Kollegen oder Frau zu schützen, die ab und zu den Rechner verwenden: OK.
-  \item Um sicher zu gehen, dass keine wichtigen Daten lesbar sind, falls Ihr Notebook oder USB-Stick geklaut wird: auch OK.
-  \item Gegen ``Fishing'' oder ``Keylogger'': keine Chance, diese sehen das eingegebene Passwort.
-  \item Gegen die Polizei oder andere Gesetzeshüter: nicht gut! Sie landen auf unbestimmte Zeit im Gefängnis.
-  \item Gegen finstere, bösartige Gestalten: keine Chance! Die werden mit dem Brecheisen nicht den Rechner, sondern \textbf{Sie} bearbeiten.
+  \item Sie vor Ihren Kindern, Mitbewohnern, Kollegen, Frau oder Mann zu schützen, die ab und zu den Rechner verwenden: Okay.
+  \item Um sicher zu gehen, dass keine wichtigen Daten lesbar sind, falls Ihr Notebook oder USB-Stick geklaut wird: auch Okay.
+  \item Gegen ,,Phishing`` oder ,,Keylogger``: Keine Chance, diese sehen das eingegebene Passwort.
+  \item Gegen die Polizei oder andere Gesetzeshüter: Nicht gut! Sie landen auf unbestimmte Zeit im Gefängnis.
+  \item Gegen finstere, bösartige Gestalten: Keine Chance! Die werden mit dem Brecheisen nicht den Rechner, sondern \textbf{Sie} bearbeiten.
 \end{itemize}
 
 \section{Funktionsumfang}\label{Funktionsumfang}
@@ -99,12 +100,12 @@ CryptoTE kann Ihren Text sichern, aber Sie müssen überlegen, ob der Einsatz von 
 \subsection{Übersicht}\label{Uebersicht}
 
 \begin{itemize}
-  \item Benutzerfreudnliches Scintilla Texteditor-Widget. Dasselbe wie in Notepad++.
-  \item Speichert mehrere Text- oder Binärdateien in \helpref{gesicherte private Containern}{Containerdateien}
-  \item Hoch-sichere \helpref{Serpent (256 Bits) Verschlüsselung}{Verschluesselung} der sensibelen Daten.
+  \item Benutzerfreundliches Scintilla Textverarbeitungswidget, dasselbe wie in Notepad++.
+  \item Speichert mehrere Text- oder Binärdateien in \helpref{gesicherten privaten Containern}{Containerdateien}
+  \item Hoch-sichere \helpref{Serpent (256 Bits) Verschlüsselung}{Verschluesselung} der privaten Daten.
   \item \helpref{Automatische Komprimierung}{Komprimierung} mittels zlib oder bzip2 zur Reduktion der Containergröße.
   \item \helpref{Mehrere Benutzerpasswörter}{KeySlots} können zum Zugriff auf einen Container hinzugefügt werden.
-  \item Schnelle Benutzeroberfläche: Schnell-Suche- und Schnell-Goto-Leisten wie Firefox. Ich benutze das Programm selber täglich.
+  \item Schnelle Benutzeroberfläche: Schnell-Suche- und Goto-Leisten wie Firefox. Ich benutze das Programm selbst täglich.
   \item Automatisches Schließen des Containers nach einer anpassbaren Zeit ohne Benutzerinteraktion.
   \item Eingebauter Passwort-Generator, um schnell neue Passwörter in den Text einzufügen.
   \item Portable, autarke Programmversionen für Windows und Linux verfügbar. Sehr nützlich für USB Sticks.
@@ -117,7 +118,7 @@ CryptoTE kann Ihren Text sichern, aber Sie müssen überlegen, ob der Einsatz von 
 
 Ein verschlüsselter Container hat die Dateiendung \texttt{.ect}. Er kann mehrere Text- oder Binär-Subdateien enthalten. Die Containerdateien sind mit einem starker Verschlüsselungsalgorithmus geschützt und für andere Programm außer CryptoTE nicht lesbar.
 
-Mehreren Subdateien können zur besseren Verwaltung Ihrer Daten verwendet werden. Etwa mit "\texttt{Web\-Seiten\-Passwörter.txt}" und "\texttt{EMail\-Konten.txt}".
+Mehreren Subdateien können zur besseren Verwaltung Ihrer Daten verwendet werden. Etwa mit ,,\texttt{Web\-Seiten\-Passwörter.txt}`` und ,,\texttt{EMail\-Konten.txt}``.
 
 Das Containerformat unterstützt \helpref{eingebaute Verschlüsselung}{Verschluesselung} and \helpref{transparente Komprimierung}{Komprimierung}. Weiterhin werden mehrere Master-Kennwörter für verschiedene Benutzer unterstützt.
 
@@ -127,33 +128,33 @@ CryptoTE integriert starke Verschlüsselung mit einem einfachen Texteditor. Es en
 
 Beim Design von CryptoTE habe ich mich entschieden den Benutzer (das sind Sie) nicht mit einer langen Auswahl an Verschlüsselungsalgorithmen zu belasten. Stattdessen habe ich für Sie einen ausgewählt, den zur Zeit sichersten und stärksten frei verfügbaren: \textbf{Serpent} (Schlange auf englisch).
 
-Warum Serpent? Serpent war einer der AES Finalisten und unterstützt 256 Bits Blockverschlüsselung, soweit die minimalen Anforderungen. Der Gewinner des AES Wettbewerbs war Rijndael, wahrscheinlich weil er um ein paar Prozent schneller ist. Serpent ist ein wenig langsamer, aber vermutlich sicherer. Für den Einsatz in CryptoTE ist die geringere Geschwindigkeit nicht ausschlaggebend: es werden nur relativ kleine Text oder Binärdateien verschlüsselt. Statt Rijndael wurde Serpent ausgewählt, da falls jemals eine Methode gefunden wird AES/Rijndael zu knacken, dann wird (hoffentlich) Serpent noch eine kurze Zeit sicher sein. Beide basieren zwar auf denselben kryptographischen Mechanismen, aber es wird definitiv mehr Kryptoanalyse (d.h. Versuche zu knacken) bei Rijndael/AES betrieben.
+Warum Serpent? Serpent war einer der AES Finalisten und unterstützt 256 Bits Blockverschlüsselung, soweit die minimalen Anforderungen. Der Gewinner des AES Wettbewerbs war Rijndael, wahrscheinlich weil er um ein paar Prozent schneller ist. Serpent ist ein wenig langsamer, aber vermutlich sicherer. Für den Einsatz in CryptoTE ist die geringere Geschwindigkeit nicht ausschlaggebend: Es werden nur relativ kleine Text oder Binärdateien verschlüsselt. Statt Rijndael wurde Serpent ausgewählt, da falls jemals eine Methode gefunden wird AES/Rijndael zu knacken, dann wird (hoffentlich) Serpent noch eine kurze Zeit sicher sein. Beide basieren zwar auf denselben kryptographischen Mechanismen, aber es wird definitiv mehr Kryptoanalyse (d.h. Versuche zu knacken) bei Rijndael/AES betrieben.
 
-Sichere Verschlüsselung ist jedoch nicht mit Auswahl eines Verschlüsselungsalgorithmus getan. Dies ist erst der Anfang: das Schlüsselmaterial muss sicher gespeichert werden, die enthalten Schüsselhashwerte dürfen nicht reversibel sein.
+Sichere Verschlüsselung ist jedoch nicht mit Auswahl eines Verschlüsselungsalgorithmus getan. Dies ist erst der Anfang: Das Schlüsselmaterial muss sicher gespeichert werden, die enthalten Schüsselhashwerte dürfen nicht reversibel sein.
 
-Ein kleiner Fehler im Design des Containerformats kann die gesamte Verschlüsselungskette unsicherer oder sogar knackbar machen. Beachten Sie, dass es recht einfach ist einen solchen Programmierfehler zu machen, und ich bin sicher, dass viele andere ``Passwortschutz''-Programme solche Fehler enthalten.
+Ein kleiner Fehler im Design des Containerformats kann die gesamte Verschlüsselungskette unsicherer oder sogar knackbar machen. Beachten Sie, dass es recht einfach ist einen solchen Programmierfehler zu machen, und mit Sicherheit enthalten viele andere ,,Passwortschutz``-Programme solche Fehler.
 
-Es ist auch \emph{sehr einfach} einen Container zu entwerfen, der eine Hintertüre (``backdoor'') enthält, und so ohne das Passwort entschlüsselt werden kann. CryptoTE \textbf{enthält keine solche Hintertüre}, es gibt \textbf{keine gangbare Methode} die Daten ohne Passwort auszulesen. Mit Sicherheit enthalten viele andere ``Passwortschutz''-Programme solche Hintertüren (auf Grund von Gesetzen oder anderem).
+Es ist auch \emph{sehr einfach} einen Container zu entwerfen, der eine Hintertüre (,,backdoor``) enthält, und so ohne das Passwort entschlüsselt werden kann. CryptoTE \textbf{enthält keine solche Hintertüre}, es gibt \textbf{keine gangbare Methode} die Daten ohne Passwort auszulesen. Mit Sicherheit enthalten viele andere ,,Passwortschutz``-Programme solche Hintertüren (auf Grund von Gesetzen oder anderem).
 
 Jede Subdatei des Containers ist einzeln mit Serpent/CBC und verschiedenen zufällig generierten Schüsseln und IV (Initialvektor) geschützt. Die Schlüssel und IV sind in einer globalen Dateitabelle gespeichert, die wiederum durch einen Masterschlüssel mit Serpent/CBC verschlüsselt ist. Dieser Masterschlüssel ist nicht als solcher ungeschützt in der Containerdatei gespeichert. 
 
-Stattdessen unterstützt der Container mehrere Entschlüsselungspasswörter: \helpref{Mehrere Passwort-Slots}{KeySlots}. Jeder Slot enthält eine verschlüsselte Kopie des Masterschlüssels mit dem die Dateitabelle gelesen werden kann. Die zum Entschlüsseln notwendigen Schlüssel und CBC-IV der Kopien können nur mit dem vom Benutzer eingegeben Passwort bestimmt werden. Aus dem Benutzer-Passwort werden mittels PBKDF2, mit HMAC(SHA256) als Hashfunktion, und zwei verschiedenen zufälligen ``Salts'' der Schlüssel und CBC-IV bestimmt.
+Stattdessen unterstützt der Container mehrere Entschlüsselungspasswörter: \helpref{Mehrere Passwort-Slots}{KeySlots}. Jeder Slot enthält eine verschlüsselte Kopie des Masterschlüssels mit dem die Dateitabelle gelesen werden kann. Die zum Entschlüsseln der Kopien notwendigen Schlüssel und CBC-IV können nur mit dem vom Benutzer eingegeben Passwort bestimmt werden. Aus dem Benutzer-Passwort werden mittels PBKDF2, mit HMAC(SHA256) als Hashfunktion, und zwei verschiedenen, zufälligen ,,Salts`` der Schlüssel und CBC-IV bestimmt.
 
-Mehr Information zum Containerformat ist in dem CryptoTE Quellcode in libenctain/format.html beigefügt.
+Mehr Information zum Containerformat ist dem CryptoTE Quellcode in libenctain/format.html beigefügt.
 
-Vor dem Entwurf von CryptoTE habe ich eine ausführlichen Geschwindigkeitvergleich verschiedener Kryptographischen Cipher und Bibliotheken gemacht: siehe \urlref{http://idlebox.net}{http://idlebox.net} für mehr Informationen.
+Vor dem Entwurf von CryptoTE habe ich einen ausführlichen Geschwindigkeitvergleich verschiedener Kryptographischen Cipher und Bibliotheken durchgeführt: siehe \urlref{http://idlebox.net}{http://idlebox.net} für mehr Informationen.
 
 \subsection{Eingebaute Komprimierung}\label{Komprimierung}
 
 Als Bonus enthält CryptoTE auch eine automatische, transparente Komprimierung der Subdateien. Hierzu muss nichts aktiviert werden: standardmäßig werden alle Dateien mit zlib komprimiert.
 
-Der Kompressionsalgorithmus kann in dem Eigenschaften-Dialog der Subdateien eingestellt werden.
+Der Kompressionsalgorithmus kann in dem Eigenschaften-Dialogfeld der Subdateien eingestellt werden.
 
-CryptoTE enthält auch bzip2 als alternative Kompressionsmethode. Diese ist generell jedoch nur für wirklich große Textdateien besser, für kleine Texte ist zlib die besser Wahl.
+CryptoTE enthält auch bzip2 als alternative Kompressionsmethode. Diese ist generell jedoch nur für wirklich große Textdateien besser, für kleine Texte ist zlib die richtige Wahl.
 
 \subsection{Mehrere Passwort-Slots}\label{KeySlots}
 
-Ein Container kann so konfiguriert werden, dass er mit mehreren verschiedenen Passwörtern entschlüsselt werden kann. So können mehrere Benutzer auf einen Container zugreifen ohne gegenseitig ihre Passwörter auszutauschen. Diese ``Slots'' sind in CryptoTE über den Menüeintrag ``Password-Liste'' einstellbar.
+Ein Container kann so konfiguriert werden, dass er mit mehreren verschiedenen Passwörtern entschlüsselt werden kann. So können mehrere Benutzer auf einen Container zugreifen ohne gegenseitig ihre Passwörter auszutauschen. Diese ,,Slots`` sind in CryptoTE über den Menüeintrag ,,Password-Liste`` einstellbar.
 
 \subsection{wxWidgets}\label{wxWidgets}
 
@@ -161,21 +162,21 @@ Warum wxWidgets als Widgets-Bibliothek? Dafür gibt es viele Gründe:
 
 \begin{itemize}
   \item Sie ist platform-unabhängig: CryptoTE ist für Windows und Linux verfügbar. Unterstützung von MacOSX ist ebenfalls möglich.
-  \item Sie sieht auf allen Platformen ``natürlich'' aus: die Fenster und Kontrollelemente sehen so aus wie der Benutzer dies erwartet.
+  \item Sie sieht auf allen Platformen ,,natürlich`` aus: die Fenster und Kontrollelemente sehen so aus wie der Benutzer dies erwartet.
   \item Sie erlaubt eine einzige autarke .exe Datei für Windows zu kompilieren. Sehr nützlich für USB Sticks.
   \item wxWidgets wird mit einer sehr liberalen Lizenz entwickelt.
 \end{itemize}
 
 \subsection{Kommandozeilen-Interface}\label{Kommandozeile}
 
-Für Unix-User und andere fortgeschrittene Anwender enthält CryptoTE auch ein Kommandozeileninterface. Dies ist sehr nützlich, wenn man keine graphische Oberfläche starten kann, z. B. falls man mit ssh eingeloggt ist oder X11 gerade nicht zur Verfügung hat.
+Für Unix-User und andere fortgeschrittene Anwender enthält CryptoTE auch ein Kommandozeileninterface. Dies ist sehr nützlich, wenn keine graphische Oberfläche starten werden kann, z. B. falls man mit ssh eingeloggt ist oder X11 gerade nicht zur Verfügung hat.
 
 Der einfachste Weg CryptoTE ohne graphische Oberfläche zu starten ist: \texttt{cryptote -s file.ect}.
 
-Dies fragt zuerst das Containerpasswort ab und startet bei gelungener Entschlüsselung eine einfache Eingabeoberfläche. Mit ``help'' erhalten Sie dann eine Liste verfügbarer Befehle unter weitere Informationen.
+Dies fragt zunächst das Containerpasswort ab und startet bei gelungener Entschlüsselung eine einfache Eingabeoberfläche. Mit ,,help`` erhalten Sie dann eine Liste verfügbarer Befehle und weiterführende Informationen.
 
-Beachten Sie, dass bei dem ``edit'' Kommando der Inhalt der Subdatei in eine externe temporäre Datei geschrieben wird. Diese Datei kann dann mit jedem Konsolen-Texteditor bearbeitet werden. Falls Sie einen eingebauten, sicheren Konsolen-Texteditor für CryptoTE beitragen wollen, kontaktieren Sie mich.
+Beachten Sie, dass bei dem ,,edit`` Kommando der Inhalt der Subdatei in eine externe temporäre Datei geschrieben wird. Diese Datei kann dann mit jedem Konsolen-Texteditor bearbeitet werden. Falls Sie einen eingebauten, sicheren Konsolen-Texteditor für CryptoTE beitragen wollen, kontaktieren Sie mich.
 
 \end{document}
 
-% LocalWords: Papierschnippsel
+% LocalWords: Papierschnippsel CryptoTE Containerdateien

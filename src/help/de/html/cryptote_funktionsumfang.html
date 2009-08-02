@@ -23,12 +23,12 @@
 <P>
 <UL>
 
-  <LI> Benutzerfreudnliches Scintilla Texteditor-Widget. Dasselbe wie in Notepad++.
-  <LI> Speichert mehrere Text- oder Bin&auml;rdateien in <A HREF="cryptote_funktionsumfang.html#Containerdateien">gesicherte private Containern</A>
-  <LI> Hoch-sichere <A HREF="cryptote_funktionsumfang.html#Verschluesselung">Serpent (256 Bits) Verschl&uuml;sselung</A> der sensibelen Daten.
+  <LI> Benutzerfreundliches Scintilla Textverarbeitungswidget, dasselbe wie in Notepad++.
+  <LI> Speichert mehrere Text- oder Bin&auml;rdateien in <A HREF="cryptote_funktionsumfang.html#Containerdateien">gesicherten privaten Containern</A>
+  <LI> Hoch-sichere <A HREF="cryptote_funktionsumfang.html#Verschluesselung">Serpent (256 Bits) Verschl&uuml;sselung</A> der privaten Daten.
   <LI> <A HREF="cryptote_funktionsumfang.html#Komprimierung">Automatische Komprimierung</A> mittels zlib oder bzip2 zur Reduktion der Containergr&ouml;&szlig;e.
   <LI> <A HREF="cryptote_funktionsumfang.html#KeySlots">Mehrere Benutzerpassw&ouml;rter</A> k&ouml;nnen zum Zugriff auf einen Container hinzugef&uuml;gt werden.
-  <LI> Schnelle Benutzeroberfl&auml;che: Schnell-Suche- und Schnell-Goto-Leisten wie Firefox. Ich benutze das Programm selber t&auml;glich.
+  <LI> Schnelle Benutzeroberfl&auml;che: Schnell-Suche- und Goto-Leisten wie Firefox. Ich benutze das Programm selbst t&auml;glich.
   <LI> Automatisches Schlie&szlig;en des Containers nach einer anpassbaren Zeit ohne Benutzerinteraktion.
   <LI> Eingebauter Passwort-Generator, um schnell neue Passw&ouml;rter in den Text einzuf&uuml;gen.
   <LI> Portable, autarke Programmversionen f&uuml;r Windows und Linux verf&uuml;gbar. Sehr n&uuml;tzlich f&uuml;r USB Sticks.
@@ -43,7 +43,7 @@
 <H3>Verschl&uuml;sselte Containerdateien</H3>
 <P>
 Ein verschl&uuml;sselter Container hat die Dateiendung <TT>.ect</TT>. Er kann mehrere Text- oder Bin&auml;r-Subdateien enthalten. Die Containerdateien sind mit einem starker Verschl&uuml;sselungsalgorithmus gesch&uuml;tzt und f&uuml;r andere Programm au&szlig;er CryptoTE nicht lesbar.<P>
-Mehreren Subdateien k&ouml;nnen zur besseren Verwaltung Ihrer Daten verwendet werden. Etwa mit "<TT>WebSeitenPassw&ouml;rter.txt</TT>" und "<TT>EMailKonten.txt</TT>".<P>
+Mehreren Subdateien k&ouml;nnen zur besseren Verwaltung Ihrer Daten verwendet werden. Etwa mit ,,<TT>WebSeitenPassw&ouml;rter.txt</TT>" und ,,<TT>EMailKonten.txt</TT>".<P>
 Das Containerformat unterst&uuml;tzt <A HREF="cryptote_funktionsumfang.html#Verschluesselung">eingebaute Verschl&uuml;sselung</A> and <A HREF="cryptote_funktionsumfang.html#Komprimierung">transparente Komprimierung</A>. Weiterhin werden mehrere Master-Kennw&ouml;rter f&uuml;r verschiedene Benutzer unterst&uuml;tzt.<P>
 
 <HR>
@@ -52,28 +52,28 @@ Das Containerformat unterst&uuml;tzt <A HREF="cryptote_funktionsumfang.html#Vers
 <P>
 CryptoTE integriert starke Verschl&uuml;sselung mit einem einfachen Texteditor. Es enth&auml;lt eine angepasste Version der Botan Algorithmenbibliothek.<P>
 Beim Design von CryptoTE habe ich mich entschieden den Benutzer (das sind Sie) nicht mit einer langen Auswahl an Verschl&uuml;sselungsalgorithmen zu belasten. Stattdessen habe ich f&uuml;r Sie einen ausgew&auml;hlt, den zur Zeit sichersten und st&auml;rksten frei verf&uuml;gbaren: <B>Serpent</B> (Schlange auf englisch).<P>
-Warum Serpent? Serpent war einer der AES Finalisten und unterst&uuml;tzt 256 Bits Blockverschl&uuml;sselung, soweit die minimalen Anforderungen. Der Gewinner des AES Wettbewerbs war Rijndael, wahrscheinlich weil er um ein paar Prozent schneller ist. Serpent ist ein wenig langsamer, aber vermutlich sicherer. F&uuml;r den Einsatz in CryptoTE ist die geringere Geschwindigkeit nicht ausschlaggebend: es werden nur relativ kleine Text oder Bin&auml;rdateien verschl&uuml;sselt. Statt Rijndael wurde Serpent ausgew&auml;hlt, da falls jemals eine Methode gefunden wird AES/Rijndael zu knacken, dann wird (hoffentlich) Serpent noch eine kurze Zeit sicher sein. Beide basieren zwar auf denselben kryptographischen Mechanismen, aber es wird definitiv mehr Kryptoanalyse (d.h. Versuche zu knacken) bei Rijndael/AES betrieben.<P>
-Sichere Verschl&uuml;sselung ist jedoch nicht mit Auswahl eines Verschl&uuml;sselungsalgorithmus getan. Dies ist erst der Anfang: das Schl&uuml;sselmaterial muss sicher gespeichert werden, die enthalten Sch&uuml;sselhashwerte d&uuml;rfen nicht reversibel sein.<P>
-Ein kleiner Fehler im Design des Containerformats kann die gesamte Verschl&uuml;sselungskette unsicherer oder sogar knackbar machen. Beachten Sie, dass es recht einfach ist einen solchen Programmierfehler zu machen, und ich bin sicher, dass viele andere "Passwortschutz''-Programme solche Fehler enthalten.<P>
-Es ist auch <EM>sehr einfach</EM> einen Container zu entwerfen, der eine Hintert&uuml;re ("backdoor'') enth&auml;lt, und so ohne das Passwort entschl&uuml;sselt werden kann. CryptoTE <B>enth&auml;lt keine solche Hintert&uuml;re</B>, es gibt <B>keine gangbare Methode</B> die Daten ohne Passwort auszulesen. Mit Sicherheit enthalten viele andere "Passwortschutz''-Programme solche Hintert&uuml;ren (auf Grund von Gesetzen oder anderem).<P>
+Warum Serpent? Serpent war einer der AES Finalisten und unterst&uuml;tzt 256 Bits Blockverschl&uuml;sselung, soweit die minimalen Anforderungen. Der Gewinner des AES Wettbewerbs war Rijndael, wahrscheinlich weil er um ein paar Prozent schneller ist. Serpent ist ein wenig langsamer, aber vermutlich sicherer. F&uuml;r den Einsatz in CryptoTE ist die geringere Geschwindigkeit nicht ausschlaggebend: Es werden nur relativ kleine Text oder Bin&auml;rdateien verschl&uuml;sselt. Statt Rijndael wurde Serpent ausgew&auml;hlt, da falls jemals eine Methode gefunden wird AES/Rijndael zu knacken, dann wird (hoffentlich) Serpent noch eine kurze Zeit sicher sein. Beide basieren zwar auf denselben kryptographischen Mechanismen, aber es wird definitiv mehr Kryptoanalyse (d.h. Versuche zu knacken) bei Rijndael/AES betrieben.<P>
+Sichere Verschl&uuml;sselung ist jedoch nicht mit Auswahl eines Verschl&uuml;sselungsalgorithmus getan. Dies ist erst der Anfang: Das Schl&uuml;sselmaterial muss sicher gespeichert werden, die enthalten Sch&uuml;sselhashwerte d&uuml;rfen nicht reversibel sein.<P>
+Ein kleiner Fehler im Design des Containerformats kann die gesamte Verschl&uuml;sselungskette unsicherer oder sogar knackbar machen. Beachten Sie, dass es recht einfach ist einen solchen Programmierfehler zu machen, und mit Sicherheit enthalten viele andere ,,Passwortschutz"-Programme solche Fehler.<P>
+Es ist auch <EM>sehr einfach</EM> einen Container zu entwerfen, der eine Hintert&uuml;re (,,backdoor") enth&auml;lt, und so ohne das Passwort entschl&uuml;sselt werden kann. CryptoTE <B>enth&auml;lt keine solche Hintert&uuml;re</B>, es gibt <B>keine gangbare Methode</B> die Daten ohne Passwort auszulesen. Mit Sicherheit enthalten viele andere ,,Passwortschutz"-Programme solche Hintert&uuml;ren (auf Grund von Gesetzen oder anderem).<P>
 Jede Subdatei des Containers ist einzeln mit Serpent/CBC und verschiedenen zuf&auml;llig generierten Sch&uuml;sseln und IV (Initialvektor) gesch&uuml;tzt. Die Schl&uuml;ssel und IV sind in einer globalen Dateitabelle gespeichert, die wiederum durch einen Masterschl&uuml;ssel mit Serpent/CBC verschl&uuml;sselt ist. Dieser Masterschl&uuml;ssel ist nicht als solcher ungesch&uuml;tzt in der Containerdatei gespeichert. <P>
-Stattdessen unterst&uuml;tzt der Container mehrere Entschl&uuml;sselungspassw&ouml;rter: <A HREF="cryptote_funktionsumfang.html#KeySlots">Mehrere Passwort-Slots</A>. Jeder Slot enth&auml;lt eine verschl&uuml;sselte Kopie des Masterschl&uuml;ssels mit dem die Dateitabelle gelesen werden kann. Die zum Entschl&uuml;sseln notwendigen Schl&uuml;ssel und CBC-IV der Kopien k&ouml;nnen nur mit dem vom Benutzer eingegeben Passwort bestimmt werden. Aus dem Benutzer-Passwort werden mittels PBKDF2, mit HMAC(SHA256) als Hashfunktion, und zwei verschiedenen zuf&auml;lligen "Salts'' der Schl&uuml;ssel und CBC-IV bestimmt.<P>
-Mehr Information zum Containerformat ist in dem CryptoTE Quellcode in libenctain/format.html beigef&uuml;gt.<P>
-Vor dem Entwurf von CryptoTE habe ich eine ausf&uuml;hrlichen Geschwindigkeitvergleich verschiedener Kryptographischen Cipher und Bibliotheken gemacht: siehe <A HREF="http://idlebox.net">http://idlebox.net</A> f&uuml;r mehr Informationen.<P>
+Stattdessen unterst&uuml;tzt der Container mehrere Entschl&uuml;sselungspassw&ouml;rter: <A HREF="cryptote_funktionsumfang.html#KeySlots">Mehrere Passwort-Slots</A>. Jeder Slot enth&auml;lt eine verschl&uuml;sselte Kopie des Masterschl&uuml;ssels mit dem die Dateitabelle gelesen werden kann. Die zum Entschl&uuml;sseln der Kopien notwendigen Schl&uuml;ssel und CBC-IV k&ouml;nnen nur mit dem vom Benutzer eingegeben Passwort bestimmt werden. Aus dem Benutzer-Passwort werden mittels PBKDF2, mit HMAC(SHA256) als Hashfunktion, und zwei verschiedenen, zuf&auml;lligen ,,Salts" der Schl&uuml;ssel und CBC-IV bestimmt.<P>
+Mehr Information zum Containerformat ist dem CryptoTE Quellcode in libenctain/format.html beigef&uuml;gt.<P>
+Vor dem Entwurf von CryptoTE habe ich einen ausf&uuml;hrlichen Geschwindigkeitvergleich verschiedener Kryptographischen Cipher und Bibliotheken durchgef&uuml;hrt: siehe <A HREF="http://idlebox.net">http://idlebox.net</A> f&uuml;r mehr Informationen.<P>
 
 <HR>
 <A NAME="Komprimierung"></A>
 <H3>Eingebaute Komprimierung</H3>
 <P>
 Als Bonus enth&auml;lt CryptoTE auch eine automatische, transparente Komprimierung der Subdateien. Hierzu muss nichts aktiviert werden: standardm&auml;&szlig;ig werden alle Dateien mit zlib komprimiert.<P>
-Der Kompressionsalgorithmus kann in dem Eigenschaften-Dialog der Subdateien eingestellt werden.<P>
-CryptoTE enth&auml;lt auch bzip2 als alternative Kompressionsmethode. Diese ist generell jedoch nur f&uuml;r wirklich gro&szlig;e Textdateien besser, f&uuml;r kleine Texte ist zlib die besser Wahl.<P>
+Der Kompressionsalgorithmus kann in dem Eigenschaften-Dialogfeld der Subdateien eingestellt werden.<P>
+CryptoTE enth&auml;lt auch bzip2 als alternative Kompressionsmethode. Diese ist generell jedoch nur f&uuml;r wirklich gro&szlig;e Textdateien besser, f&uuml;r kleine Texte ist zlib die richtige Wahl.<P>
 
 <HR>
 <A NAME="KeySlots"></A>
 <H3>Mehrere Passwort-Slots</H3>
 <P>
-Ein Container kann so konfiguriert werden, dass er mit mehreren verschiedenen Passw&ouml;rtern entschl&uuml;sselt werden kann. So k&ouml;nnen mehrere Benutzer auf einen Container zugreifen ohne gegenseitig ihre Passw&ouml;rter auszutauschen. Diese "Slots'' sind in CryptoTE &uuml;ber den Men&uuml;eintrag "Password-Liste'' einstellbar.<P>
+Ein Container kann so konfiguriert werden, dass er mit mehreren verschiedenen Passw&ouml;rtern entschl&uuml;sselt werden kann. So k&ouml;nnen mehrere Benutzer auf einen Container zugreifen ohne gegenseitig ihre Passw&ouml;rter auszutauschen. Diese ,,Slots" sind in CryptoTE &uuml;ber den Men&uuml;eintrag ,,Password-Liste" einstellbar.<P>
 
 <HR>
 <A NAME="wxWidgets"></A>
@@ -83,7 +83,7 @@ Warum wxWidgets als Widgets-Bibliothek? Daf&uuml;r gibt es viele Gr&uuml;nde:<P>
 <UL>
 
   <LI> Sie ist platform-unabh&auml;ngig: CryptoTE ist f&uuml;r Windows und Linux verf&uuml;gbar. Unterst&uuml;tzung von MacOSX ist ebenfalls m&ouml;glich.
-  <LI> Sie sieht auf allen Platformen "nat&uuml;rlich'' aus: die Fenster und Kontrollelemente sehen so aus wie der Benutzer dies erwartet.
+  <LI> Sie sieht auf allen Platformen ,,nat&uuml;rlich" aus: die Fenster und Kontrollelemente sehen so aus wie der Benutzer dies erwartet.
   <LI> Sie erlaubt eine einzige autarke .exe Datei f&uuml;r Windows zu kompilieren. Sehr n&uuml;tzlich f&uuml;r USB Sticks.
   <LI> wxWidgets wird mit einer sehr liberalen Lizenz entwickelt.
 </UL>
@@ -93,10 +93,10 @@ Warum wxWidgets als Widgets-Bibliothek? Daf&uuml;r gibt es viele Gr&uuml;nde:<P>
 <A NAME="Kommandozeile"></A>
 <H3>Kommandozeilen-Interface</H3>
 <P>
-F&uuml;r Unix-User und andere fortgeschrittene Anwender enth&auml;lt CryptoTE auch ein Kommandozeileninterface. Dies ist sehr n&uuml;tzlich, wenn man keine graphische Oberfl&auml;che starten kann, z. B. falls man mit ssh eingeloggt ist oder X11 gerade nicht zur Verf&uuml;gung hat.<P>
+F&uuml;r Unix-User und andere fortgeschrittene Anwender enth&auml;lt CryptoTE auch ein Kommandozeileninterface. Dies ist sehr n&uuml;tzlich, wenn keine graphische Oberfl&auml;che starten werden kann, z. B. falls man mit ssh eingeloggt ist oder X11 gerade nicht zur Verf&uuml;gung hat.<P>
 Der einfachste Weg CryptoTE ohne graphische Oberfl&auml;che zu starten ist: <TT>cryptote -s file.ect</TT>.<P>
-Dies fragt zuerst das Containerpasswort ab und startet bei gelungener Entschl&uuml;sselung eine einfache Eingabeoberfl&auml;che. Mit "help'' erhalten Sie dann eine Liste verf&uuml;gbarer Befehle unter weitere Informationen.<P>
-Beachten Sie, dass bei dem "edit'' Kommando der Inhalt der Subdatei in eine externe tempor&auml;re Datei geschrieben wird. Diese Datei kann dann mit jedem Konsolen-Texteditor bearbeitet werden. Falls Sie einen eingebauten, sicheren Konsolen-Texteditor f&uuml;r CryptoTE beitragen wollen, kontaktieren Sie mich.<P>
+Dies fragt zun&auml;chst das Containerpasswort ab und startet bei gelungener Entschl&uuml;sselung eine einfache Eingabeoberfl&auml;che. Mit ,,help" erhalten Sie dann eine Liste verf&uuml;gbarer Befehle und weiterf&uuml;hrende Informationen.<P>
+Beachten Sie, dass bei dem ,,edit" Kommando der Inhalt der Subdatei in eine externe tempor&auml;re Datei geschrieben wird. Diese Datei kann dann mit jedem Konsolen-Texteditor bearbeitet werden. Falls Sie einen eingebauten, sicheren Konsolen-Texteditor f&uuml;r CryptoTE beitragen wollen, kontaktieren Sie mich.<P>
 <P>
 
 </FONT></BODY></HTML>

@@ -1,6 +1,6 @@
 % $Id$
 
-\documentclass[a4paper,12pt,twoside]{article}
+\documentclass[a4paper,12pt,twoside,draft]{article}
 
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
@@ -31,7 +31,8 @@
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
 
 \usepackage{xcolor}
-\usepackage[colorlinks=true,linkcolor=blue!70!black,urlcolor=blue!70!black]{hyperref}
+\usepackage[final,colorlinks=true,linkcolor=blue!70!black,urlcolor=blue!70!black]{hyperref}
+\renewcommand{\UrlFont}{\fontfamily{lmtt}\selectfont{}\hyphenchar\font=`\-{}}
 
 \title{CryptoTE Help}
 \author{Timo Bingmann}
@@ -61,11 +62,11 @@ descriptions etc.
 
 \subsection{Weak Passwords}\label{WeakPasswords}
 
-Much advice can be given about choosing a good password. Following the advice is often more difficult.
+Much advice is be given by different people about choosing a good password. Following the advice is often difficult and it is commonly ignored. This help tutorial suggests a simple method to keep your sensitive login information secure.
 
-First: do not think of ``passwords'', rather think of \textbf{pass-phrases}. No encryption program can keep your data safe if you set the password to a plain English word or, even worse, some word connected with your surroundings or identity. There are many lists of bad but nevertheless frequently used passwords on the Internet: try search for ``top 100 passwords'' for some amusement.
+First: do not think of pass\emph{words}, rather think of pass\textbf{phrases}. No encryption program can keep your data safe if you set the password to a plain English word or, even worse, some word connected with your surroundings or identity. There are many lists of bad but nevertheless frequently used passwords on the Internet: try search for ``top 100 passwords'' for some amusement.
 
-Confronted with having to choose a longer passphrase most people will want to write it down. Next bad thing to do is to keep the slip of paper directly at the computer. Do not to this!
+Confronted with having to choose a longer passphrase most people will want to write it down. Next bad thing to do is to keep the slip of paper directly at the computer. Do not do this!
 
 To give an idea of a good password: regard that Serpent uses 256 keybits, that is 256 bits of random information. An average English text has 1.0 to 1.5 keybits per letter.
 
@@ -79,22 +80,22 @@ My method to learn a new password is very simple: I use the random password gene
 
 Depending on the purpose, I only use lowercase characters and choose an appropriate password length: the generator will show you the theoretic keybits of the password. Adapt the length to your needs.
 
-My container password is about 25 upper and lowercase letters. That is 139.6 keybits. Alot better than a simple sentence. Something like this: DUWHmnBunfVQNUeCdQxpHHdIJ
+My container password is about 25 upper and lowercase letters. That is 139.6 keybits. A lot better than a simple sentence. Something like this: DUWHmnBunfVQNUeCdQxpHHdIJ
 
 You think you cannot learn 25 random letters? \textbf{Try it!} Your memory is way better than you think. Learn it by frequent repetition:
 
-I use CryptoTE daily to fetch some passwords and it always requires you to enter the password. Through this repetition \textbf{you too} will quickly learn your random letters. For the starting time (1 week or so) you can write the letters down on paper, but keep that paper slip safe! My favorite place: my wallet. After two weeks: burn it.
+I use CryptoTE daily to fetch some passwords and it always requires you to enter the password. Through this repetition \textbf{you too} will quickly learn your random letters. For the starting time (a week or so) you can write the letters down on paper, but keep that paper slip safe! My favorite place: my wallet. After two weeks: burn it.
 
-If you think 25 letters is way too much: try starting with 10, e.g. rZl2jXybem. That is already 57 keybits.
+If you think 25 letters is way too much: try starting with ten, e.g. rZl2jXybem. That is already 57 keybits.
 
 \subsection{Measures of Security}\label{MeasuresSecurity}
 
 CryptoTE can keep your text safe, but you must consider the suitability of encryption for your purpose. Against whom are you keeping your passwords safe?
 
 \begin{itemize}
-  \item To keep them safe against your children, roommates, co-workers or wife casually using your computer: OK.
-  \item To be sure that if your notebook or usb stick is stolen that no sensitive data can be read: very good idea, also OK.
-  \item Against fishing or keyloggers: no chance, they will see the entered password.
+  \item To keep them safe against your children, roommates, co-workers, wife or husband casually using your computer: OK.
+  \item To be sure that if your notebook or USB stick is stolen that no sensitive data can be read: very good idea, also OK.
+  \item Against phishing or keyloggers: no chance, they will see the entered password.
   \item Against police / law enforcement officials: not good! They'll jail you indefinitely.
   \item Against vicious, evil people: no chance! They will use a crowbar \textbf{on you} instead of your computer.
 \end{itemize}
@@ -104,7 +105,7 @@ CryptoTE can keep your text safe, but you must consider the suitability of encry
 \subsection{Overview}\label{Overview}
 
 \begin{itemize}
-  \item User-friendly Scintilla text editing widget. The same as used by Notepad++.
+  \item User-friendly Scintilla text editing widget, the same as used by Notepad++.
   \item Edits \helpref{secure private container files}{Containers} holding multiple text or binary files.
   \item Highly-secure \helpref{Serpent (256 keybits) encryption}{Encryption} of sensitive data.
   \item \helpref{Automatic compression}{Compression} using zlib or bzip2 to reduce container size.
@@ -112,9 +113,9 @@ CryptoTE can keep your text safe, but you must consider the suitability of encry
   \item Fast user-interface: Quick-Find and Quick-Goto bars like Firefox's find. I use the program myself daily.
   \item Auto-Close the container after a user-defined period of inactivity.
   \item Built-in password generator to insert new passwords in the text.
-  \item Portable, self-sufficient executable files for Windows and Linux available. Very useful for USB sticks.
+  \item Portable, self-sufficient executable files for Windows and Linux available, very useful for USB sticks.
   \item Sleek wxAui tabbed interface from the newest \helpref{wxWidgets}{wxWidgets} version.
-  \item Also useable from the Unix/Linux \helpref{command line}{Commandline} on a text console e.g. via ssh.
+  \item Also usable from the Unix/Linux \helpref{command line}{Commandline} on a text console e.g. via ssh.
   \item Modularized and well-tested container processing library.
   \item Translated into German (volunteers for more languages wanted).
 \end{itemize}
@@ -125,7 +126,7 @@ An encrypted container has the extension \texttt{.ect}. It can hold multiple tex
 
 Use multiple subfiles to structure your sensitive data like "\texttt{Web\-Site\-Passwords.txt}" and "\texttt{EMail\-Accounts.txt}".
 
-The container file format support \helpref{built-in encryption}{Encryption} and \helpref{built-in compression}{Compression}. It also supports multiple key slots for different password.
+The container file format supports \helpref{built-in encryption}{Encryption} and \helpref{built-in compression}{Compression}. It also supports multiple key slots for different passwords.
 
 \subsection{Built-in Encryption}\label{Encryption}
 
@@ -133,7 +134,7 @@ CryptoTE contains built-in strong encryption. It uses a custom version of the Bo
 
 While designing CryptoTE I decided not to burden a user (that is you) with a long list of encryption ciphers to select one. Instead I selected one for you, the strongest currently freely available one: \textbf{Serpent}.
 
-Why use Serpent? Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will (hopefully) still be safe for a short time. Even though both are based on the same cryptographic mechanisms more cryptoanalysis (read: attempts to break) will be directed at Rijndael/AES.
+Why use Serpent? Serpent was among the AES finalists and supports 256 key bits block encryption, that was a minimum requirement. The winner of the AES contest was Rijndael, probably because it is faster by a few percent. Serpent is a bit slower but supposedly more secure. As for the purposes of CryptoTE: encrypting rather small amounts of text or binary data, speed was not an important criterion. Instead Serpent was chosen because if someone ever finds a way to break Rijndael/AES then Serpent will (hopefully) still be safe for a short time. Even though both are based on the same cryptographic mechanisms, more cryptanalysis (read: attempts to break) will be directed at Rijndael/AES.
 
 However secure encryption does not end with selecting a cipher. Instead it starts there: the key material must be stored securely, the contained key hashes must be irreversible.
 
@@ -168,18 +169,20 @@ Why choose wxWidgets as toolkit? For many reasons:
 \begin{itemize}
   \item It is cross-platform: versions of CryptoTE exist for Windows and Linux. MacOSX support is also possible.
   \item It looks ``native'' on all platforms: the frames and widgets look like the user expects them to look like.
-  \item It allows me to compile a self-sufficient single .exe file for Windows. Very useful for USB sticks.
+  \item It allows me to compile a self-sufficient single .exe file for Windows, very useful for USB sticks.
   \item It is released under a very liberal license.
 \end{itemize}
 
-\subsection{Commandline Interface}\label{Commandline}
+\subsection{Command Line Interface}\label{Commandline}
 
 For Unix users and other power-users the CryptoTE program has a command line interface. This is very useful if you cannot start the graphical user interface, e.g. if logged in via ssh or if you are limited to a text console.
 
-The best way to use CryptoTE without gui is to start the ``shell'': \texttt{cryptote -s file.ect}.
+The best way to use CryptoTE without GUI is to start the ``shell'': \texttt{cryptote -s file.ect}.
 
 It will query for the container password and if decryption works a simple shell is started. Start using the shell by entering ``help'' for a list of command.
 
 Be warned that using the ``edit'' command requires CryptoTE to save the contents in a temporary file outside the container. This file can then be modified using any text editor. If you wish to implement a built-in console text editor in CryptoTE, contact me.
 
 \end{document}
+
+% LocalWords:  keybits CryptoTE AES
