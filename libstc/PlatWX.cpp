@@ -2,6 +2,7 @@
 // PlatWX.cxx - implementation of platform facilities on wxWidgets
 // Copyright 1998-1999 by Neil Hodgson <neilh@scintilla.org>
 //                        Robin Dunn <robin@aldunn.com>
+//           2008-2009 Timo Bingmann (adaptation to newer Scintilla versions)
 // The License.txt file describes the conditions under which this software may be distributed.
 
 #include <ctype.h>

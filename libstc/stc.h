@@ -10,6 +10,7 @@
 //              classes and itentifiers from Scintilla.
 //
 // Author:      Robin Dunn
+//              Timo Bingmann (adaptation to newer Scintilla versions)
 //
 // Created:     13-Jan-2000
 // RCS-ID:      $Id$
