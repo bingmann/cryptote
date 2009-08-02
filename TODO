@@ -6,13 +6,11 @@
 
 --- Important ---
 
-  * Write a short help document and add Info -> Help. Probably use
-    wxRichTextCtrl for displaying.
+  * No entries
 
 --- Necessary ---
 
-  * Create "directories" in container by grouping subfiles. Must all be stored
-    in metadata.
+  * No entries
 
 --- Somewhen ---
 

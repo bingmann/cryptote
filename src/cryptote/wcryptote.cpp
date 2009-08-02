@@ -1219,7 +1219,7 @@ void WCryptoTE::WebUpdateCheck()
 
     UpdateStatusBar(_("Opening HTTP connection to idlebox.net..."));
 
-    wxURL url(_T("http://idlebox.net/2008/cryptote/updatecheck"));
+    wxURL url(_T("http://idlebox.net/2009/cryptote/updatecheck"));
 
     wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
     if (!httpconn) {
@@ -3153,7 +3153,7 @@ WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& p
     // begin wxGlade: WAbout::WAbout
     bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
 
     set_properties();
@@ -3192,7 +3192,7 @@ void WAbout::do_layout()
     sizer3->Add(label1, 0, wxALL, 6);
     wxStaticText* label2 = new wxStaticText(this, wxID_ANY, _("CryptoTE is a text editor built upon the popular\nScintilla editing widget. Text is saved encrypted\nand compressed to secure sensitive data."));
     sizer3->Add(label2, 0, wxALL, 6);
-    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Copyright 2008 Timo Bingmann\nReleased under the GNU General Public License v2"));
+    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Copyright 2009 Timo Bingmann\nReleased under the GNU General Public License v2"));
     sizer3->Add(label4, 0, wxALL, 6);
     sizer4->Add(bitmapWeb, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
     sizer5->Add(hyperlink1, 1, wxEXPAND, 0);
@@ -3218,7 +3218,7 @@ WWebUpdateCheck::WWebUpdateCheck(wxWindow* parent, const wxString& newversion, c
 {
     // begin wxGlade: WWebUpdateCheck::WWebUpdateCheck
     labelNewVersion = new wxStaticText(this, wxID_ANY, _("CryptoTE 0.1.2"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_CENTRE);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_CENTRE);
     textctrlChanges = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonDisable = new wxButton(this, wxID_NO, _("Disable WebUpdateCheck"));

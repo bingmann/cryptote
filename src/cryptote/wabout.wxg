@@ -59,7 +59,7 @@
                                 <option>0</option>
                                 <object class="wxStaticText" name="label4" base="EditStaticText">
                                     <attribute>0</attribute>
-                                    <label>Copyright 2008 Timo Bingmann\nReleased under the GNU General Public License v2</label>
+                                    <label>Copyright 2009 Timo Bingmann\nReleased under the GNU General Public License v2</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -90,8 +90,8 @@
                                                     <arguments>
                                                         <argument>$parent</argument>
                                                         <argument>$id</argument>
-                                                        <argument>_("Visit http://idlebox.net/2008/cryptote/")</argument>
-                                                        <argument>_("http://idlebox.net/2008/cryptote/")</argument>
+                                                        <argument>_("Visit http://idlebox.net/2009/cryptote/")</argument>
+                                                        <argument>_("http://idlebox.net/2009/cryptote/")</argument>
                                                         <argument>wxDefaultPosition</argument>
                                                         <argument>wxDefaultSize</argument>
                                                         <argument>wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT</argument>
@@ -176,8 +176,8 @@
                     <arguments>
                         <argument>$parent</argument>
                         <argument>$id</argument>
-                        <argument>_("http://idlebox.net/2008/cryptote/")</argument>
-                        <argument>_("http://idlebox.net/2008/cryptote/")</argument>
+                        <argument>_("http://idlebox.net/2009/cryptote/")</argument>
+                        <argument>_("http://idlebox.net/2009/cryptote/")</argument>
                         <argument>wxDefaultPosition</argument>
                         <argument>wxDefaultSize</argument>
                         <argument>wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_CENTRE</argument>

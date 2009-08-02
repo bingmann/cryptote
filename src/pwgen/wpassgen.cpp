@@ -1024,7 +1024,7 @@ PGWAbout::PGWAbout(wxWindow* parent, int id, const wxString& title, const wxPoin
     // begin wxGlade: PGWAbout::PGWAbout
     bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2008/cryptote/"), _("http://idlebox.net/2008/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
 
     set_properties();
@@ -1065,7 +1065,7 @@ void PGWAbout::do_layout()
     sizer_3->Add(label2, 0, wxALL, 6);
     wxStaticText* label3 = new wxStaticText(this, wxID_ANY, _("The random password generator can generate\npronounceable English passwords or general upper-\nand/or lowercase letter and digit combinations.\nIt also displays the theoretic strength in key bits of\nthe chosen generator settings."));
     sizer_3->Add(label3, 0, wxALL, 6);
-    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Copyright 2008 Timo Bingmann\nReleased under the GNU General Public License v2"));
+    wxStaticText* label4 = new wxStaticText(this, wxID_ANY, _("Copyright 2009 Timo Bingmann\nReleased under the GNU General Public License v2"));
     sizer_3->Add(label4, 0, wxALL, 6);
     sizer4->Add(bitmapWeb, 0, wxALL|wxALIGN_CENTER_VERTICAL, 6);
     sizer5->Add(hyperlink1, 1, wxEXPAND, 0);

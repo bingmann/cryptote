@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-01 20:07+0200\n"
+"POT-Creation-Date: 2009-08-02 17:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1355,12 +1355,12 @@ msgid "Loading SubFile"
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:3156 ../pwgen/wpassgen.cpp:1027
-msgid "Visit http://idlebox.net/2008/cryptote/"
+msgid "Visit http://idlebox.net/2009/cryptote/"
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:3156 ../cryptote/wcryptote.cpp:3221
 #: ../cryptote/wpass.cpp:629 ../pwgen/wpassgen.cpp:1027
-msgid "http://idlebox.net/2008/cryptote/"
+msgid "http://idlebox.net/2009/cryptote/"
 msgstr ""
 
 #: ../cryptote/wcryptote.cpp:3177
@@ -1376,7 +1376,7 @@ msgstr ""
 
 #: ../cryptote/wcryptote.cpp:3195 ../pwgen/wpassgen.cpp:1068
 msgid ""
-"Copyright 2008 Timo Bingmann\n"
+"Copyright 2009 Timo Bingmann\n"
 "Released under the GNU General Public License v2"
 msgstr ""
 
