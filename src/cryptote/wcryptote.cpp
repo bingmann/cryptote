@@ -1809,13 +1809,7 @@ void WCryptoTE::LoadPreferences()
     cfg->Read(_T("autoclosetime"), &prefs_autoclosetime, 15);
     cfg->Read(_T("autocloseexit"), &prefs_autocloseexit, true);
 
-#if defined(__WINDOWS__)
-    bool default_sharelock = true;
-#else
-    bool default_sharelock = false;
-#endif
-
-    cfg->Read(_T("sharelock"), &prefs_sharelock, default_sharelock);
+    cfg->Read(_T("sharelock"), &prefs_sharelock, true);
 
 #ifndef DISABLE_WEBUPDATECHECK
     cfg->Read(_T("webupdatecheck"), &prefs_webupdatecheck, true);
