@@ -125,7 +125,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-RESCOMP = @RESCOMP@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -593,7 +592,7 @@ uninstall-man: uninstall-man1
 
 
 @GOT_RESCOMP_TRUE@cryptote-rc.o: cryptote.rc
-@GOT_RESCOMP_TRUE@	$(RESCOMP) -I$(srcdir) $< $@
+@GOT_RESCOMP_TRUE@	$(WX_RESCOMP) -I$(srcdir) $< $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

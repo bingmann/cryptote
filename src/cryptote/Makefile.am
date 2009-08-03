@@ -33,7 +33,7 @@ if GOT_RESCOMP
 BUILT_SOURCES = cryptote-rc.o
 
 cryptote-rc.o: cryptote.rc
-	$(RESCOMP) -I$(srcdir) $< $@
+	$(WX_RESCOMP) -I$(srcdir) $< $@
 
 cryptote_LDFLAGS = cryptote-rc.o
 

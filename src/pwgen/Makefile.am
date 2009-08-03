@@ -18,7 +18,7 @@ if GOT_RESCOMP
 BUILT_SOURCES = pwgen-rc.o
 
 pwgen-rc.o: pwgen.rc
-	$(RESCOMP) -I$(srcdir) $< $@
+	$(WX_RESCOMP) -I$(srcdir) $< $@
 
 cryptote_pwgen_LDFLAGS = pwgen-rc.o
 

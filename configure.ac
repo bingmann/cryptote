@@ -130,7 +130,7 @@ fi
 
 AC_CHECK_TOOL(TEX2RTF, tex2rtf)
 
-AM_CONDITIONAL(GOT_TEX2RTF, test x$TEX2RTF != x)
+AM_CONDITIONAL(GOT_TEX2RTF, test "$TEX2RTF" != "")
 
 # Check for zlib - based on CHECK_ZLIB()
 
@@ -235,11 +235,7 @@ fi
 
 # Win32 tools to add icons to the programs
 
-if $ON_WIN32; then
-    AC_CHECK_TOOL(RESCOMP, windres)
-fi
-
-AM_CONDITIONAL(GOT_RESCOMP, test x$RESCOMP != x)
+AM_CONDITIONAL(GOT_RESCOMP, test "$WX_RESCOMP" != "")
 
 # Checks for library functions.
 
