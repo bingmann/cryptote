@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-02 17:47+0200\n"
+"POT-Creation-Date: 2009-08-03 14:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1743,6 +1743,10 @@ msgstr ""
 
 #: ../cryptote/wpass.cpp:560
 msgid "Entered passwords no not match."
+msgstr ""
+
+#: ../cryptote/wpass.cpp:572
+msgid "cryptote_aboutencryption.html#AdvicePassword"
 msgstr ""
 
 #: ../cryptote/wpass.cpp:581

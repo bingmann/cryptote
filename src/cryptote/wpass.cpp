@@ -569,7 +569,7 @@ void WSetPassword::OnButtonOK(wxCommandEvent& WXUNUSED(event))
 
 void WSetPassword::OnHyperlinkAdvice(wxHyperlinkEvent& WXUNUSED(event))
 {
-    wmain->GetHtmlHelpController()->Display(_T("cryptote_aboutencryption.html#AdvicePassword"));
+    wmain->GetHtmlHelpController()->Display(_("cryptote_aboutencryption.html#AdvicePassword"));
 }
 
 // wxGlade: add WSetPassword event handlers

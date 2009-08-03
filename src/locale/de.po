@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-02 17:47+0200\n"
-"PO-Revision-Date: 2009-08-02 17:47+0200\n"
+"POT-Creation-Date: 2009-08-03 14:53+0200\n"
+"PO-Revision-Date: 2009-08-03 14:55+0200\n"
 "Last-Translator: Timo Bingmann\n"
 "Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1800,7 +1800,7 @@ msgstr "Setze Passwort für \"abc.ect\":"
 
 #: ../cryptote/wpass.cpp:261
 msgid "Advice on Choosing a Password"
-msgstr "Ratschläge zur Wahl eines Passworts"
+msgstr "Vorgehen um ein gutes Passwort zu lernen"
 
 #: ../cryptote/wpass.cpp:290
 #, c-format
@@ -1830,6 +1830,10 @@ msgstr "Siehe auch:"
 #: ../cryptote/wpass.cpp:560
 msgid "Entered passwords no not match."
 msgstr "Eingegebene Passwörter stimmen nicht überein."
+
+#: ../cryptote/wpass.cpp:572
+msgid "cryptote_aboutencryption.html#AdvicePassword"
+msgstr "cryptote_ueberverschluesselung.html#VorgehenPasswort"
 
 #: ../cryptote/wpass.cpp:581
 msgid "Enter Password for abc.ect:"
