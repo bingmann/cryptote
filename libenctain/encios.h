@@ -1,7 +1,7 @@
 // $Id$
 
 /*
- * CryptoTE LibEnctain v0.0.0
+ * CryptoTE LibEnctain v0.5.390
  * Copyright (C) 2008-2009 Timo Bingmann
  *
  * This program is free software; you can redistribute it and/or modify it

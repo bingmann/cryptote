@@ -2,7 +2,7 @@
 // $Id$
 
 /*
- * CryptoTE PasswordGenerator v0.0.0
+ * CryptoTE PasswordGenerator v0.5.390
  * Copyright (C) 2008-2009 Timo Bingmann
  *
  * This program is free software; you can redistribute it and/or modify it
