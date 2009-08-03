@@ -38,7 +38,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
 	$(top_srcdir)/win32/cryptote-pwgen-win32.iss.in \
 	$(top_srcdir)/win32/cryptote-win32.iss.in AUTHORS COPYING \
-	ChangeLog INSTALL NEWS TODO acscripts/config.guess \
+	ChangeLog INSTALL NEWS acscripts/config.guess \
 	acscripts/config.sub acscripts/depcomp acscripts/install-sh \
 	acscripts/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
