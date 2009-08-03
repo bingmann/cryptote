@@ -653,20 +653,20 @@ WLegalNotice::WLegalNotice(wxWindow* parent, int id, const wxString& title, cons
     // end wxGlade
 
     labelText->SetLabel(_("The password you just entered will be hashed and used to encrypt all subfiles\n"
-			  "in the container. If you lose / forget / misspelled the password there is\n"
+			  "in the container. If you lose, forget or misspelled the password there is\n"
 			  "NO KNOWN METHOD TO RETRIEVE YOUR SENSITIVE DATA WITHIN\n"
-			  "THE NEXT 100 YEARS! Otherwise the cryptographic protection would be\n"
+			  "THE NEXT 100 YEARS! If there were the cryptographic protection would be\n"
 			  "pointless.\n"
 			  "\n"
-			  "Furthermore this program is BETA SOFTWARE and free under the GNU\n"
+			  "Note too that this program is BETA SOFTWARE and free under the GNU\n"
 			  "General Public License. As such it comes with NO WARRANTY. This means\n"
 			  "if it contains some unknown bug or error which screws up your irreplaceable\n"
 			  "password file, then I (the author) am not liable. You (re)acknowledge these\n"
 			  "terms by pressing the OK button below.\n"
 			  "\n"
 			  "Don't be too troubled though, I use the program for my own password lists and\n"
-			  "try to keep it bug-free. However I had to point out this legal issue, which you\n"
-			  "will find in almost any software license agreement. If you find a bug, please\n"
+			  "try to keep it bug-free. However, I had to point out this legal issue, which you\n"
+			  "can find in virtually any software license agreement. If you find a bug, please\n"
 			  "report it on"));
 
     #include "art/web-16.h"
