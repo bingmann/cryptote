@@ -8,6 +8,8 @@
 
 #include "botan-1.6/include/timers.h"
 
+#ifdef BOTAN_EXT_TIMER_POSIX
+
 namespace Enctain {
 namespace Botan {
 
@@ -23,4 +25,6 @@ class POSIX_Timer : public Timer
 }
 }
 
-#endif
+#endif // BOTAN_EXT_TIMER_POSIX
+
+#endif // BOTAN_EXT_TIMER_POSIX_H__

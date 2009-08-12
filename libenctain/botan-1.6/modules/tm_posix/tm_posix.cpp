@@ -6,6 +6,8 @@
 #include "botan-1.6/include/tm_posix.h"
 #include "botan-1.6/include/util.h"
 
+#ifdef BOTAN_EXT_TIMER_POSIX
+
 #ifndef _POSIX_C_SOURCE
   #define _POSIX_C_SOURCE 199309
 #endif
@@ -31,3 +33,5 @@ u64bit POSIX_Timer::clock() const
 
 }
 }
+
+#endif // BOTAN_EXT_TIMER_POSIX

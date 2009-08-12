@@ -237,6 +237,10 @@ fi
 
 AM_CONDITIONAL(GOT_RESCOMP, test "$WX_RESCOMP" != "")
 
+# Check for functions not available on some systems
+
+AC_CHECK_DECLS([clock_gettime],[],[],[#include <time.h>]) # Not on MacOXS
+
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
