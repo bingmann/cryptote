@@ -689,6 +689,8 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+ON_MACOSX_FALSE
+ON_MACOSX_TRUE
 ON_WIN32_FALSE
 ON_WIN32_TRUE
 host_os
@@ -1436,10 +1438,10 @@ Optional Packages:
   --with-wx-prefix=PREFIX Prefix where wxWidgets is installed (optional)
   --with-wx-exec-prefix=PREFIX
                           Exec prefix where wxWidgets is installed (optional)
-  --with-zlib=DIR root directory path of zlib installation defaults to
-                    /usr/local or /usr if not found in /usr/local
-  --with-bzlib=DIR root directory path of bzip2 installation defaults to
-                    /usr/local or /usr if not found in /usr/local
+  --with-zlib=DIR         root directory path of zlib installation [defaults
+                          to /usr/local or /usr if not found in /usr/local]
+  --with-bzlib=DIR        root directory path of bzip2 installation [defaults
+                          to /usr/local or /usr if not found in /usr/local]
 
 Some influential environment variables:
   CC          C compiler command
@@ -2501,27 +2503,49 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 
-{ $as_echo "$as_me:$LINENO: checking building on win32" >&5
-$as_echo_n "checking building on win32... " >&6; }
-case $host_os in
-*cygwin* | *mingw32*)
-    ON_WIN32=true
-    { $as_echo "$as_me:$LINENO: result: yes" >&5
+{ $as_echo "$as_me:$LINENO: checking building on Win32" >&5
+$as_echo_n "checking building on Win32... " >&6; }
+case "$host_os" in
+    *cygwin* | *mingw32*)
+        ON_WIN32=true
+        { $as_echo "$as_me:$LINENO: result: yes" >&5
 $as_echo "yes" >&6; }
-    ;;
-*)
-    ON_WIN32=false
-    { $as_echo "$as_me:$LINENO: result: no" >&5
+        ;;
+    *)
+        ON_WIN32=false
+        { $as_echo "$as_me:$LINENO: result: no" >&5
 $as_echo "no" >&6; }
-    ;;
+        ;;
 esac
-
  if $ON_WIN32; then
   ON_WIN32_TRUE=
   ON_WIN32_FALSE='#'
 else
   ON_WIN32_TRUE='#'
   ON_WIN32_FALSE=
+fi
+
+
+{ $as_echo "$as_me:$LINENO: checking building on MacOSX" >&5
+$as_echo_n "checking building on MacOSX... " >&6; }
+case "$host_os" in
+    *darwin*)
+        ON_MACOSX=true
+        { $as_echo "$as_me:$LINENO: result: yes" >&5
+$as_echo "yes" >&6; }
+        ;;
+    *)
+        ON_MACOSX=false
+        { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+        ;;
+esac
+ if $ON_MACOSX; then
+  ON_MACOSX_TRUE=
+  ON_MACOSX_FALSE='#'
+else
+  ON_MACOSX_TRUE='#'
+  ON_MACOSX_FALSE=
 fi
 
 
@@ -5986,9 +6010,10 @@ Install the bzip2 development package using your distribution's package manager.
    { (exit 1); exit 1; }; }
 fi
 
-# Win32 tools to add icons to the programs
+# Win32 tools to add icons and resources to the programs
 
- if test "$WX_RESCOMP" != ""; then
+if $ON_WIN32; then
+    if test "$WX_RESCOMP" != ""; then
   GOT_RESCOMP_TRUE=
   GOT_RESCOMP_FALSE='#'
 else
@@ -5996,6 +6021,16 @@ else
   GOT_RESCOMP_FALSE=
 fi
 
+else
+    if false; then
+  GOT_RESCOMP_TRUE=
+  GOT_RESCOMP_FALSE='#'
+else
+  GOT_RESCOMP_TRUE='#'
+  GOT_RESCOMP_FALSE=
+fi
+
+fi
 
 # Check for functions not available on some systems
 
@@ -6078,6 +6113,10 @@ ac_config_files="$ac_config_files Makefile libstc/Makefile libenctain/Makefile l
 
 if $ON_WIN32; then
     ac_config_files="$ac_config_files win32/cryptote-win32.iss win32/cryptote-pwgen-win32.iss"
+
+fi
+if $ON_MACOSX; then
+    ac_config_files="$ac_config_files src/cryptote/Info.plist src/pwgen/Info.plist"
 
 fi
 
@@ -6228,6 +6267,13 @@ $as_echo "$as_me: error: conditional \"ON_WIN32\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${ON_MACOSX_TRUE}" && test -z "${ON_MACOSX_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"ON_MACOSX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"ON_MACOSX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -6267,6 +6313,13 @@ if test -z "${GOT_TEX2RTF_TRUE}" && test -z "${GOT_TEX2RTF_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"GOT_TEX2RTF\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"GOT_TEX2RTF\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GOT_RESCOMP_TRUE}" && test -z "${GOT_RESCOMP_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"GOT_RESCOMP\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"GOT_RESCOMP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -6786,6 +6839,8 @@ do
     "desktop/Makefile") CONFIG_FILES="$CONFIG_FILES desktop/Makefile" ;;
     "win32/cryptote-win32.iss") CONFIG_FILES="$CONFIG_FILES win32/cryptote-win32.iss" ;;
     "win32/cryptote-pwgen-win32.iss") CONFIG_FILES="$CONFIG_FILES win32/cryptote-pwgen-win32.iss" ;;
+    "src/cryptote/Info.plist") CONFIG_FILES="$CONFIG_FILES src/cryptote/Info.plist" ;;
+    "src/pwgen/Info.plist") CONFIG_FILES="$CONFIG_FILES src/pwgen/Info.plist" ;;
 
   *) { { $as_echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 $as_echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

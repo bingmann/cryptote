@@ -12,19 +12,31 @@ AM_MAINTAINER_MODE
 
 AC_CANONICAL_HOST
 
-AC_MSG_CHECKING(building on win32)
-case $host_os in
-*cygwin* | *mingw32*)
-    ON_WIN32=true
-    AC_MSG_RESULT(yes)
-    ;;
-*)
-    ON_WIN32=false
-    AC_MSG_RESULT(no)
-    ;;
+AC_MSG_CHECKING(building on Win32)
+case "$host_os" in
+    *cygwin* | *mingw32*)
+        ON_WIN32=true
+        AC_MSG_RESULT(yes)
+        ;;
+    *)
+        ON_WIN32=false
+        AC_MSG_RESULT(no)
+        ;;
 esac
-
 AM_CONDITIONAL(ON_WIN32, $ON_WIN32)
+
+AC_MSG_CHECKING(building on MacOSX)
+case "$host_os" in
+    *darwin*)
+        ON_MACOSX=true
+        AC_MSG_RESULT(yes)
+        ;;
+    *)
+        ON_MACOSX=false
+        AC_MSG_RESULT(no)
+        ;;
+esac
+AM_CONDITIONAL(ON_MACOSX, $ON_MACOSX)
 
 # enable full optimization by configure switch
 
@@ -135,8 +147,9 @@ AM_CONDITIONAL(GOT_TEX2RTF, test "$TEX2RTF" != "")
 # Check for zlib - based on CHECK_ZLIB()
 
 AC_ARG_WITH(zlib,
-[  --with-zlib=DIR root directory path of zlib installation [defaults to
-                    /usr/local or /usr if not found in /usr/local]],
+	AS_HELP_STRING([--with-zlib=DIR],
+		       [root directory path of zlib installation
+		        @<:@defaults to /usr/local or /usr if not found in /usr/local@:>@]),
 [if test -d "$withval"
   then
     ZLIB_HOME="$withval"
@@ -185,8 +198,9 @@ fi
 # Check if bzip2 is available - also based on CHECK_ZLIB()
 
 AC_ARG_WITH(bzlib,
-[  --with-bzlib=DIR root directory path of bzip2 installation [defaults to
-                    /usr/local or /usr if not found in /usr/local]],
+	AS_HELP_STRING([--with-bzlib=DIR],
+		       [root directory path of bzip2 installation
+		        @<:@defaults to /usr/local or /usr if not found in /usr/local@:>@]),
 [if test -d "$withval"
   then
     BZLIB_HOME="$withval"
@@ -233,9 +247,13 @@ else
 Install the bzip2 development package using your distribution's package manager.])
 fi
 
-# Win32 tools to add icons to the programs
+# Win32 tools to add icons and resources to the programs
 
-AM_CONDITIONAL(GOT_RESCOMP, test "$WX_RESCOMP" != "")
+if $ON_WIN32; then
+   AM_CONDITIONAL(GOT_RESCOMP, test "$WX_RESCOMP" != "")
+else
+   AM_CONDITIONAL(GOT_RESCOMP, false)
+fi
 
 # Check for functions not available on some systems
 
@@ -265,6 +283,9 @@ AC_CONFIG_FILES([Makefile
 
 if $ON_WIN32; then
     AC_CONFIG_FILES([win32/cryptote-win32.iss win32/cryptote-pwgen-win32.iss])
+fi
+if $ON_MACOSX; then
+    AC_CONFIG_FILES([src/cryptote/Info.plist src/pwgen/Info.plist])
 fi
 
 AC_OUTPUT

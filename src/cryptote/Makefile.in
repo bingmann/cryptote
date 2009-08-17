@@ -36,14 +36,14 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = cryptote$(EXEEXT)
 subdir = src/cryptote
-DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+DIST_COMMON = $(dist_man_MANS) $(srcdir)/Info.plist.in \
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = Info.plist
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
@@ -216,11 +216,12 @@ cryptote_SOURCES = main.cpp \
 cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
 dist_man_MANS = cryptote.1
 AM_CXXFLAGS = -W -Wall "-DMY_BUILDTIME=\"`date -u '+%Y-%m-%d %H:%M %Z'`\"" -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) 
-@GOT_RESCOMP_TRUE@BUILT_SOURCES = cryptote-rc.o
-@GOT_RESCOMP_TRUE@cryptote_LDFLAGS = cryptote-rc.o
+@GOT_RESCOMP_TRUE@@ON_WIN32_TRUE@BUILT_SOURCES = cryptote-rc.o
+@GOT_RESCOMP_TRUE@@ON_WIN32_TRUE@cryptote_LDFLAGS = cryptote-rc.o
 EXTRA_DIST = cryptote.rc cryptote.xml \
 	wabout.wxg wcntprop.wxg wfileprop.wxg \
-	wfind.wxg wpass.wxg wprefs.wxg
+	wfind.wxg wpass.wxg wprefs.wxg \
+	Info.plist.in
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -256,6 +257,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+Info.plist: $(top_builddir)/config.status $(srcdir)/Info.plist.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -484,7 +487,8 @@ distdir: $(DISTFILES)
 check-am: all-am
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(PROGRAMS) $(MANS)
+@ON_MACOSX_FALSE@all-local:
+all-am: Makefile $(PROGRAMS) $(MANS) all-local
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -515,9 +519,10 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+@ON_MACOSX_FALSE@clean-local:
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -576,23 +581,39 @@ uninstall-man: uninstall-man1
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man1 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-binPROGRAMS \
+.PHONY: CTAGS GTAGS all all-am all-local check check-am clean \
+	clean-binPROGRAMS clean-generic clean-local ctags distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-man uninstall-man1
 
 
-@GOT_RESCOMP_TRUE@cryptote-rc.o: cryptote.rc
-@GOT_RESCOMP_TRUE@	$(WX_RESCOMP) -I$(srcdir) $< $@
+@GOT_RESCOMP_TRUE@@ON_WIN32_TRUE@cryptote-rc.o: cryptote.rc
+@GOT_RESCOMP_TRUE@@ON_WIN32_TRUE@	$(WX_RESCOMP) -I$(srcdir) $< $@
+
+# create an application bundle
+@ON_MACOSX_TRUE@cryptote.app/Contents/Pkginfo: cryptote$(EXEEXT) Info.plist
+@ON_MACOSX_TRUE@	mkdir -p cryptote.app/Contents/MacOS
+@ON_MACOSX_TRUE@	mkdir -p cryptote.app/Contents/Resources
+
+@ON_MACOSX_TRUE@	cp Info.plist cryptote.app/Contents/Info.plist
+@ON_MACOSX_TRUE@	/bin/echo -n "APPL????" > cryptote.app/Contents/PkgInfo
+@ON_MACOSX_TRUE@	cp $(top_srcdir)/src/art/cryptote-256.icns cryptote.app/Contents/Resources/
+@ON_MACOSX_TRUE@	cp $(top_srcdir)/src/art/ectfile-256.icns cryptote.app/Contents/Resources/
+@ON_MACOSX_TRUE@	cp cryptote$(EXEEXT) cryptote.app/Contents/MacOS/
+
+@ON_MACOSX_TRUE@all-local: cryptote.app/Contents/Pkginfo
+
+@ON_MACOSX_TRUE@clean-local:
+@ON_MACOSX_TRUE@	rm -rf cryptote.app
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

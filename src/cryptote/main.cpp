@@ -781,6 +781,23 @@ public:
 	}
     }
 
+    virtual void MacOpenFile(const wxString &fileName)
+    {
+	if (!wcryptote)
+	{
+	    // Create editor's main window frame
+	    wcryptote = new WCryptoTE(NULL, m_locale);
+	    SetTopWindow(wcryptote);
+	    wcryptote->Show();
+	}
+
+	if (!fileName.IsEmpty())
+	{
+	    wcryptote->ContainerOpen(fileName);
+	}
+
+    }
+
     virtual int OnExit()
     {
 	return 0;

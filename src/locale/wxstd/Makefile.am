@@ -3,12 +3,12 @@
 
 LINGUAS = de
 
-# the programs we use (TODO: use configure to detect them)
-MSGFMT=msgfmt --verbose
+# the gettext programs are detected by configure
+if GOT_GETTEXT
 
 # implicit rule: generate binary message catalogs
 %.mo: %.po
-	$(MSGFMT) -c -o $@ $<
+	$(MSGFMT) --verbose -c -o $@ $<
 
 %.h: %.mo
 	../../art/file2h -c -p "locale-wxstd-" $< > $@
@@ -33,6 +33,8 @@ stats:
 		TOTAL=`expr $$TR + $$FZ + $$UT`; \
 		echo "$$i.po `expr 100 "*" $$TR / $$TOTAL`% of $$TOTAL strings"; \
 	done
+
+endif
 
 .PHONY: allmo allh force-update stats
 

@@ -6,7 +6,6 @@ SUBDIRS = wxstd
 LINGUAS = de
 
 # the gettext programs are detected by configure
-
 if GOT_GETTEXT
 
 # common xgettext args: C++ syntax, joining, use the specified macro names as markers

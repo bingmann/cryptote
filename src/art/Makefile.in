@@ -216,15 +216,18 @@ EXTRA_DIST = \
 	pwgen-32.png \
 	pwgen-48.png \
 	pwgen-128.png \
+	pwgen-128.icns \
 	pwgen.ico \
 	cryptote-16.png \
 	cryptote-32.png \
 	cryptote-48.png \
+	cryptote-256.icns \
 	cryptote.ico \
 	cryptote.svg \
 	ectfile-16.png \
 	ectfile-32.png \
 	ectfile-48.png \
+	ectfile-256.icns \
 	ectfile.ico \
 	ectfile.svg \
 	modified-12.png \
