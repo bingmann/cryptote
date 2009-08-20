@@ -415,18 +415,15 @@ void WTextPage::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
     }
     if (editctrl->GetSelectionEnd() <= editctrl->GetSelectionStart())
     {
-#if defined(__WXMSW__)
-	// On Windows the shortcut is not skipped when it is disabled.
-	// thus always enable it and synthesize a DELETE key.
+	// Forward the DELETE key press event to the editing component
+	// by synthesizing a DELETE key. Simply Veto()ing does not
+	// work here.
 	wxKeyEvent key(wxEVT_KEY_DOWN);
 	key.SetId(editctrl->GetId());
 	key.m_altDown = key.m_shiftDown = key.m_controlDown = 0;
 	key.m_keyCode = WXK_DELETE;
 	key.SetEventObject(editctrl);
 	editctrl->OnKeyDown(key);
-#else
-	UpdateStatusBar(_("Nothing selected."));
-#endif
 	return;
     }
 
@@ -705,11 +702,7 @@ void WTextPage::OnScintillaUpdateUI(wxStyledTextEvent& WXUNUSED(event))
 
     menubar->Enable(wxID_CUT, HasSelection);
     menubar->Enable(wxID_COPY, HasSelection);
-#if defined(__WXMSW__)
     menubar->Enable(wxID_CLEAR, true);
-#else
-    menubar->Enable(wxID_CLEAR, HasSelection);
-#endif
 
     toolbar->EnableTool(wxID_CUT, HasSelection);
     toolbar->EnableTool(wxID_COPY, HasSelection);
