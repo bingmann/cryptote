@@ -373,14 +373,16 @@ WNotePage* WCryptoTE::FindSubFilePage(unsigned int sfid)
     return NULL;
 }
 
-void WCryptoTE::OpenSubFile(unsigned int sfid)
+void WCryptoTE::OpenSubFile(unsigned int sfid, bool autoselect)
 {
     WNotePage* findpage = FindSubFilePage(sfid);
     if (findpage != NULL)
     {
 	// subfile with specified id is already open. change notebook tab to
 	// the selected subfile.
-	auinotebook->SetSelection( auinotebook->GetPageIndex(findpage) );
+	if (autoselect) {
+	    auinotebook->SetSelection( auinotebook->GetPageIndex(findpage) );
+	}
 	return;
     }
 
@@ -397,9 +399,11 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	}
 	else
 	{
-	    auinotebook->AddPage(textpage, textpage->GetCaption(), true);
+	    auinotebook->AddPage(textpage, textpage->GetCaption(), autoselect);
 
-	    UpdateNotebookPageChanged(auinotebook->GetPageIndex(textpage), textpage);
+	    if (autoselect) {
+		UpdateNotebookPageChanged(auinotebook->GetPageIndex(textpage), textpage);
+	    }
 	}
     }
     else
@@ -413,9 +417,11 @@ void WCryptoTE::OpenSubFile(unsigned int sfid)
 	}
 	else
 	{
-	    auinotebook->AddPage(binarypage, binarypage->GetCaption(), true);
+	    auinotebook->AddPage(binarypage, binarypage->GetCaption(), autoselect);
 
-	    UpdateNotebookPageChanged(auinotebook->GetPageIndex(binarypage), binarypage);
+	    if (autoselect) {
+		UpdateNotebookPageChanged(auinotebook->GetPageIndex(binarypage), binarypage);
+	    }
 	}
     }
 }
@@ -1150,6 +1156,7 @@ void WCryptoTE::SaveOpenSubFilelist()
     }
     
     container.SetGlobalEncryptedProperty("SubFilesOpened", std::string((char*)&sflist, pagenum * sizeof(int)));
+    container.SetGlobalEncryptedProperty("SubFileCurrent", std::string((char*)&cpage->subfileid, sizeof(cpage->subfileid)));
 }
 
 void WCryptoTE::RestoreOpenSubFilelist()
@@ -1174,8 +1181,19 @@ void WCryptoTE::RestoreOpenSubFilelist()
     
     for (unsigned int pi = 0; pi < str.size() / 4; ++pi)
     {
-	OpenSubFile(sflist[pi]);
+	OpenSubFile(sflist[pi], false);
     }
+
+    str = container.GetGlobalEncryptedProperty("SubFileCurrent");
+    if (str.empty()) {
+	return;
+    }
+    if (str.size() != 4) {
+	wxLogError(_T("Invalid current opened subfile identifier."));
+	return;
+    }
+    
+    OpenSubFile(*reinterpret_cast<const int*>(str.data()), true);
 }
 
 static int CompareVersionStrings(const wxString& a, const wxString& b)

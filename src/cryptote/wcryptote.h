@@ -161,7 +161,7 @@ public:
     class WNotePage* FindSubFilePage(unsigned int sfid);
 
     /// Open one of the SubFiles in the Container
-    void	OpenSubFile(unsigned int sfid);
+    void	OpenSubFile(unsigned int sfid, bool autoselect=true);
 
     /// Update the modified page caption on the notebook
     void	UpdateSubFileCaption(int sfid);
