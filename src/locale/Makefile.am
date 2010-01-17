@@ -12,11 +12,13 @@ if GOT_GETTEXT
 XGETTEXT_ARGS=-CF -k_ -kwxPLURAL:1,2 -kwxTRANSLATE
 
 # implicit rule: generate binary message catalogs
+if !CROSS_COMPILATION
 %.mo: %.po
 	$(MSGFMT) --verbose -c -o $@ $<
 
 %.h: %.mo
 	../art/file2h -c -p "locale-" $< > $@
+endif
 
 # PO files must be updated from cryptote.pot to include new translations
 %.po: cryptote.pot

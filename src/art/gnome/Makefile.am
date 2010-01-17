@@ -1,7 +1,9 @@
 # $Id$
 
+if !CROSS_COMPILATION
 %.h: %.png
 	../file2h -p "gnome-" $< > $@
+endif
 
 noinst_HEADERS = \
 	application-about-tool.h \

@@ -1,7 +1,9 @@
 # $Id$
 
+if !CROSS_COMPILATION
 %.h: %.png
 	../file2h -p "crystal-" $< > $@
+endif
 
 noinst_HEADERS = \
 	application-exit-16.h \

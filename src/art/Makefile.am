@@ -10,8 +10,10 @@ AM_CFLAGS = -W -Wall $(ZLIB_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS)
 LIBS = $(ZLIB_LIBS)
 
+if !CROSS_COMPILATION
 %.h: %.png
 	./file2h $< > $@
+endif
 
 noinst_HEADERS = \
 	pwgen-16.h \

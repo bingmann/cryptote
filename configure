@@ -666,6 +666,8 @@ GOT_GETTEXT_TRUE
 XGETTEXT
 MSGMERGE
 MSGFMT
+CROSS_COMPILATION_FALSE
+CROSS_COMPILATION_TRUE
 RANLIB
 am__fastdepCXX_FALSE
 am__fastdepCXX_TRUE
@@ -4255,6 +4257,15 @@ else
 fi
 
 
+ if test "$cross_compiling" == "yes"; then
+  CROSS_COMPILATION_TRUE=
+  CROSS_COMPILATION_FALSE='#'
+else
+  CROSS_COMPILATION_TRUE='#'
+  CROSS_COMPILATION_FALSE=
+fi
+
+
 # Check for gettext programs
 
 # Extract the first word of "msgfmt", so it can be a program name with args.
@@ -4856,10 +4867,11 @@ fi
 fi
 
 
-ZLIB_HOME=/usr/local
-if test ! -f "${ZLIB_HOME}/include/zlib.h"
-then
-  ZLIB_HOME=/usr
+if test ! -f "${ZLIB_HOME}/include/zlib.h"; then
+  ZLIB_HOME=/usr/local
+  if test ! -f "${ZLIB_HOME}/include/zlib.h"; then
+    ZLIB_HOME=/usr
+  fi
 fi
 
 { $as_echo "$as_me:$LINENO: checking zlib in ${ZLIB_HOME}" >&5
@@ -5751,10 +5763,11 @@ fi
 fi
 
 
-BZLIB_HOME=/usr/local
-if test ! -f "${BZLIB_HOME}/include/bzlib.h"
-then
-  BZLIB_HOME=/usr
+if test ! -f "${BZLIB_HOME}/include/bzlib.h"; then
+  BZLIB_HOME=/usr/local
+  if test ! -f "${BZLIB_HOME}/include/bzlib.h"; then
+    BZLIB_HOME=/usr
+  fi
 fi
 
 { $as_echo "$as_me:$LINENO: checking bzlib in ${BZLIB_HOME}" >&5
@@ -6292,6 +6305,13 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${CROSS_COMPILATION_TRUE}" && test -z "${CROSS_COMPILATION_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"CROSS_COMPILATION\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"CROSS_COMPILATION\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi

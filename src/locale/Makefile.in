@@ -492,11 +492,11 @@ uninstall-am:
 
 
 # implicit rule: generate binary message catalogs
-@GOT_GETTEXT_TRUE@%.mo: %.po
-@GOT_GETTEXT_TRUE@	$(MSGFMT) --verbose -c -o $@ $<
+@CROSS_COMPILATION_FALSE@@GOT_GETTEXT_TRUE@%.mo: %.po
+@CROSS_COMPILATION_FALSE@@GOT_GETTEXT_TRUE@	$(MSGFMT) --verbose -c -o $@ $<
 
-@GOT_GETTEXT_TRUE@%.h: %.mo
-@GOT_GETTEXT_TRUE@	../art/file2h -c -p "locale-" $< > $@
+@CROSS_COMPILATION_FALSE@@GOT_GETTEXT_TRUE@%.h: %.mo
+@CROSS_COMPILATION_FALSE@@GOT_GETTEXT_TRUE@	../art/file2h -c -p "locale-" $< > $@
 
 # PO files must be updated from cryptote.pot to include new translations
 @GOT_GETTEXT_TRUE@%.po: cryptote.pot

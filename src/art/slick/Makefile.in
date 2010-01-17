@@ -525,8 +525,8 @@ uninstall-am:
 	pdf-am ps ps-am tags uninstall uninstall-am
 
 
-%.h: %.png
-	../file2h -p "slick-" $< > $@
+@CROSS_COMPILATION_FALSE@%.h: %.png
+@CROSS_COMPILATION_FALSE@	../file2h -p "slick-" $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

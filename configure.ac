@@ -68,6 +68,8 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 
+AM_CONDITIONAL(CROSS_COMPILATION, test "$cross_compiling" == "yes")
+
 # Check for gettext programs
 
 AC_CHECK_PROG(MSGFMT, msgfmt, msgfmt)
@@ -157,10 +159,11 @@ AC_ARG_WITH(zlib,
     AC_MSG_WARN([Sorry, $withval does not exist, checking usual places])
 fi])
 
-ZLIB_HOME=/usr/local
-if test ! -f "${ZLIB_HOME}/include/zlib.h"
-then
-  ZLIB_HOME=/usr
+if test ! -f "${ZLIB_HOME}/include/zlib.h"; then
+  ZLIB_HOME=/usr/local
+  if test ! -f "${ZLIB_HOME}/include/zlib.h"; then
+    ZLIB_HOME=/usr
+  fi
 fi
 
 AC_MSG_CHECKING(zlib in ${ZLIB_HOME})
@@ -208,10 +211,11 @@ AC_ARG_WITH(bzlib,
     AC_MSG_WARN([Sorry, $withval does not exist, checking usual places])
 fi])
 
-BZLIB_HOME=/usr/local
-if test ! -f "${BZLIB_HOME}/include/bzlib.h"
-then
-  BZLIB_HOME=/usr
+if test ! -f "${BZLIB_HOME}/include/bzlib.h"; then
+  BZLIB_HOME=/usr/local
+  if test ! -f "${BZLIB_HOME}/include/bzlib.h"; then
+    BZLIB_HOME=/usr
+  fi
 fi
 
 AC_MSG_CHECKING(bzlib in ${BZLIB_HOME})

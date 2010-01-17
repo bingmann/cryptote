@@ -1,10 +1,12 @@
 # $Id$
 
+if !CROSS_COMPILATION
 %.h: %
 	../../../art/file2h -c -p "help-de-" $< > $@
 
 cryptote.hhp.cached: cryptote.hhp
 	hhp2cached $<
+endif
 
 cleanmore:
 	rm -f *.html *.hhc *.hhk *.hhp *.hhp.cached *.htx *.con *.ref *.h

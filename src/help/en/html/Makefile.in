@@ -397,11 +397,11 @@ uninstall-am:
 	pdf-am ps ps-am tags uninstall uninstall-am
 
 
-%.h: %
-	../../../art/file2h -c -p "help-en-" $< > $@
+@CROSS_COMPILATION_FALSE@%.h: %
+@CROSS_COMPILATION_FALSE@	../../../art/file2h -c -p "help-en-" $< > $@
 
-cryptote.hhp.cached: cryptote.hhp
-	hhp2cached $<
+@CROSS_COMPILATION_FALSE@cryptote.hhp.cached: cryptote.hhp
+@CROSS_COMPILATION_FALSE@	hhp2cached $<
 
 cleanmore:
 	rm -f *.html *.hhc *.hhk *.hhp *.hhp.cached *.htx *.con *.ref *.h
