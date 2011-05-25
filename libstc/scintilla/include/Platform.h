@@ -255,8 +255,8 @@ class Palette {
 	int allocatedLen;
 #endif
 	// Private so Palette objects can not be copied
-	Palette(const Palette &) {}
-	Palette &operator=(const Palette &) { return *this; }
+	Palette(const Palette &);
+	Palette &operator=(const Palette &);
 public:
 #if PLAT_WIN
 	void *hpal;
@@ -288,14 +288,14 @@ protected:
 	int ascent;
 #endif
 	// Private so Font objects can not be copied
-	Font(const Font &) {}
-	Font &operator=(const Font &) { fid=0; return *this; }
+	Font(const Font &);
+	Font &operator=(const Font &);
 public:
 	Font();
 	virtual ~Font();
 
 	virtual void Create(const char *faceName, int characterSet, int size,
-		bool bold, bool italic, bool extraFontFlag=false);
+		bool bold, bool italic, int extraFontFlag=0);
 	virtual void Release();
 
 	FontID GetID() { return fid; }
@@ -314,8 +314,8 @@ private:
 	Surface(const Surface &) {}
 	Surface &operator=(const Surface &) { return *this; }
 public:
-	Surface() {};
-	virtual ~Surface() {};
+	Surface() {}
+	virtual ~Surface() {}
 	static Surface *Allocate();
 
 	virtual void Init(WindowID wid)=0;
@@ -474,7 +474,7 @@ public:
  */
 class DynamicLibrary {
 public:
-	virtual ~DynamicLibrary() {};
+	virtual ~DynamicLibrary() {}
 
 	/// @return Pointer to function "name", or NULL on failure.
 	virtual Function FindFunction(const char *name) = 0;

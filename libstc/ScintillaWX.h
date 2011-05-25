@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 #include "Platform.h"
 
@@ -36,6 +37,8 @@
 #include "RunStyles.h"
 #include "Decoration.h"
 #include "CellBuffer.h"
+#include "ILexer.h"
+#include "Selection.h"
 #include "Document.h"
 #include "Style.h"
 #include "Indicator.h"
@@ -45,9 +48,9 @@
 
 #ifdef SCI_LEXER
 #include "SciLexer.h"
-#include "PropSet.h"
+#include "LexAccessor.h"
+#include "LexerModule.h"
 #include "Accessor.h"
-#include "KeyWords.h"
 #endif
 
 #include "ContractionState.h"

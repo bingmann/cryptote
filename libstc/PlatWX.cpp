@@ -124,7 +124,7 @@ Font::Font() {
 Font::~Font() {
 }
 
-void Font::Create(const char *faceName, int characterSet, int size, bool bold, bool italic, bool extraFontFlag) {
+void Font::Create(const char *faceName, int characterSet, int size, bool bold, bool italic, int extraFontFlag) {
 
     Release();
 

@@ -188,26 +188,33 @@ int LineMarkers::AddMark(int line, int markerNum, int lines) {
 		// No existing markers so allocate one element per line
 		markers.InsertValue(0, lines, 0);
 	}
+	if (line >= markers.Length()) {
+		return -1;
+	}
 	if (!markers[line]) {
 		// Need new structure to hold marker handle
 		markers[line] = new MarkerHandleSet();
 		if (!markers[line])
-			return - 1;
+			return -1;
 	}
 	markers[line]->InsertHandle(handleCurrent, markerNum);
 
 	return handleCurrent;
 }
 
-void LineMarkers::DeleteMark(int line, int markerNum, bool all) {
+bool LineMarkers::DeleteMark(int line, int markerNum, bool all) {
+	bool someChanges = false;
 	if (markers.Length() && (line >= 0) && (line < markers.Length()) && markers[line]) {
 		if (markerNum == -1) {
+			someChanges = true;
 			delete markers[line];
 			markers[line] = NULL;
 		} else {
 			bool performedDeletion = markers[line]->RemoveNumber(markerNum);
+			someChanges = someChanges || performedDeletion;
 			while (all && performedDeletion) {
 				performedDeletion = markers[line]->RemoveNumber(markerNum);
+				someChanges = someChanges || performedDeletion;
 			}
 			if (markers[line]->Length() == 0) {
 				delete markers[line];
@@ -215,6 +222,7 @@ void LineMarkers::DeleteMark(int line, int markerNum, bool all) {
 			}
 		}
 	}
+	return someChanges;
 }
 
 void LineMarkers::DeleteMarkFromHandle(int markerHandle) {
@@ -237,10 +245,7 @@ void LineLevels::Init() {
 
 void LineLevels::InsertLine(int line) {
 	if (levels.Length()) {
-		int level = SC_FOLDLEVELBASE;
-		if ((line > 0) && (line < levels.Length())) {	
-			level = levels[line-1] & ~SC_FOLDLEVELWHITEFLAG;
-		}
+		int level = (line < levels.Length()) ? levels[line] : SC_FOLDLEVELBASE;
 		levels.InsertValue(line, 1, level);
 	}
 }
@@ -298,7 +303,8 @@ void LineState::Init() {
 void LineState::InsertLine(int line) {
 	if (lineStates.Length()) {
 		lineStates.EnsureLength(line);
-		lineStates.Insert(line, 0);
+		int val = (line < lineStates.Length()) ? lineStates[line] : 0;
+		lineStates.Insert(line, val);
 	}
 }
 
@@ -316,6 +322,8 @@ int LineState::SetLineState(int line, int state) {
 }
 
 int LineState::GetLineState(int line) {
+	if (line < 0)
+		return 0;
 	lineStates.EnsureLength(line + 1);
 	return lineStates[line];
 }
@@ -359,6 +367,7 @@ void LineAnnotation::Init() {
 
 void LineAnnotation::InsertLine(int line) {
 	if (annotations.Length()) {
+		annotations.EnsureLength(line);
 		annotations.Insert(line, 0);
 	}
 }
@@ -417,7 +426,7 @@ void LineAnnotation::SetText(int line, const char *text) {
 			delete []annotations[line];
 		}
 		annotations[line] = AllocateAnnotation(strlen(text), style);
-		AnnotationHeader *pah = reinterpret_cast<AnnotationHeader*>(annotations[line]);
+		AnnotationHeader *pah = reinterpret_cast<AnnotationHeader *>(annotations[line]);
 		pah->style = static_cast<short>(style);
 		pah->length = strlen(text);
 		pah->lines = static_cast<short>(NumberLines(text));

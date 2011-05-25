@@ -24,7 +24,7 @@ using namespace Scintilla;
 #endif
 
 MarginStyle::MarginStyle() :
-	style(SC_MARGIN_SYMBOL), width(0), mask(0), sensitive(false) {
+	style(SC_MARGIN_SYMBOL), width(0), mask(0), sensitive(false), cursor(SC_CURSORREVERSEARROW) {
 }
 
 // A list of the fontnames - avoids wasting space in each style
@@ -41,7 +41,7 @@ FontNames::~FontNames() {
 }
 
 void FontNames::Clear() {
-	for (int i=0;i<max;i++) {
+	for (int i=0; i<max; i++) {
 		delete []names[i];
 	}
 	max = 0;
@@ -50,7 +50,7 @@ void FontNames::Clear() {
 const char *FontNames::Save(const char *name) {
 	if (!name)
 		return 0;
-	for (int i=0;i<max;i++) {
+	for (int i=0; i<max; i++) {
 		if (strcmp(names[i], name) == 0) {
 			return names[i];
 		}
@@ -59,7 +59,7 @@ const char *FontNames::Save(const char *name) {
 		// Grow array
 		int sizeNew = size * 2;
 		char **namesNew = new char *[sizeNew];
-		for (int j=0;j<max;j++) {
+		for (int j=0; j<max; j++) {
 			namesNew[j] = names[j];
 		}
 		delete []names;
@@ -78,24 +78,27 @@ ViewStyle::ViewStyle() {
 
 ViewStyle::ViewStyle(const ViewStyle &source) {
 	Init(source.stylesSize);
-	for (unsigned int sty=0;sty<source.stylesSize;sty++) {
+	for (unsigned int sty=0; sty<source.stylesSize; sty++) {
 		styles[sty] = source.styles[sty];
 		// Can't just copy fontname as its lifetime is relative to its owning ViewStyle
 		styles[sty].fontName = fontNames.Save(source.styles[sty].fontName);
 	}
-	for (int mrk=0;mrk<=MARKER_MAX;mrk++) {
+	for (int mrk=0; mrk<=MARKER_MAX; mrk++) {
 		markers[mrk] = source.markers[mrk];
 	}
-	for (int ind=0;ind<=INDIC_MAX;ind++) {
+	for (int ind=0; ind<=INDIC_MAX; ind++) {
 		indicators[ind] = source.indicators[ind];
 	}
 
 	selforeset = source.selforeset;
 	selforeground.desired = source.selforeground.desired;
+	selAdditionalForeground.desired = source.selAdditionalForeground.desired;
 	selbackset = source.selbackset;
 	selbackground.desired = source.selbackground.desired;
+	selAdditionalBackground.desired = source.selAdditionalBackground.desired;
 	selbackground2.desired = source.selbackground2.desired;
 	selAlpha = source.selAlpha;
+	selAdditionalAlpha = source.selAdditionalAlpha;
 	selEOLFilled = source.selEOLFilled;
 
 	foldmarginColourSet = source.foldmarginColourSet;
@@ -117,6 +120,7 @@ ViewStyle::ViewStyle(const ViewStyle &source) {
 	selbar.desired = source.selbar.desired;
 	selbarlight.desired = source.selbarlight.desired;
 	caretcolour.desired = source.caretcolour.desired;
+	additionalCaretColour.desired = source.additionalCaretColour.desired;
 	showCaretLineBackground = source.showCaretLineBackground;
 	caretLineBackground.desired = source.caretLineBackground.desired;
 	caretLineAlpha = source.caretLineAlpha;
@@ -125,9 +129,10 @@ ViewStyle::ViewStyle(const ViewStyle &source) {
 	caretStyle = source.caretStyle;
 	caretWidth = source.caretWidth;
 	someStylesProtected = false;
+	someStylesForceCase = false;
 	leftMarginWidth = source.leftMarginWidth;
 	rightMarginWidth = source.rightMarginWidth;
-	for (int i=0;i < margins; i++) {
+	for (int i=0; i < margins; i++) {
 		ms[i] = source.ms[i];
 	}
 	symbolMargin = source.symbolMargin;
@@ -135,6 +140,7 @@ ViewStyle::ViewStyle(const ViewStyle &source) {
 	fixedColumnWidth = source.fixedColumnWidth;
 	zoomLevel = source.zoomLevel;
 	viewWhitespace = source.viewWhitespace;
+	whitespaceSize = source.whitespaceSize;
 	viewIndentationGuides = source.viewIndentationGuides;
 	viewEOL = source.viewEOL;
 	showMarkedLines = source.showMarkedLines;
@@ -176,10 +182,13 @@ void ViewStyle::Init(size_t stylesSize_) {
 
 	selforeset = false;
 	selforeground.desired = ColourDesired(0xff, 0, 0);
+	selAdditionalForeground.desired = ColourDesired(0xff, 0, 0);
 	selbackset = true;
 	selbackground.desired = ColourDesired(0xc0, 0xc0, 0xc0);
+	selAdditionalBackground.desired = ColourDesired(0xd7, 0xd7, 0xd7);
 	selbackground2.desired = ColourDesired(0xb0, 0xb0, 0xb0);
 	selAlpha = SC_ALPHA_NOALPHA;
+	selAdditionalAlpha = SC_ALPHA_NOALPHA;
 	selEOLFilled = false;
 
 	foldmarginColourSet = false;
@@ -196,6 +205,7 @@ void ViewStyle::Init(size_t stylesSize_) {
 	styles[STYLE_LINENUMBER].fore.desired = ColourDesired(0, 0, 0);
 	styles[STYLE_LINENUMBER].back.desired = Platform::Chrome();
 	caretcolour.desired = ColourDesired(0, 0, 0);
+	additionalCaretColour.desired = ColourDesired(0x7f, 0x7f, 0x7f);
 	showCaretLineBackground = false;
 	caretLineBackground.desired = ColourDesired(0xff, 0xff, 0);
 	caretLineAlpha = SC_ALPHA_NOALPHA;
@@ -204,6 +214,7 @@ void ViewStyle::Init(size_t stylesSize_) {
 	caretStyle = CARETSTYLE_LINE;
 	caretWidth = 1;
 	someStylesProtected = false;
+	someStylesForceCase = false;
 
 	hotspotForegroundSet = false;
 	hotspotForeground.desired = ColourDesired(0, 0, 0xff);
@@ -234,10 +245,11 @@ void ViewStyle::Init(size_t stylesSize_) {
 	}
 	zoomLevel = 0;
 	viewWhitespace = wsInvisible;
+	whitespaceSize = 1;
 	viewIndentationGuides = ivNone;
 	viewEOL = false;
 	showMarkedLines = true;
-	extraFontFlag = false;
+	extraFontFlag = 0;
 	extraAscent = 0;
 	extraDescent = 0;
 	marginStyleOffset = 0;
@@ -247,18 +259,20 @@ void ViewStyle::Init(size_t stylesSize_) {
 
 void ViewStyle::RefreshColourPalette(Palette &pal, bool want) {
 	unsigned int i;
-	for (i=0;i<stylesSize;i++) {
+	for (i=0; i<stylesSize; i++) {
 		pal.WantFind(styles[i].fore, want);
 		pal.WantFind(styles[i].back, want);
 	}
-	for (i=0;i<(sizeof(indicators)/sizeof(indicators[0]));i++) {
+	for (i=0; i<(sizeof(indicators)/sizeof(indicators[0])); i++) {
 		pal.WantFind(indicators[i].fore, want);
 	}
-	for (i=0;i<(sizeof(markers)/sizeof(markers[0]));i++) {
+	for (i=0; i<(sizeof(markers)/sizeof(markers[0])); i++) {
 		markers[i].RefreshColourPalette(pal, want);
 	}
 	pal.WantFind(selforeground, want);
+	pal.WantFind(selAdditionalForeground, want);
 	pal.WantFind(selbackground, want);
+	pal.WantFind(selAdditionalBackground, want);
 	pal.WantFind(selbackground2, want);
 
 	pal.WantFind(foldmarginColour, want);
@@ -269,6 +283,7 @@ void ViewStyle::RefreshColourPalette(Palette &pal, bool want) {
 	pal.WantFind(selbar, want);
 	pal.WantFind(selbarlight, want);
 	pal.WantFind(caretcolour, want);
+	pal.WantFind(additionalCaretColour, want);
 	pal.WantFind(caretLineBackground, want);
 	pal.WantFind(edgecolour, want);
 	pal.WantFind(hotspotForeground, want);
@@ -282,6 +297,7 @@ void ViewStyle::Refresh(Surface &surface) {
 	maxAscent = styles[STYLE_DEFAULT].ascent;
 	maxDescent = styles[STYLE_DEFAULT].descent;
 	someStylesProtected = false;
+	someStylesForceCase = false;
 	for (unsigned int i=0; i<stylesSize; i++) {
 		if (i != STYLE_DEFAULT) {
 			styles[i].Realise(surface, zoomLevel, &styles[STYLE_DEFAULT], extraFontFlag);
@@ -292,6 +308,9 @@ void ViewStyle::Refresh(Surface &surface) {
 		}
 		if (styles[i].IsProtected()) {
 			someStylesProtected = true;
+		}
+		if (styles[i].caseForce != Style::caseMixed) {
+			someStylesForceCase = true;
 		}
 	}
 	maxAscent += extraAscent;

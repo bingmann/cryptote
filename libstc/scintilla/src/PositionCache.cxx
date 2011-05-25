@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#include <string>
+#include <vector>
+
 #include "Platform.h"
 
 #include "Scintilla.h"
@@ -27,7 +30,9 @@
 #include "ViewStyle.h"
 #include "CharClassify.h"
 #include "Decoration.h"
+#include "ILexer.h"
 #include "Document.h"
+#include "Selection.h"
 #include "PositionCache.h"
 
 #ifdef SCI_NAMESPACE
@@ -46,11 +51,11 @@ LineLayout::LineLayout(int maxLineLength_) :
 	inCache(false),
 	maxLineLength(-1),
 	numCharsInLine(0),
+	numCharsBeforeEOL(0),
 	validity(llInvalid),
 	xHighlightGuide(0),
 	highlightColumn(0),
-	selStart(0),
-	selEnd(0),
+	psel(NULL),
 	containsCaret(false),
 	edgeColumn(0),
 	chars(0),
@@ -63,6 +68,8 @@ LineLayout::LineLayout(int maxLineLength_) :
 	widthLine(wrapWidthInfinite),
 	lines(1),
 	wrapIndent(0) {
+	bracePreviousStyles[0] = 0;
+	bracePreviousStyles[1] = 0;
 	Resize(maxLineLength_);
 }
 
@@ -115,12 +122,7 @@ int LineLayout::LineLastVisible(int line) const {
 	if (line < 0) {
 		return 0;
 	} else if ((line >= lines-1) || !lineStarts) {
-		int startLine = LineStart(line);
-		int endLine = numCharsInLine;
-		while ((endLine > startLine) && IsEOLChar(chars[endLine-1])) {
-			endLine--;
-		}
-		return endLine;
+		return numCharsBeforeEOL;
 	} else {
 		return lineStarts[line+1];
 	}
@@ -135,8 +137,6 @@ void LineLayout::SetLineStart(int line, int start) {
 	if ((line >= lenLineStarts) && (line != 0)) {
 		int newMaxLines = line + 20;
 		int *newLineStarts = new int[newMaxLines];
-		if (!newLineStarts)
-			return;
 		for (int i = 0; i < newMaxLines; i++) {
 			if (i < lenLineStarts)
 				newLineStarts[i] = lineStarts[i];
@@ -199,6 +199,10 @@ int LineLayout::FindBefore(int x, int lower, int upper) const {
 		}
 	} while (lower < upper);
 	return lower;
+}
+
+int LineLayout::EndLineStyle() const {
+	return styles[numCharsBeforeEOL > 0 ? numCharsBeforeEOL-1 : 0];
 }
 
 LineLayoutCache::LineLayoutCache() :
@@ -361,7 +365,8 @@ void BreakFinder::Insert(int val) {
 		for (unsigned int j = 0; j<saeLen; j++) {
 			if (val == selAndEdge[j]) {
 				return;
-			} if (val < selAndEdge[j]) {
+			}
+			if (val < selAndEdge[j]) {
 				for (unsigned int k = saeLen; k>j; k--) {
 					selAndEdge[k] = selAndEdge[k-1];
 				}
@@ -386,7 +391,7 @@ static int NextBadU(const char *s, int p, int len, int &trailBytes) {
 	return -1;
 }
 
-BreakFinder::BreakFinder(LineLayout *ll_, int lineStart_, int lineEnd_, int posLineStart_, bool utf8_, int xStart) :
+BreakFinder::BreakFinder(LineLayout *ll_, int lineStart_, int lineEnd_, int posLineStart_, bool utf8_, int xStart, bool breakForSelection) :
 	ll(ll_),
 	lineStart(lineStart_),
 	lineEnd(lineEnd_),
@@ -412,9 +417,19 @@ BreakFinder::BreakFinder(LineLayout *ll_, int lineStart_, int lineEnd_, int posL
 		nextBreak--;
 	}
 
-	if (ll->selStart != ll->selEnd) {
-		Insert(ll->selStart - posLineStart - 1);
-		Insert(ll->selEnd - posLineStart - 1);
+	if (breakForSelection) {
+		SelectionPosition posStart(posLineStart);
+		SelectionPosition posEnd(posLineStart + lineEnd);
+		SelectionSegment segmentLine(posStart, posEnd);
+		for (size_t r=0; r<ll->psel->Count(); r++) {
+			SelectionSegment portion = ll->psel->Range(r).Intersect(segmentLine);
+			if (!(portion.start == portion.end)) {
+				if (portion.start.IsValid())
+					Insert(portion.start.Position() - posLineStart - 1);
+				if (portion.end.IsValid())
+					Insert(portion.end.Position() - posLineStart - 1);
+			}
+		}
 	}
 
 	Insert(ll->edgeColumn - 1);
@@ -437,7 +452,7 @@ BreakFinder::~BreakFinder() {
 	delete []selAndEdge;
 }
 
-int BreakFinder::First() {
+int BreakFinder::First() const {
 	return nextBreak;
 }
 
@@ -524,7 +539,7 @@ void PositionCacheEntry::Set(unsigned int styleNumber_, const char *s_,
 	clock = clock_;
 	if (s_ && positions_) {
 		positions = new short[len + (len + 1) / 2];
-		for (unsigned int i=0;i<len;i++) {
+		for (unsigned int i=0; i<len; i++) {
 			positions[i] = static_cast<short>(positions_[i]);
 		}
 		memcpy(reinterpret_cast<char *>(positions + len), s_, len);
@@ -547,7 +562,7 @@ bool PositionCacheEntry::Retrieve(unsigned int styleNumber_, const char *s_,
 	unsigned int len_, int *positions_) const {
 	if ((styleNumber == styleNumber_) && (len == len_) &&
 		(memcmp(reinterpret_cast<char *>(positions + len), s_, len)== 0)) {
-		for (unsigned int i=0;i<len;i++) {
+		for (unsigned int i=0; i<len; i++) {
 			positions_[i] = positions[i];
 		}
 		return true;
@@ -569,7 +584,7 @@ int PositionCacheEntry::Hash(unsigned int styleNumber, const char *s, unsigned i
 	return ret;
 }
 
-bool PositionCacheEntry::NewerThan(const PositionCacheEntry &other) {
+bool PositionCacheEntry::NewerThan(const PositionCacheEntry &other) const {
 	return clock > other.clock;
 }
 
@@ -593,7 +608,7 @@ PositionCache::~PositionCache() {
 
 void PositionCache::Clear() {
 	if (!allClear) {
-		for (size_t i=0;i<size;i++) {
+		for (size_t i=0; i<size; i++) {
 			pces[i].Clear();
 		}
 	}
@@ -637,7 +652,7 @@ void PositionCache::MeasureWidths(Surface *surface, ViewStyle &vstyle, unsigned 
 		if (clock > 60000) {
 			// Since there are only 16 bits for the clock, wrap it round and
 			// reset all cache entries so none get stuck with a high clock.
-			for (size_t i=0;i<size;i++) {
+			for (size_t i=0; i<size; i++) {
 				pces[i].ResetClock();
 			}
 			clock = 2;
