@@ -392,7 +392,7 @@ public:
 		    wxPrintf(_("Container password: "));
 
 		    wxChar linepass[260];
-		    wxFgets(linepass, sizeof(linepass), stdin);
+		    wxFgets(linepass, sizeof(linepass)-1, stdin);
 
 		    wxString linepassstr(linepass);
 		    linepassstr.Truncate( linepassstr.Length() - 1 );
@@ -687,7 +687,7 @@ public:
 	    wxPrintf(_T("cryptote> "));
 
 	    wxChar linebuff[260];
-	    wxFgets(linebuff, sizeof(linebuff), stdin);
+	    wxFgets(linebuff, sizeof(linebuff)-1, stdin);
 
 	    wxString line(linebuff);
 	    line.Truncate( line.Length() - 1 );
@@ -761,7 +761,7 @@ public:
 		wxPrintf(_("Container was modified. Save? (y/n) "));
 
 		wxChar linebuff[260];
-		wxFgets(linebuff, sizeof(linebuff), stdin);
+		wxFgets(linebuff, sizeof(linebuff)-1, stdin);
 
 		wxString line(linebuff);
 		line.Truncate( line.Length() - 1 );
