@@ -11,7 +11,7 @@ cryptote_pwgen_SOURCES = main.cpp \
 cryptote_pwgen_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a 
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/src -I$(top_srcdir)/libenctain $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
-LIBS = $(top_builddir)/libenctain/libenctain.a  $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a  $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
 
 if ON_WIN32
 if GOT_RESCOMP

@@ -26,7 +26,7 @@ cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/
 dist_man_MANS = cryptote.1
 
 AM_CXXFLAGS = -W -Wall "-DMY_BUILDTIME=\"`date -u '+%Y-%m-%d %H:%M %Z'`\"" -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) 
-LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
 
 if ON_WIN32
 if GOT_RESCOMP

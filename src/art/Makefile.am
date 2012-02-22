@@ -8,7 +8,7 @@ file2h_SOURCES = file2h.cpp
 
 AM_CFLAGS = -W -Wall $(ZLIB_CFLAGS)
 AM_CXXFLAGS = -W -Wall $(ZLIB_CFLAGS)
-LIBS = $(ZLIB_LIBS)
+LIBS = $(ZLIB_LIBS) $(EXTRA_LIBS)
 
 if !CROSS_COMPILATION
 %.h: %.png

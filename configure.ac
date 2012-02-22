@@ -5,15 +5,15 @@ AC_INIT(cryptote, 0.0.0)
 AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 
+AC_CANONICAL_TARGET
+
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 
 # Check for Win32 system and set compilation flag.
 
-AC_CANONICAL_HOST
-
-AC_MSG_CHECKING(building on Win32)
-case "$host_os" in
+AC_MSG_CHECKING(building for Win32)
+case "$target_os" in
     *cygwin* | *mingw32*)
         ON_WIN32=true
         AC_MSG_RESULT(yes)
@@ -25,8 +25,8 @@ case "$host_os" in
 esac
 AM_CONDITIONAL(ON_WIN32, $ON_WIN32)
 
-AC_MSG_CHECKING(building on MacOSX)
-case "$host_os" in
+AC_MSG_CHECKING(building for MacOSX)
+case "$target_os" in
     *darwin*)
         ON_MACOSX=true
         AC_MSG_RESULT(yes)
@@ -37,6 +37,23 @@ case "$host_os" in
         ;;
 esac
 AM_CONDITIONAL(ON_MACOSX, $ON_MACOSX)
+
+# enable hardware specific code in Botan
+
+AC_MSG_CHECKING(target CPU type)
+case "$target_cpu" in
+    "i686" | "x86_64")
+	AC_DEFINE(BOTAN_TARGET_ARCH_IS_IA32, [1])
+	AC_MSG_RESULT(ia32)
+	;;
+    "powerpc")
+	AC_DEFINE(BOTAN_TARGET_ARCH_IS_PPC, [1])
+	AC_MSG_RESULT(ppc)
+	;;
+    *)
+	AC_MSG_RESULT(unknown)
+        ;;
+esac
 
 # enable full optimization by configure switch
 
@@ -261,7 +278,18 @@ fi
 
 # Check for functions not available on some systems
 
+EXTRA_LIBS=""
+
 AC_CHECK_DECLS([clock_gettime],[],[],[#include <time.h>]) # Not on MacOXS
+
+AC_CHECK_FUNCS(clock_gettime, [], [
+    AC_CHECK_LIB(rt, clock_gettime, [
+        AC_DEFINE(HAVE_CLOCK_GETTIME, 1)
+        EXTRA_LIBS="$EXTRA_LIBS -lrt"
+    ])
+])
+
+AC_SUBST(EXTRA_LIBS)
 
 # Checks for library functions.
 

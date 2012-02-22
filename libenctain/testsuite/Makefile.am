@@ -22,6 +22,6 @@ test_serpent_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a
 
 AM_CXXFLAGS = -W -Wall -I$(top_srcdir)/libenctain $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
 
-LIBS = $(top_builddir)/libenctain/libenctain.a $(BZLIB_LIBS) $(ZLIB_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
 
 EXTRA_DIST = frozen1.ect
