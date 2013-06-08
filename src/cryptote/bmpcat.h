@@ -33,14 +33,14 @@ private:
     {
 	int	identifier;
 	int	usage;
-	char*	data;
+	const unsigned char* data;
 	size_t	datalen;
     };
 
     struct Theme
     {
 	const wxChar*		name;
-	const char*		snapshot_data;
+	const unsigned char*	snapshot_data;
 	size_t			snapshot_datalen;
 	const ThemeEntry*	entries;
     };

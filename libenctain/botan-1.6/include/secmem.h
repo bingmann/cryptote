@@ -161,15 +161,15 @@ class MemoryVector : public MemoryRegion<T>
    {
    public:
       MemoryVector<T>& operator=(const MemoryRegion<T>& in)
-         { if(this != &in) set(in); return (*this); }
+         { if(this != &in) MemoryRegion<T>::set(in); return (*this); }
 
       MemoryVector(u32bit n = 0) { MemoryRegion<T>::init(false, n); }
       MemoryVector(const T in[], u32bit n)
-         { MemoryRegion<T>::init(false); set(in, n); }
+         { MemoryRegion<T>::init(false); MemoryRegion<T>::set(in, n); }
       MemoryVector(const MemoryRegion<T>& in)
-         { MemoryRegion<T>::init(false); set(in); }
+         { MemoryRegion<T>::init(false); MemoryRegion<T>::set(in); }
       MemoryVector(const MemoryRegion<T>& in1, const MemoryRegion<T>& in2)
-         { MemoryRegion<T>::init(false); set(in1); append(in2); }
+         { MemoryRegion<T>::init(false); MemoryRegion<T>::set(in1); MemoryRegion<T>::append(in2); }
    };
 
 /*************************************************
@@ -180,15 +180,15 @@ class SecureVector : public MemoryRegion<T>
    {
    public:
       SecureVector<T>& operator=(const MemoryRegion<T>& in)
-         { if(this != &in) set(in); return (*this); }
+         { if(this != &in) MemoryRegion<T>::set(in); return (*this); }
 
       SecureVector(u32bit n = 0) { MemoryRegion<T>::init(true, n); }
       SecureVector(const T in[], u32bit n)
-         { MemoryRegion<T>::init(true); set(in, n); }
+         { MemoryRegion<T>::init(true); MemoryRegion<T>::set(in, n); }
       SecureVector(const MemoryRegion<T>& in)
-         { MemoryRegion<T>::init(true); set(in); }
+         { MemoryRegion<T>::init(true); MemoryRegion<T>::set(in); }
       SecureVector(const MemoryRegion<T>& in1, const MemoryRegion<T>& in2)
-         { MemoryRegion<T>::init(true); set(in1); append(in2); }
+         { MemoryRegion<T>::init(true); MemoryRegion<T>::set(in1); MemoryRegion<T>::append(in2); }
    };
 
 /*************************************************
@@ -199,11 +199,11 @@ class SecureBuffer : public MemoryRegion<T>
    {
    public:
       SecureBuffer<T,L>& operator=(const SecureBuffer<T,L>& in)
-         { if(this != &in) set(in); return (*this); }
+         { if(this != &in) MemoryRegion<T>::set(in); return (*this); }
 
       SecureBuffer() { MemoryRegion<T>::init(true, L); }
       SecureBuffer(const T in[], u32bit n)
-         { MemoryRegion<T>::init(true, L); copy(in, n); }
+         { MemoryRegion<T>::init(true, L); MemoryRegion<T>::copy(in, n); }
    private:
       SecureBuffer<T, L>& operator=(const MemoryRegion<T>& in)
          { if(this != &in) set(in); return (*this); }

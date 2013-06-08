@@ -1609,7 +1609,8 @@ bool MyLocale::AddCatalogFromMemory(const wxChar *szDomain, const MyLocaleMemory
 	    catlang.msgIdLanguage == sublocale)
 	{
 	    if ( pMsgCat->Load(szDomain,
-			       catlang.msgCatalogData, catlang.msgCatalogDataLen, catlang.msgCatalogUncompLen,
+			       (char*)catlang.msgCatalogData,
+                               catlang.msgCatalogDataLen, catlang.msgCatalogUncompLen,
 			       catlang.msgIdCharset, true) )
 	    {
 		wxLogTrace(_T("i18n"), _T("Loading memory catalog for \"%s\"."), szDomain);

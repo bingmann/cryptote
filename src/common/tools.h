@@ -44,14 +44,14 @@
 
 #define wxBitmapFromMemory(name) wxBitmapFromMemory2(name, sizeof(name))
 
-static inline wxBitmap wxBitmapFromMemory2(const char *data, int len) {
+static inline wxBitmap wxBitmapFromMemory2(const unsigned char *data, int len) {
     wxMemoryInputStream is(data, len);
     return wxBitmap(wxImage(is, wxBITMAP_TYPE_PNG, -1), -1);
 }
 
 #define wxIconFromMemory(name) wxIconFromMemory2(name, sizeof(name))
 
-static inline wxIcon wxIconFromMemory2(const char *data, int len) {
+static inline wxIcon wxIconFromMemory2(const unsigned char *data, int len) {
     wxIcon icon;
     icon.CopyFromBitmap( wxBitmapFromMemory2(data, len) );
     return icon;
@@ -96,7 +96,7 @@ static inline std::string strTimeStampNow() {
  * Decompress a string using zlib and return the original data. Throws
  * std::runtime_error if an error occurred during decompression.
  */
-static inline std::string decompress(const char* str, unsigned int slen, unsigned int possiblelen=0)
+static inline std::string decompress(const void* str, unsigned int slen, unsigned int possiblelen=0)
 {
     z_stream zs;	// z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));

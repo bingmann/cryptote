@@ -49,7 +49,7 @@ protected:
     struct BuiltinFile
     {
         const wxString  path;
-        const char*     compressed_data;
+        const unsigned char* compressed_data;
         unsigned int    compressed_size;
         unsigned int    uncompressed_size;
         std::string     decompressed_data;

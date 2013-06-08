@@ -158,7 +158,7 @@ public:
 	    // to English.
 
 	    delete m_locale;
-	    m_locale = new MyLocale(wxLANGUAGE_ENGLISH, wxLOCALE_CONV_ENCODING);
+	    m_locale = new MyLocale(_T("en_GB"), _T("en"), _T("C"), true, true);
 	    
 	    if (!m_locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||
 		!m_locale->AddCatalogFromMemory(_T("wxstd"), wxstd_catalogs))

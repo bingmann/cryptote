@@ -28,7 +28,7 @@ struct MyLocaleMemoryCatalog
 {
     const wxChar*	msgIdLanguage;	// language e.g. "us_GB"
     const wxChar*	msgIdCharset;	// character set
-    const char*		msgCatalogData;	// ptr to binary catalog
+    const unsigned char* msgCatalogData;	// ptr to binary catalog
     unsigned int	msgCatalogDataLen; // size of data at ptr
     unsigned int	msgCatalogUncompLen; // uncompressed size len, if 0 ->
 					     // not compressed.

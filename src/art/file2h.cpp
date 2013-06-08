@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 	std::string filename = prefix + argv[ai];
 	fixfilename(filename);
 	
-	std::cout << "static char " << filename
+	std::cout << "static const unsigned char " << filename
 		  << "[" << std::dec << filedata.size() << "] = {\n";
 
 	static const int charsperline = 16;
