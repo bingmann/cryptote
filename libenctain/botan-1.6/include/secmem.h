@@ -206,7 +206,7 @@ class SecureBuffer : public MemoryRegion<T>
          { MemoryRegion<T>::init(true, L); MemoryRegion<T>::copy(in, n); }
    private:
       SecureBuffer<T, L>& operator=(const MemoryRegion<T>& in)
-         { if(this != &in) set(in); return (*this); }
+         { if(this != &in) MemoryRegion<T>::set(in); return (*this); }
    };
 
 }
