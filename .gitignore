@@ -1,0 +1,16 @@
+**/Makefile
+**/.deps
+/autom4te.cache/
+/config.log
+/config.status
+/misc/
+*.o
+*.a
+
+/libenctain/testsuite/test_ect1
+/libenctain/testsuite/test_ect2
+/libenctain/testsuite/test_serpent
+/libenctain/testsuite/test_sha256
+/src/art/file2h
+/src/cryptote/cryptote
+/src/pwgen/cryptote-pwgen
