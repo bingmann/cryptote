@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/bmpcat.h
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,13 +15,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
-#ifndef BITMAPCATALOG_H
-#define BITMAPCATALOG_H
+#ifndef CRYPTOTE_SRC_BMPCAT_HEADER
+#define CRYPTOTE_SRC_BMPCAT_HEADER
 
 #include <wx/string.h>
 #include <wx/bitmap.h>
@@ -28,110 +29,110 @@
 class BitmapCatalog
 {
 private:
-
     struct ThemeEntry
     {
-	int	identifier;
-	int	usage;
-	const unsigned char* data;
-	size_t	datalen;
+        int identifier;
+        int usage;
+        const unsigned char* data;
+        size_t datalen;
     };
 
     struct Theme
     {
-	const wxChar*		name;
-	const unsigned char*	snapshot_data;
-	size_t			snapshot_datalen;
-	const ThemeEntry*	entries;
+        const wxChar* name;
+        const unsigned char* snapshot_data;
+        size_t snapshot_datalen;
+        const ThemeEntry* entries;
     };
 
     // *** First Theme: KDE's Crystal ***
 
-    const static ThemeEntry	bitmaplist_crystal_large[];
-    const static ThemeEntry	bitmaplist_crystal_small[];
+    const static ThemeEntry bitmaplist_crystal_large[];
+    const static ThemeEntry bitmaplist_crystal_small[];
 
     // *** Second Theme: KDE's Slick ***
 
-    const static ThemeEntry	bitmaplist_slick_large[];
-    const static ThemeEntry	bitmaplist_slick_small[];
+    const static ThemeEntry bitmaplist_slick_large[];
+    const static ThemeEntry bitmaplist_slick_small[];
 
     // *** Third Theme: Gnome's Standard ***
 
-    const static ThemeEntry	bitmaplist_gnome_large[];
-    const static ThemeEntry	bitmaplist_gnome_small[];
+    const static ThemeEntry bitmaplist_gnome_large[];
+    const static ThemeEntry bitmaplist_gnome_small[];
 
     // *** List of Built-In Themes ***
 
     /// This function is used because the arrays contain translated strings.
-    static const Theme**	GetThemeList(int& size);
+    static const Theme ** GetThemeList(int& size);
 
     struct BitmapInfo
     {
-	const int     	identifier;
-	const int	usage;
-	const wxString	name;
-	wxBitmap	current;
+        const int identifier;
+        const int usage;
+        const wxString name;
+        wxBitmap current;
     };
 
     /// Array of bitmap initialized from the theme
-    static struct BitmapInfo	bitmaplist[];
+    static struct BitmapInfo bitmaplist[];
 
     /// Selected Theme Id
-    int		themeid;
+    int themeid;
 
-    void	AddBuiltInTheme(const Theme* theme);
+    void AddBuiltInTheme(const Theme* theme);
 
 protected:
     /// Construct and initialize the bitmap catalog
     BitmapCatalog();
 
     /// Singleton class
-    static BitmapCatalog*	singleton;
+    static BitmapCatalog* singleton;
 
     /// Registered wxArtProvider derived class
     class BitmapCatalogArtProvider* artprovider;
 
 public:
-
     /// Set the current bitmap/icon theme
-    void	SetTheme(int themeid);
+    void SetTheme(int themeid);
 
     /// Return current theme id
-    int		GetCurrentTheme();
+    int GetCurrentTheme();
 
     /// Return info about a built-in theme. returns true if the index was
     /// valid.
-    bool	GetThemeInfo(int themeid, wxString& name, wxBitmap& snapshot);
+    bool GetThemeInfo(int themeid, wxString& name, wxBitmap& snapshot);
 
     /// Return a bitmap for the given general identifier
-    wxBitmap	_GetBitmap(int id);
+    wxBitmap _GetBitmap(int id);
 
     /// Return a bitmap for the menu identifier id.
-    wxBitmap	_GetMenuBitmap(int id);
+    wxBitmap _GetMenuBitmap(int id);
 
     /// Return a bitmap for the toolbar identifier id.
-    wxBitmap	_GetToolbarBitmap(int id);
+    wxBitmap _GetToolbarBitmap(int id);
 
     /// Return a bitmap for the file list.
-    wxBitmap	_GetFileTypeBitmap(int id);
+    wxBitmap _GetFileTypeBitmap(int id);
 
     /// Return a bitmap for the given general identifier
-    static wxBitmap	GetBitmap(int id);
+    static wxBitmap GetBitmap(int id);
 
     /// Return a bitmap for the menu identifier id.
-    static wxBitmap	GetMenuBitmap(int id);
+    static wxBitmap GetMenuBitmap(int id);
 
     /// Return a bitmap for the toolbar identifier id.
-    static wxBitmap	GetToolbarBitmap(int id);
+    static wxBitmap GetToolbarBitmap(int id);
 
     /// Return a bitmap for the file list.
-    static wxBitmap	GetFileTypeBitmap(int id);
+    static wxBitmap GetFileTypeBitmap(int id);
 
     /// Return Singleton class
-    static BitmapCatalog*	GetSingleton();
+    static BitmapCatalog * GetSingleton();
 
     /// Register a wxArtProvider providing bitmaps from this object.
-    void		RegisterArtProvider();
+    void RegisterArtProvider();
 };
 
-#endif // BITMAPCATALOG_H
+#endif // !CRYPTOTE_SRC_BMPCAT_HEADER
+
+/******************************************************************************/

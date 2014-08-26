@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/wcryptote.h
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,13 +15,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
-#ifndef WCRYPTOTE_H
-#define WCRYPTOTE_H
+#ifndef CRYPTOTE_SRC_WCRYPTOTE_HEADER
+#define CRYPTOTE_SRC_WCRYPTOTE_HEADER
 
 #include <wx/wx.h>
 #include <wx/filename.h>
@@ -73,7 +74,7 @@ enum {
 
     myID_MENU_VIEW_LINEWRAP,
     myID_MENU_VIEW_LINENUMBER,
-    myID_MENU_VIEW_WHITESPACE,	
+    myID_MENU_VIEW_WHITESPACE,
     myID_MENU_VIEW_ENDOFLINE,
     myID_MENU_VIEW_INDENTGUIDE,
     myID_MENU_VIEW_LONGLINEGUIDE,
@@ -137,312 +138,310 @@ public:
     // *** Operations ***
 
     /// Return a localized string for the given error code.
-    static const wxChar* EnctainErrorString(Enctain::error_type e);
+    static const wxChar * EnctainErrorString(Enctain::error_type e);
 
     /// Return a localized string for the given exception object.
     static wxString EnctainExceptionString(Enctain::Exception& e);
 
     /// Temporarily set status bar to show given text.
-    void	UpdateStatusBar(const wxString& str);
+    void UpdateStatusBar(const wxString& str);
 
-    /// Callback from any subdialog to hide it's pane 
-    void	HidePane(wxWindow* child);
+    /// Callback from any subdialog to hide it's pane
+    void HidePane(wxWindow* child);
 
     /// Checks if any subfile was modified or the main container modified.
-    bool	IsModified();
+    bool IsModified();
 
     /// Set menu items and toolbar accordingly if the file was modified.
-    void	UpdateModified();
+    void UpdateModified();
 
     /// Helper to set the main modified flag and update the main window.
-    void	SetModified();
+    void SetModified();
 
     /// Attempt to find a notebook page showing the given subfileid.
-    class WNotePage* FindSubFilePage(unsigned int sfid);
+    class WNotePage * FindSubFilePage(unsigned int sfid);
 
     /// Open one of the SubFiles in the Container
-    void	OpenSubFile(unsigned int sfid, bool autoselect=true);
+    void OpenSubFile(unsigned int sfid, bool autoselect = true);
 
     /// Update the modified page caption on the notebook
-    void	UpdateSubFileCaption(int sfid);
+    void UpdateSubFileCaption(int sfid);
 
     /// Set the modified page image on notebook pages
-    void	UpdateSubFileModified(WNotePage* page, bool modified);
+    void UpdateSubFileModified(WNotePage* page, bool modified);
 
     /// Import a list of full file paths as new subfiles into the container.
-    void	ImportSubFiles(const wxArrayString& filelist, const std::string& filetype, bool openpage);
+    void ImportSubFiles(const wxArrayString& filelist, const std::string& filetype, bool openpage);
 
     /// Export one of the SubFiles of the container, either the currently
     /// opened buffer or directly from the container.
-    void	ExportSubFile(unsigned int sfid, wxOutputStream& os);
+    void ExportSubFile(unsigned int sfid, wxOutputStream& os);
 
     /// Delete one of the existing subfiles, fixes up all current references.
-    void	DeleteSubFile(unsigned int sfid, bool resetfilelist);
+    void DeleteSubFile(unsigned int sfid, bool resetfilelist);
 
     /// Update the window title when a container is loaded.
-    void	UpdateTitle();
+    void UpdateTitle();
 
     /// Return the current file name.
-    wxString	GetSavedFilename();
+    wxString GetSavedFilename();
 
     /// Toggle the filelist pane on or off and set the corresponding button
-    void	ShowFilelistPane(bool on);
+    void ShowFilelistPane(bool on);
 
     /// Hide Quick-Find and Quick-Goto Bars
-    void	HideQuickBars();
+    void HideQuickBars();
 
     /// Discard any current container and set up a default new one with one
     /// activated text file.
-    void	ContainerNew();
+    void ContainerNew();
 
     /// Load a container file into the editor, discard any current container.
-    bool	ContainerOpen(const wxString& filename, const wxString& defpass=wxEmptyString);
+    bool ContainerOpen(const wxString& filename, const wxString& defpass = wxEmptyString);
 
     /// Save the current container to a file.
-    bool	ContainerSaveAs(const wxString& filename);
+    bool ContainerSaveAs(const wxString& filename);
 
     /// Save the list of currently opened subfiles in the global properties
-    void	SaveOpenSubFilelist();
+    void SaveOpenSubFilelist();
 
     /// Restore list of opened subfiles by calling OpenSubFile.
-    void	RestoreOpenSubFilelist();
+    void RestoreOpenSubFilelist();
 
     /// Query the web page for the newest version and check if the current
     /// should be updated.
-    void	WebUpdateCheck();
+    void WebUpdateCheck();
 
     // *** Preference Variables ***
 
     /// Theme set using BitmapCatalog
-    int		prefs_bitmaptheme;
+    int prefs_bitmaptheme;
 
     /// Flag if backup files of the container should be created
-    bool	prefs_makebackups;
+    bool prefs_makebackups;
 
     /// How many backups to keep.
-    int		prefs_backupnum;
-    
+    int prefs_backupnum;
+
     /// Flag if the editor should automatically save and close container files
     /// after a period of inactivity.
-    bool	prefs_autoclose;
+    bool prefs_autoclose;
 
     /// Number of minutes of inactivity until the container is saved and closed.
-    int		prefs_autoclosetime;
+    int prefs_autoclosetime;
 
     /// Flag if to also close CryptoTE after the idle timeout.
-    bool	prefs_autocloseexit;
-    
+    bool prefs_autocloseexit;
+
     /// Flag to keep the current file open on Win32 and thus locking it. On
     /// Linux the opened file is flock()-ed
-    bool	prefs_sharelock;
+    bool prefs_sharelock;
 
     /// Flag is allow auto checking for updates online.
-    bool	prefs_webupdatecheck;
+    bool prefs_webupdatecheck;
 
     /// Time value when the last update check was performed successfully.
-    time_t	prefs_webupdatecheck_time;
+    time_t prefs_webupdatecheck_time;
 
     /// Highest updated version confirmed by the user.
-    wxString	prefs_webupdatecheck_version;
+    wxString prefs_webupdatecheck_version;
 
     /// Retrieve config settings from registry or config file
-    void	LoadPreferences();
+    void LoadPreferences();
 
     // *** Container Option Variables ***
 
     /// Restore positions
-    bool	copt_restoreview;
+    bool copt_restoreview;
 
     // *** Event Handlers ***
 
     // Generic Events
 
-    void	OnClose(wxCloseEvent& event);
+    void OnClose(wxCloseEvent& event);
 
     /// Helper Function for OnClose() show "Save container" dialog if it is
     /// modified.
-    bool	AllowCloseModified();
+    bool AllowCloseModified();
 
     // Menu Events
 
-    void	OnMenuContainerOpen(wxCommandEvent& event);
-    void	OnMenuContainerSave(wxCommandEvent& event);
-    void	OnMenuContainerSaveAs(wxCommandEvent& event);
-    void	OnMenuContainerRevert(wxCommandEvent& event);
-    void	OnMenuContainerClose(wxCommandEvent& event);
+    void OnMenuContainerOpen(wxCommandEvent& event);
+    void OnMenuContainerSave(wxCommandEvent& event);
+    void OnMenuContainerSaveAs(wxCommandEvent& event);
+    void OnMenuContainerRevert(wxCommandEvent& event);
+    void OnMenuContainerClose(wxCommandEvent& event);
 
-    bool	UserContainerOpen();
-    bool	UserContainerSave();
-    bool	UserContainerSaveAs();
+    bool UserContainerOpen();
+    bool UserContainerSave();
+    bool UserContainerSaveAs();
 
-    void	OnMenuContainerShowList(wxCommandEvent& event);
-    void	OnMenuContainerProperties(wxCommandEvent& event);
-    void	OnMenuContainerPasswordList(wxCommandEvent& event);
+    void OnMenuContainerShowList(wxCommandEvent& event);
+    void OnMenuContainerProperties(wxCommandEvent& event);
+    void OnMenuContainerPasswordList(wxCommandEvent& event);
 
-    void	OnMenuContainerPreferences(wxCommandEvent& event);
+    void OnMenuContainerPreferences(wxCommandEvent& event);
 
-    void	OnMenuContainerQuit(wxCommandEvent& event);
+    void OnMenuContainerQuit(wxCommandEvent& event);
 
-    void	OnMenuSubFileNew(wxCommandEvent& event);
-    void	OnMenuSubFileImport(wxCommandEvent& event);
-    void	OnMenuSubFileExport(wxCommandEvent& event);
-    void	OnMenuSubFileProperties(wxCommandEvent& event);
-    void	OnMenuSubFileClose(wxCommandEvent& event);
+    void OnMenuSubFileNew(wxCommandEvent& event);
+    void OnMenuSubFileImport(wxCommandEvent& event);
+    void OnMenuSubFileExport(wxCommandEvent& event);
+    void OnMenuSubFileProperties(wxCommandEvent& event);
+    void OnMenuSubFileClose(wxCommandEvent& event);
 
-    void	OnMenuEditGeneric(wxCommandEvent& event);
-    void	OnMenuEditQuickFind(wxCommandEvent& event);
-    void	OnMenuEditGoto(wxCommandEvent& event);
-    void	OnMenuEditFind(wxCommandEvent& event);
-    void	OnMenuEditFindReplace(wxCommandEvent& event);
-    void	OnMenuEditInsertPassword(wxCommandEvent& event);
-    void	OnToolEditInsertPassword(wxCommandEvent& event);
-    void	OnMenuEditInsertPasswordPreset(wxCommandEvent& event);
-    void	OnMenuEditInsertDateTime(wxCommandEvent& event);
-    void	OnToolEditInsertDateTime(wxCommandEvent& event);
+    void OnMenuEditGeneric(wxCommandEvent& event);
+    void OnMenuEditQuickFind(wxCommandEvent& event);
+    void OnMenuEditGoto(wxCommandEvent& event);
+    void OnMenuEditFind(wxCommandEvent& event);
+    void OnMenuEditFindReplace(wxCommandEvent& event);
+    void OnMenuEditInsertPassword(wxCommandEvent& event);
+    void OnToolEditInsertPassword(wxCommandEvent& event);
+    void OnMenuEditInsertPasswordPreset(wxCommandEvent& event);
+    void OnMenuEditInsertDateTime(wxCommandEvent& event);
+    void OnToolEditInsertDateTime(wxCommandEvent& event);
 
-    void	OnMenuViewLineWrap(wxCommandEvent& event);
-    void	OnMenuViewLineNumber(wxCommandEvent& event);
-    void	OnMenuViewWhitespace(wxCommandEvent& event);
-    void	OnMenuViewEndOfLine(wxCommandEvent& event);
-    void	OnMenuViewIndentGuide(wxCommandEvent& event);
-    void	OnMenuViewLonglineGuide(wxCommandEvent& event);
-    void	OnMenuViewZoomIncrease(wxCommandEvent& event);
-    void	OnMenuViewZoomDecrease(wxCommandEvent& event);
-    void	OnMenuViewZoomReset(wxCommandEvent& event);
+    void OnMenuViewLineWrap(wxCommandEvent& event);
+    void OnMenuViewLineNumber(wxCommandEvent& event);
+    void OnMenuViewWhitespace(wxCommandEvent& event);
+    void OnMenuViewEndOfLine(wxCommandEvent& event);
+    void OnMenuViewIndentGuide(wxCommandEvent& event);
+    void OnMenuViewLonglineGuide(wxCommandEvent& event);
+    void OnMenuViewZoomIncrease(wxCommandEvent& event);
+    void OnMenuViewZoomDecrease(wxCommandEvent& event);
+    void OnMenuViewZoomReset(wxCommandEvent& event);
 
-    void	OnMenuHelpBrowser(wxCommandEvent& event);
-    void	OnMenuHelpWebUpdateCheck(wxCommandEvent& event);
-    void	OnMenuHelpAbout(wxCommandEvent& event);
+    void OnMenuHelpBrowser(wxCommandEvent& event);
+    void OnMenuHelpWebUpdateCheck(wxCommandEvent& event);
+    void OnMenuHelpAbout(wxCommandEvent& event);
 
     // Accelerator Events
 
-    void	OnAccelEscape(wxCommandEvent& event);
+    void OnAccelEscape(wxCommandEvent& event);
 
     // wxAuiManager Callbacks
-    
-    void	OnAuiManagerPaneClose(wxAuiManagerEvent& event);
+
+    void OnAuiManagerPaneClose(wxAuiManagerEvent& event);
 
     // wxAuiNotebook Callbacks
 
-    void	OnNotebookPageChanged(wxAuiNotebookEvent& event);
-    void	OnNotebookPageClose(wxAuiNotebookEvent& event);
-    void	OnNotebookPageRightDown(wxAuiNotebookEvent& event);
+    void OnNotebookPageChanged(wxAuiNotebookEvent& event);
+    void OnNotebookPageClose(wxAuiNotebookEvent& event);
+    void OnNotebookPageRightDown(wxAuiNotebookEvent& event);
 
     /// Update the window's menus and toolbars when a notebook page is
     /// activated.
-    void	UpdateNotebookPageChanged(int pageid, WNotePage* page);
+    void UpdateNotebookPageChanged(int pageid, WNotePage* page);
 
     // Quick-Find Bar
 
-    void	OnTextQuickFind(wxCommandEvent& event);
+    void OnTextQuickFind(wxCommandEvent& event);
 
-    void	OnButtonQuickFindNext(wxCommandEvent& event);
-    void	OnButtonQuickFindPrev(wxCommandEvent& event);
-    void	OnButtonQuickFindClose(wxCommandEvent& event);
+    void OnButtonQuickFindNext(wxCommandEvent& event);
+    void OnButtonQuickFindPrev(wxCommandEvent& event);
+    void OnButtonQuickFindClose(wxCommandEvent& event);
 
     // Quick-Goto Bar
 
-    void	OnButtonGotoGo(wxCommandEvent& event);
-    void	OnButtonGotoClose(wxCommandEvent& event);
+    void OnButtonGotoGo(wxCommandEvent& event);
+    void OnButtonGotoClose(wxCommandEvent& event);
 
 protected:
     // *** Global System Objects ***
-    class MyLocale*     m_locale;
+    class MyLocale* m_locale;
 
 public:
     // *** Menu, Tool and Status Bars of the Main Window ***
 
-    class wxMenuBar*	menubar_plain;
-    class wxMenuBar*	menubar_textpage;
-    class wxMenuBar*	menubar_binarypage;
+    class wxMenuBar* menubar_plain;
+    class wxMenuBar* menubar_textpage;
+    class wxMenuBar* menubar_binarypage;
 
-    class wxMenuBar*	menubar_active;
+    class wxMenuBar* menubar_active;
 
-    class wxToolBar*	toolbar;
-    class WStatusBar*	statusbar;
+    class wxToolBar* toolbar;
+    class WStatusBar* statusbar;
 
-    wxMenuBar* 		CreateMenuBar(const wxClassInfo* page);
+    wxMenuBar * CreateMenuBar(const wxClassInfo* page);
 
-    void 		CreateToolBar();
+    void CreateToolBar();
 
-    void		UpdateMenuInsertPassword();
+    void UpdateMenuInsertPassword();
 
 protected:
     // *** wxAUI Window Manager ***
 
-    wxAuiManager 	auimgr;
+    wxAuiManager auimgr;
 
 public:
     // *** Displayed or Hidden Panes ***
 
-    wxAuiNotebook*	auinotebook;
+    wxAuiNotebook* auinotebook;
 
     // *** Container Loaded ***
 
     /// Container object used. This class is a reference-counter pimpl;
-    Enctain::Container	container;
+    Enctain::Container container;
 
     /// Associated file name
-    wxFileName		container_filename;
+    wxFileName container_filename;
 
     /// File Object which stays open to keep an exclusive share lock on Win32.
-    wxFile*		container_filehandle;
+    wxFile* container_filehandle;
 
     /// Whether the container's or a subfile's metadata was modified
-    bool		main_modified;
+    bool main_modified;
 
 public:
-
     /// Currently selected notebook page (or NULL).
-    class WNotePage*	cpage;
+    class WNotePage* cpage;
 
     /// Index in notebook of the current page
-    int			cpageid;
+    int cpageid;
 
     /// Quick-Find Bar activated with Ctrl+F
     class WQuickFindBar* quickfindbar;
-    bool		quickfindbar_visible;
+    bool quickfindbar_visible;
 
     /// Quick-Goto Bar activated with Ctrl+G
     class WQuickGotoBar* quickgotobar;
-    bool		quickgotobar_visible;
+    bool quickgotobar_visible;
 
     /// (Slow) Find & Replace Dialog activated with Ctrl+Shift+F
-    class WFindReplace*	findreplacedlg;
+    class WFindReplace* findreplacedlg;
 
     /// Container File List Pane
-    class WFileList*	filelistpane;
+    class WFileList* filelistpane;
 
     /// Password Generator Dialog Box
-    class WPassGen*	wpassgen;
+    class WPassGen* wpassgen;
 
     /// Reentry flag for WebUpdateCheck
-    bool		webupdatecheck_running;
+    bool webupdatecheck_running;
 
     /// wxHtmlHelp displayer
     wxHtmlHelpController* m_htmlhelp;
 
     /// Return initialized help displayer
-    wxHtmlHelpController* GetHtmlHelpController();
-    
-public:
+    wxHtmlHelpController * GetHtmlHelpController();
 
+public:
     // *** Idle-Timer ***
 
     /// wxEvent::GetTimestamp() value of the last user event.
-    long		lastuserevent;
+    long lastuserevent;
 
     /// wxTimer calling the idle event handler
-    wxTimer		idlechecktimer;
+    wxTimer idlechecktimer;
 
     /// Old text from status bar before replacing it with idle time counter.
-    wxString		idletimestatusbar;
-    
+    wxString idletimestatusbar;
+
     /// Timer event handler called by the wxTimer object every 5 seconds
-    void		OnIdleTimerCheck(wxTimerEvent& event);
+    void OnIdleTimerCheck(wxTimerEvent& event);
 
     /// Called by the main event loop FilterEvent() in wxApp
-    void		ResetIdleTimer();
+    void ResetIdleTimer();
 
 private:
     DECLARE_EVENT_TABLE()
@@ -451,32 +450,32 @@ private:
 class WStatusBar : public wxStatusBar, public Enctain::ProgressIndicator
 {
 public:
-    WStatusBar(wxWindow *parent);
+    WStatusBar(wxWindow* parent);
 
-    void		OnSize(wxSizeEvent& event);
-    void		SetModified(bool on);
+    void OnSize(wxSizeEvent& event);
+    void SetModified(bool on);
 
-    wxWindow *parent;
+    wxWindow* parent;
 
-    wxStaticBitmap*	lockbitmap;
+    wxStaticBitmap* lockbitmap;
 
-    wxWindow*		panelProgress;
-    wxBoxSizer* 	sizerProgress;
-    wxStaticText*	labelProgress;
-    wxGauge*		gaugeProgress;
+    wxWindow* panelProgress;
+    wxBoxSizer* sizerProgress;
+    wxStaticText* labelProgress;
+    wxGauge* gaugeProgress;
 
     /// Pure virtual function called when the progress indicator should
     /// start. The range is given in this call.
-    virtual void	ProgressStart(const char* text, Enctain::progress_indicator_type pitype,
-				      size_t value, size_t limit);
+    virtual void ProgressStart(const char* text, Enctain::progress_indicator_type pitype,
+                               size_t value, size_t limit);
 
     /// Pure virtual function called when the progress indicator should be
     /// updated.
-    virtual void	ProgressUpdate(size_t value);
+    virtual void ProgressUpdate(size_t value);
 
     /// Pure virtual function called when the progress indicator should be
     /// hidden.
-    virtual void	ProgressStop();
+    virtual void ProgressStop();
 
 private:
     DECLARE_EVENT_TABLE()
@@ -488,7 +487,7 @@ public:
     // begin wxGlade: WAbout::ids
     // end wxGlade
 
-    WAbout(wxWindow* parent, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WAbout(wxWindow* parent, int id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
 
 private:
     // begin wxGlade: WAbout::methods
@@ -512,7 +511,7 @@ public:
     // begin wxGlade: WWebUpdateCheck::ids
     // end wxGlade
 
-    WWebUpdateCheck(wxWindow* parent, const wxString& newversion, const wxString& changes, int id=wxID_ANY, const wxString& title=wxEmptyString, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    WWebUpdateCheck(wxWindow* parent, const wxString& newversion, const wxString& changes, int id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
 
 private:
     // begin wxGlade: WWebUpdateCheck::methods
@@ -530,80 +529,77 @@ protected:
     wxButton* buttonClose;
     // end wxGlade
 
-    virtual void OnButtonDisableWebUpdateCheck(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnButtonDisableWebUpdateCheck(wxCommandEvent& event); // wxGlade: <event_handler>
 
 protected:
     DECLARE_EVENT_TABLE()
-}; // wxGlade: end class
+};                                                                     // wxGlade: end class
 
 class WNotePage : public wxPanel
 {
 protected:
-
     WNotePage(class WCryptoTE* _wmain);
 
     /// Reference to parent window class
-    class WCryptoTE*	wmain;
+    class WCryptoTE* wmain;
 
     /// Temporarily set status bar to show given text. Just forwards via wmain.
-    void	UpdateStatusBar(const wxString& str);
+    void UpdateStatusBar(const wxString& str);
 
     /// Helper to set the modified flag of this page and also update the main
     /// window.
-    void	SetModified(bool modified);
+    void SetModified(bool modified);
 
 public:
     /// associated container subfile identifier of page data
-    int		subfileid;
+    int subfileid;
 
     /// modified flag
-    bool	page_modified;
+    bool page_modified;
 
 public:
-
     /// Return the text to display in the notebook
-    virtual wxString	GetCaption() = 0;
+    virtual wxString GetCaption() = 0;
 
     /// Called when the notebook page is activated/focused.
-    virtual void	PageFocused() = 0;
+    virtual void PageFocused() = 0;
 
     /// Called when the notebook page is deactivated.
-    virtual void	PageBlurred() = 0;
+    virtual void PageBlurred() = 0;
 
     /// Called when the notebook page should save it's data.
-    virtual void	PageSaveData() = 0;
+    virtual void PageSaveData() = 0;
 
     /// Called when the notebook page is closed.
-    virtual void	PageClosed() = 0;
+    virtual void PageClosed() = 0;
 
     /// Clear buffer and load all data from a file
-    virtual size_t	ImportFile(wxFile& file) = 0;
+    virtual size_t ImportFile(wxFile& file) = 0;
 
     /// Write current data buffer to the output stream. Used by SubFile->Export.
-    virtual void	ExportBuffer(wxOutputStream& outstream) = 0;
+    virtual void ExportBuffer(wxOutputStream& outstream) = 0;
 
     /// Terminate a quick find sequence
-    virtual void        StopQuickFind() = 0;
+    virtual void StopQuickFind() = 0;
 
     /// Execute Quick-Goto for a given string or set an error message. The goto
     /// window will close if the function returns true.
-    virtual bool	DoQuickGoto(const wxString& gototext) = 0;
+    virtual bool DoQuickGoto(const wxString& gototext) = 0;
 
     DECLARE_ABSTRACT_CLASS(WNotePage);
 };
 
 struct DataInputStream : public Enctain::DataInput
 {
-    wxInputStream&	is;
+    wxInputStream& is;
 
     DataInputStream(wxInputStream& s)
-	: is(s)
-    {
-    }
+        : is(s)
+    { }
 
     virtual unsigned int Input(void* data, size_t maxlen)
     {
-	return is.Read(data, maxlen).LastRead();
+        return is.Read(data, maxlen).LastRead();
     }
 };
 
@@ -611,19 +607,20 @@ struct DataInputStream : public Enctain::DataInput
 class DataOutputStream : public Enctain::DataOutput
 {
 public:
-    class wxOutputStream&	outstream;
+    class wxOutputStream& outstream;
 
     /// Constructor using a reference to an already open stream.
     DataOutputStream(wxOutputStream& os)
-	: outstream(os)
-    {
-    }
+        : outstream(os)
+    { }
 
     /// Virtual callback function to save data.
     virtual bool Output(const void* data, size_t datalen)
     {
-	return outstream.Write(data, datalen).IsOk();
+        return outstream.Write(data, datalen).IsOk();
     }
 };
 
-#endif // WCRYPTOTE_H
+#endif // !CRYPTOTE_SRC_WCRYPTOTE_HEADER
+
+/******************************************************************************/

@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE LibEnctain v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * libenctain/initrng.cpp
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,10 +15,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
 #include "enctain.h"
 
@@ -58,3 +59,5 @@ unsigned int RNG::random_uint()
 }
 
 } // namespace Enctain
+
+/******************************************************************************/

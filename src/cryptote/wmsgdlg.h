@@ -1,9 +1,11 @@
-// $Id$
-// Based on wxWidgets-2.8.7/include/generic/msgdlgg.h
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/wmsgdlg.h
+ *
+ * Based on wxWidgets-2.8.7/include/generic/msgdlgg.h
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -15,13 +17,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
-#ifndef WMSGDLG_H
-#define WMSGDLG_H
+#ifndef CRYPTOTE_SRC_WMSGDLG_HEADER
+#define CRYPTOTE_SRC_WMSGDLG_HEADER
 
 #include <wx/wx.h>
 
@@ -33,26 +35,26 @@
 class WMessageDialog : public wxDialog
 {
 public:
+    WMessageDialog(wxWindow* parent, const wxString& message,
+                   const wxString& caption,
+                   long style = 0,
+                   int button0 = 0, int button1 = 0, int button2 = 0);
 
-    WMessageDialog(wxWindow *parent, const wxString& message,
-		   const wxString& caption,
-		   long style = 0,
-		   int button0 = 0, int button1 = 0, int button2 = 0);
+    wxButton * CreateButton(int id);
 
-    wxButton*	CreateButton(int id);
-
-    void	OnButton(wxCommandEvent& event);
-    void	OnButtonCancel(wxCommandEvent& event);
+    void OnButton(wxCommandEvent& event);
+    void OnButtonCancel(wxCommandEvent& event);
 
 private:
-
-    int		button0;
-    int		button1;
-    int		button2;
+    int button0;
+    int button1;
+    int button2;
 
     DECLARE_EVENT_TABLE()
 };
 
-extern void wxMessageDialogErrorOK(wxWindow *parent, const wxString& message);
+extern void wxMessageDialogErrorOK(wxWindow* parent, const wxString& message);
 
-#endif // WMSGDLG_H
+#endif // !CRYPTOTE_SRC_WMSGDLG_HEADER
+
+/******************************************************************************/

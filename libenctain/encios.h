@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE LibEnctain v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * libenctain/encios.h
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,13 +15,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
-#ifndef ENCTAIN_ENCIOS_H
-#define ENCTAIN_ENCIOS_H
+#ifndef CRYPTOTE_LIBENCTAIN_ENCIOS_HEADER
+#define CRYPTOTE_LIBENCTAIN_ENCIOS_HEADER
 
 #include <ostream>
 #include <istream>
@@ -36,19 +37,18 @@ struct DataOutputStream : public DataOutput
 {
 private:
     /// Output stream used.
-    std::ostream&	m_os;
+    std::ostream& m_os;
 
 public:
     /// Constructor is passed the output stream.
     DataOutputStream(std::ostream& os)
-	: m_os(os)
-    {
-    }
+        : m_os(os)
+    { }
 
     /// Virtual implementation writes out the data.
     virtual bool Output(const void* data, size_t datalen)
     {
-	return m_os.write((const char*)data, datalen).good();
+        return m_os.write((const char*)data, datalen).good();
     }
 };
 
@@ -60,22 +60,23 @@ struct DataInputStream : public DataInput
 {
 private:
     /// Input stream used.
-    std::istream&	m_is;
+    std::istream& m_is;
 
 public:
     /// Constructor is passed the input stream.
     DataInputStream(std::istream& is)
-	: m_is(is)
-    {
-    }
+        : m_is(is)
+    { }
 
     /// Virtual implementation attempts to read maxlen data.
     virtual unsigned int Input(void* data, size_t maxlen)
     {
-	return m_is.read((char*)data, maxlen).gcount();
+        return m_is.read((char*)data, maxlen).gcount();
     }
 };
 
 } // namespace Enctain
 
-#endif // ENCTAIN_ENCIOS_H
+#endif // !CRYPTOTE_LIBENCTAIN_ENCIOS_HEADER
+
+/******************************************************************************/

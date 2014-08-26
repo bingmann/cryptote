@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/hhelpfs.cpp
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,10 +15,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
 #include "hhelpfs.h"
 
@@ -25,12 +26,10 @@
 #include <wx/log.h>
 
 BuiltinHtmlHelpFSHandler::BuiltinHtmlHelpFSHandler()
-{
-}
+{ }
 
 BuiltinHtmlHelpFSHandler::~BuiltinHtmlHelpFSHandler()
-{
-}
+{ }
 
 bool
 BuiltinHtmlHelpFSHandler::CanOpen(const wxString& location)
@@ -47,7 +46,7 @@ BuiltinHtmlHelpFSHandler::OpenFile(wxFileSystem&, const wxString& location)
     wxString path = location.Mid(5);
     wxString anchor;
 
-    if (path.Find('#',true) != wxNOT_FOUND)
+    if (path.Find('#', true) != wxNOT_FOUND)
     {
         anchor = path.AfterLast('#');
         path = path.BeforeLast('#');
@@ -67,11 +66,11 @@ BuiltinHtmlHelpFSHandler::OpenFile(wxFileSystem&, const wxString& location)
                                                            filelist[i].uncompressed_size);
             }
 
-            wxMemoryInputStream* ms = new wxMemoryInputStream( filelist[i].decompressed_data.data(),
-                                                               filelist[i].decompressed_data.size() );
+            wxMemoryInputStream* ms = new wxMemoryInputStream(filelist[i].decompressed_data.data(),
+                                                              filelist[i].decompressed_data.size());
 
             return new wxFSFile(ms,
-                                location, 
+                                location,
                                 GetMimeTypeFromExt(path),
                                 anchor,
                                 wxDateTime::Now());
@@ -109,7 +108,7 @@ BuiltinHtmlHelpFSHandler::OpenFile(wxFileSystem&, const wxString& location)
 #include "help/de/html/cryptote_ueberverschluesselung.html.h"
 #include "help/de/html/cryptote_funktionsumfang.html.h"
 
-#define FILE(path,buffer)       { wxString(wxT(path)), buffer, sizeof(buffer), buffer##_uncompressed, std::string() }
+#define FILE(path, buffer)       { wxString(wxT(path)), buffer, sizeof(buffer), buffer ## _uncompressed, std::string() }
 
 struct BuiltinHtmlHelpFSHandler::BuiltinFile
 BuiltinHtmlHelpFSHandler::filelist[] =
@@ -145,3 +144,5 @@ BuiltinHtmlHelpFSHandler::filelist[] =
 
 unsigned int
 BuiltinHtmlHelpFSHandler::filelistsize = sizeof(filelist) / sizeof(filelist[0]);
+
+/******************************************************************************/

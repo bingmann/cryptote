@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/wbinpage.cpp
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,10 +15,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
 #include "wbinpage.h"
 #include "wfilelist.h"
@@ -36,7 +37,7 @@ WBinaryPage::WBinaryPage(class WCryptoTE* parent)
     listctrl->SetFocus();
 
     // *** Set up Sizer ***
- 
+
     wxBoxSizer* sizerMain = new wxBoxSizer(wxVERTICAL);
     sizerMain->Add(listctrl, 1, wxEXPAND, 0);
 
@@ -46,26 +47,24 @@ WBinaryPage::WBinaryPage(class WCryptoTE* parent)
 
 wxString WBinaryPage::GetCaption()
 {
-    return strSTL2WX( wmain->container.GetSubFileProperty(subfileid, "Name") );
+    return strSTL2WX(wmain->container.GetSubFileProperty(subfileid, "Name"));
 }
 
 struct DataOutputMemoryBuffer : public Enctain::DataOutput
 {
-    wxMemoryBuffer&	buffer;
+    wxMemoryBuffer& buffer;
 
     DataOutputMemoryBuffer(wxMemoryBuffer& out)
-	: buffer(out)
-    {
-    }
+        : buffer(out)
+    { }
 
     ~DataOutputMemoryBuffer()
-    {
-    }
+    { }
 
     virtual bool Output(const void* data, size_t datalen)
     {
-	buffer.AppendData(data, datalen);
-	return true;
+        buffer.AppendData(data, datalen);
+        return true;
     }
 };
 
@@ -77,12 +76,12 @@ bool WBinaryPage::LoadSubFile(unsigned int sfid)
     bindata.SetDataLen(0);
 
     try {
-	wmain->container.GetSubFileData(sfid, dataout);
+        wmain->container.GetSubFileData(sfid, dataout);
     }
-    catch(Enctain::Exception& e)
+    catch (Enctain::Exception& e)
     {
-	wxLogError(WCryptoTE::EnctainExceptionString(e));
-	return false;
+        wxLogError(WCryptoTE::EnctainExceptionString(e));
+        return false;
     }
 
     subfileid = sfid;
@@ -98,7 +97,7 @@ size_t WBinaryPage::ImportFile(wxFile& file)
     wxFileOffset filesize = file.Length();
 
     wmain->statusbar->ProgressStart(wxString(_("Importing")).mb_str(), Enctain::PI_GENERIC,
-				    0, filesize);
+                                    0, filesize);
 
     bindata.SetBufSize(filesize);
 
@@ -106,12 +105,12 @@ size_t WBinaryPage::ImportFile(wxFile& file)
 
     for (int i = 0; !file.Eof(); i++)
     {
-	size_t rb = file.Read(buffer, sizeof(buffer));
-	if (rb == 0) break;
+        size_t rb = file.Read(buffer, sizeof(buffer));
+        if (rb == 0) break;
 
-	bindata.AppendData(buffer, rb);
+        bindata.AppendData(buffer, rb);
 
-	wmain->statusbar->ProgressUpdate(bindata.GetDataLen());
+        wmain->statusbar->ProgressUpdate(bindata.GetDataLen());
     }
 
     listctrl->UpdateData();
@@ -136,45 +135,44 @@ void WBinaryPage::PageFocused()
 }
 
 void WBinaryPage::PageBlurred()
-{
-}
+{ }
 
 void WBinaryPage::PageSaveData()
 {
     if (needsave)
     {
-	try {
-	    wmain->container.SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
-	}
-	catch (Enctain::Exception& e)
-	{
-	    wxLogFatalError(WCryptoTE::EnctainExceptionString(e));
-	    return;
-	}
+        try {
+            wmain->container.SetSubFileData(subfileid, bindata.GetData(), bindata.GetDataLen());
+        }
+        catch (Enctain::Exception& e)
+        {
+            wxLogFatalError(WCryptoTE::EnctainExceptionString(e));
+            return;
+        }
 
-	wmain->container.SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
+        wmain->container.SetSubFileProperty(subfileid, "MTime", strTimeStampNow());
 
-	size_t savelen = wmain->container.GetSubFileStorageSize(subfileid);
+        size_t savelen = wmain->container.GetSubFileStorageSize(subfileid);
 
-	if (savelen != bindata.GetDataLen())
-	{
-	    UpdateStatusBar(
-		wxString::Format(_("Compressed %u bytes from buffer into %u bytes for encrypted storage."),
-				 bindata.GetDataLen(), savelen)
-		);
-	}
-	else
-	{
-	    UpdateStatusBar(
-		wxString::Format(_("Saving %u bytes from buffer for encrypted storage."),
-				 bindata.GetDataLen())
-		);
-	}
+        if (savelen != bindata.GetDataLen())
+        {
+            UpdateStatusBar(
+                wxString::Format(_("Compressed %u bytes from buffer into %u bytes for encrypted storage."),
+                                 bindata.GetDataLen(), savelen)
+                );
+        }
+        else
+        {
+            UpdateStatusBar(
+                wxString::Format(_("Saving %u bytes from buffer for encrypted storage."),
+                                 bindata.GetDataLen())
+                );
+        }
 
-	wmain->SetModified();
-	wmain->filelistpane->UpdateItem(subfileid);
+        wmain->SetModified();
+        wmain->filelistpane->UpdateItem(subfileid);
 
-	needsave = false;
+        needsave = false;
     }
 }
 
@@ -184,27 +182,26 @@ void WBinaryPage::PageClosed()
 }
 
 void WBinaryPage::StopQuickFind()
-{
-}
+{ }
 
 bool WBinaryPage::DoQuickGoto(const wxString& gototext)
 {
     long offset;
 
-    if (! gototext.ToLong(&offset) || offset <= 0 ) {
-	UpdateStatusBar(_("Yeah right. Enter a number smarty."));
-	return false;
+    if (! gototext.ToLong(&offset) || offset <= 0) {
+        UpdateStatusBar(_("Yeah right. Enter a number smarty."));
+        return false;
     }
 
     if (offset >= (long)bindata.GetDataLen()) {
-	UpdateStatusBar(_("Yeah right. Offset is beyond the end of the data."));
-	return false;
+        UpdateStatusBar(_("Yeah right. Offset is beyond the end of the data."));
+        return false;
     }
 
     listctrl->EnsureVisible(offset / 16);
     listctrl->SetItemState(offset / 16,
-			   wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
-			   wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
+                           wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
+                           wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
     UpdateStatusBar(wxString::Format(_("Jumped to offset %d."), offset));
 
     return true;
@@ -219,7 +216,7 @@ void WBinaryPage::OnListItemFocused(wxListEvent& WXUNUSED(event))
 BEGIN_EVENT_TABLE(WBinaryPage, WNotePage)
 
     EVT_LIST_ITEM_FOCUSED(myID_LISTCTRL, WBinaryPage::OnListItemFocused)
-    
+
 END_EVENT_TABLE();
 
 IMPLEMENT_ABSTRACT_CLASS(WBinaryPage, WNotePage);
@@ -235,7 +232,7 @@ WBinaryPageList::WBinaryPageList(class WBinaryPage* parent, wxWindowID id)
 
     unsigned int size = binpage.bindata.GetDataLen();
 
-    SetItemCount( (size / 16) + ((size % 16) != 0) );
+    SetItemCount((size / 16) + ((size % 16) != 0));
 
     InsertColumn(0, _T("Offset"), wxLIST_FORMAT_RIGHT, 32);
     InsertColumn(1, _T("Hexadecimal"), wxLIST_FORMAT_LEFT, 400);
@@ -255,7 +252,7 @@ WBinaryPageList::WBinaryPageList(class WBinaryPage* parent, wxWindowID id)
     dc.GetTextExtent(_T("0000000000000000  "), &textwidth, &textheight);
     SetColumnWidth(2, textwidth);
 
-    SetItemCount( (size / 16) + ((size % 16) != 0) );
+    SetItemCount((size / 16) + ((size % 16) != 0));
 }
 
 wxString WBinaryPageList::OnGetItemText(long item, long column) const
@@ -268,57 +265,57 @@ wxString WBinaryPageList::OnGetItemText(long item, long column) const
 
     if (column == 0)
     {
-	return wxString::Format(_T("%d"), offset);
+        return wxString::Format(_T("%d"), offset);
     }
     else if (column == 1)
     {
-	wxString hexdump;
+        wxString hexdump;
 
-	for(unsigned int hi = 0; hi < 16 && offset + hi < binsize; ++hi)
-	{
-	    if (hexdump.size()) hexdump += _T(" ");
-	    if (hi == 8) hexdump += _T(" ");
+        for (unsigned int hi = 0; hi < 16 && offset + hi < binsize; ++hi)
+        {
+            if (hexdump.size()) hexdump += _T(" ");
+            if (hi == 8) hexdump += _T(" ");
 
-	    hexdump += wxString::Format(_T("%02X"), (unsigned char)(dataoff[hi]));
-	}
+            hexdump += wxString::Format(_T("%02X"), (unsigned char)(dataoff[hi]));
+        }
 
-	return hexdump;
+        return hexdump;
     }
     else if (column == 2)
     {
-	char buffer[16];
-	unsigned int len = std::min<unsigned int>(16, binsize - offset);
+        char buffer[16];
+        unsigned int len = std::min<unsigned int>(16, binsize - offset);
 
-	static const unsigned char asciiok[256] = {
-	    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00 - 0x0F
-	    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x10 - 0x1F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x20 - 0x2F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x30 - 0x3F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x40 - 0x4F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x50 - 0x5F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x60 - 0x6F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, // 0x70 - 0x7F
-	    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x80 - 0x8F
-	    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x90 - 0x9F
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xA0 - 0xAF
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xB0 - 0xBF
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xC0 - 0xCF
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xD0 - 0xDF
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xE0 - 0xEF
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // 0xF0 - 0xFF
-	};
+        static const unsigned char asciiok[256] = {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00 - 0x0F
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x10 - 0x1F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x20 - 0x2F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x30 - 0x3F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x40 - 0x4F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x50 - 0x5F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x60 - 0x6F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, // 0x70 - 0x7F
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x80 - 0x8F
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x90 - 0x9F
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xA0 - 0xAF
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xB0 - 0xBF
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xC0 - 0xCF
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xD0 - 0xDF
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0xE0 - 0xEF
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // 0xF0 - 0xFF
+        };
 
-	for(unsigned int hi = 0; hi < 16 && offset + hi < binsize; ++hi)
-	{
-	    char c = dataoff[hi];
+        for (unsigned int hi = 0; hi < 16 && offset + hi < binsize; ++hi)
+        {
+            char c = dataoff[hi];
 
-	    if ( asciiok[(unsigned char)c] )
-		buffer[hi] = c;
-	    else
-		buffer[hi] = '.';
-	}
+            if (asciiok[(unsigned char)c])
+                buffer[hi] = c;
+            else
+                buffer[hi] = '.';
+        }
 
-	return wxString(buffer, wxConvISO8859_1, len);
+        return wxString(buffer, wxConvISO8859_1, len);
     }
     return _T("Error");
 }
@@ -327,5 +324,7 @@ void WBinaryPageList::UpdateData()
 {
     unsigned int size = binpage.bindata.GetDataLen();
 
-    SetItemCount( (size / 16) + ((size % 16) != 0) );
+    SetItemCount((size / 16) + ((size % 16) != 0));
 }
+
+/******************************************************************************/

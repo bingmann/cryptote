@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/hhelpfs.h
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,13 +15,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
-#ifndef HHELPFS_H
-#define HHELPFS_H
+#ifndef CRYPTOTE_SRC_HHELPFS_HEADER
+#define CRYPTOTE_SRC_HHELPFS_HEADER
 
 #include <wx/filesys.h>
 #include <string>
@@ -42,28 +43,29 @@ public:
     virtual bool CanOpen(const wxString& location);
 
     /// Tries to open the file specified.
-    virtual wxFSFile* OpenFile(wxFileSystem& fs, const wxString& location);
+    virtual wxFSFile * OpenFile(wxFileSystem& fs, const wxString& location);
 
 protected:
-
     struct BuiltinFile
     {
-        const wxString  path;
+        const wxString path;
         const unsigned char* compressed_data;
-        unsigned int    compressed_size;
-        unsigned int    uncompressed_size;
-        std::string     decompressed_data;
+        unsigned int compressed_size;
+        unsigned int uncompressed_size;
+        std::string decompressed_data;
     };
 
-    static struct BuiltinFile   filelist[];
-    static unsigned int         filelistsize;
+    static struct BuiltinFile filelist[];
+    static unsigned int filelistsize;
 
 private:
     /// No copy construction allowed.
     BuiltinHtmlHelpFSHandler(const BuiltinHtmlHelpFSHandler&);
-    
+
     /// No assignment allowed.
-    BuiltinHtmlHelpFSHandler& operator=(const BuiltinHtmlHelpFSHandler&);
+    BuiltinHtmlHelpFSHandler& operator = (const BuiltinHtmlHelpFSHandler&);
 };
 
-#endif // HHELPFS_H
+#endif // !CRYPTOTE_SRC_HHELPFS_HEADER
+
+/******************************************************************************/

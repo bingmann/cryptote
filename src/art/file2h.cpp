@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * Part of CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/art/file2h.cpp
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,10 +15,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
 #include <stdlib.h>
 #include <string.h>
@@ -32,13 +33,13 @@ void fixfilename(std::string& str)
     // remove path
     std::string::size_type pos = str.find_last_of('/');
     if (pos != std::string::npos) {
-	str.erase(0, pos+1);
+        str.erase(0, pos + 1);
     }
 
     // replace characters illegal in C identifiers
     for (std::string::iterator ci = str.begin(); ci != str.end(); ++ci)
     {
-	if (!isalnum(*ci)) *ci = '_';
+        if (!isalnum(*ci)) *ci = '_';
     }
 }
 
@@ -57,8 +58,8 @@ std::string compress_string(const std::string& str,
     memset(&zs, 0, sizeof(zs));
 
     if (deflateInit(&zs, compressionlevel) != Z_OK) {
-	std::cerr << "deflateInit failed while compressing.\n";
-	exit(0);
+        std::cerr << "deflateInit failed while compressing.\n";
+        exit(0);
     }
 
     zs.next_in = (Bytef*)str.data();
@@ -84,8 +85,8 @@ std::string compress_string(const std::string& str,
     deflateEnd(&zs);
 
     if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
-	std::cerr << "Exception during zlib compression: (" << ret << ") " << zs.msg << "\n";
-	exit(0);
+        std::cerr << "Exception during zlib compression: (" << ret << ") " << zs.msg << "\n";
+        exit(0);
     }
 
     return outstring;
@@ -93,94 +94,119 @@ std::string compress_string(const std::string& str,
 
 int main(int argc, char* argv[])
 {
-    std::cout << "/* $" << "Id$ */\n";
-    std::cout << "/* Automatically generated file dump */\n";
-    std::cout << "\n";
+    std::cout << "/*******************************************************************************\n"
+              << " * src/art/file2h.cpp\n"
+              << " *\n"
+              << " * Automatically generated file dump\n"
+              << " *\n"
+              << " * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote\n"
+              << " *******************************************************************************\n"
+              << " * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>\n"
+              << " *\n"
+              << " * This program is free software; you can redistribute it and/or modify it\n"
+              << " * under the terms of the GNU General Public License as published by the Free\n"
+              << " * Software Foundation; either version 2 of the License, or (at your option)\n"
+              << " * any later version.\n"
+              << " *\n"
+              << " * This program is distributed in the hope that it will be useful, but WITHOUT\n"
+              << " * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or\n"
+              << " * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for\n"
+              << " * more details.\n"
+              << " *\n"
+              << " * You should have received a copy of the GNU General Public License along with\n"
+              << " * this program; if not, write to the Free Software Foundation, Inc., 59 Temple\n"
+              << " * Place, Suite 330, Boston, MA 02111-1307 USA\n"
+              << " ******************************************************************************/\n"
+              << "\n";
 
     std::string prefix;
     bool compress = false;
 
-    for(int ai = 1; ai < argc; ++ai)
+    for (int ai = 1; ai < argc; ++ai)
     {
-	if (strcmp(argv[ai], "-p") == 0 && ai+1 < argc)
-	{
-	    prefix = argv[++ai];
-	    continue;
-	}
-	if (strcmp(argv[ai], "-c") == 0)
-	{
-	    compress = true;
-	    continue;
-	}
+        if (strcmp(argv[ai], "-p") == 0 && ai + 1 < argc)
+        {
+            prefix = argv[++ai];
+            continue;
+        }
+        if (strcmp(argv[ai], "-c") == 0)
+        {
+            compress = true;
+            continue;
+        }
 
-	std::cerr << "Reading " << argv[ai] << "\n";
+        std::cerr << "Reading " << argv[ai] << "\n";
 
-	// open file path
-	std::ifstream filestream(argv[ai], std::ios::in | std::ios::binary);
-	if (!filestream.good()) {
-	    std::cerr << "Could not open " << argv[ai] << "\n";
-	    return 0;
-	}
+        // open file path
+        std::ifstream filestream(argv[ai], std::ios::in | std::ios::binary);
+        if (!filestream.good()) {
+            std::cerr << "Could not open " << argv[ai] << "\n";
+            return 0;
+        }
 
-	// read complete data file
-	std::string filedata;
-	char fileindata[4096];
-	do {
-	    filestream.read(fileindata, sizeof(fileindata));
-	    filedata.append(fileindata, filestream.gcount());
-	} while(filestream.good());
+        // read complete data file
+        std::string filedata;
+        char fileindata[4096];
+        do {
+            filestream.read(fileindata, sizeof(fileindata));
+            filedata.append(fileindata, filestream.gcount());
+        } while (filestream.good());
 
-	unsigned int filesize = filedata.size();
+        unsigned int filesize = filedata.size();
 
-	// compress if required
-	if (compress) {
-	    filedata = compress_string(filedata);
-	    std::cout << "/* compressed data dump of " << argv[ai] << " */\n\n";
-	}
-	else {
-	    std::cout << "/* data dump of " << argv[ai] << " */\n\n";
-	}
+        // compress if required
+        if (compress) {
+            filedata = compress_string(filedata);
+            std::cout << "/* compressed data dump of " << argv[ai] << " */\n\n";
+        }
+        else {
+            std::cout << "/* data dump of " << argv[ai] << " */\n\n";
+        }
 
-	// output data char array
-	std::string filename = prefix + argv[ai];
-	fixfilename(filename);
-	
-	std::cout << "static const unsigned char " << filename
-		  << "[" << std::dec << filedata.size() << "] = {\n";
+        // output data char array
+        std::string filename = prefix + argv[ai];
+        fixfilename(filename);
 
-	static const int charsperline = 16;
+        std::cout << "static const unsigned char " << filename
+                  << "[" << std::dec << filedata.size() << "] = {\n";
 
-	for(unsigned int ci = 0; ci < filedata.size(); ++ci)
-	{
-	    if (ci % charsperline == 0) {
-		//std::cout << "    ";
-	    }
+        static const int charsperline = 16;
 
-	    unsigned char c = filedata[ci];
+        for (unsigned int ci = 0; ci < filedata.size(); ++ci)
+        {
+            if (ci % charsperline == 0) {
+                //std::cout << "    ";
+            }
 
-	    switch(c)
-	    {
-	    default:
-		std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') << (unsigned int)c;
-		break;
-	    }
+            unsigned char c = filedata[ci];
 
-	    if (ci+1 < filedata.size()) {
-		std::cout << ",";
+            switch (c)
+            {
+            default:
+                std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') << (unsigned int)c;
+                break;
+            }
 
-		if (ci % charsperline == charsperline-1) {
-		    std::cout << "\n";
-		}
-	    }
-	}
+            if (ci + 1 < filedata.size()) {
+                std::cout << ",";
 
-	std::cout << "\n};\n";
+                if (ci % charsperline == charsperline - 1) {
+                    std::cout << "\n";
+                }
+            }
+        }
 
-	if (compress) {
-	    std::cout << "static const unsigned int " << filename
-		      << "_uncompressed = " << std::dec << filesize << ";\n";
-	}
+        std::cout << "\n};\n";
 
-	std::cout << "\n";
+        if (compress) {
+            std::cout << "static const unsigned int " << filename
+                      << "_uncompressed = " << std::dec << filesize << ";\n";
+        }
+
+        std::cout << "\n";
     }
+
+    std::cout << "/******************************************************************************/\n";
 }
+
+/******************************************************************************/

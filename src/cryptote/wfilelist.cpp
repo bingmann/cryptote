@@ -1,8 +1,9 @@
-// $Id$
-
-/*
- * CryptoTE v0.0.0
- * Copyright (C) 2008-2009 Timo Bingmann
+/*******************************************************************************
+ * src/cryptote/wfilelist.cpp
+ *
+ * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+ *******************************************************************************
+ * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,10 +15,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ ******************************************************************************/
 
 #include "wfilelist.h"
 #include "wcryptote.h"
@@ -36,14 +37,14 @@ WFileList::WFileList(class WCryptoTE* parent)
       wmain(parent)
 {
     metasettings.show_filename
-	= metasettings.show_size
-	= metasettings.show_compressed
-	= metasettings.show_compression
-	= metasettings.show_encryption
-	= metasettings.show_mtime
-	= metasettings.show_ctime
-	= metasettings.show_author
-	= metasettings.show_subject = 50;
+        = metasettings.show_size
+              = metasettings.show_compressed
+                    = metasettings.show_compression
+                          = metasettings.show_encryption
+                                = metasettings.show_mtime
+                                      = metasettings.show_ctime
+                                            = metasettings.show_author
+                                                  = metasettings.show_subject = 50;
 
     UpdateDisplayMode(0);
 
@@ -58,21 +59,21 @@ WFileList::WFileList(class WCryptoTE* parent)
 void WFileList::BuildImageList()
 {
     {
-	wxImageList* imagelist = new wxImageList(16, 16);
-	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_BINARY) );
-	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_TEXT) );
-	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_IMAGE) );
+        wxImageList* imagelist = new wxImageList(16, 16);
+        imagelist->Add(BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_BINARY));
+        imagelist->Add(BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_TEXT));
+        imagelist->Add(BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_IMAGE));
 
-	AssignImageList(imagelist, wxIMAGE_LIST_SMALL);
+        AssignImageList(imagelist, wxIMAGE_LIST_SMALL);
     }
 
     {
-	wxImageList* imagelist = new wxImageList(32, 32);
-	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_BINARY_LARGE) );
-	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_TEXT_LARGE) );
-	imagelist->Add( BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_IMAGE_LARGE) );
+        wxImageList* imagelist = new wxImageList(32, 32);
+        imagelist->Add(BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_BINARY_LARGE));
+        imagelist->Add(BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_TEXT_LARGE));
+        imagelist->Add(BitmapCatalog::GetFileTypeBitmap(myID_FILETYPE_IMAGE_LARGE));
 
-	AssignImageList(imagelist, wxIMAGE_LIST_NORMAL);
+        AssignImageList(imagelist, wxIMAGE_LIST_NORMAL);
     }
 }
 
@@ -82,70 +83,70 @@ void WFileList::UpdateItemColumns(unsigned int fi)
 
     if (displaymode == 2)
     {
-	static const wxString choiceCompression_choices[] = {
-	    _("None"), _("ZLib"), _("BZ2")
-	};
+        static const wxString choiceCompression_choices[] = {
+            _("None"), _("ZLib"), _("BZ2")
+        };
 
-	static const wxString choiceEncryption_choices[] = {
-	    _("None"), _("Serpent")
-	};
+        static const wxString choiceEncryption_choices[] = {
+            _("None"), _("Serpent")
+        };
 
-	int col = 0;
+        int col = 0;
 
-	if (metasettings.show_filename >= 0) {
-	    SetItem(fi, col++, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")));
-	}
+        if (metasettings.show_filename >= 0) {
+            SetItem(fi, col++, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")));
+        }
 
-	if (metasettings.show_size >= 0) {
-	    SetItem(fi, col++, wxString::Format(_T("%u"), cnt.GetSubFileSize(fi)));
-	}
+        if (metasettings.show_size >= 0) {
+            SetItem(fi, col++, wxString::Format(_T("%u"), cnt.GetSubFileSize(fi)));
+        }
 
-	if (metasettings.show_compressed >= 0) {
-	    SetItem(fi, col++, wxString::Format(_T("%u"), cnt.GetSubFileStorageSize(fi)));
-	}
+        if (metasettings.show_compressed >= 0) {
+            SetItem(fi, col++, wxString::Format(_T("%u"), cnt.GetSubFileStorageSize(fi)));
+        }
 
-	if (metasettings.show_compression >= 0) {
-	    unsigned int comp = cnt.GetSubFileCompression(fi);
-	    if (comp < sizeof(choiceCompression_choices))
-		SetItem(fi, col++, choiceCompression_choices[comp]);
-	    else
-		SetItem(fi, col++, _("<unknown>") );
-	}
+        if (metasettings.show_compression >= 0) {
+            unsigned int comp = cnt.GetSubFileCompression(fi);
+            if (comp < sizeof(choiceCompression_choices))
+                SetItem(fi, col++, choiceCompression_choices[comp]);
+            else
+                SetItem(fi, col++, _("<unknown>"));
+        }
 
-	if (metasettings.show_encryption >= 0) {
-	    unsigned int encr = cnt.GetSubFileEncryption(fi);
-	    if (encr < sizeof(choiceEncryption_choices))
-		SetItem(fi, col++, choiceEncryption_choices[encr]);
-	    else
-		SetItem(fi, col++, _("<unknown>") );
-	}
+        if (metasettings.show_encryption >= 0) {
+            unsigned int encr = cnt.GetSubFileEncryption(fi);
+            if (encr < sizeof(choiceEncryption_choices))
+                SetItem(fi, col++, choiceEncryption_choices[encr]);
+            else
+                SetItem(fi, col++, _("<unknown>"));
+        }
 
-	if (metasettings.show_mtime >= 0) {
-	    std::string timestr = cnt.GetSubFileProperty(fi, "MTime");
-	    if (timestr.size() == sizeof(time_t)) {
-		wxDateTime ctime (*(time_t*)timestr.data());
-		SetItem(fi, col++, ctime.Format(_("%c")) );
-	    }
-	}
+        if (metasettings.show_mtime >= 0) {
+            std::string timestr = cnt.GetSubFileProperty(fi, "MTime");
+            if (timestr.size() == sizeof(time_t)) {
+                wxDateTime ctime(*(time_t*)timestr.data());
+                SetItem(fi, col++, ctime.Format(_("%c")));
+            }
+        }
 
-	if (metasettings.show_ctime >= 0) {
-	    std::string timestr = cnt.GetSubFileProperty(fi, "CTime");
-	    if (timestr.size() == sizeof(time_t)) {
-		wxDateTime ctime (*(time_t*)timestr.data());
-		SetItem(fi, col++, ctime.Format(_("%c")) );
-	    }
-	}
+        if (metasettings.show_ctime >= 0) {
+            std::string timestr = cnt.GetSubFileProperty(fi, "CTime");
+            if (timestr.size() == sizeof(time_t)) {
+                wxDateTime ctime(*(time_t*)timestr.data());
+                SetItem(fi, col++, ctime.Format(_("%c")));
+            }
+        }
 
-	if (metasettings.show_author >= 0) {
-	    SetItem(fi, col++, strSTL2WX(cnt.GetSubFileProperty(fi, "Author")));
-	}
-	if (metasettings.show_subject >= 0) {
-	    SetItem(fi, col++, strSTL2WX(cnt.GetSubFileProperty(fi, "Subject")));
-	}
+        if (metasettings.show_author >= 0) {
+            SetItem(fi, col++, strSTL2WX(cnt.GetSubFileProperty(fi, "Author")));
+        }
+        if (metasettings.show_subject >= 0) {
+            SetItem(fi, col++, strSTL2WX(cnt.GetSubFileProperty(fi, "Subject")));
+        }
     }
     else
     {
-	SetItem(fi, 0, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")));
+        SetItem(fi, 0, strSTL2WX(cnt.GetSubFileProperty(fi, "Name")));
     }
 }
 
@@ -155,17 +156,17 @@ void WFileList::ResetItems()
 
     Enctain::Container cnt = wmain->container;
 
-    for(unsigned int fi = 0; fi < cnt.CountSubFile(); ++fi)
+    for (unsigned int fi = 0; fi < cnt.CountSubFile(); ++fi)
     {
-	const std::string& filetype = cnt.GetSubFileProperty(fi, "Filetype");
-	int filetypeimage = 0;
-	if (filetype == "text") {
-	    filetypeimage = 1;
-	}
+        const std::string& filetype = cnt.GetSubFileProperty(fi, "Filetype");
+        int filetypeimage = 0;
+        if (filetype == "text") {
+            filetypeimage = 1;
+        }
 
-	InsertItem(fi, filetypeimage);
+        InsertItem(fi, filetypeimage);
 
-	UpdateItemColumns(fi);
+        UpdateItemColumns(fi);
     }
 }
 
@@ -176,7 +177,7 @@ void WFileList::UpdateItem(unsigned int sfid)
     const std::string& filetype = cnt.GetSubFileProperty(sfid, "Filetype");
     int filetypeimage = 0;
     if (filetype == "text") {
-	filetypeimage = 1;
+        filetypeimage = 1;
     }
 
     SetItemImage(sfid, filetypeimage);
@@ -188,57 +189,57 @@ void WFileList::UpdateItem(unsigned int sfid)
 
 void WFileList::UpdateDisplayMode(int newmode)
 {
-    switch(newmode)
+    switch (newmode)
     {
     case 0:
-	SetWindowStyleFlag(wxLC_ICON | wxLC_EDIT_LABELS);
-	displaymode = 0;
-	break;
+        SetWindowStyleFlag(wxLC_ICON | wxLC_EDIT_LABELS);
+        displaymode = 0;
+        break;
 
     case 1:
-	SetWindowStyleFlag(wxLC_LIST | wxLC_EDIT_LABELS);
-	displaymode = 1;
-	break;
+        SetWindowStyleFlag(wxLC_LIST | wxLC_EDIT_LABELS);
+        displaymode = 1;
+        break;
 
     case 2: {
-	SetWindowStyleFlag(wxLC_REPORT | wxLC_EDIT_LABELS);
-	displaymode = 2;
+        SetWindowStyleFlag(wxLC_REPORT | wxLC_EDIT_LABELS);
+        displaymode = 2;
 
-	int col = 0;
+        int col = 0;
 
-	if (metasettings.show_filename >= 0) {
-	    InsertColumn(col++, _("Filename"), wxLIST_FORMAT_LEFT, metasettings.show_filename);
-	}
-	if (metasettings.show_size >= 0) {
-	    InsertColumn(col++, _("Size"), wxLIST_FORMAT_RIGHT, metasettings.show_size);
-	}
-	if (metasettings.show_compressed >= 0) {
-	    InsertColumn(col++, _("Compressed"), wxLIST_FORMAT_RIGHT, metasettings.show_compressed);
-	}
-	if (metasettings.show_compression >= 0) {
-	    InsertColumn(col++, _("Compression"), wxLIST_FORMAT_LEFT, metasettings.show_compression);
-	}
-	if (metasettings.show_encryption >= 0) {
-	    InsertColumn(col++, _("Encryption"), wxLIST_FORMAT_LEFT, metasettings.show_encryption);
-	}
-	if (metasettings.show_mtime >= 0) {
-	    InsertColumn(col++, _("MTime"), wxLIST_FORMAT_LEFT, metasettings.show_mtime);
-	}
-	if (metasettings.show_ctime >= 0) {
-	    InsertColumn(col++, _("CTime"), wxLIST_FORMAT_LEFT, metasettings.show_ctime);
-	}
-	if (metasettings.show_author >= 0) {
-	    InsertColumn(col++, _("Author"), wxLIST_FORMAT_LEFT, metasettings.show_author);
-	}
-	if (metasettings.show_subject >= 0) {
-	    InsertColumn(col++, _("Subject"), wxLIST_FORMAT_LEFT, metasettings.show_subject);
-	}
+        if (metasettings.show_filename >= 0) {
+            InsertColumn(col++, _("Filename"), wxLIST_FORMAT_LEFT, metasettings.show_filename);
+        }
+        if (metasettings.show_size >= 0) {
+            InsertColumn(col++, _("Size"), wxLIST_FORMAT_RIGHT, metasettings.show_size);
+        }
+        if (metasettings.show_compressed >= 0) {
+            InsertColumn(col++, _("Compressed"), wxLIST_FORMAT_RIGHT, metasettings.show_compressed);
+        }
+        if (metasettings.show_compression >= 0) {
+            InsertColumn(col++, _("Compression"), wxLIST_FORMAT_LEFT, metasettings.show_compression);
+        }
+        if (metasettings.show_encryption >= 0) {
+            InsertColumn(col++, _("Encryption"), wxLIST_FORMAT_LEFT, metasettings.show_encryption);
+        }
+        if (metasettings.show_mtime >= 0) {
+            InsertColumn(col++, _("MTime"), wxLIST_FORMAT_LEFT, metasettings.show_mtime);
+        }
+        if (metasettings.show_ctime >= 0) {
+            InsertColumn(col++, _("CTime"), wxLIST_FORMAT_LEFT, metasettings.show_ctime);
+        }
+        if (metasettings.show_author >= 0) {
+            InsertColumn(col++, _("Author"), wxLIST_FORMAT_LEFT, metasettings.show_author);
+        }
+        if (metasettings.show_subject >= 0) {
+            InsertColumn(col++, _("Subject"), wxLIST_FORMAT_LEFT, metasettings.show_subject);
+        }
     }
-	break;
+    break;
 
     default:
-	displaymode = newmode;
-	break;
+        displaymode = newmode;
+        break;
     }
 }
 
@@ -247,36 +248,35 @@ void WFileList::SaveProperties()
     Enctain::Container cnt = wmain->container;
 
     cnt.SetGlobalEncryptedProperty("FileListColumns",
-				   std::string((char*)&metasettings, sizeof(metasettings)));
+                                   std::string((char*)&metasettings, sizeof(metasettings)));
 
     cnt.SetGlobalEncryptedProperty("FileListDisplayMode",
-				   strWX2STL(wxString::Format(_T("%d"), displaymode)));
+                                   strWX2STL(wxString::Format(_T("%d"), displaymode)));
 }
 
 void WFileList::LoadProperties()
 {
     Enctain::Container cnt = wmain->container;
 
-    std::string strmetasettings = cnt.GetGlobalEncryptedProperty("FileListColumns"); 
+    std::string strmetasettings = cnt.GetGlobalEncryptedProperty("FileListColumns");
     if (strmetasettings.size() == sizeof(metasettings))
     {
-	memcpy(&metasettings, strmetasettings.data(), sizeof(metasettings));
+        memcpy(&metasettings, strmetasettings.data(), sizeof(metasettings));
     }
 
     wxString strdisplaymode = strSTL2WX(cnt.GetGlobalEncryptedProperty("FileListDisplayMode"));
     unsigned long newdisplaymode;
     if (strdisplaymode.ToULong(&newdisplaymode))
-	UpdateDisplayMode(newdisplaymode);
+        UpdateDisplayMode(newdisplaymode);
     else
-	UpdateDisplayMode(0);
-
+        UpdateDisplayMode(0);
 }
 
-static inline wxMenuItem* appendMenuItem(class wxMenu* parentMenu, int id,
-					 const wxString& text, const wxString& helpString)
+static inline wxMenuItem * appendMenuItem(class wxMenu* parentMenu, int id,
+                                          const wxString& text, const wxString& helpString)
 {
     wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
-    mi->SetBitmap( BitmapCatalog::GetMenuBitmap(id) );
+    mi->SetBitmap(BitmapCatalog::GetMenuBitmap(id));
     parentMenu->Append(mi);
     return mi;
 }
@@ -286,52 +286,52 @@ void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
     wxMenu* menu = new wxMenu;
 
     appendMenuItem(menu, myID_MENU_SUBFILE_OPEN,
-		   _("&Open SubFile"),
-		   _("Open subfile in editor."));
+                   _("&Open SubFile"),
+                   _("Open subfile in editor."));
 
     appendMenuItem(menu, myID_MENU_SUBFILE_NEW,
-		   _("&Add New SubFile"),
-		   _("Add new text subfile to container and open it in the editor."));
+                   _("&Add New SubFile"),
+                   _("Add new text subfile to container and open it in the editor."));
 
     appendMenuItem(menu, myID_MENU_SUBFILE_IMPORT,
-		   _("&Import New SubFile"),
-		   _("Import any file from the disk into the container."));
+                   _("&Import New SubFile"),
+                   _("Import any file from the disk into the container."));
 
     appendMenuItem(menu, myID_MENU_SUBFILE_EXPORT,
-		   _("&Export SubFiles"),
-		   _("Export subfiles from encrypted container to disk."));
+                   _("&Export SubFiles"),
+                   _("Export subfiles from encrypted container to disk."));
 
     appendMenuItem(menu, myID_MENU_SUBFILE_DELETE,
-		   _("&Delete SubFiles"),
-		   _("Delete selected subfiles from encrypted container."));
+                   _("&Delete SubFiles"),
+                   _("Delete selected subfiles from encrypted container."));
 
     menu->AppendSeparator();
 
     wxMenu* viewmenu = new wxMenu;
 
     appendMenuItem(viewmenu, myID_MENU_VIEW_BIGICONS,
-		   _("Big &Icons"),
-		   wxEmptyString);
+                   _("Big &Icons"),
+                   wxEmptyString);
 
     appendMenuItem(viewmenu, myID_MENU_VIEW_LIST,
-		   _("&List"),
-		   wxEmptyString);
+                   _("&List"),
+                   wxEmptyString);
 
     appendMenuItem(viewmenu, myID_MENU_VIEW_REPORT,
-		   _("&Report"),	
-		   wxEmptyString);
+                   _("&Report"),
+                   wxEmptyString);
 
     menu->AppendSubMenu(viewmenu, _("&View"));
 
     menu->AppendSeparator();
 
     appendMenuItem(menu, myID_MENU_SUBFILE_RENAME,
-		   _("&Rename"),
-		   _("Rename selected subfile."));
+                   _("&Rename"),
+                   _("Rename selected subfile."));
 
     appendMenuItem(menu, myID_MENU_SUBFILE_PROPERTIES,
-		   _("&Properties"),
-		   _("Show metadata properties of selected subfile."));
+                   _("&Properties"),
+                   _("Show metadata properties of selected subfile."));
 
     // disable items not applicable
     int si = GetSelectedItemCount();
@@ -347,7 +347,7 @@ void WFileList::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
 
 void WFileList::OnItemActivated(wxListEvent& event)
 {
-    wmain->OpenSubFile( event.GetIndex() );
+    wmain->OpenSubFile(event.GetIndex());
 }
 
 void WFileList::OnColumnEndDrag(wxListEvent& event)
@@ -355,58 +355,58 @@ void WFileList::OnColumnEndDrag(wxListEvent& event)
     int dragcol = event.GetColumn();
 
     if (metasettings.show_filename >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_filename = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_filename = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_size >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_size = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_size = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_compressed >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_compressed = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_compressed = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_compression >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_compression = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_compression = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_encryption >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_encryption = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_encryption = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_mtime >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_mtime = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_mtime = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_ctime >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_ctime = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_ctime = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_author >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_author = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_author = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
     if (metasettings.show_subject >= 0) {
-	if (dragcol == 0)
-	    metasettings.show_subject = GetColumnWidth( event.GetColumn() );
+        if (dragcol == 0)
+            metasettings.show_subject = GetColumnWidth(event.GetColumn());
 
-	dragcol--;
+        dragcol--;
     }
 }
 
@@ -442,21 +442,21 @@ void WFileList::OnBeginLabelEdit(wxListEvent& WXUNUSED(event))
 
 void WFileList::OnEndLabelEdit(wxListEvent& event)
 {
-    wmain->container.SetSubFileProperty( event.GetIndex(), "Name", strWX2STL(event.GetLabel()) );
-    
-    wmain->UpdateSubFileCaption( event.GetIndex() );
+    wmain->container.SetSubFileProperty(event.GetIndex(), "Name", strWX2STL(event.GetLabel()));
+
+    wmain->UpdateSubFileCaption(event.GetIndex());
     wmain->SetModified();
 }
 
 void WFileList::OnMenuFileOpen(wxCommandEvent& WXUNUSED(event))
 {
     long item = -1;
-    while(1)
+    while (1)
     {
         item = GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
         if (item == -1) break;
 
-	wmain->OpenSubFile(item);
+        wmain->OpenSubFile(item);
     }
 }
 
@@ -464,77 +464,77 @@ void WFileList::OnMenuFileExport(wxCommandEvent& WXUNUSED(event))
 {
     if (GetSelectedItemCount() == 0)
     {
-	return;
+        return;
     }
     else if (GetSelectedItemCount() == 1)
     {
-	long sfid = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        long sfid = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 
-	wxString suggestname = strSTL2WX(wmain->container.GetSubFileProperty(sfid, "Name"));
+        wxString suggestname = strSTL2WX(wmain->container.GetSubFileProperty(sfid, "Name"));
 
-	wxFileDialog dlg(this,
-			 _("Save SubFile"), wxEmptyString, suggestname,
-			 _("Any file (*)|*"),
-			 wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+        wxFileDialog dlg(this,
+                         _("Save SubFile"), wxEmptyString, suggestname,
+                         _("Any file (*)|*"),
+                         wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-	if (dlg.ShowModal() != wxID_OK) return;
+        if (dlg.ShowModal() != wxID_OK) return;
 
-	wxFile outfile(dlg.GetPath(), wxFile::write);
-	if (!outfile.IsOpened()) return;
+        wxFile outfile(dlg.GetPath(), wxFile::write);
+        if (!outfile.IsOpened()) return;
 
-	{
-	    wxFileOutputStream outstream(outfile);
-	    wmain->ExportSubFile(sfid, outstream);
-	}
+        {
+            wxFileOutputStream outstream(outfile);
+            wmain->ExportSubFile(sfid, outstream);
+        }
 
-	wmain->UpdateStatusBar(wxString::Format(_("Wrote %u bytes from subfile \"%s\" to %s"),
-						(unsigned int)(outfile.Tell()),
-						suggestname.c_str(),
-						dlg.GetPath().c_str()));
+        wmain->UpdateStatusBar(wxString::Format(_("Wrote %u bytes from subfile \"%s\" to %s"),
+                                                (unsigned int)(outfile.Tell()),
+                                                suggestname.c_str(),
+                                                dlg.GetPath().c_str()));
     }
     else
     {
-	wxString dlgtitle = wxString::Format(_("Select directory to export %u files to."), GetSelectedItemCount());
-	wxDirDialog dlg(this, dlgtitle, wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+        wxString dlgtitle = wxString::Format(_("Select directory to export %u files to."), GetSelectedItemCount());
+        wxDirDialog dlg(this, dlgtitle, wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
-	if (dlg.ShowModal() != wxID_OK) return;
+        if (dlg.ShowModal() != wxID_OK) return;
 
-	int filesok = 0;
+        int filesok = 0;
 
-	long sfid = -1;
-	while(1)
-	{
-	    sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-	    if (sfid == -1) break;
+        long sfid = -1;
+        while (1)
+        {
+            sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+            if (sfid == -1) break;
 
-	    wxString name = strSTL2WX(wmain->container.GetSubFileProperty(sfid, "Name"));
+            wxString name = strSTL2WX(wmain->container.GetSubFileProperty(sfid, "Name"));
 
-	    wxFileName filename(dlg.GetPath(), name);
+            wxFileName filename(dlg.GetPath(), name);
 
-	    if (filename.FileExists())
-	    {
-		wxString overstr = wxString::Format(_("The export filename \"%s\" already exists.\nDo you wish to overwrite the existing file?"), filename.GetFullPath().c_str());
+            if (filename.FileExists())
+            {
+                wxString overstr = wxString::Format(_("The export filename \"%s\" already exists.\nDo you wish to overwrite the existing file?"), filename.GetFullPath().c_str());
 
-		wxMessageDialog overdlg(this, overstr, _("Overwrite existing file?"),
-					wxYES_NO | wxNO_DEFAULT);
-		
-		if (overdlg.ShowModal() == wxID_NO) continue;
-	    }
-	
-	    wxFile outfile(filename.GetFullPath(), wxFile::write);
-	    if (!outfile.IsOpened()) continue;
+                wxMessageDialog overdlg(this, overstr, _("Overwrite existing file?"),
+                                        wxYES_NO | wxNO_DEFAULT);
 
-	    {
-		wxFileOutputStream outstream(outfile);
-		wmain->ExportSubFile(sfid, outstream);
-	    }
+                if (overdlg.ShowModal() == wxID_NO) continue;
+            }
 
-	    filesok++;
-	}
+            wxFile outfile(filename.GetFullPath(), wxFile::write);
+            if (!outfile.IsOpened()) continue;
 
-	wmain->UpdateStatusBar(wxString::Format(wxPLURAL("Exported %u subfile to %s",
-							 "Exported %u subfiles to %s", filesok),
-						filesok, dlg.GetPath().c_str()));
+            {
+                wxFileOutputStream outstream(outfile);
+                wmain->ExportSubFile(sfid, outstream);
+            }
+
+            filesok++;
+        }
+
+        wmain->UpdateStatusBar(wxString::Format(wxPLURAL("Exported %u subfile to %s",
+                                                         "Exported %u subfiles to %s", filesok),
+                                                filesok, dlg.GetPath().c_str()));
     }
 }
 
@@ -543,12 +543,12 @@ void WFileList::OnMenuFileDelete(wxCommandEvent& WXUNUSED(event))
     std::vector<int> subfilelist;
 
     long sfid = -1;
-    while(1)
+    while (1)
     {
-	sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-	if (sfid == -1) break;
+        sfid = GetNextItem(sfid, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if (sfid == -1) break;
 
-	subfilelist.push_back(sfid);
+        subfilelist.push_back(sfid);
     }
 
     wxString surestr;
@@ -556,24 +556,24 @@ void WFileList::OnMenuFileDelete(wxCommandEvent& WXUNUSED(event))
     if (subfilelist.empty()) return;
     else if (subfilelist.size() == 1)
     {
-	wxString filelist = strSTL2WX( wmain->container.GetSubFileProperty(subfilelist[0], "Name") );
-	surestr = wxString::Format(_("Going to permanently delete \"%s\". This cannot be undone, are you sure?"), filelist.c_str());
+        wxString filelist = strSTL2WX(wmain->container.GetSubFileProperty(subfilelist[0], "Name"));
+        surestr = wxString::Format(_("Going to permanently delete \"%s\". This cannot be undone, are you sure?"), filelist.c_str());
     }
     else {
-	surestr = wxString::Format(_("Going to permanently delete %u files. This cannot be undone, are you sure?"), subfilelist.size());
+        surestr = wxString::Format(_("Going to permanently delete %u files. This cannot be undone, are you sure?"), subfilelist.size());
     }
 
     wxMessageDialog suredlg(this, surestr, _("Delete files?"),
-			    wxYES_NO | wxNO_DEFAULT);
+                            wxYES_NO | wxNO_DEFAULT);
 
     if (suredlg.ShowModal() != wxID_YES) return;
 
-    for(std::vector<int>::reverse_iterator sfi = subfilelist.rbegin();
-	sfi != subfilelist.rend(); ++sfi)
+    for (std::vector<int>::reverse_iterator sfi = subfilelist.rbegin();
+         sfi != subfilelist.rend(); ++sfi)
     {
-	wmain->DeleteSubFile(*sfi, false);
+        wmain->DeleteSubFile(*sfi, false);
     }
-    
+
     ResetItems();
 }
 
@@ -593,26 +593,26 @@ void WFileList::OnMenuFileProperties(wxCommandEvent& WXUNUSED(event))
     WFileProperties dlg(wmain, item);
     if (dlg.ShowModal() == wxID_OK)
     {
-	UpdateItem(item);
-	wmain->SetModified();
+        UpdateItem(item);
+        wmain->SetModified();
     }
 }
 
 void WFileList::OnMenuView(wxCommandEvent& event)
 {
-    switch(event.GetId())
+    switch (event.GetId())
     {
     case myID_MENU_VIEW_BIGICONS:
-	UpdateDisplayMode(0);
-	break;
+        UpdateDisplayMode(0);
+        break;
 
     case myID_MENU_VIEW_LIST:
-	UpdateDisplayMode(1);
-	break;
+        UpdateDisplayMode(1);
+        break;
 
     case myID_MENU_VIEW_REPORT:
-	UpdateDisplayMode(2);
-	break;
+        UpdateDisplayMode(2);
+        break;
     }
 
     ResetItems();
@@ -620,32 +620,32 @@ void WFileList::OnMenuView(wxCommandEvent& event)
 
 void WFileList::OnMenuShowColumn(wxCommandEvent& event)
 {
-    switch(event.GetId())
+    switch (event.GetId())
     {
     case myID_MENU_SHOW_COLUMN0 + 1:
-	metasettings.show_size = -metasettings.show_size;
-	break;
+        metasettings.show_size = -metasettings.show_size;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 2:
-	metasettings.show_compressed = -metasettings.show_compressed;
-	break;
+        metasettings.show_compressed = -metasettings.show_compressed;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 3:
-	metasettings.show_compression = -metasettings.show_compression;
-	break;
+        metasettings.show_compression = -metasettings.show_compression;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 4:
-	metasettings.show_encryption = -metasettings.show_encryption;
-	break;
+        metasettings.show_encryption = -metasettings.show_encryption;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 5:
-	metasettings.show_mtime = -metasettings.show_mtime;
-	break;
+        metasettings.show_mtime = -metasettings.show_mtime;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 6:
-	metasettings.show_ctime = -metasettings.show_ctime;
-	break;
+        metasettings.show_ctime = -metasettings.show_ctime;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 7:
-	metasettings.show_author = -metasettings.show_author;
-	break;
+        metasettings.show_author = -metasettings.show_author;
+        break;
     case myID_MENU_SHOW_COLUMN0 + 8:
-	metasettings.show_subject = -metasettings.show_subject;
-	break;
+        metasettings.show_subject = -metasettings.show_subject;
+        break;
     }
 
     UpdateDisplayMode(displaymode);
@@ -654,8 +654,7 @@ void WFileList::OnMenuShowColumn(wxCommandEvent& event)
 
 WFileListDropTarget::WFileListDropTarget(class WCryptoTE* _wmain)
     : wmain(_wmain)
-{
-}
+{ }
 
 bool WFileListDropTarget::OnDropFiles(wxCoord WXUNUSED(x), wxCoord WXUNUSED(y), const wxArrayString& filenames)
 {
@@ -675,19 +674,21 @@ BEGIN_EVENT_TABLE(WFileList, wxListCtrl)
 
     EVT_LIST_COL_RIGHT_CLICK(wxID_ANY, WFileList::OnColumnRightClick)
     EVT_LIST_COL_END_DRAG(wxID_ANY, WFileList::OnColumnEndDrag)
-    
+
     // Popup Menu Items
 
-    EVT_MENU(myID_MENU_SUBFILE_OPEN,		WFileList::OnMenuFileOpen)
-    EVT_MENU(myID_MENU_SUBFILE_EXPORT,		WFileList::OnMenuFileExport)
-    EVT_MENU(myID_MENU_SUBFILE_DELETE,		WFileList::OnMenuFileDelete)
-    EVT_MENU(myID_MENU_SUBFILE_RENAME,		WFileList::OnMenuFileRename)
-    EVT_MENU(myID_MENU_SUBFILE_PROPERTIES,	WFileList::OnMenuFileProperties)
+    EVT_MENU(myID_MENU_SUBFILE_OPEN, WFileList::OnMenuFileOpen)
+    EVT_MENU(myID_MENU_SUBFILE_EXPORT, WFileList::OnMenuFileExport)
+    EVT_MENU(myID_MENU_SUBFILE_DELETE, WFileList::OnMenuFileDelete)
+    EVT_MENU(myID_MENU_SUBFILE_RENAME, WFileList::OnMenuFileRename)
+    EVT_MENU(myID_MENU_SUBFILE_PROPERTIES, WFileList::OnMenuFileProperties)
 
-    EVT_MENU(myID_MENU_VIEW_BIGICONS,	WFileList::OnMenuView)
-    EVT_MENU(myID_MENU_VIEW_LIST,	WFileList::OnMenuView)
-    EVT_MENU(myID_MENU_VIEW_REPORT,	WFileList::OnMenuView)
+    EVT_MENU(myID_MENU_VIEW_BIGICONS, WFileList::OnMenuView)
+    EVT_MENU(myID_MENU_VIEW_LIST, WFileList::OnMenuView)
+    EVT_MENU(myID_MENU_VIEW_REPORT, WFileList::OnMenuView)
 
     EVT_MENU_RANGE(myID_MENU_SHOW_COLUMN0, myID_MENU_SHOW_COLUMN0 + 20, WFileList::OnMenuShowColumn)
 
 END_EVENT_TABLE()
+
+/******************************************************************************/
