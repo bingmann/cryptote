@@ -2181,7 +2181,7 @@ void WCryptoTE::OnMenuEditGeneric(wxCommandEvent& event)
 
     if (cpage && cpage->IsKindOf(CLASSINFO(WTextPage)))
     {
-        cpage->ProcessEvent(event);
+        cpage->GetEventHandler()->ProcessEvent(event);
     }
 }
 

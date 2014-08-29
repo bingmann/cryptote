@@ -239,54 +239,32 @@ bool wxSimpleImageListBox::Create(wxWindow *parent, wxWindowID id,
 wxSimpleImageListBox::~wxSimpleImageListBox()
 {
     wxASSERT(m_items.GetCount() == m_bitmaps.GetCount());
-    wxASSERT(m_items.GetCount() == m_clientData.GetCount());
 
     for (size_t i=0; i<m_bitmaps.GetCount(); i++)
 	if (m_bitmaps[i]) delete (wxBitmap*)m_bitmaps[i];
 
-    if (HasClientObjectData())
-    {
-        // clear the array of client data objects
-        for (size_t i=0; i<m_items.GetCount(); i++)
-            if (m_clientData[i]) delete DoGetItemClientObject(i);
-    }
-
     m_items.Clear();
     m_bitmaps.Clear();
-    m_clientData.Clear();
 }
 
 void wxSimpleImageListBox::Clear()
 {
     wxASSERT(m_items.GetCount() == m_bitmaps.GetCount());
-    wxASSERT(m_items.GetCount() == m_clientData.GetCount());
 
     for (size_t i=0; i<m_bitmaps.GetCount(); i++)
 	if (m_bitmaps[i]) delete (wxBitmap*)m_bitmaps[i];
 
-    if (HasClientObjectData())
-    {
-        // clear the array of client data objects
-        for (size_t i=0; i<m_items.GetCount(); i++)
-            if (m_clientData[i]) delete DoGetItemClientObject(i);
-    }
-
     m_items.Clear();
     m_bitmaps.Clear();
-    m_clientData.Clear();
     UpdateCount();
 }
 
 void wxSimpleImageListBox::Delete(unsigned int n)
 {
-    if (HasClientObjectData())
-	if (m_clientData[n]) delete DoGetItemClientObject(n);
-
     if (m_bitmaps[n]) delete (wxBitmap*)m_bitmaps[n];
 
     m_items.RemoveAt(n);
     m_bitmaps.RemoveAt(n);
-    m_clientData.RemoveAt(n);
     UpdateCount();
 }
 
@@ -296,7 +274,6 @@ void wxSimpleImageListBox::Append(const wxArrayString& strings)
     WX_APPEND_ARRAY(m_items, strings);
 
     m_bitmaps.Add(NULL, strings.GetCount());
-    m_clientData.Add(NULL, strings.GetCount());
 
     UpdateCount();
 }
@@ -305,7 +282,6 @@ int wxSimpleImageListBox::DoAppend(const wxString& item)
 {
     m_items.Add(item);
     m_bitmaps.Add(NULL);
-    m_clientData.Add(NULL);
     UpdateCount();
     return GetCount()-1;
 }
@@ -314,7 +290,6 @@ int wxSimpleImageListBox::DoInsert(const wxString& item, unsigned int pos)
 {
     m_items.Insert(item, pos);
     m_bitmaps.Insert(NULL, pos);
-    m_clientData.Insert(NULL, pos);
     UpdateCount();
     return pos;
 }
@@ -358,7 +333,6 @@ wxBitmap* wxSimpleImageListBox::GetBitmap(unsigned int n)
 void wxSimpleImageListBox::UpdateCount()
 {
     wxASSERT(m_items.GetCount() == m_bitmaps.GetCount());
-    wxASSERT(m_items.GetCount() == m_clientData.GetCount());
 
     wxImageListBox::SetItemCount(m_items.GetCount());
 

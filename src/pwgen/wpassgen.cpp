@@ -387,7 +387,7 @@ void WPassGen::SaveSettings(class wxConfigBase* cfg)
             cfg->SetPath(wxString::Format(_T("%d"), pi));
 
             cfg->Write(_T("name"), presetlist[pi].name);
-            cfg->Write(_T("type"), presetlist[pi].type);
+            cfg->Write(_T("type"), (int)presetlist[pi].type);
             cfg->Write(_T("skip_similar"), presetlist[pi].skip_similar);
             cfg->Write(_T("skip_swapped"), presetlist[pi].skip_swapped);
             cfg->Write(_T("extrachar"), presetlist[pi].extrachar);

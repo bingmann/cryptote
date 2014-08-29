@@ -423,7 +423,7 @@ void WTextPage::OnMenuEditDelete(wxCommandEvent& WXUNUSED(event))
         key.m_altDown = key.m_shiftDown = key.m_controlDown = 0;
         key.m_keyCode = WXK_DELETE;
         key.SetEventObject(editctrl);
-        editctrl->OnKeyDown(key);
+        editctrl->GetEventHandler()->ProcessEvent(key);
         return;
     }
 

@@ -580,7 +580,7 @@ public:
 
         wxChar* args[3];
         args[0] = wxGetenv(_T("EDITOR"));
-        args[1] = const_cast<wxChar*>(tempname.c_str());
+        args[1] = const_cast<wxChar*>((const wxChar*)tempname.c_str());
         args[2] = NULL;
 
         long retcode = wxExecute(args, wxEXEC_SYNC | wxEXEC_NOHIDE);

@@ -111,8 +111,7 @@ private:
 
 #define wxILB_DEFAULT_STYLE     wxBORDER_SUNKEN
 
-class wxSimpleImageListBox : public wxImageListBox,
-			     public wxItemContainer
+class wxSimpleImageListBox : public wxImageListBox
 {
 public:
     // wxListBox-compatible constructors
@@ -170,26 +169,23 @@ public:
     int GetSelection() const
     { return wxVListBox::GetSelection(); }
 
-    // see ctrlsub.h for more info about this:
-    wxCONTROL_ITEMCONTAINER_CLIENTDATAOBJECT_RECAST
-
 
     // accessing strings
     // -----------------
 
-    virtual unsigned int GetCount() const
+    unsigned int GetCount() const
     { return m_items.GetCount(); }
 
-    virtual wxString GetString(unsigned int n) const;
+    wxString GetString(unsigned int n) const;
 
     // override default unoptimized wxItemContainer::GetStrings() function
     wxArrayString GetStrings() const
     { return m_items; }
 
-    virtual void SetString(unsigned int n, const wxString& s);
+    void SetString(unsigned int n, const wxString& s);
 
-    virtual void Clear();
-    virtual void Delete(unsigned int n);
+    void Clear();
+    void Delete(unsigned int n);
 
     void	SetBitmap(unsigned int n, const wxBitmap& bmp);
     wxBitmap*	GetBitmap(unsigned int n);
@@ -198,28 +194,19 @@ public:
     void Append(const wxArrayString& strings);
 
     // since we override one Append() overload, we need to overload all others too
+
     int Append(const wxString& item)
-    { return wxItemContainer::Append(item); }
-    int Append(const wxString& item, void *clientData)
-    { return wxItemContainer::Append(item, clientData); }
-    int Append(const wxString& item, wxClientData *clientData)
-    { return wxItemContainer::Append(item, clientData); }
+    { return DoAppend(item); }
+
+    // check that the index is valid
+    inline bool IsValid(unsigned int n) const
+    { return n < GetCount(); }
 
 protected:
     // Abstract functions called by wxItemContainer
 
-    virtual int DoAppend(const wxString& item);
-    virtual int DoInsert(const wxString& item, unsigned int pos);
-
-    virtual void DoSetItemClientData(unsigned int n, void *clientData)
-    { m_clientData[n] = clientData; }
-    virtual void *DoGetItemClientData(unsigned int n) const
-    { return m_clientData[n]; }
-
-    virtual void DoSetItemClientObject(unsigned int n, wxClientData *clientData)
-    { m_clientData[n] = (void *)clientData; }
-    virtual wxClientData *DoGetItemClientObject(unsigned int n) const
-    { return (wxClientData *)m_clientData[n]; }
+    int DoAppend(const wxString& item);
+    int DoInsert(const wxString& item, unsigned int pos);
 
     // calls wxImageListBox::SetItemCount() and RefreshAll()
     void	UpdateCount();
@@ -242,7 +229,6 @@ protected:
 
     wxArrayString   m_items;		// Strings associated with items
     wxArrayPtrVoid  m_bitmaps;		// Images associated with items
-    wxArrayPtrVoid  m_clientData;	// User data associated
 
     // Note: For the benefit of old compilers (like gcc-2.8) this should
     // not be named m_clientdata as that clashes with the name of an
