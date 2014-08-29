@@ -1,7 +1,7 @@
 ################################################################################
 # src/Makefile.am
 #
-# Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+# Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
 #
 # Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
 #

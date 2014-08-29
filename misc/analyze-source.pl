@@ -2,7 +2,7 @@
 ################################################################################
 # misc/analyze-source.pl
 #
-# Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote
+# Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
 #
 # Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
 #
@@ -33,6 +33,8 @@ my $write_changes = 0;
 # function testing whether to uncrustify a path
 sub filter_uncrustify($) {
     my ($path) = @_;
+
+    return 0 if $path =~ m/\.rc$/;
 
     return 1;
 }
@@ -156,7 +158,7 @@ sub process_cpp {
     }
 
     expect($path, $i-1, $data[$i-1], " *\n");
-    expect($path, $i, $data[$i], " * Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote\n"); ++$i;
+    expect($path, $i, $data[$i], " * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote\n"); ++$i;
     expect($path, $i, $data[$i], " ".('*'x79)."\n"); ++$i;
 
     # read authors
@@ -292,7 +294,7 @@ sub process_pl_cmake {
     }
 
     expect($path, $i-1, $data[$i-1], "#\n");
-    expect($path, $i, $data[$i], "# Part of CryptoTE v0.0.0, see http://panthema.net/2007/cryptote\n"); ++$i;
+    expect($path, $i, $data[$i], "# Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote\n"); ++$i;
     expect($path, $i, $data[$i], "#\n"); ++$i;
 
     # read authors
@@ -374,7 +376,7 @@ foreach my $file (@filelist)
     elsif ($file =~ m!^src/(art|help|locale)/.*\.(h|cpp)$!) {
         process_cpp($file, "noguard");
     }
-    elsif ($file =~ /\.(h|cpp)$/) {
+    elsif ($file =~ /\.(h|cpp|rc)$/) {
         process_cpp($file);
     }
     elsif ($file =~ m!/Makefile(.in)?$!) {
