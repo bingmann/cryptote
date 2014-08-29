@@ -143,19 +143,27 @@ AC_LANG([C++])
 
 AM_OPTIONS_WXCONFIG
 
-AM_PATH_WXCONFIG(2.8.0, [wxWin=1], [wxWin=0], [aui,html,adv,net,core])
+AM_PATH_WXCONFIG(3.0.0, [wxWin3=1], [wxWin3=0], [aui,stc,html,adv,net,core])
 
-if test "$wxWin" != 1; then
-    AC_MSG_ERROR([
-	wxWidgets does not seem to be installed on your system.
+if test "$wxWin3" == 0; then
+        AC_MSG_WARN([Could not find wxWidgets >= 3.0.0, testing for 2.8.0.])
 
-        If you think wxWidgets >= 2.8.0 is installed,
-	please check that wx-config is in path, the directory
-	where wxWidgets libraries are installed (returned by
-	'wx-config --libs' command) is in LD_LIBRARY_PATH or
-	equivalent variable.
-    ])
+	AM_PATH_WXCONFIG(2.8.0, [wxWin=1], [wxWin=0], [aui,html,adv,net,core])
+
+	if test "$wxWin" == 0; then
+	    AC_MSG_ERROR([
+		wxWidgets does not seem to be installed on your system.
+
+	        If you think wxWidgets >= 2.8.0 is installed,
+		please check that wx-config is in path, the directory
+		where wxWidgets libraries are installed (returned by
+		'wx-config --libs' command) is in LD_LIBRARY_PATH or
+		equivalent variable.
+	    ])
+	fi
 fi
+
+AM_CONDITIONAL(HAVE_WXWIDGETS3, test "$wxWin3" != 0)
 
 # Check for tex2rtf utility from wxWidgets to regenerate help.
 

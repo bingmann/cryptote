@@ -20,7 +20,13 @@
 # Place, Suite 330, Boston, MA 02111-1307 USA
 ################################################################################
 
-SUBDIRS = libstc libenctain src desktop
+SUBDIRS = libenctain
+
+if !HAVE_WXWIDGETS3
+    SUBDIRS += libstc
+endif
+
+SUBDIRS += src desktop
 
 EXTRA_DIST = \
 	win32/cryptote-win32.iss.in \

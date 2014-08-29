@@ -102,6 +102,10 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = cryptote$(EXEEXT)
+@HAVE_WXWIDGETS3_FALSE@am__append_1 = $(top_builddir)/libstc/libstc.a
+@HAVE_WXWIDGETS3_FALSE@am__append_2 = -I$(top_srcdir)/libstc
+@HAVE_WXWIDGETS3_FALSE@am__append_3 = $(top_builddir)/libstc/libstc.a
+@HAVE_WXWIDGETS3_TRUE@am__append_4 = -DHAVE_WXWIDGETS3=1
 subdir = src/cryptote
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/Info.plist.in $(top_srcdir)/acscripts/depcomp \
@@ -261,7 +265,8 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
+LIBS = $(top_builddir)/libenctain/libenctain.a $(am__append_3) \
+	$(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -373,9 +378,13 @@ cryptote_SOURCES = main.cpp \
 	../pwgen/fips181.cpp ../pwgen/fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
-cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
+cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a \
+	$(am__append_1)
 dist_man_MANS = cryptote.1
-AM_CXXFLAGS = -W -Wall "-DMY_BUILDTIME=\"`date -u '+%Y-%m-%d %H:%M %Z'`\"" -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) 
+AM_CXXFLAGS = -W -Wall "-DMY_BUILDTIME=\"`date -u '+%Y-%m-%d %H:%M \
+	%Z'`\"" -I$(top_srcdir)/src -I$(top_srcdir)/libenctain \
+	$(am__append_2) $(am__append_4) $(WX_CXXFLAGS) $(BZLIB_CFLAGS) \
+	$(ZLIB_CFLAGS)
 @GOT_RESCOMP_TRUE@@ON_WIN32_TRUE@BUILT_SOURCES = cryptote-rc.o
 @GOT_RESCOMP_TRUE@@ON_WIN32_TRUE@cryptote_LDFLAGS = cryptote-rc.o
 EXTRA_DIST = cryptote.rc cryptote.xml \

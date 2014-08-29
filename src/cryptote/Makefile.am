@@ -41,12 +41,24 @@ cryptote_SOURCES = main.cpp \
 	../pwgen/fips181.cpp ../pwgen/fips181.h \
 	../common/myintl.cpp ../common/myintl.h
 
-cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a
+cryptote_DEPENDENCIES = $(top_builddir)/libenctain/libenctain.a
 
 dist_man_MANS = cryptote.1
 
-AM_CXXFLAGS = -W -Wall "-DMY_BUILDTIME=\"`date -u '+%Y-%m-%d %H:%M %Z'`\"" -I$(top_srcdir)/src -I$(top_srcdir)/libenctain -I$(top_srcdir)/libstc $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS) 
-LIBS = $(top_builddir)/libenctain/libenctain.a $(top_builddir)/libstc/libstc.a $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
+AM_CXXFLAGS = -W -Wall "-DMY_BUILDTIME=\"`date -u '+%Y-%m-%d %H:%M %Z'`\"" -I$(top_srcdir)/src -I$(top_srcdir)/libenctain
+LIBS = $(top_builddir)/libenctain/libenctain.a
+
+if !HAVE_WXWIDGETS3
+    cryptote_DEPENDENCIES += $(top_builddir)/libstc/libstc.a
+    AM_CXXFLAGS += -I$(top_srcdir)/libstc
+    LIBS += $(top_builddir)/libstc/libstc.a
+else
+    AM_CXXFLAGS += -DHAVE_WXWIDGETS3=1
+endif
+
+AM_CXXFLAGS += $(WX_CXXFLAGS) $(BZLIB_CFLAGS) $(ZLIB_CFLAGS)
+LIBS += $(WX_LIBS) $(BZLIB_LIBS) $(ZLIB_LIBS) $(EXTRA_LIBS)
+
 
 if ON_WIN32
 if GOT_RESCOMP

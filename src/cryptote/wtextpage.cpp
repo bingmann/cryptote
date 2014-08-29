@@ -27,7 +27,12 @@
 
 #include <wx/file.h>
 #include <wx/wfstream.h>
-#include <stc.h>
+
+#if HAVE_WXWIDGETS3
+  #include <wx/stc/stc.h>
+#else
+  #include <stc.h>
+#endif
 
 WTextPage::WTextPage(class WCryptoTE* parent)
     : WNotePage(parent)

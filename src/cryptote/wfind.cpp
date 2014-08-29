@@ -23,7 +23,12 @@
 #include "wfind.h"
 #include "wcryptote.h"
 #include "wtextpage.h"
-#include <stc.h>
+
+#if HAVE_WXWIDGETS3
+  #include <wx/stc/stc.h>
+#else
+  #include <stc.h>
+#endif
 
 #include "common/tools.h"
 
