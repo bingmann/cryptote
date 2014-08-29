@@ -51,7 +51,7 @@ public:
              bool bConvertEncoding = false);                      // convert Win<->Unix if necessary?
 
     MyLocale(int language, // wxLanguage id or custom language
-             int flags = wxLOCALE_LOAD_DEFAULT | wxLOCALE_CONV_ENCODING);
+             int flags = wxLOCALE_LOAD_DEFAULT);
 
     virtual ~MyLocale();
 

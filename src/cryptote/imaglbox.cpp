@@ -299,8 +299,12 @@ void wxSimpleImageListBox::SetString(unsigned int n, const wxString& s)
     wxCHECK_RET( IsValid(n),
                  wxT("invalid index in wxSimpleImageListBox::SetString") );
 
-    m_items[n] = s; 
+    m_items[n] = s;
+#if wxCHECK_VERSION(3,0,0)
+    RefreshRow(n);
+#else
     RefreshLine(n);
+#endif
 }
 
 wxString wxSimpleImageListBox::GetString(unsigned int n) const
@@ -319,7 +323,11 @@ void wxSimpleImageListBox::SetBitmap(unsigned int n, const wxBitmap& bmp)
     if (!m_bitmaps[n]) m_bitmaps[n] = (void*)(new wxBitmap(bmp));
     else (*(wxBitmap*)m_bitmaps[n]) = bmp;
 
+#if wxCHECK_VERSION(3,0,0)
+    RefreshRow(n);
+#else
     RefreshLine(n);
+#endif
 }
 
 wxBitmap* wxSimpleImageListBox::GetBitmap(unsigned int n)

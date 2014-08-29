@@ -1499,7 +1499,7 @@ const wxChar *MyLocale::GetString(const wxChar *szOrigString,
 		   _T("string \"%s\"[%ld] not found in %slocale '%s'."),
 		   szOrigString, (long)n,
 		   szDomain ? wxString::Format(_T("domain '%s' "), szDomain).c_str()
-		   : _T(""),
+		   : wxEmptyString,
 		   GetLocale());
 #endif // __WXDEBUG__
 

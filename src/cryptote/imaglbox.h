@@ -215,8 +215,6 @@ protected:
     // wxSimpleImageListBox shouldn't be allowed to call them directly!
     virtual void SetItemCount(size_t count)
     { wxImageListBox::SetItemCount(count); }
-    virtual void SetLineCount(size_t count)
-    { wxImageListBox::SetLineCount(count); }
 
     // Callbacks from wxImageListBox to retrieve data
 

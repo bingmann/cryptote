@@ -146,7 +146,7 @@ public:
 
         // Setup locale to system default
 
-        m_locale = new MyLocale(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+        m_locale = new MyLocale(wxLANGUAGE_DEFAULT);
 
         // Load and initialize the catalog
         if (!m_locale->AddCatalogFromMemory(_T("cryptote"), cryptote_catalogs) ||

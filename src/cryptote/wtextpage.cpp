@@ -48,7 +48,9 @@ WTextPage::WTextPage(class WCryptoTE* parent)
 
     // *** Create Control ***
 
-    editctrl = new wxStyledTextCtrl(this, myID_EDITCTRL);
+    editctrl = new wxStyledTextCtrl(
+        this, myID_EDITCTRL, wxDefaultPosition, wxDefaultSize,
+        wxVSCROLL | wxHSCROLL);
     editctrl->SetFocus();
 
     //editctrl->UsePopUp(false);	// we show a context menu ourselves.
@@ -511,14 +513,14 @@ void WTextPage::PageSaveData()
     {
         UpdateStatusBar(
             wxString::Format(_("Compressed %u characters from buffer into %u bytes for encrypted storage."),
-                             buflen, savelen)
+                             (unsigned int)buflen, (unsigned int)savelen)
             );
     }
     else
     {
         UpdateStatusBar(
             wxString::Format(_("Saving %u characters from buffer for encrypted storage."),
-                             buflen)
+                             (unsigned int)buflen)
             );
     }
 

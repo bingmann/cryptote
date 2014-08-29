@@ -111,8 +111,10 @@ WCryptoTE::WCryptoTE(wxWindow* parent, class MyLocale* locale)
 
     // Create Controls
 
-    auinotebook = new wxAuiNotebook(this, myID_AUINOTEBOOK, wxDefaultPosition, wxDefaultSize,
-                                    wxAUI_NB_DEFAULT_STYLE | wxNO_BORDER);
+    auinotebook = new wxAuiNotebook(
+        this, myID_AUINOTEBOOK, wxDefaultPosition, wxDefaultSize,
+        wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_CLOSE_ON_ACTIVE_TAB |
+        wxNO_BORDER);
 
     filelistpane = new WFileList(this);
 
@@ -474,8 +476,8 @@ static inline bool CheckTextASCII(char c)
 
 void WCryptoTE::ImportSubFiles(const wxArrayString& importlist, const std::string& importtype, bool openpage)
 {
-    size_t importsize = 0;
-    size_t importnum = 0;
+    unsigned int importsize = 0;
+    unsigned int importnum = 0;
 
     for (unsigned int fi = 0; fi < importlist.GetCount(); ++fi)
     {
