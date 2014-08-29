@@ -168,7 +168,7 @@ public:
     // *** Static Password Generator Functions ***
 
     /// Return ASCII Name for password generator type
-    static const wxChar * GetTypeName(pass_type pt);
+    static const wxString GetTypeName(pass_type pt);
 
     /// Return array of possible letters in simple random password.
     static const wxChar * GetType0Letters(pass_type pt, bool skip_similar, bool skip_swapped);

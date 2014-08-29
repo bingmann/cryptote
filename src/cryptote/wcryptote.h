@@ -138,7 +138,7 @@ public:
     // *** Operations ***
 
     /// Return a localized string for the given error code.
-    static const wxChar * EnctainErrorString(Enctain::error_type e);
+    static wxString EnctainErrorString(Enctain::error_type e);
 
     /// Return a localized string for the given exception object.
     static wxString EnctainExceptionString(Enctain::Exception& e);

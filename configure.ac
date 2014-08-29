@@ -143,10 +143,10 @@ AC_LANG([C++])
 
 AM_OPTIONS_WXCONFIG
 
-AM_PATH_WXCONFIG(3.0.0, [wxWin3=1], [wxWin3=0], [aui,stc,html,adv,net,core])
+AM_PATH_WXCONFIG(2.9.2, [wxWin3=1], [wxWin3=0], [aui,stc,html,adv,net,core])
 
 if test "$wxWin3" == 0; then
-        AC_MSG_WARN([Could not find wxWidgets >= 3.0.0, testing for 2.8.0.])
+        AC_MSG_WARN([Could not find wxWidgets >= 2.9.2, testing for 2.8.0.])
 
 	AM_PATH_WXCONFIG(2.8.0, [wxWin=1], [wxWin=0], [aui,html,adv,net,core])
 

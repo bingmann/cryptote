@@ -179,7 +179,7 @@ WCryptoTE::~WCryptoTE()
     }
 }
 
-const wxChar* WCryptoTE::EnctainErrorString(Enctain::error_type e)
+wxString WCryptoTE::EnctainErrorString(Enctain::error_type e)
 {
     using namespace Enctain;
 

@@ -1031,7 +1031,7 @@ static wxString GetFullSearchPath(const wxChar *lang)
 	count = gs_searchPrefixes.size();
     for ( n = 0; n < count; n++ )
     {
-        paths.Add(GetMsgCatalogSubdirs(gs_searchPrefixes[n], lang));
+        paths.Add(GetMsgCatalogSubdirs(gs_searchPrefixes[n].c_str(), lang));
     }
 
 
@@ -1097,7 +1097,7 @@ bool MyMsgCatalogMemory::LoadFile(const wxChar *szDirPrefix, const wxChar *szNam
     {
 	wxString fullname(szDirPrefix);
 	fullname << _T('.') << wxFontMapperBase::GetEncodingName(encSys);
-	searchPath << GetFullSearchPath(fullname) << wxPATH_SEP;
+	searchPath << GetFullSearchPath(fullname.c_str()) << wxPATH_SEP;
     }
 #endif // wxUSE_FONTMAP
 
@@ -1109,8 +1109,9 @@ bool MyMsgCatalogMemory::LoadFile(const wxChar *szDirPrefix, const wxChar *szNam
 	// french) we should use "fr" if no belgium specific message catalogs
 	// exist
 	searchPath << wxPATH_SEP
-		   << GetFullSearchPath(wxString(szDirPrefix).
-					Left((size_t)(sublocale - szDirPrefix)));
+		   << GetFullSearchPath(
+                       (wxString(szDirPrefix).
+                        Left((size_t)(sublocale - szDirPrefix))).c_str());
     }
 
     // don't give translation errors here because the wxstd catalog might

@@ -39,7 +39,7 @@ private:
 
     struct Theme
     {
-        const wxChar* name;
+        const wxString name;
         const unsigned char* snapshot_data;
         size_t snapshot_datalen;
         const ThemeEntry* entries;

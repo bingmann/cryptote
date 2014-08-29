@@ -813,7 +813,7 @@ bool WPassGen::IsAllowedLength() const
 
 // *** Static Password Generator Functions ***
 
-const wxChar* WPassGen::GetTypeName(pass_type pt)
+const wxString WPassGen::GetTypeName(pass_type pt)
 {
     switch (pt)
     {
