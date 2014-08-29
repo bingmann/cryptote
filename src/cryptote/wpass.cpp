@@ -645,7 +645,7 @@ WLegalNotice::WLegalNotice(wxWindow* parent, int id, const wxString& title, cons
     // begin wxGlade: WLegalNotice::WLegalNotice
     labelText = new wxStaticText(this, wxID_ANY, wxEmptyString);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://panthema.net/2009/cryptote/"), _("http://panthema.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
     buttonOK = new wxButton(this, wxID_OK, _("OK"));
 
     set_properties();

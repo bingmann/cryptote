@@ -1255,9 +1255,9 @@ void WCryptoTE::WebUpdateCheck()
     if (webupdatecheck_running) return;
     webupdatecheck_running = true;
 
-    UpdateStatusBar(_("Opening HTTP connection to idlebox.net..."));
+    UpdateStatusBar(_("Opening HTTP connection to panthema.net..."));
 
-    wxURL url(_T("http://idlebox.net/2009/cryptote/updatecheck"));
+    wxURL url(_T("http://panthema.net/2009/cryptote/updatecheck"));
 
     wxHTTP* httpconn = wxDynamicCast(&url.GetProtocol(), wxHTTP);
     if (!httpconn) {
@@ -3185,7 +3185,7 @@ WAbout::WAbout(wxWindow* parent, int id, const wxString& title, const wxPoint& p
     // begin wxGlade: WAbout::WAbout
     bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://panthema.net/2009/cryptote/"), _("http://panthema.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
     labelBuildTime = new wxStaticText(this, wxID_ANY, _("Binary compiled at "));
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
 
@@ -3254,7 +3254,7 @@ WWebUpdateCheck::WWebUpdateCheck(wxWindow* parent, const wxString& newversion, c
 {
     // begin wxGlade: WWebUpdateCheck::WWebUpdateCheck
     labelNewVersion = new wxStaticText(this, wxID_ANY, _("CryptoTE 0.1.2"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_CENTRE);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("http://panthema.net/2009/cryptote/"), _("http://panthema.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_CENTRE);
     textctrlChanges = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
     buttonDisable = new wxButton(this, wxID_NO, _("Disable WebUpdateCheck"));

@@ -59,7 +59,7 @@ Es ist auch <EM>sehr einfach</EM> einen Container zu entwerfen, der eine Hintert
 Jede Subdatei des Containers ist einzeln mit Serpent/CBC und verschiedenen zuf&auml;llig generierten Sch&uuml;sseln und IV (Initialvektor) gesch&uuml;tzt. Die Schl&uuml;ssel und IV sind in einer globalen Dateitabelle gespeichert, die wiederum durch einen Masterschl&uuml;ssel mit Serpent/CBC verschl&uuml;sselt ist. Dieser Masterschl&uuml;ssel ist nicht als solcher ungesch&uuml;tzt in der Containerdatei gespeichert. <P>
 Stattdessen unterst&uuml;tzt der Container mehrere Entschl&uuml;sselungspassw&ouml;rter: <A HREF="cryptote_funktionsumfang.html#KeySlots">Mehrere Passwort-Slots</A>. Jeder Slot enth&auml;lt eine verschl&uuml;sselte Kopie des Masterschl&uuml;ssels mit dem die Dateitabelle gelesen werden kann. Die zum Entschl&uuml;sseln der Kopien notwendigen Schl&uuml;ssel und CBC-IV k&ouml;nnen nur mit dem vom Benutzer eingegeben Passwort bestimmt werden. Aus dem Benutzer-Passwort werden mittels PBKDF2, mit HMAC(SHA256) als Hashfunktion, und zwei verschiedenen, zuf&auml;lligen ,,Salts" der Schl&uuml;ssel und CBC-IV bestimmt.<P>
 Mehr Information zum Containerformat ist dem CryptoTE Quellcode in libenctain/format.html beigef&uuml;gt.<P>
-Vor dem Entwurf von CryptoTE habe ich einen ausf&uuml;hrlichen Geschwindigkeitvergleich verschiedener Kryptographischen Cipher und Bibliotheken durchgef&uuml;hrt: siehe <A HREF="http://idlebox.net">http://idlebox.net</A> f&uuml;r mehr Informationen.<P>
+Vor dem Entwurf von CryptoTE habe ich einen ausf&uuml;hrlichen Geschwindigkeitvergleich verschiedener Kryptographischen Cipher und Bibliotheken durchgef&uuml;hrt: siehe <A HREF="http://panthema.net">http://panthema.net</A> f&uuml;r mehr Informationen.<P>
 
 <HR>
 <A NAME="Komprimierung"></A>

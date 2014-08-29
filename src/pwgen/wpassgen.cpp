@@ -1042,7 +1042,7 @@ PGWAbout::PGWAbout(wxWindow* parent, int id, const wxString& title, const wxPoin
     // begin wxGlade: PGWAbout::PGWAbout
     bitmapIcon = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
     bitmapWeb = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
-    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://idlebox.net/2009/cryptote/"), _("http://idlebox.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
+    hyperlink1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Visit http://panthema.net/2009/cryptote/"), _("http://panthema.net/2009/cryptote/"), wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
     buttonOK = new wxButton(this, wxID_OK, wxEmptyString);
 
     set_properties();

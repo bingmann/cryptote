@@ -60,7 +60,7 @@ It is also <EM>very easy</EM> to design a container that has a backdoor, i.e. th
 Each subfile of the container is encrypted using Serpent/CBC with a different randomly generated key and IV (initialization vector). The keys and IVs are stored in a global file table, which in turn is encrypted with a master key using Serpent/CBC. This master key is not stored in plain text within the container file.<P>
 Instead a container supports multiple decryption keys: <A HREF="cryptote_features.html#KeySlots">Multiple Key Slots</A>. Each key slot contains an encrypted copy of the master key required to read the file table. The decryption key and CBC-IV for the master key can only be determined from the password entered by the user. The password entered by the user is hashed using PBKDF2 with HMAC(SHA256) as hash function. Two different random salts are used to generate decryption key and CBC-IV from the entered password.<P>
 More information about the container file format is available in the CryptoTE source code in libenctain/format.html.<P>
-I ran an extensive cryptography speedtest before designing CryptoTE: see <A HREF="http://idlebox.net">http://idlebox.net</A> for details.<P>
+I ran an extensive cryptography speedtest before designing CryptoTE: see <A HREF="http://panthema.net">http://panthema.net</A> for details.<P>
 
 <HR>
 <A NAME="Compression"></A>

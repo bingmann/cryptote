@@ -8,9 +8,9 @@ AppVersion=@VERSION@
 AppVerName=CryptoTE @VERSION@
 AppID={{C78E3B78-D047-426F-87CD-2289FEF2202B}
 AppPublisher=Timo Bingmann
-AppPublisherURL=http://idlebox.net/2009/cryptote/
-AppSupportURL=http://idlebox.net/2009/cryptote/
-AppUpdatesURL=http://idlebox.net/2009/cryptote/
+AppPublisherURL=http://panthema.net/2009/cryptote/
+AppSupportURL=http://panthema.net/2009/cryptote/
+AppUpdatesURL=http://panthema.net/2009/cryptote/
 AppCopyright=GNU General Public License v2.0
 DefaultDirName={pf}\CryptoTE
 DefaultGroupName=CryptoTE
@@ -23,7 +23,7 @@ ChangesAssociations=true
 UninstallDisplayIcon={app}\cryptote.exe
 VersionInfoVersion=@VERSION@
 VersionInfoCompany=Timo Bingmann
-VersionInfoDescription=http://idlebox.net/2009/cryptote/
+VersionInfoDescription=http://panthema.net/2009/cryptote/
 VersionInfoCopyright=GNU General Public License v2.0
 MinVersion=0,4.0
 ShowLanguageDialog=auto
@@ -60,5 +60,5 @@ Root: HKCR; SubKey: .ect; ValueType: string; ValueData: CryptoTE Encrypted Conta
 Root: HKCR; SubKey: CryptoTE Encrypted Container; ValueType: string; ValueData: {cm:EncryptedContainer}; Flags: uninsdeletekey
 Root: HKCR; SubKey: CryptoTE Encrypted Container\Shell\Open\Command; ValueType: string; ValueData: """{app}\cryptote.exe"" ""%1"""; Flags: uninsdeletevalue
 Root: HKCR; Subkey: CryptoTE Encrypted Container\DefaultIcon; ValueType: string; ValueData: {app}\cryptote.exe,1; Flags: uninsdeletevalue
-Root: HKCU; Subkey: Software\idlebox.net\CryptoTE; Flags: dontcreatekey uninsdeletekey
-Root: HKCU; Subkey: Software\idlebox.net; Flags: dontcreatekey uninsdeletekeyifempty
+Root: HKCU; Subkey: Software\panthema.net\CryptoTE; Flags: dontcreatekey uninsdeletekey
+Root: HKCU; Subkey: Software\panthema.net; Flags: dontcreatekey uninsdeletekeyifempty

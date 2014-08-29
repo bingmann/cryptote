@@ -6,7 +6,7 @@
     <string>6.0</string>
 
     <key>CFBundleIdentifier</key>
-    <string>net.idlebox.2009.cryptote</string>
+    <string>net.panthema.2009.cryptote</string>
 
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>

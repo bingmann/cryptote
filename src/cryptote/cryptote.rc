@@ -49,7 +49,7 @@ BEGIN
             VALUE "CompanyName", "Timo Bingmann"
             VALUE "FileDescription", "CryptoTE - Text Editor with Integrated Secure Encryption"
             VALUE "FileVersion", "0,0,0,0"
-            VALUE "Comments", "http://idlebox.net/2009/cryptote/"
+            VALUE "Comments", "http://panthema.net/2009/cryptote/"
             VALUE "LegalCopyright", "Copyright (C) 2009 Timo Bingmann"
             VALUE "OriginalFilename", "cryptote.exe"
         END

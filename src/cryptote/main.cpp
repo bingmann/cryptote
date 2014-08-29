@@ -142,7 +142,7 @@ public:
         wxLog::SetActiveTarget(new wxLogStderr);
 
         SetAppName(_T("CryptoTE"));
-        SetVendorName(_T("idlebox.net"));
+        SetVendorName(_T("panthema.net"));
 
         // Setup locale to system default
 
