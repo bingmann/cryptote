@@ -635,7 +635,8 @@ void WTextPage::DoQuickFind(bool backwards, const wxString& findtext)
         quickfind_startpos = editctrl->GetTargetStart();
         quickfind_length = editctrl->GetTargetEnd() - quickfind_startpos;
 
-        editctrl->EnsureVisible(editctrl->LineFromPosition(quickfind_startpos));
+        int linepos = editctrl->LineFromPosition(quickfind_startpos);
+        editctrl->EnsureVisibleEnforcePolicy(linepos);
 
         editctrl->StartStyling(quickfind_startpos, 0x1F);
         editctrl->SetStyling(quickfind_length, STYLE_FINDHIGHLIGHT);
