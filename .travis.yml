@@ -1,0 +1,25 @@
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+env:
+  matrix:
+    # compile with wxWidgets version 2.8 and 3.0
+    - WXVER=2.8
+    - WXVER=3.0 CXXFLAGS=-std=c++0x
+
+install:
+  - if [ "$WXVER" == "3.0" ]; then sudo add-apt-repository -y ppa:wxformbuilder/wxwidgets; fi
+  - sudo apt-get -qq update
+  - sudo apt-get install libz-dev libbz2-dev
+  - if [ "$WXVER" == "2.8" ]; then sudo apt-get install libwxgtk2.8-dev; fi
+  - if [ "$WXVER" == "3.0" ]; then sudo apt-get install libwxgtk3.0-dev; fi
+
+before_script:
+  - mkdir build && cd build && ../configure
+
+script:
+  - make
+  - make check
