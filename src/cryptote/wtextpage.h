@@ -3,7 +3,7 @@
  *
  * Miscellaneous tools.
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -177,7 +177,7 @@ protected:
 
     struct MetaSettingsv00000001
     {
-        uint32_t version;
+        uint32_t      version;
 
         unsigned char view_linewrap;
         unsigned char view_linenumber;
@@ -186,11 +186,11 @@ protected:
         unsigned char view_indentguide;
         unsigned char view_longlineguide;
 
-        int view_zoom;
+        int           view_zoom;
 
-        int cursor_firstvisibleline;
-        int cursor_xoffset;
-        int cursor_currentpos;
+        int           cursor_firstvisibleline;
+        int           cursor_xoffset;
+        int           cursor_currentpos;
     }
     __attribute__ ((packed));
 

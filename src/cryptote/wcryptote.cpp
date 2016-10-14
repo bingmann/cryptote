@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wcryptote.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -20,27 +20,27 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  ******************************************************************************/
 
-#include "wcryptote.h"
 #include "bmpcat.h"
-#include "wtextpage.h"
-#include "wfind.h"
-#include "wfilelist.h"
-#include "wfileprop.h"
-#include "wcntprop.h"
-#include "wmsgdlg.h"
-#include "wbinpage.h"
-#include "wpass.h"
-#include "wprefs.h"
+#include "common/myintl.h"
 #include "hhelpfs.h"
 #include "pwgen/wpassgen.h"
-#include "common/myintl.h"
+#include "wbinpage.h"
+#include "wcntprop.h"
+#include "wcryptote.h"
+#include "wfilelist.h"
+#include "wfileprop.h"
+#include "wfind.h"
+#include "wmsgdlg.h"
+#include "wpass.h"
+#include "wprefs.h"
+#include "wtextpage.h"
 
+#include <memory>
 #include <wx/config.h>
 #include <wx/fileconf.h>
+#include <wx/protocol/http.h>
 #include <wx/tokenzr.h>
 #include <wx/url.h>
-#include <wx/protocol/http.h>
-#include <memory>
 
 #include "common/tools.h"
 
@@ -1399,7 +1399,7 @@ void WCryptoTE::WebUpdateCheck()
 }
 
 static inline wxMenuItem * appendMenuItem(class wxMenu* parentMenu, int id,
-                                          const wxString& text, const wxString& helpString)
+                                              const wxString& text, const wxString& helpString)
 {
     wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
     mi->SetBitmap(BitmapCatalog::GetMenuBitmap(id));

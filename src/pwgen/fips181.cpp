@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/pwgen/fips181.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -1293,7 +1293,7 @@ unsigned int FIPS181::digram[NUM_RULES][NUM_RULES] =
     }
 };
 
-FIPS181::FIPS181(unsigned int(* randfunc)())
+FIPS181::FIPS181(unsigned int(*randfunc)())
     : saved_unit(0),
       randfunc_(randfunc)
 { }
@@ -1508,7 +1508,6 @@ bool FIPS181::improper_word(unsigned int* units, unsigned int word_size)
 
     return failure;
 }
-
 
 /**
  * Treating y as a vowel is sometimes a problem.  Some words get formed that

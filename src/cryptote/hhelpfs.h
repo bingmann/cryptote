@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/hhelpfs.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,8 +23,8 @@
 #ifndef CRYPTOTE_SRC_HHELPFS_HEADER
 #define CRYPTOTE_SRC_HHELPFS_HEADER
 
-#include <wx/filesys.h>
 #include <string>
+#include <wx/filesys.h>
 
 /**
  * FileSystemHandler serving only the help: protocol with files from compressed
@@ -48,11 +48,11 @@ public:
 protected:
     struct BuiltinFile
     {
-        const wxString path;
+        const wxString     path;
         const unsigned char* compressed_data;
-        unsigned int compressed_size;
-        unsigned int uncompressed_size;
-        std::string decompressed_data;
+        unsigned int       compressed_size;
+        unsigned int       uncompressed_size;
+        std::string        decompressed_data;
     };
 
     static struct BuiltinFile filelist[];

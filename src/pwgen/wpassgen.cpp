@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/pwgen/wpassgen.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,8 +23,8 @@
 #include "wpassgen.h"
 
 #include "common/tools.h"
-#include "fips181.h"
 #include "enctain.h"
+#include "fips181.h"
 
 #include <wx/config.h>
 #include <wx/textdlg.h>

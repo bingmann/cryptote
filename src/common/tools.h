@@ -3,7 +3,7 @@
  *
  * Miscellaneous tools.
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -25,16 +25,16 @@
 #ifndef CRYPTOTE_COMMON_TOOLS_HEADER
 #define CRYPTOTE_COMMON_TOOLS_HEADER
 
+#include <wx/bitmap.h>
+#include <wx/icon.h>
+#include <wx/image.h>
 #include <wx/mstream.h>
 #include <wx/string.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
 
-#include <time.h>
-#include <string>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <time.h>
 #include <zlib.h>
 
 // *** Missing in 2.8, but always added by wxGlade ***

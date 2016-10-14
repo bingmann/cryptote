@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wpass.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -20,11 +20,11 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  ******************************************************************************/
 
-#include "wpass.h"
-#include "wcryptote.h"
 #include "bmpcat.h"
-#include "wmsgdlg.h"
 #include "common/tools.h"
+#include "wcryptote.h"
+#include "wmsgdlg.h"
+#include "wpass.h"
 
 #include <wx/filename.h>
 #include <wx/imaglist.h>

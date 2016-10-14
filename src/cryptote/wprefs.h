@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wprefs.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,12 +23,12 @@
 #ifndef CRYPTOTE_SRC_WPREFS_HEADER
 #define CRYPTOTE_SRC_WPREFS_HEADER
 
-#include <wx/wx.h>
 #include <wx/image.h>
+#include <wx/wx.h>
 
 // begin wxGlade: ::dependencies
-#include <wx/spinctrl.h>
 #include <wx/notebook.h>
+#include <wx/spinctrl.h>
 // end wxGlade
 
 #include "imaglbox.h"

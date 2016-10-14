@@ -2,7 +2,7 @@
 ################################################################################
 # misc/analyze-source.pl
 #
-# Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+# Part of CryptoTE, see http://panthema.net/2007/cryptote
 #
 # Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
 #
@@ -158,7 +158,7 @@ sub process_cpp {
     }
 
     expect($path, $i-1, $data[$i-1], " *\n");
-    expect($path, $i, $data[$i], " * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote\n"); ++$i;
+    expect($path, $i, $data[$i], " * Part of CryptoTE, see http://panthema.net/2007/cryptote\n"); ++$i;
     expect($path, $i, $data[$i], " ".('*'x79)."\n"); ++$i;
 
     # read authors
@@ -230,7 +230,7 @@ EOF
         my $namespace = 0;
         for(my $i = 0; $i < @uncrust-1; ++$i)
         {
-            if ($uncrust[$i] =~ m!^namespace \S+ {!) {
+            if ($uncrust[$i] =~ m!^namespace \S+ \{!) {
                 splice(@uncrust, $i+1, 0, "\n");
                 ++$namespace;
             }
@@ -294,7 +294,7 @@ sub process_pl_cmake {
     }
 
     expect($path, $i-1, $data[$i-1], "#\n");
-    expect($path, $i, $data[$i], "# Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote\n"); ++$i;
+    expect($path, $i, $data[$i], "# Part of CryptoTE, see http://panthema.net/2007/cryptote\n"); ++$i;
     expect($path, $i, $data[$i], "#\n"); ++$i;
 
     # read authors

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/pwgen/fips181.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -41,7 +41,7 @@ public:
     typedef unsigned int (* randfunc_type)();
 
     /// Construct a new password generator using given random function.
-    explicit FIPS181(unsigned int(* randfunc)());
+    explicit FIPS181(unsigned int(*randfunc)());
 
     /// Randomword will generate a random word and place it in the buffer word.
     int randomword(std::string& word, std::string& hyphenated_word, unsigned int minlen, unsigned int maxlen);
@@ -51,7 +51,7 @@ private:
     struct unit
     {
         char unit_code[5];
-        int flags;
+        int  flags;
     };
 
     static const unsigned int NUM_RULES = 34;

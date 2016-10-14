@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/bmpcat.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,26 +23,26 @@
 #ifndef CRYPTOTE_SRC_BMPCAT_HEADER
 #define CRYPTOTE_SRC_BMPCAT_HEADER
 
-#include <wx/string.h>
 #include <wx/bitmap.h>
+#include <wx/string.h>
 
 class BitmapCatalog
 {
 private:
     struct ThemeEntry
     {
-        int identifier;
-        int usage;
+        int                identifier;
+        int                usage;
         const unsigned char* data;
-        size_t datalen;
+        size_t             datalen;
     };
 
     struct Theme
     {
-        const wxString name;
+        const wxString     name;
         const unsigned char* snapshot_data;
-        size_t snapshot_datalen;
-        const ThemeEntry* entries;
+        size_t             snapshot_datalen;
+        const ThemeEntry   * entries;
     };
 
     // *** First Theme: KDE's Crystal ***
@@ -67,10 +67,10 @@ private:
 
     struct BitmapInfo
     {
-        const int identifier;
-        const int usage;
+        const int      identifier;
+        const int      usage;
         const wxString name;
-        wxBitmap current;
+        wxBitmap       current;
     };
 
     /// Array of bitmap initialized from the theme

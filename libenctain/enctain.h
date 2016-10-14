@@ -1,7 +1,7 @@
 /*******************************************************************************
  * libenctain/enctain.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,9 +23,9 @@
 #ifndef CRYPTOTE_LIBENCTAIN_ENCTAIN_HEADER
 #define CRYPTOTE_LIBENCTAIN_ENCTAIN_HEADER
 
-#include <string>
 #include <exception>
 #include <stdint.h>
+#include <string>
 
 /// Holds all public declarations and classes of Enctain.
 namespace Enctain {
@@ -341,7 +341,6 @@ public:
     /// Reset all structures in the container
     void Clear();
 
-
     // *** Container Info Operations ***
 
     /// Return whether the subfiles or properties were changed since the last load/save.
@@ -353,7 +352,6 @@ public:
 
     /// Set the Progress Indicator object which receives progress notifications
     void SetProgressIndicator(ProgressIndicator* pi);
-
 
     // *** Container User KeySlots Operations ***
 
@@ -377,7 +375,6 @@ public:
     /// file. Returns -1 if it was deleted.
     int GetUsedKeySlot() const;
 
-
     // *** Container Unencrypted Global Properties ***
 
     /// Set (overwrite) an unencrypted global property.
@@ -393,7 +390,6 @@ public:
     /// false if the index is beyond the last property
     bool GetGlobalUnencryptedPropertyIndex(unsigned int propindex,
                                            std::string& key, std::string& value) const;
-
 
     // *** Container Encrypted Global Properties ***
 
@@ -411,9 +407,7 @@ public:
     bool GetGlobalEncryptedPropertyIndex(unsigned int propindex,
                                          std::string& key, std::string& value) const;
 
-
     // *** Container SubFiles ***
-
 
     // * Subfile array management *
 
@@ -431,7 +425,6 @@ public:
     /// Delete a subfile in the array. Returns true if it existed.
     bool DeleteSubFile(unsigned int subfileindex);
 
-
     // * Subfile user-defined properties *
 
     /// Set (overwrite) a subfile's property.
@@ -448,7 +441,6 @@ public:
     bool GetSubFilePropertyIndex(unsigned int subfileindex, unsigned int propindex,
                                  std::string& key, std::string& value) const;
 
-
     // * Get operations of subfile header fields *
 
     /// Return number of bytes the subfile requires on disk, after compression
@@ -464,7 +456,6 @@ public:
 
     /// Return compression method of the subfile.
     compression_type GetSubFileCompression(unsigned int subfileindex) const;
-
 
     // * Set operations of subfile header fields *
 
@@ -484,7 +475,6 @@ public:
     void SetSubFileCompressionEncryption(unsigned int subfileindex,
                                          compression_type comp,
                                          encryption_type enc);
-
 
     // * Subfile data operations *
 

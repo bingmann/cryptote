@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/main.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -20,20 +20,20 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  ******************************************************************************/
 
-#include <wx/wx.h>
+#include <memory>
 #include <wx/cmdline.h>
-#include <wx/tokenzr.h>
 #include <wx/confbase.h>
 #include <wx/fileconf.h>
 #include <wx/stdpaths.h>
-#include <memory>
+#include <wx/tokenzr.h>
+#include <wx/wx.h>
 
-#include "wcryptote.h"
-#include "pwgen/wpassgen.h"
 #include "common/myintl.h"
 #include "common/tools.h"
 #include "locale/de.h"
 #include "locale/wxstd/de.h"
+#include "pwgen/wpassgen.h"
+#include "wcryptote.h"
 
 #ifdef __UNIX__
 #include <termios.h>

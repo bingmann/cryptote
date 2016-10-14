@@ -1,7 +1,7 @@
 /*******************************************************************************
  * libenctain/bytebuff.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,13 +23,13 @@
 #ifndef CRYPTOTE_LIBENCTAIN_BYTEBUFF_HEADER
 #define CRYPTOTE_LIBENCTAIN_BYTEBUFF_HEADER
 
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include <utility>
-#include <string>
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 namespace Enctain {
 

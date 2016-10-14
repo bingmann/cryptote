@@ -1,7 +1,7 @@
 /*******************************************************************************
  * libenctain/testsuite/test_ect1.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -20,15 +20,15 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  ******************************************************************************/
 
-#include "enctain.h"
 #include "encios.h"
+#include "enctain.h"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 #define WRITEFILE       0

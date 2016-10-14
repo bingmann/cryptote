@@ -1,7 +1,7 @@
 /*******************************************************************************
  * libenctain/encios.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,9 +23,9 @@
 #ifndef CRYPTOTE_LIBENCTAIN_ENCIOS_HEADER
 #define CRYPTOTE_LIBENCTAIN_ENCIOS_HEADER
 
-#include <ostream>
-#include <istream>
 #include "enctain.h"
+#include <istream>
+#include <ostream>
 
 namespace Enctain {
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/hhelpfs.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -84,29 +84,29 @@ BuiltinHtmlHelpFSHandler::OpenFile(wxFileSystem&, const wxString& location)
 
 #include "help/en/html/back.gif.h"
 #include "help/en/html/contents.gif.h"
-#include "help/en/html/forward.gif.h"
-#include "help/en/html/up.gif.h"
 #include "help/en/html/cryptote.hhc.h"
 #include "help/en/html/cryptote.hhk.h"
-#include "help/en/html/cryptote.hhp.h"
 #include "help/en/html/cryptote.hhp.cached.h"
-#include "help/en/html/cryptote_contents.html.h"
-#include "help/en/html/cryptote_introduction.html.h"
+#include "help/en/html/cryptote.hhp.h"
 #include "help/en/html/cryptote_aboutencryption.html.h"
+#include "help/en/html/cryptote_contents.html.h"
 #include "help/en/html/cryptote_features.html.h"
+#include "help/en/html/cryptote_introduction.html.h"
+#include "help/en/html/forward.gif.h"
+#include "help/en/html/up.gif.h"
 
 #include "help/de/html/back.gif.h"
 #include "help/de/html/contents.gif.h"
-#include "help/de/html/forward.gif.h"
-#include "help/de/html/up.gif.h"
 #include "help/de/html/cryptote.hhc.h"
 #include "help/de/html/cryptote.hhk.h"
-#include "help/de/html/cryptote.hhp.h"
 #include "help/de/html/cryptote.hhp.cached.h"
+#include "help/de/html/cryptote.hhp.h"
 #include "help/de/html/cryptote_contents.html.h"
 #include "help/de/html/cryptote_einfuehrung.html.h"
-#include "help/de/html/cryptote_ueberverschluesselung.html.h"
 #include "help/de/html/cryptote_funktionsumfang.html.h"
+#include "help/de/html/cryptote_ueberverschluesselung.html.h"
+#include "help/de/html/forward.gif.h"
+#include "help/de/html/up.gif.h"
 
 #define FILE(path, buffer)       { wxString(wxT(path)), buffer, sizeof(buffer), buffer ## _uncompressed, std::string() }
 

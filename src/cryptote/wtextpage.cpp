@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wtextpage.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -20,10 +20,10 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  ******************************************************************************/
 
-#include "wtextpage.h"
-#include "wfilelist.h"
 #include "bmpcat.h"
 #include "common/tools.h"
+#include "wfilelist.h"
+#include "wtextpage.h"
 
 #include <wx/file.h>
 #include <wx/wfstream.h>
@@ -272,7 +272,7 @@ void WTextPage::AddText(const wxString& text)
 // *** Event Handlers ***
 
 static inline wxMenuItem * appendMenuItem(class wxMenu* parentMenu, int id,
-                                          const wxString& text, const wxString& helpString)
+                                              const wxString& text, const wxString& helpString)
 {
     wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
     mi->SetBitmap(BitmapCatalog::GetMenuBitmap(id));
@@ -327,7 +327,6 @@ void WTextPage::OnContextMenu(wxContextMenuEvent& WXUNUSED(event))
     appendMenuItem(menu, myID_MENU_EDIT_INSERT_PASSWORD,
                    _("Insert &Password ...\tCtrl+P"),
                    _("Open random generator dialog box and insert the generated password."));
-
 
     // Enable or Disable Menu Items and Tool Bar Items
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/bmpcat.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -22,8 +22,8 @@
 
 #include "bmpcat.h"
 
-#include "wcryptote.h"
 #include "common/tools.h"
+#include "wcryptote.h"
 
 #include <wx/artprov.h>
 
@@ -427,8 +427,8 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/messagebox-info-32.h"
 #include "art/crystal/messagebox-warning-32.h"
 #include "art/crystal/snapshot.h"
-#include "art/crystal/userkeyslot.h"
 #include "art/crystal/userkeyslot-active.h"
+#include "art/crystal/userkeyslot.h"
 #include "art/crystal/view-choose-16.h"
 #include "art/crystal/view-choose-22.h"
 #include "art/crystal/view-detailed-16.h"
@@ -437,10 +437,10 @@ wxBitmap BitmapCatalog::_GetFileTypeBitmap(int id)
 #include "art/crystal/view-icon-22.h"
 #include "art/crystal/view-multicolumn-16.h"
 #include "art/crystal/view-multicolumn-22.h"
-#include "art/crystal/view-zoom.h"
-#include "art/crystal/view-zoom-increase.h"
 #include "art/crystal/view-zoom-decrease.h"
+#include "art/crystal/view-zoom-increase.h"
 #include "art/crystal/view-zoom-reset.h"
+#include "art/crystal/view-zoom.h"
 #include "art/crystal/window-close-16.h"
 
 #define BUILTIN(x)      x, sizeof(x)
@@ -759,8 +759,8 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 #include "art/slick/messagebox-information.h"
 #include "art/slick/messagebox-warning.h"
 #include "art/slick/snapshot.h"
-#include "art/slick/userkeyslot.h"
 #include "art/slick/userkeyslot-active.h"
+#include "art/slick/userkeyslot.h"
 #include "art/slick/view-choose-16.h"
 #include "art/slick/view-choose-22.h"
 #include "art/slick/view-detailed-16.h"
@@ -769,9 +769,9 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_crystal_small[] =
 #include "art/slick/view-icon-22.h"
 #include "art/slick/view-multicolumn-16.h"
 #include "art/slick/view-multicolumn-22.h"
-#include "art/slick/view-zoom.h"
-#include "art/slick/view-zoom-increase.h"
 #include "art/slick/view-zoom-decrease.h"
+#include "art/slick/view-zoom-increase.h"
+#include "art/slick/view-zoom.h"
 #include "art/slick/window-close-16.h"
 
 const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_large[] =
@@ -1044,8 +1044,8 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 #include "art/gnome/edit-copy.h"
 #include "art/gnome/edit-cut-tool.h"
 #include "art/gnome/edit-cut.h"
-#include "art/gnome/edit-datetime.h"
 #include "art/gnome/edit-datetime-tool.h"
+#include "art/gnome/edit-datetime.h"
 #include "art/gnome/edit-delete-tool.h"
 #include "art/gnome/edit-delete.h"
 #include "art/gnome/edit-find-replace-tool.h"
@@ -1080,8 +1080,8 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 #include "art/gnome/messagebox-question.h"
 #include "art/gnome/messagebox-warning.h"
 #include "art/gnome/process-stop.h"
-#include "art/gnome/seahorse.h"
 #include "art/gnome/seahorse-tool.h"
+#include "art/gnome/seahorse.h"
 #include "art/gnome/snapshot.h"
 #include "art/gnome/subfile-close.h"
 #include "art/gnome/subfile-export.h"
@@ -1091,12 +1091,12 @@ const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_slick_small[] =
 #include "art/gnome/subfile-open-tool.h"
 #include "art/gnome/subfile-open.h"
 #include "art/gnome/subfile-properties.h"
-#include "art/gnome/userkeyslot.h"
 #include "art/gnome/userkeyslot-active.h"
-#include "art/gnome/view-zoom.h"
-#include "art/gnome/view-zoom-increase.h"
+#include "art/gnome/userkeyslot.h"
 #include "art/gnome/view-zoom-decrease.h"
+#include "art/gnome/view-zoom-increase.h"
 #include "art/gnome/view-zoom-reset.h"
+#include "art/gnome/view-zoom.h"
 
 const BitmapCatalog::ThemeEntry BitmapCatalog::bitmaplist_gnome_large[] =
 {

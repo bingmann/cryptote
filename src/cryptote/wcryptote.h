@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wcryptote.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,11 +23,11 @@
 #ifndef CRYPTOTE_SRC_WCRYPTOTE_HEADER
 #define CRYPTOTE_SRC_WCRYPTOTE_HEADER
 
-#include <wx/wx.h>
+#include <wx/aui/aui.h>
 #include <wx/filename.h>
 #include <wx/hyperlink.h>
 #include <wx/wfstream.h>
-#include <wx/aui/aui.h>
+#include <wx/wx.h>
 #include <wx/wxhtml.h>
 
 #include "enctain.h"

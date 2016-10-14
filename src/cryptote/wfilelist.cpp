@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wfilelist.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -20,15 +20,15 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  ******************************************************************************/
 
-#include "wfilelist.h"
-#include "wcryptote.h"
-#include "wfileprop.h"
 #include "bmpcat.h"
+#include "wcryptote.h"
+#include "wfilelist.h"
+#include "wfileprop.h"
 
 #include <vector>
+#include <wx/dirdlg.h>
 #include <wx/imaglist.h>
 #include <wx/wfstream.h>
-#include <wx/dirdlg.h>
 
 #include "common/tools.h"
 
@@ -273,7 +273,7 @@ void WFileList::LoadProperties()
 }
 
 static inline wxMenuItem * appendMenuItem(class wxMenu* parentMenu, int id,
-                                          const wxString& text, const wxString& helpString)
+                                              const wxString& text, const wxString& helpString)
 {
     wxMenuItem* mi = new wxMenuItem(parentMenu, id, text, helpString);
     mi->SetBitmap(BitmapCatalog::GetMenuBitmap(id));

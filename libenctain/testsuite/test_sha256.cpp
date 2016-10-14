@@ -1,7 +1,7 @@
 /*******************************************************************************
  * libenctain/testsuite/test_sha256.cpp
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,10 +23,10 @@
 #include <assert.h>
 #include <iostream>
 
-#include "botan-1.6/include/init.h"
-#include "botan-1.6/include/sha256.h"
 #include "botan-1.6/include/hmac.h"
+#include "botan-1.6/include/init.h"
 #include "botan-1.6/include/pkcs5.h"
+#include "botan-1.6/include/sha256.h"
 
 using namespace Enctain;
 

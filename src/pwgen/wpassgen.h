@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/pwgen/wpassgen.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,14 +23,14 @@
 #ifndef CRYPTOTE_PWGEN_WPASSGEN_HEADER
 #define CRYPTOTE_PWGEN_WPASSGEN_HEADER
 
-#include <wx/wx.h>
-#include <wx/image.h>
 #include <wx/hyperlink.h>
+#include <wx/image.h>
+#include <wx/wx.h>
 
 // begin wxGlade: ::dependencies
+#include <wx/listctrl.h>
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
-#include <wx/listctrl.h>
 // end wxGlade
 
 #include <vector>
@@ -81,12 +81,12 @@ public:
 
     struct Preset
     {
-        wxString name;
+        wxString  name;
         pass_type type;
-        bool skip_similar;
-        bool skip_swapped;
-        wxString extrachar;
-        int length;
+        bool      skip_similar;
+        bool      skip_swapped;
+        wxString  extrachar;
+        int       length;
 
         // Default Constructor
         Preset() { }

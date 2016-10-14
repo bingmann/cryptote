@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/cryptote/wpass.h
  *
- * Part of CryptoTE v0.5.999, see http://panthema.net/2007/cryptote
+ * Part of CryptoTE, see http://panthema.net/2007/cryptote
  *******************************************************************************
  * Copyright (C) 2008-2014 Timo Bingmann <tb@panthema.net>
  *
@@ -23,8 +23,8 @@
 #ifndef CRYPTOTE_SRC_WPASS_HEADER
 #define CRYPTOTE_SRC_WPASS_HEADER
 
-#include <wx/wx.h>
 #include <wx/hyperlink.h>
+#include <wx/wx.h>
 // begin wxGlade: ::dependencies
 #include <wx/statline.h>
 // end wxGlade
