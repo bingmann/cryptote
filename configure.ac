@@ -1,13 +1,13 @@
 # $Id$ -*- mode: autoconf -*-
 
 AC_PREREQ(2.59)
-AC_INIT(cryptote, 0.5.999)
+AC_INIT(cryptote, 0.6.0)
 AC_CONFIG_SRCDIR(src/cryptote/main.cpp)
 AC_CONFIG_AUX_DIR(acscripts)
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 AM_MAINTAINER_MODE
 
 # Check for Win32 system and set compilation flag.
